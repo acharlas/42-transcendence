@@ -9,8 +9,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 COPY ./ui ./
 
-RUN npm install
-RUN npm install react-scripts -g
+RUN npm install --silent
 
 #start app
 
