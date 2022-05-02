@@ -1,4 +1,5 @@
 FROM node:slim
+RUN apt-get update
 
 #set working directory
 WORKDIR /app

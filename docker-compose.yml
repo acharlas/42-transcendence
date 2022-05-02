@@ -1,7 +1,7 @@
 version: "3.7"
 
 services:
-  ui:
+  react:
     container_name: react
     build:
       context: ./front
@@ -12,3 +12,12 @@ services:
       - 3001:3000
     environment:
       - CHOKIDAR_USEPOLLING=true
+  nest:
+    container_name: nest
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    volumes:
+      - "./back/nest/src:/nest/src"
+    ports:
+      - 8080:8080
