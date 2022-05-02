@@ -7,7 +7,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 #add app
 
-COPY ./ui ./
+COPY ./react ./
 
 RUN npm install --silent
 
