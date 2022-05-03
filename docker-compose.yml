@@ -12,12 +12,33 @@ services:
       - 3001:3000
     environment:
       - CHOKIDAR_USEPOLLING=true
+
   nest:
     container_name: nest
     build:
       context: ./back
       dockerfile: Dockerfile
+    depends_on:
+      - postgres
     volumes:
       - "./back/nest/src:/nest/src"
     ports:
       - 8080:8080
+
+  postgres:
+    container_name: postgresql
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    volumes:
+      - "db:/var/lib/postgresql/data"
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    restart: always
+volumes:
+  db:
+    driver: local    
