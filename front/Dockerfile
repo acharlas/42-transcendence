@@ -1,5 +1,4 @@
-FROM node:slim
-RUN apt-get update
+FROM node:alpine
 
 #set working directory
 WORKDIR /app

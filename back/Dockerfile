@@ -1,6 +1,4 @@
-FROM node:slim
-
-RUN apt-get update && apt-get install -y procps
+FROM node:alpine
 
 WORKDIR /nest
 
