@@ -4,7 +4,6 @@ import React from "react";
 import Box from "./componants/Box"
 import "./style.css"
 
-
 function App() {
   return (
     <Canvas>
