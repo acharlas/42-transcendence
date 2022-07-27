@@ -8,7 +8,7 @@ ENV PATH /nest/node_modules/.bin:$PATH
 
 COPY ./nest ./
 
-RUN npm install --silent
+RUN npm install
 RUN nest build
 
 CMD ["npm", "run", "start:dev"]

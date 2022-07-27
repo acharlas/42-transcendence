@@ -10,7 +10,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 COPY ./react ./
 
-RUN npm install --silent
+RUN npm install 
 
 #start app
 
