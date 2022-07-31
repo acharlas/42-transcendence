@@ -21,4 +21,8 @@ export class UserService {
         return from(this.userRepository.find());
     }
 
+    findById(id: number): Observable<UserI> {
+        return from(this.userRepository.findOne({where: {id}}));
+    }
+
 }

@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { runInThisContext } from 'vm';
 import { UserI } from '../models/user.interface';
 import { UserService } from '../service/user.service';
 
@@ -18,4 +17,10 @@ export class UserController {
     findAll(): Observable<UserI[]> {
         return this.userService.findAll();
     }
+
+    @Get(':id')
+    findById(@Param('id') id: number): Observable<UserI> {
+        return this.userService.findById(id);
+    }
+   
 }
