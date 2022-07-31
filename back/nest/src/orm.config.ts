@@ -8,5 +8,6 @@ export const config: TypeOrmModuleOptions = {
     username:'postgres',
     password:'postgres',
     entities: ['dist/**/*.entity{.ts,.js}'],
+    autoLoadEntities: true,
     synchronize:true,
 };

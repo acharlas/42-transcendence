@@ -21,7 +21,7 @@ export class HistoryService {
         return from(this.historyRepository.find());
     }
 
-    findById(id: number): Observable<HistoryI> {
+    findById(id: string): Observable<HistoryI> {
         return from(this.historyRepository.findOne({where: {id}}));
     }
 

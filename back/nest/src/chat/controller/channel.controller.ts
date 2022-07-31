@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { ChannelI } from '../models/channel.interface';
 import { ChannelService } from '../service/channel.service';
 
-@Controller('channels')
+@Controller('channel')
 export class ChannelController {
 
     constructor(private channelService: ChannelService) {}
@@ -19,7 +19,7 @@ export class ChannelController {
     }
 
     @Get(':id')
-    findById(@Param('id') id: number): Observable<ChannelI> {
+    findById(@Param('id') id: string): Observable<ChannelI> {
         return this.channelService.findById(id);
     }
    

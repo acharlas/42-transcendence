@@ -19,7 +19,7 @@ export class HistoryController {
     }
 
     @Get(':id')
-    findById(@Param('id') id: number): Observable<HistoryI> {
+    findById(@Param('id') id: string): Observable<HistoryI> {
         return this.historyService.findById(id);
     }
    

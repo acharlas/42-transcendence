@@ -1,5 +1,5 @@
 export interface HistoryI{
-    id: number;
+    id: string;
     matchinfo : [
     {
         player:{

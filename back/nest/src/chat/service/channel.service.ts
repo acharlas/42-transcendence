@@ -21,8 +21,8 @@ export class ChannelService {
         return from(this.channelRepository.find());
     }
 
-    findById(id: number): Observable<ChannelI> {
-        return from(this.channelRepository.findOne({where: {id}}));
+    findById(id: string): Observable<ChannelI> {
+        return from(this.channelRepository.findOne({where: {id: id}}));
     }
 
 }

@@ -1,8 +1,6 @@
 export interface ChannelI{
-    id: number;
-    messages: [{
-        userid: number,
-        timestamp: string,
-        content: string
-    }]
+    id: string;
+    content: string;
+    senderId: string;
+    timestamps: Date
 }

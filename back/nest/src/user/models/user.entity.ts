@@ -3,19 +3,19 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 @Entity("users")
 export class UserEntity {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-    @Column()
+    @Column({default: ''})
     username: string;
 
-    @Column()
+    @Column({default: ''})
     nickname: string;
 
-    @Column()
+    @Column({default: 0})
     ladderLevel: number;
 
-    @Column({type: "simple-json", nullable: true})
+    @Column({type: "simple-json", nullable: true, default: {wins:0, losses: 0}})
     stats: {wins: number, losses: number}
 
 

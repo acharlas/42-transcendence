@@ -3,16 +3,17 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 @Entity("channel")
 export class ChannelEntity {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-    @Column("simple-json")
-    messages: [{
-        userid: number,
-        timestamp: string,
-        content: string
-    }]
+    @Column()
+    content: string;
 
+    @Column()
+    senderId: string;
+
+    @Column({default: new Date()})
+    timestamps: Date;
 
 
 }
