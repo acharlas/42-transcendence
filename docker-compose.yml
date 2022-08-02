@@ -40,7 +40,7 @@ services:
       - POSTGRES_PASSWORD=postgres
     restart: always
 
-  pdadmin:
+  pgadmin:
     container_name: pgAdmin
     build:
       context: ./pgadmin

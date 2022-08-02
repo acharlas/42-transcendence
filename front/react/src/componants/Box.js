@@ -7,8 +7,6 @@ const SPEED = 0.2
 export default function Box() {
     const {forward, backward, left, right} = keyboardControl()
     const boxMesh = useRef();
-    useFrame((state, delta) => (boxMesh.current.rotation.x += 0.01))
-    useFrame((state, delta) => (boxMesh.current.rotation.y += 0.02))
     useFrame(() => {
         if(boxMesh.current.position.x > -10 )
         {

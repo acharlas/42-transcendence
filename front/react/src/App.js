@@ -1,4 +1,4 @@
-import { AdaptiveDpr, Stars, Stats } from "@react-three/drei";
+import { AdaptiveDpr, OrbitControls, Stars, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React from "react";
 import Box from "./componants/Box"
