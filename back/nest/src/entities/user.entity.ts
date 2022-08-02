@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from "typeorm"
 import { ChannelUsers } from "./channelUsers.entity"
+import { Message } from "./message.entity"
 
 export enum UserStatus {
     ONLINE = 'online',
@@ -30,6 +31,9 @@ export class User {
 
     @OneToMany(() => ChannelUsers, (channelUser) => channelUser.userRef)
     channels: ChannelUsers[]
+
+    @OneToMany(() => Message, (message) => message.userRef)
+    messages: Message[]
 
     @ManyToMany(type => User)
     @JoinTable({joinColumn: {name: 'id_1'} })

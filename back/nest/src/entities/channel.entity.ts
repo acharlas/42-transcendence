@@ -1,5 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from "typeorm"
 import { ChannelUsers } from "./channelUsers.entity"
+import { Message } from "./message.entity"
+
 
 export enum ChannelType {
     PRIVATE = 'private',
@@ -25,7 +27,8 @@ export class Channel {
     @OneToMany(() => ChannelUsers, (channelUser) => channelUser.channelRef)
     users: ChannelUsers[]
 
-    
-    
-    
+    @OneToMany(() => Message, (message) => message.channelRef)
+    messages: Message[]
+
+
 }
