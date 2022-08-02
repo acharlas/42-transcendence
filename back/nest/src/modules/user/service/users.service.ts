@@ -4,7 +4,7 @@ import { PageMetaDto } from 'src/common/dtos/page-meta.dto';
 import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
 import { PageDto } from 'src/common/dtos/page.dto';
 import { Repository } from 'typeorm';
-import { UserDto } from '../dto/user.dto';
+import { UserDto } from '../dtos/user.dto';
 import { UserEntity } from '../entities/user.entity';
 //import { UpdateUserDto } from '../dto/update-user.dto';
 

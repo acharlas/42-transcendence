@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Channel } from './channel.entity';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '../modules/user/entities/user.entity';
 
 @Entity()
 export class Message {

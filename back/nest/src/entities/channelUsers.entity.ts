@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Channel } from './channel.entity';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '../modules/user/entities/user.entity';
 
 export enum UserPrivilege {
   OWNER = 'owner',

@@ -4,7 +4,7 @@ import { Message } from 'src/entities/message.entity';
 import { UserEntity, UserStatus } from '../entities/user.entity';
 
 
-export class UserDto {
+export class UserDto  {
   @ApiProperty()
   username: string;
 

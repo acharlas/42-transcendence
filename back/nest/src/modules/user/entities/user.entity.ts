@@ -7,9 +7,9 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { AbstractEntity } from '../../common/entities/abstract.entity';
-import { ChannelUsers } from '../../entities/channelUsers.entity';
-import { Message } from '../../entities/message.entity';
+import { AbstractEntity } from '../../../common/entities/abstract.entity';
+import { ChannelUsers } from '../../../entities/channelUsers.entity';
+import { Message } from '../../../entities/message.entity';
 
 export enum UserStatus {
   ONLINE = 'online',

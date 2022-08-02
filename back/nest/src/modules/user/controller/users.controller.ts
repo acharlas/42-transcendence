@@ -17,7 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
 import { PageDto } from 'src/common/dtos/page.dto';
-import { UserDto } from '../dto/user.dto';
+import { UserDto } from '../dtos/user.dto';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 
 
@@ -32,15 +32,12 @@ export class UsersController {
   async getUsers(@Query() pageOptionsDto: PageOptionsDto): Promise<PageDto<UserDto>> {
     return this.usersService.getUsers(pageOptionsDto)
   }
-  // @Post()
-  // @ApiCreatedResponse({
-  //   description: 'User as been successfully created',
-  //   type: UserEntity
-  // })
-  // @ApiForbiddenResponse({ description: 'Forbidden' })
-  // create(@Body() createUserDto: CreateUserDto): Promise<UserEntity> {
-  //   return this.usersService.create(createUserDto);
-  // }
+  @Post()
+  @ApiCreatedResponse({description: 'User as been successfully created',type: UserDto})
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
+    return this.usersService.create(createUserDto);
+  }
 
   
 
