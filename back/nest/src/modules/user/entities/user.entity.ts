@@ -6,10 +6,12 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  JoinColumn,
 } from 'typeorm';
 import { AbstractEntity } from '../../../common/entities/abstract.entity';
 import { ChannelUsers } from '../../../entities/channelUsers.entity';
 import { Message } from '../../../entities/message.entity';
+import { UserDto } from '../dtos/user.dto';
 
 export enum UserStatus {
   ONLINE = 'online',
@@ -19,7 +21,7 @@ export enum UserStatus {
 }
 
 @Entity({name: "users"})
-export class UserEntity extends AbstractEntity {
+export class UserEntity extends AbstractEntity<UserDto> {
 
   @Column()
   username: string;
@@ -37,9 +39,11 @@ export class UserEntity extends AbstractEntity {
   losses: number;
 
   @OneToMany(() => ChannelUsers, (channelUser) => channelUser.userRef)
+  @JoinColumn()
   channels: ChannelUsers[];
 
   @OneToMany(() => Message, (message) => message.userRef)
+  @JoinColumn()
   messages: Message[];
 
   @ManyToMany((type) => UserEntity)
@@ -49,4 +53,6 @@ export class UserEntity extends AbstractEntity {
   @ManyToMany((type) => UserEntity)
   @JoinTable({ joinColumn: { name: 'id_1' } })
   blocked: UserEntity[];
+
+  dtoClass = UserDto;
 }

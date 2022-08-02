@@ -19,6 +19,7 @@ import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
 import { PageDto } from 'src/common/dtos/page.dto';
 import { UserDto } from '../dtos/user.dto';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
+import { CreateUserDto } from '../dtos/createUserDto';
 
 
 @Controller('users')
@@ -32,11 +33,14 @@ export class UsersController {
   async getUsers(@Query() pageOptionsDto: PageOptionsDto): Promise<PageDto<UserDto>> {
     return this.usersService.getUsers(pageOptionsDto)
   }
+
+
   @Post()
   @ApiCreatedResponse({description: 'User as been successfully created',type: UserDto})
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async createUser(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
-    return this.usersService.create(createUserDto);
+    const user = await this.usersService.createUser(createUserDto);
+    return user.toDto()
   }
 
   

@@ -3,7 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PageMetaDto } from 'src/common/dtos/page-meta.dto';
 import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
 import { PageDto } from 'src/common/dtos/page.dto';
+import { CreateFailedException } from 'src/exceptions/create-failed.exception';
 import { Repository } from 'typeorm';
+import { CreateUserDto } from '../dtos/createUserDto';
 import { UserDto } from '../dtos/user.dto';
 import { UserEntity } from '../entities/user.entity';
 //import { UpdateUserDto } from '../dto/update-user.dto';
@@ -15,9 +17,16 @@ export class UsersService {
     private usersRepository: Repository<UserEntity>,
   ) {}
 
-  // create(createUserDto: CreateUserDto): Promise<UserEntity> {
-  //   return this.usersRepository.save(createUserDto);
-  // }
+
+
+  async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
+    try {
+      const user = this.usersRepository.create(createUserDto);
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      throw new CreateFailedException(error);
+    } 
+  }
 
   async getUsers(pageOptionsDto: PageOptionsDto): Promise<PageDto<UserDto>> {
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
@@ -28,11 +37,9 @@ export class UsersService {
 
       const itemCount = await queryBuilder.getCount();
       const {entities} = await queryBuilder.getRawAndEntities();
-
       const pageMetaDto = new PageMetaDto({itemCount, pageOptionsDto});
 
       return new PageDto(entities, pageMetaDto)
-
   }
 
   // findOne(id: number) {
