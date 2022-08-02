@@ -15,11 +15,10 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
-import { PageDto } from 'src/common/dtos/page.dto';
 import { UserDto } from '../dtos/user.dto';
-import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
+
 import { CreateUserDto } from '../dtos/createUserDto';
+import { UserEntity } from '../entities/user.entity';
 
 
 @Controller('users')
@@ -29,9 +28,8 @@ export class UsersController {
 
   
   @Get()
-  @ApiPaginatedResponse(UserDto)
-  async getUsers(@Query() pageOptionsDto: PageOptionsDto): Promise<PageDto<UserDto>> {
-    return this.usersService.getUsers(pageOptionsDto)
+  async getUsers(): Promise<UserEntity[]> {
+    return await this.usersService.getUsers()
   }
 
 

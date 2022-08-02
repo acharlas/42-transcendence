@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PageMetaDto } from 'src/common/dtos/page-meta.dto';
-import { PageOptionsDto } from 'src/common/dtos/page-options.dto';
-import { PageDto } from 'src/common/dtos/page.dto';
 import { CreateFailedException } from 'src/exceptions/create-failed.exception';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/createUserDto';
@@ -28,18 +25,8 @@ export class UsersService {
     } 
   }
 
-  async getUsers(pageOptionsDto: PageOptionsDto): Promise<PageDto<UserDto>> {
-    const queryBuilder = this.usersRepository.createQueryBuilder('user');
-    queryBuilder
-      .orderBy('user.createdAt', pageOptionsDto.order)
-      .skip(pageOptionsDto.skip)
-      .take(pageOptionsDto.take)
-
-      const itemCount = await queryBuilder.getCount();
-      const {entities} = await queryBuilder.getRawAndEntities();
-      const pageMetaDto = new PageMetaDto({itemCount, pageOptionsDto});
-
-      return new PageDto(entities, pageMetaDto)
+  async getUsers(): Promise<UserEntity[]> {
+    return await this.usersRepository.find();     
   }
 
   // findOne(id: number) {
