@@ -1,34 +1,37 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from "typeorm"
-import { ChannelUsers } from "./channelUsers.entity"
-import { Message } from "./message.entity"
-
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  OneToMany,
+} from 'typeorm';
+import { ChannelUsers } from './channelUsers.entity';
+import { Message } from './message.entity';
 
 export enum ChannelType {
-    PRIVATE = 'private',
-    PUBLIC = 'public',
-    PROTECTED = 'protected',
-    DM = 'dm'
+  PRIVATE = 'private',
+  PUBLIC = 'public',
+  PROTECTED = 'protected',
+  DM = 'dm',
 }
 
 @Entity()
 export class Channel {
-    @PrimaryGeneratedColumn('uuid')
-    id: string
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    name: string
+  @Column()
+  name: string;
 
-    @Column({type: 'enum', enum: ChannelType, default: ChannelType.PUBLIC})
-    type: ChannelType
+  @Column({ type: 'enum', enum: ChannelType, default: ChannelType.PUBLIC })
+  type: ChannelType;
 
-    @Column({nullable: true})
-    password: string
+  @Column({ nullable: true })
+  password: string;
 
-    @OneToMany(() => ChannelUsers, (channelUser) => channelUser.channelRef)
-    users: ChannelUsers[]
+  @OneToMany(() => ChannelUsers, (channelUser) => channelUser.channelRef)
+  users: ChannelUsers[];
 
-    @OneToMany(() => Message, (message) => message.channelRef)
-    messages: Message[]
-
-
+  @OneToMany(() => Message, (message) => message.channelRef)
+  messages: Message[];
 }

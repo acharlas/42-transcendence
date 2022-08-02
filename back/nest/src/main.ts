@@ -1,20 +1,15 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app.module';
+import { AppModule } from './app/app.module';
+import { setupSwagger } from './utils/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api');
 
-  const config = new DocumentBuilder()
-    .setTitle('Backend test')
-    .setDescription('Nestjs pong')
-    .setVersion('1.0')
-    .addTag('back')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-  
+  app.useGlobalPipes(new ValidationPipe({transform: true}))
+ 
+  setupSwagger(app);
+
   await app.listen(8080);
 }
 bootstrap();
