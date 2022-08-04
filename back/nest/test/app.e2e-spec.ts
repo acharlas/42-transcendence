@@ -47,7 +47,7 @@ describe('App e2e', () => {
             'http://localhost:3334/auth/signup',
           )
           .withBody(dto)
-          .expectStatus(201);
+          .expectStatus(201)
       });
     });
 
