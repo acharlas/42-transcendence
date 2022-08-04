@@ -11,10 +11,11 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    AuthModule, 
-    UserModule, 
-    ChannelModule, 
-    ChannelUserModule, 
-    PrismaModule],
+    AuthModule,
+    UserModule,
+    ChannelModule,
+    ChannelUserModule,
+    PrismaModule,
+  ],
 })
 export class AppModule {}

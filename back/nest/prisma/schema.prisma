@@ -36,10 +36,10 @@ model ChannelUser {
   privilege UserPrivilege @default(DEFAULT)
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   channelId String
-  channel Channel @relation(fields: [channelId], references: [id])
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
   @@map("channelusers")
 }

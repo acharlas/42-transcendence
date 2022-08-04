@@ -12,6 +12,8 @@ services:
   #     - 3001:3000
   #   environment:
   #     - CHOKIDAR_USEPOLLING=true
+  #   networks:
+  #     - transcendence
 
   nest:
     container_name: nest
@@ -19,21 +21,19 @@ services:
       context: ./back
       dockerfile: Dockerfile
     depends_on:
-      - postgres
+      - db
     volumes:
       - "./back/nest/src:/nest/src"
       - "./back/nest/prisma:/nest/prisma"
+      - "./back/nest/test:/nest/test"
     ports:
       - 3333:3333
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres?schema=public
-      - JWT_SECRET=super_secret
+    networks:
+      - transcendence
 
-  postgres:
-    container_name: postgresql
-    build:
-      context: ./db
-      dockerfile: Dockerfile
+  db:
+    container_name: db
+    image: postgres:14.2
     volumes:
       - "database:/var/lib/postgresql/data"
     ports:
@@ -43,6 +43,25 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     restart: always
+    networks:
+      - transcendence
+  
+  test-db:
+    container_name: test-db
+    image: postgres:14.2
+    volumes:
+      - "database:/var/lib/postgresql/data"
+    ports:
+      - 5433:5433
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    restart: always
+    networks:
+      - transcendence
+    command:
+      -p 5433
 
   # pgadmin:
   #   container_name: pgAdmin
@@ -57,4 +76,8 @@ services:
 
 volumes:
   database:
-    driver: local    
+    driver: local
+
+
+networks:
+  transcendence:
