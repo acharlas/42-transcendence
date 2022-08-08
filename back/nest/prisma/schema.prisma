@@ -29,11 +29,10 @@ model User {
 }
 
 model ChannelUser {
-  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  privilege UserPrivilege @default(DEFAULT)
+  privilege UserPrivilege
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -42,6 +41,7 @@ model ChannelUser {
   channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
   @@map("channelusers")
+  @@id([userId, channelId])
 }
 
 model Channel {
@@ -50,7 +50,8 @@ model Channel {
   updatedAt DateTime @updatedAt
 
   name String
-  type ChannelType @default(PUBLIC)
+  type ChannelType @default(public)
+  password String?
 
   users ChannelUser[]
 
@@ -58,16 +59,16 @@ model Channel {
 }
 
 enum UserPrivilege {
-  OWNER
-  ADMIN
-  DEFAULT
-  MUTED
-  BAN
+  owner
+  admin
+  default
+  muted
+  ban
 }
 
 enum ChannelType {
-  PUBLIC
-  PRIVATE
-  PROTECTED
-  DM
+  public
+  private
+  protected
+  dm
 }

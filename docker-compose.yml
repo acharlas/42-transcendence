@@ -45,12 +45,12 @@ services:
     restart: always
     networks:
       - transcendence
-  
+
   test-db:
     container_name: test-db
     image: postgres:14.2
     volumes:
-      - "database:/var/lib/postgresql/data"
+      - "database-test:/var/lib/postgresql/data"
     ports:
       - 5433:5433
     environment:
@@ -60,8 +60,7 @@ services:
     restart: always
     networks:
       - transcendence
-    command:
-      -p 5433
+    command: -p 5433
 
   # pgadmin:
   #   container_name: pgAdmin
@@ -77,7 +76,8 @@ services:
 volumes:
   database:
     driver: local
-
+  database-test:
+    driver: local
 
 networks:
   transcendence:

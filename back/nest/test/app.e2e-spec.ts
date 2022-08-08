@@ -8,6 +8,8 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
 import { AuthDto } from '../src/auth/dto';
 import { EditUserDto } from '../src/user/dto';
+import { CreateChannelDto } from 'src/channel/dto';
+import { ChannelType } from '@prisma/client';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -170,6 +172,94 @@ describe('App e2e', () => {
           .expectBodyContains(dto.username)
           .expectBodyContains(dto.email);
       });
+    });
+  });
+
+  describe('Channel', () => {
+    describe('Get empty channels', () => {
+      it('should get all channels', () => {
+        return pactum
+          .spec()
+          .get('/channels')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBody([]);
+      });
+      it('should get all public channels', () => {
+        return pactum
+          .spec()
+          .get('/channels?type=public')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBody([]);
+      });
+      it('should get all protected channels', () => {
+        return pactum
+          .spec()
+          .get('/channels?type=protected')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200);
+      });
+    });
+    describe('Create channels', () => {
+      describe('Create public channels', () => {
+        const dto: CreateChannelDto = {
+          name: 'First Channel',
+          type: ChannelType.public,
+        };
+        it('should create a channel', () => {
+          return pactum
+            .spec()
+            .post('/channels')
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
+            .withBody(dto)
+            .expectStatus(201);
+        });
+        it.todo(
+          'should throw if name bad formated',
+        );
+      });
+    });
+
+    describe('get channels', () => {
+      it.todo('get channel by id');
+      it.todo('get channels');
+    });
+
+    describe('edit channel', () => {
+      it.todo('edit channel');
+      it.todo(
+        'should throw if name bad formated',
+      );
+    });
+
+    describe('delete channels', () => {
+      it.todo('delete channel');
+      it.todo('throw if user not owner');
+    });
+
+    describe('join channels', () => {
+      it.todo('join channel');
+      it.todo('join protected channel');
+      it.todo('throw if password incorrect');
+    });
+
+    describe('send message', () => {
+      it.todo('send message');
+      it.todo('throw if content empty');
+    });
+
+    describe('get channel', () => {
+      it.todo('get messages from channel');
+      it.todo('throw if user not on channel');
     });
   });
 });
