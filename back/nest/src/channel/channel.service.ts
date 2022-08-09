@@ -42,7 +42,7 @@ export class ChannelService {
           data: {
             name: dto.name,
             type: dto.type,
-            password: hash,
+            hash: hash,
             users: {
               create: [
                 {
@@ -147,7 +147,7 @@ export class ChannelService {
         data: {
           name: dto.name,
           type: dto.type,
-          password: hash,
+          hash: hash,
         },
       });
     } catch (e) {
