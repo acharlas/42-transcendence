@@ -49,9 +49,9 @@ model Channel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String
+  name String @unique
   type ChannelType @default(public)
-  password String?
+  hash String?
 
   users ChannelUser[]
 

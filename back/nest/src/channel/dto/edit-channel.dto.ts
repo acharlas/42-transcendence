@@ -2,38 +2,33 @@ import {
   ApiProperty,
   ApiPropertyOptional,
 } from '@nestjs/swagger';
+import { ChannelType } from '@prisma/client';
 import {
   IsEnum,
+  IsNotEmpty,
   IsOptional,
   IsString,
-  Max,
-  Min,
 } from 'class-validator';
-
-enum ChannelType {
-  PUBLIC,
-  PRIVATE,
-  PROTECTED,
-  DM,
-}
 
 export class EditChannelDto {
   @IsString()
-  @Min(5)
-  @Max(15)
+  @IsNotEmpty()
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    pattern: '^([a-zA-Z0-9]{2,10})',
+  })
   name?: string;
 
   @IsEnum(ChannelType)
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    enum: ChannelType,
+  })
   type?: ChannelType;
 
   @IsString()
-  @Min(5)
-  @Max(15)
   @IsOptional()
+  @IsNotEmpty()
   @ApiPropertyOptional()
   password?: string;
 }

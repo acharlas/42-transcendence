@@ -5,26 +5,32 @@ import {
 import { ChannelType } from '@prisma/client';
 import {
   IsEnum,
+  IsNotEmpty,
   IsOptional,
   IsString,
   Max,
   Min,
+  NotEquals,
 } from 'class-validator';
 
 export class CreateChannelDto {
   @IsString()
-  @ApiProperty()
+  @IsNotEmpty()
+  @ApiProperty({
+    pattern: '^([a-zA-Z0-9]{2,10})',
+  })
   name: string;
 
   @IsEnum(ChannelType)
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    enum: ChannelType,
+  })
   type?: ChannelType;
 
   @IsString()
-  @Min(5)
-  @Max(15)
   @IsOptional()
+  @IsNotEmpty()
   @ApiPropertyOptional()
   password?: string;
 }

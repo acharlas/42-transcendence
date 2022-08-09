@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -54,12 +56,8 @@ export class ChannelController {
   }
 
   @Get(':id')
-  getChannelById(
-    @GetUser('id') userId: string,
-    @Param('id') channelId: string,
-  ) {
+  getChannelById(@Param('id') channelId: string) {
     return this.channelService.getChannelById(
-      userId,
       channelId,
     );
   }
@@ -77,6 +75,7 @@ export class ChannelController {
     );
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   deleteChannelById(
     @GetUser('id') userId: string,
