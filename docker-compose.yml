@@ -13,7 +13,7 @@ services:
   #   environment:
   #     - CHOKIDAR_USEPOLLING=true
   #   networks:
-  #     - transcendence
+  #     - network
 
   nest:
     container_name: nest
@@ -29,7 +29,7 @@ services:
     ports:
       - 3333:3333
     networks:
-      - transcendence
+      - network
 
   db:
     container_name: db
@@ -44,7 +44,7 @@ services:
       - POSTGRES_PASSWORD=postgres
     restart: always
     networks:
-      - transcendence
+      - network
 
   test-db:
     container_name: test-db
@@ -59,7 +59,7 @@ services:
       - POSTGRES_PASSWORD=postgres
     restart: always
     networks:
-      - transcendence
+      - network
     command: -p 5433
 
   # pgadmin:
@@ -80,4 +80,5 @@ volumes:
     driver: local
 
 networks:
-  transcendence:
+  network:
+    driver: bridge
