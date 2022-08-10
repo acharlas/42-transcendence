@@ -22,8 +22,10 @@ import { ChannelService } from './channel.service';
 import {
   CreateChannelDto,
   EditChannelDto,
+  JoinChannelDto,
 } from './dto';
 import { ChannelType } from '@prisma/client';
+import passport from 'passport';
 
 @Controller('channels')
 @ApiTags('channels')
@@ -82,6 +84,32 @@ export class ChannelController {
     @Param('id') channelId: string,
   ) {
     return this.channelService.deleteChannelById(
+      userId,
+      channelId,
+    );
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post(':id/join')
+  joinChannel(
+    @GetUser('id') userId: string,
+    @Param('id') channelId: string,
+    @Body() dto: JoinChannelDto,
+  ) {
+    return this.channelService.joinChannelById(
+      userId,
+      channelId,
+      dto,
+    );
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post(':id/leave')
+  leaveChannel(
+    @GetUser('id') userId: string,
+    @Param('id') channelId: string,
+  ) {
+    return this.channelService.leaveChannel(
       userId,
       channelId,
     );

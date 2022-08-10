@@ -33,6 +33,7 @@ model ChannelUser {
   updatedAt DateTime @updatedAt
 
   privilege UserPrivilege
+  status UserStatus
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -56,6 +57,11 @@ model Channel {
   users ChannelUser[]
 
   @@map("channels")
+}
+
+enum UserStatus {
+  connected
+  disconnected
 }
 
 enum UserPrivilege {

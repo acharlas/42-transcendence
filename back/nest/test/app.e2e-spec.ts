@@ -1,8 +1,5 @@
 import { Test } from '@nestjs/testing';
-import {
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
@@ -16,10 +13,9 @@ describe('App e2e', () => {
   let prisma: PrismaService;
 
   beforeAll(async () => {
-    const moduleRef =
-      await Test.createTestingModule({
-        imports: [AppModule],
-      }).compile();
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
     app = moduleRef.createNestApplication();
     app.useGlobalPipes(
       new ValidationPipe({
@@ -31,9 +27,7 @@ describe('App e2e', () => {
 
     prisma = app.get(PrismaService);
     await prisma.cleanDb();
-    pactum.request.setBaseUrl(
-      'http://localhost:3334',
-    );
+    pactum.request.setBaseUrl('http://localhost:3334');
   });
 
   afterAll(() => {
@@ -47,10 +41,7 @@ describe('App e2e', () => {
     };
     describe('Signup', () => {
       it('should throw if no body', () => {
-        return pactum
-          .spec()
-          .post('/auth/signup')
-          .expectStatus(400);
+        return pactum.spec().post('/auth/signup').expectStatus(400);
       });
       it('should throw if email empty', () => {
         return pactum
@@ -89,10 +80,7 @@ describe('App e2e', () => {
     });
     describe('Signin', () => {
       it('should throw if no body', () => {
-        return pactum
-          .spec()
-          .post('/auth/signin')
-          .expectStatus(400);
+        return pactum.spec().post('/auth/signin').expectStatus(400);
       });
       it('should throw if email empty', () => {
         return pactum
@@ -213,18 +201,14 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({
-              Authorization: 'Bearer $S{userAt}',
-            })
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               name: 'First public channel',
               type: ChannelType.public,
               password: 'password',
             })
             .expectStatus(201)
-            .expectBodyContains(
-              ChannelType.public,
-            );
+            .expectBodyContains(ChannelType.public);
         });
       });
 
@@ -238,9 +222,7 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({
-              Authorization: 'Bearer $S{userAt}',
-            })
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               name: 'First protected channel',
               type: ChannelType.protected,
@@ -256,9 +238,7 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({
-              Authorization: 'Bearer $S{userAt}',
-            })
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               name: 'No password',
               type: dto.type,
@@ -269,9 +249,7 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({
-              Authorization: 'Bearer $S{userAt}',
-            })
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               name: 'null password',
               type: dto.type,
@@ -290,9 +268,7 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({
-              Authorization: 'Bearer $S{userAt}',
-            })
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               name: '',
               type: ChannelType.protected,
@@ -304,9 +280,7 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({
-              Authorization: 'Bearer $S{userAt}',
-            })
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .withBody({
               name: 'First protected channel',
               type: ChannelType.protected,
@@ -362,9 +336,7 @@ describe('App e2e', () => {
             .spec()
             .get('/channels/$S{channelId}')
             .withPathParams('id', '$S{channelId}')
-            .withHeaders({
-              Authorization: 'Bearer $S{userAt}',
-            })
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .expectStatus(200)
             .expectBodyContains('$S{channelId}');
         });
@@ -373,15 +345,12 @@ describe('App e2e', () => {
             .spec()
             .get('/channels/1234')
             .withPathParams('id', '1234')
-            .withHeaders({
-              Authorization: 'Bearer $S{userAt}',
-            })
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
             .expectStatus(200)
             .expectBody('');
         });
       });
     });
-
     describe('Edit channel', () => {
       it('should edit channel name', () => {
         return pactum
@@ -444,7 +413,6 @@ describe('App e2e', () => {
           .expectStatus(403);
       });
     });
-
     describe('Delete channels', () => {
       it('should delete channel', () => {
         return pactum
@@ -467,11 +435,123 @@ describe('App e2e', () => {
           .expectJsonLength(1);
       });
     });
+    describe('Join channel', () => {
+      //create test channels
+      it('should create a public test channel', () => {
+        return pactum
+          .spec()
+          .post('/channels')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            name: 'join public channel',
+            type: ChannelType.public,
+            password: 'password',
+          })
+          .stores('pubChannelId', 'id');
+      });
 
-    describe('join channels', () => {
-      it.todo('join channel');
-      it.todo('join protected channel');
-      it.todo('throw if password incorrect');
+      it('should create a protected test channel', () => {
+        return pactum
+          .spec()
+          .post('/channels')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            name: 'join protected channel',
+            type: ChannelType.protected,
+            password: 'password',
+          })
+          .stores('proChannelId', 'id');
+      });
+      describe('Join public channel', () => {
+        it('join public channel', () => {
+          return pactum
+            .spec()
+            .post('/channels/$S{pubChannelId}/join')
+            .withPathParams('id', '$S{pubChannelId}')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .expectStatus(200);
+        });
+      });
+      describe('Join protected channel', () => {
+        it('should throw if password incorrect', () => {
+          return pactum
+            .spec()
+            .post('/channels/$S{proChannelId}/join')
+            .withPathParams('id', '$S{proChannelId}')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              password: 'pass',
+            })
+            .expectStatus(403);
+        });
+        it('should throw if password null', () => {
+          return pactum
+            .spec()
+            .post('/channels/$S{proChannelId}/join')
+            .withPathParams('id', '$S{proChannelId}')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              password: null,
+            })
+            .expectStatus(403);
+        });
+
+        it('should throw if password undefined', () => {
+          return pactum
+            .spec()
+            .post('/channels/$S{proChannelId}/join')
+            .withPathParams('id', '$S{proChannelId}')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({})
+            .expectStatus(403);
+        });
+        it('should join protected channel', () => {
+          return pactum
+            .spec()
+            .post('/channels/$S{proChannelId}/join')
+            .withPathParams('id', '$S{proChannelId}')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              password: 'password',
+            })
+            .expectStatus(200);
+        });
+      });
+      describe('Errors', () => {
+        it('Error if channelId incorrect', () => {
+          return pactum
+            .spec()
+            .post('/channels/12345/join')
+            .withPathParams('id', '12345')
+            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withBody({
+              password: 'password',
+            })
+            .expectStatus(403);
+        });
+      });
+    });
+    describe('Leave channel', () => {
+      it('leave channel', () => {
+        return pactum
+          .spec()
+          .post('/channels/$S{proChannelId}/leave')
+          .withPathParams('id', '$S{proChannelId}')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(200);
+      });
+      it('throw if channelId incorrect', () => {
+        return pactum
+          .spec()
+          .post('/channels/1234/leave')
+          .withPathParams('id', '1234')
+          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .expectStatus(403);
+      });
     });
 
     describe('send message', () => {
@@ -479,7 +559,7 @@ describe('App e2e', () => {
       it.todo('throw if content empty');
     });
 
-    describe('get channel', () => {
+    describe('get channel messages', () => {
       it.todo('get messages from channel');
       it.todo('throw if user not on channel');
     });
