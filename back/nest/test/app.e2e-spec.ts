@@ -8,6 +8,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
 import { AuthDto } from '../src/auth/dto';
 import { EditUserDto } from '../src/user/dto';
+import { FriendDto } from 'src/friend/dto';
 
 describe('App e2e', () => {
   let app: INestApplication;
@@ -170,6 +171,46 @@ describe('App e2e', () => {
           .expectBodyContains(dto.username)
           .expectBodyContains(dto.email);
       });
+    });
+    describe('add/remove friend', () => {
+      it('create amis1', () => {
+        const authDto: AuthDto = {
+          email: 'amis1@a.com',
+          password: 'string',
+        };
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withBody(authDto)
+          .stores('userToken', 'access_token')
+          .expectStatus(201);
+      });
+      it('create amis2', () => {
+        const authDto: AuthDto = {
+          email: 'amis2@a.com',
+          password: 'string',
+        };
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withBody(authDto)
+          .expectStatus(201)
+          .stores('userId', 'UserId');
+      });
+      it('add friend', () => {
+        const dto: FriendDto = {
+          userId: '$S{userId}',
+        };
+        return pactum
+          .spec()
+          .patch('/users')
+          .withHeaders({
+            Authorization: 'Bearer $S{userToken}',
+          })
+          .inspect()
+          .expectStatus(200);
+      });
+      it.todo('remove friend');
     });
   });
 });

@@ -11,9 +11,9 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   email String @unique
   hash  String
@@ -24,6 +24,13 @@ model User {
   losses   Int     @default(0)
 
   Channels ChannelUser[]
+  myfriend User[]   @relation("friends")
+  arefriend  User[]  @relation("friends")
+  
+  myblock User[]   @relation("blocks")
+  areblock  User[]  @relation("blocks")
+
+  msg Msg[] @relation("UserMsg")
 
   @@map("users")
 }
@@ -53,8 +60,22 @@ model Channel {
   type ChannelType @default(PUBLIC)
 
   users ChannelUser[]
+  msg Msg[]
 
   @@map("channels")
+}
+
+model Msg {
+
+  content String
+
+  
+  users User @relation(name: "UserMsg", fields: [userId], references: [id], onDelete: Cascade)
+  userId String 
+  channelId String
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  @@map("msgs")
+  @@id([userId, channelId])
 }
 
 enum UserPrivilege {

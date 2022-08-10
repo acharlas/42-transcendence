@@ -5,6 +5,9 @@ import { ChannelModule } from './channel/channel.module';
 import { ChannelUserModule } from './channel-user/channel-user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
+import { MsgModule } from './msg/msg.module';
+import { FriendModule } from './friend/friend.module';
+import { BlockModule } from './block/block.module';
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import { ConfigModule } from '@nestjs/config';
     ChannelModule,
     ChannelUserModule,
     PrismaModule,
+    MsgModule,
+    FriendModule,
+    BlockModule,
   ],
 })
 export class AppModule {}
