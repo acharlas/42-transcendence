@@ -2,7 +2,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { BlockDto } from './dto';
 
 @Injectable()
@@ -52,6 +52,9 @@ export class BlockService {
           },
         },
       },
+      select: {
+        myblock: true,
+      },
     });
     return user;
   }
@@ -86,6 +89,9 @@ export class BlockService {
             id: dto.userId,
           },
         },
+      },
+      select: {
+        myblock: true,
       },
     });
     return user;

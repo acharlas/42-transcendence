@@ -14,7 +14,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { User } from '@prisma/client';
-import { domainToASCII } from 'url';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { EditUserDto } from './dto';
@@ -30,6 +29,19 @@ export class UserController {
   @Get('me')
   getMe(@GetUser() user: User) {
     return user;
+  }
+
+  @Get(':id')
+  getUserId(
+    @GetUser('id') userId: string,
+    @Param('id') id: string,
+  ) {
+    return this.userService.getUserId(userId, id);
+  }
+
+  @Get()
+  getUsers() {
+    return this.userService.getUsers();
   }
 
   @Patch()

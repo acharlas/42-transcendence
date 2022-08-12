@@ -12,12 +12,11 @@ import {
   ApiBearerAuth,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetUser } from 'src/auth/decorator';
-import { JwtGuard } from 'src/auth/guard';
+import { GetUser } from '../auth/decorator';
+import { JwtGuard } from '../auth/guard';
 import { FriendDto } from './dto';
 import { FriendService } from './friend.service';
 
-@Controller('friend')
 @ApiTags('friend')
 @ApiBearerAuth()
 @UseGuards(JwtGuard)
@@ -28,7 +27,7 @@ export class FriendController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
-  @Post('/friend/add')
+  @Post('add')
   addFriend(
     @GetUser('id') userId: string,
     @Body() dto: FriendDto,
@@ -40,7 +39,7 @@ export class FriendController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('/friend/remove')
+  @Post('remove')
   removeFriend(
     @GetUser('id') userId: string,
     @Body() dto: FriendDto,
@@ -51,7 +50,7 @@ export class FriendController {
     );
   }
 
-  @Get(':id/friend')
+  @Get(':id')
   getFriend(
     @GetUser('id') userId: string,
     @Param('id') id: string,

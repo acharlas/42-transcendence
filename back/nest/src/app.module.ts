@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MsgModule } from './msg/msg.module';
 import { FriendModule } from './friend/friend.module';
 import { BlockModule } from './block/block.module';
+import { HistoryModule } from './history/history.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { BlockModule } from './block/block.module';
     MsgModule,
     FriendModule,
     BlockModule,
+    HistoryModule,
   ],
 })
 export class AppModule {}

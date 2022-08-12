@@ -32,6 +32,8 @@ model User {
 
   msg Msg[] @relation("UserMsg")
 
+  history UserHistory[]
+
   @@map("users")
 }
 
@@ -76,6 +78,42 @@ model Msg {
   channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
   @@map("msgs")
   @@id([userId, channelId])
+}
+
+model UserHistory {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  win Winstate
+  score Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  historyId String
+  history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  @@map("userhistorys")
+  @@id([userId, historyId])
+}
+
+model History {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mode GameMode
+  user UserHistory[] 
+}
+
+enum GameMode {
+  BATTLEROYAL
+  CLASSIC
+}
+
+enum Winstate {
+  WIN
+  LOOSE
+  EQUAL
 }
 
 enum UserPrivilege {

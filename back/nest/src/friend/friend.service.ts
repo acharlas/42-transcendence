@@ -2,7 +2,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { FriendDto } from './dto';
 
 @Injectable()
@@ -24,7 +24,6 @@ export class FriendService {
         },
       },
     );
-    console.log({ friend });
     if (friend === null) {
       throw new ForbiddenException(
         'Must add an existing user',
@@ -40,7 +39,6 @@ export class FriendService {
         },
       },
     });
-    console.log({ friend });
     if (friend !== null) {
       throw new ForbiddenException(
         'already friend',
@@ -56,6 +54,9 @@ export class FriendService {
             id: dto.userId,
           },
         },
+      },
+      select: {
+        myfriend: true,
       },
     });
     return user;
@@ -74,7 +75,6 @@ export class FriendService {
           },
         },
       });
-    console.log({ friend });
     if (friend === null) {
       throw new ForbiddenException(
         'no matching friend',
@@ -92,12 +92,15 @@ export class FriendService {
           },
         },
       },
+      select: {
+        myfriend: true,
+      },
     });
     return user;
   }
 
   async getFriend(userId: string, id: string) {
-    if (userId != id) {
+    if (userId !== id) {
       throw new ForbiddenException(
         "can't access friend from a other user",
       );

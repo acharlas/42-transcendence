@@ -12,8 +12,8 @@ import {
   ApiBearerAuth,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetUser } from 'src/auth/decorator';
-import { JwtGuard } from 'src/auth/guard';
+import { GetUser } from '../auth/decorator';
+import { JwtGuard } from '../auth/guard';
 import { BlockDto } from './dto';
 import { BlockService } from './block.service';
 
@@ -28,7 +28,7 @@ export class BlockController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
-  @Post('/block/add')
+  @Post('add')
   addBlock(
     @GetUser('id') userId: string,
     @Body() dto: BlockDto,
@@ -40,7 +40,7 @@ export class BlockController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('/block/remove')
+  @Post('remove')
   removeBlock(
     @GetUser('id') userId: string,
     @Body() dto: BlockDto,
@@ -51,7 +51,7 @@ export class BlockController {
     );
   }
 
-  @Get(':id/block')
+  @Get(':id')
   getFriend(
     @GetUser('id') userId: string,
     @Param('id') id: string,

@@ -9,6 +9,36 @@ import { EditUserDto } from './dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
+  async getUserId(userId: string, id: string) {
+    const user = await this.prisma.user.findFirst(
+      { where: { id: id } },
+    );
+    if (user === null)
+      throw new ForbiddenException(
+        'no such user',
+      );
+    return user;
+  }
+
+  async getUsers() {
+    const user = this.prisma.user.findMany();
+    return user;
+  }
+
+  async getUserUsername(
+    userId: string,
+    id: string,
+  ) {
+    const user = await this.prisma.user.findFirst(
+      { where: { id: id } },
+    );
+    if (user === null)
+      throw new ForbiddenException(
+        'no such user',
+      );
+    return user;
+  }
+
   async editUser(
     userId: string,
     dto: EditUserDto,
