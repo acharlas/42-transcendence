@@ -201,7 +201,9 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .withBody({
               name: 'First public channel',
               type: ChannelType.public,
@@ -222,7 +224,9 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .withBody({
               name: 'First protected channel',
               type: ChannelType.protected,
@@ -238,7 +242,9 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .withBody({
               name: 'No password',
               type: dto.type,
@@ -249,7 +255,9 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .withBody({
               name: 'null password',
               type: dto.type,
@@ -268,7 +276,9 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .withBody({
               name: '',
               type: ChannelType.protected,
@@ -280,7 +290,9 @@ describe('App e2e', () => {
           return pactum
             .spec()
             .post('/channels')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .withBody({
               name: 'First protected channel',
               type: ChannelType.protected,
@@ -336,7 +348,9 @@ describe('App e2e', () => {
             .spec()
             .get('/channels/$S{channelId}')
             .withPathParams('id', '$S{channelId}')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .expectStatus(200)
             .expectBodyContains('$S{channelId}');
         });
@@ -345,7 +359,9 @@ describe('App e2e', () => {
             .spec()
             .get('/channels/1234')
             .withPathParams('id', '1234')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .expectStatus(200)
             .expectBody('');
         });
@@ -472,7 +488,9 @@ describe('App e2e', () => {
             .spec()
             .post('/channels/$S{pubChannelId}/join')
             .withPathParams('id', '$S{pubChannelId}')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .expectStatus(200);
         });
       });
@@ -482,7 +500,9 @@ describe('App e2e', () => {
             .spec()
             .post('/channels/$S{proChannelId}/join')
             .withPathParams('id', '$S{proChannelId}')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .withBody({
               password: 'pass',
             })
@@ -493,7 +513,9 @@ describe('App e2e', () => {
             .spec()
             .post('/channels/$S{proChannelId}/join')
             .withPathParams('id', '$S{proChannelId}')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .withBody({
               password: null,
             })
@@ -505,7 +527,9 @@ describe('App e2e', () => {
             .spec()
             .post('/channels/$S{proChannelId}/join')
             .withPathParams('id', '$S{proChannelId}')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .withBody({})
             .expectStatus(403);
         });
@@ -514,7 +538,9 @@ describe('App e2e', () => {
             .spec()
             .post('/channels/$S{proChannelId}/join')
             .withPathParams('id', '$S{proChannelId}')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .withBody({
               password: 'password',
             })
@@ -527,7 +553,9 @@ describe('App e2e', () => {
             .spec()
             .post('/channels/12345/join')
             .withPathParams('id', '12345')
-            .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+            .withHeaders({
+              Authorization: 'Bearer $S{userAt}',
+            })
             .withBody({
               password: 'password',
             })
@@ -541,7 +569,9 @@ describe('App e2e', () => {
           .spec()
           .post('/channels/$S{proChannelId}/leave')
           .withPathParams('id', '$S{proChannelId}')
-          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
           .expectStatus(200);
       });
       it('throw if channelId incorrect', () => {
@@ -549,19 +579,89 @@ describe('App e2e', () => {
           .spec()
           .post('/channels/1234/leave')
           .withPathParams('id', '1234')
-          .withHeaders({ Authorization: 'Bearer $S{userAt}' })
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
           .expectStatus(403);
       });
     });
 
     describe('send message', () => {
-      it.todo('send message');
-      it.todo('throw if content empty');
+      it('send message', () => {
+        return pactum
+          .spec()
+          .post('/channels/{pubChannelId}/messages')
+          .withPathParams('pubChannelId', '$S{pubChannelId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            content: 'Hello world',
+          })
+          .expectStatus(200)
+          .expectJsonMatch({
+            content: 'Hello world',
+          })
+          .stores('messageId', 'id');
+      });
+      it('should throw if content empty', () => {
+        return pactum
+          .spec()
+          .post('/channels/{pubChannelId}/messages')
+          .withPathParams('pubChannelId', '$S{pubChannelId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            content: '',
+          })
+          .expectStatus(400);
+      });
+      it('should throw if bad channelid', () => {
+        return pactum
+          .spec()
+          .post('/channels/1234/messages')
+          .withPathParams('id', '1234')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            content: 'Hello world',
+          })
+          .expectStatus(403);
+      });
+      it.todo('should throw if user muted');
+      it.todo('should throw if user ban');
     });
 
-    describe('get channel messages', () => {
-      it.todo('get messages from channel');
-      it.todo('throw if user not on channel');
+    describe('get messages from channel', () => {
+      it('get messages from channel', () => {
+        return pactum
+          .spec()
+          .get('/channels/{pubChannelId}/messages')
+          .withPathParams('pubChannelId', '$S{pubChannelId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBodyContains('Hello world');
+      });
+    });
+    describe('Get messages by id', () => {
+      it('get messages by id', () => {
+        return pactum
+          .spec()
+          .get('/channels/{pubChannelId}/{messageId}')
+          .withPathParams({
+            pubChannelId: '$S{pubChannelId}',
+            messageId: '$S{messageId}',
+          })
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .expectBodyContains('Hello world');
+      });
     });
   });
 });

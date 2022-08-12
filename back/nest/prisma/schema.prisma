@@ -18,12 +18,14 @@ model User {
   email String @unique
   hash  String
 
-  username String?
+  username String? 
   nickname String?
   wins     Int     @default(0)
   losses   Int     @default(0)
+  mmr Int @default(1000)
 
   Channels ChannelUser[]
+  messages Message[]
 
   @@map("users")
 }
@@ -55,8 +57,26 @@ model Channel {
   hash String?
 
   users ChannelUser[]
+  messages Message[]
 
   @@map("channels")
+}
+
+model Message {
+  id String @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  content String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channelId String
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+  @@id([channelId, id])
+
 }
 
 enum UserStatus {
