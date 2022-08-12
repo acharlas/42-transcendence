@@ -4,6 +4,7 @@ import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 
 export default async () => {
+  console.log('\n\n==>Setting up<==')
   let app: INestApplication;
   let prisma: PrismaService;
   const moduleRef = await Test.createTestingModule({
@@ -20,5 +21,7 @@ export default async () => {
   globalThis.__app__ = app
 
   prisma = app.get(PrismaService);
+  globalThis.__prisma__ = prisma
   await prisma.cleanDb();
+  
 };
