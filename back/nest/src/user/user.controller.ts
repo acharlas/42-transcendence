@@ -44,6 +44,11 @@ export class UserController {
     return this.userService.getUsers();
   }
 
+  @Get('history/:id')
+  getUserHistory(@Param('id') userId: string) {
+    return this.userService.getHistory(userId);
+  }
+
   @Patch()
   editUser(
     @GetUser('id') userId: string,

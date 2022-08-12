@@ -54,4 +54,17 @@ export class UserService {
     delete user.hash;
     return user;
   }
+
+  async getHistory(UserId: string) {
+    const playerHistory =
+      await this.prisma.user.findUnique({
+        where: {
+          id: UserId,
+        },
+        select: {
+          history: true,
+        },
+      });
+    return playerHistory;
+  }
 }

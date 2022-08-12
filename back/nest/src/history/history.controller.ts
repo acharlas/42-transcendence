@@ -1,5 +1,7 @@
 import {
   Controller,
+  Get,
+  Param,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -17,4 +19,11 @@ export class HistoryController {
   constructor(
     private historyService: HistoryService,
   ) {}
+
+  @Get(':id')
+  getHistoryId(@Param('id') userId: string) {
+    return this.historyService.getHistoryId(
+      userId,
+    );
+  }
 }
