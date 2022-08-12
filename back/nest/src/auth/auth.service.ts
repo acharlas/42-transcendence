@@ -34,7 +34,6 @@ export class AuthService {
       ) {
         nickname = dto.nickname;
       }
-      console.log(nickname);
       const user = await this.prisma.user.create({
         data: {
           email: dto.email,

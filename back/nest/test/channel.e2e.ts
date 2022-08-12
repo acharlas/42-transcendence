@@ -195,7 +195,6 @@ describe('Channel Suite', () => {
           })
           .expectStatus(200)
           .expectBodyContains('$S{proChannelId}')
-          .inspect();
       });
       it('should get empty channel with bad id', () => {
         return pactum
