@@ -1,9 +1,12 @@
 import { Test } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
-import { AuthDto } from '../src/auth/dto';
+import { AuthSignupDto } from '../src/auth/dto';
 import { EditUserDto } from '../src/user/dto';
 import { CreateChannelDto } from 'src/channel/dto';
 import { ChannelType } from '@prisma/client';
@@ -13,155 +16,139 @@ describe('App e2e', () => {
   let prisma: PrismaService;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-    app = moduleRef.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-      }),
+    pactum.request.setBaseUrl(
+      'http://localhost:3334',
     );
-    await app.init();
-    await app.listen(3334);
-
-    prisma = app.get(PrismaService);
-    await prisma.cleanDb();
-    pactum.request.setBaseUrl('http://localhost:3334');
   });
 
-  afterAll(() => {
-    app.close();
-  });
+  // describe('Auth', () => {
+  //   const dto: AuthSignupDto = {
+  //     email: 'a@a.com',
+  //     password: 'pass',
+  //   };
+  //   describe('Signup', () => {
+  //     it('should throw if no body', () => {
+  //       return pactum.spec().post('/auth/signup').expectStatus(400);
+  //     });
+  //     it('should throw if email empty', () => {
+  //       return pactum
+  //         .spec()
+  //         .post('/auth/signup')
+  //         .withBody({
+  //           password: dto.password,
+  //         })
+  //         .expectStatus(400);
+  //     });
+  //     it('should throw if password empty', () => {
+  //       return pactum
+  //         .spec()
+  //         .post('/auth/signup')
+  //         .withBody({
+  //           email: dto.email,
+  //         })
+  //         .expectStatus(400);
+  //     });
+  //     it('should throw if email bad formated', () => {
+  //       return pactum
+  //         .spec()
+  //         .post('/auth/signup')
+  //         .withBody({
+  //           email: 'bad-email',
+  //         })
+  //         .expectStatus(400);
+  //     });
+  //     it('should signup', () => {
+  //       return pactum
+  //         .spec()
+  //         .post('/auth/signup')
+  //         .withBody(dto)
+  //         .expectStatus(201);
+  //     });
+  //   });
+  //   describe('Signin', () => {
+  //     it('should throw if no body', () => {
+  //       return pactum.spec().post('/auth/signin').expectStatus(400);
+  //     });
+  //     it('should throw if email empty', () => {
+  //       return pactum
+  //         .spec()
+  //         .post('/auth/signin')
+  //         .withBody({
+  //           password: dto.password,
+  //         })
+  //         .expectStatus(400);
+  //     });
+  //     it('should throw if password empty', () => {
+  //       return pactum
+  //         .spec()
+  //         .post('/auth/signin')
+  //         .withBody({
+  //           email: dto.email,
+  //         })
+  //         .expectStatus(400);
+  //     });
+  //     it('should throw if email incorrect', () => {
+  //       return pactum
+  //         .spec()
+  //         .post('/auth/signin')
+  //         .withBody({
+  //           email: 'bademail@fsdf.com',
+  //           password: dto.password,
+  //         })
+  //         .expectStatus(403);
+  //     });
+  //     it('should throw if password incorrect', () => {
+  //       return pactum
+  //         .spec()
+  //         .post('/auth/signin')
+  //         .withBody({
+  //           email: dto.email,
+  //           password: 'bad-password',
+  //         })
+  //         .expectStatus(403);
+  //     });
+  //     it('should signin', () => {
+  //       return pactum
+  //         .spec()
+  //         .post('/auth/signin')
+  //         .withBody(dto)
+  //         .expectStatus(200)
+  //         .stores('userAt', 'access_token');
+  //     });
+  //   });
+  // });
 
-  describe('Auth', () => {
-    const dto: AuthDto = {
-      email: 'a@a.com',
-      password: 'pass',
-    };
-    describe('Signup', () => {
-      it('should throw if no body', () => {
-        return pactum.spec().post('/auth/signup').expectStatus(400);
-      });
-      it('should throw if email empty', () => {
-        return pactum
-          .spec()
-          .post('/auth/signup')
-          .withBody({
-            password: dto.password,
-          })
-          .expectStatus(400);
-      });
-      it('should throw if password empty', () => {
-        return pactum
-          .spec()
-          .post('/auth/signup')
-          .withBody({
-            email: dto.email,
-          })
-          .expectStatus(400);
-      });
-      it('should throw if email bad formated', () => {
-        return pactum
-          .spec()
-          .post('/auth/signup')
-          .withBody({
-            email: 'bad-email',
-          })
-          .expectStatus(400);
-      });
-      it('should signup', () => {
-        return pactum
-          .spec()
-          .post('/auth/signup')
-          .withBody(dto)
-          .expectStatus(201);
-      });
-    });
-    describe('Signin', () => {
-      it('should throw if no body', () => {
-        return pactum.spec().post('/auth/signin').expectStatus(400);
-      });
-      it('should throw if email empty', () => {
-        return pactum
-          .spec()
-          .post('/auth/signin')
-          .withBody({
-            password: dto.password,
-          })
-          .expectStatus(400);
-      });
-      it('should throw if password empty', () => {
-        return pactum
-          .spec()
-          .post('/auth/signin')
-          .withBody({
-            email: dto.email,
-          })
-          .expectStatus(400);
-      });
-      it('should throw if email incorrect', () => {
-        return pactum
-          .spec()
-          .post('/auth/signin')
-          .withBody({
-            email: 'bademail@fsdf.com',
-            password: dto.password,
-          })
-          .expectStatus(403);
-      });
-      it('should throw if password incorrect', () => {
-        return pactum
-          .spec()
-          .post('/auth/signin')
-          .withBody({
-            email: dto.email,
-            password: 'bad-password',
-          })
-          .expectStatus(403);
-      });
-      it('should signin', () => {
-        return pactum
-          .spec()
-          .post('/auth/signin')
-          .withBody(dto)
-          .expectStatus(200)
-          .stores('userAt', 'access_token');
-      });
-    });
-  });
-
-  describe('User', () => {
-    describe('Get me', () => {
-      it('should get current user', () => {
-        return pactum
-          .spec()
-          .get('/users/me')
-          .withHeaders({
-            Authorization: 'Bearer $S{userAt}',
-          })
-          .expectStatus(200);
-      });
-    });
-    describe('Edit user', () => {
-      it('shoult edit current user', () => {
-        const dto: EditUserDto = {
-          username: 'acharlas',
-          email: 'b@b.com',
-        };
-        return pactum
-          .spec()
-          .patch('/users')
-          .withHeaders({
-            Authorization: 'Bearer $S{userAt}',
-          })
-          .withBody(dto)
-          .expectStatus(200)
-          .expectBodyContains(dto.username)
-          .expectBodyContains(dto.email);
-      });
-    });
-  });
+  // describe('User', () => {
+  // describe('Get me', () => {
+  //   it('should get current user', () => {
+  //     return pactum
+  //       .spec()
+  //       .get('/users/me')
+  //       .withHeaders({
+  //         Authorization: 'Bearer $S{userAt}',
+  //       })
+  //       .expectStatus(200);
+  //   });
+  // });
+  //   describe('Edit user', () => {
+  //     it('shoult edit current user', () => {
+  //       const dto: EditUserDto = {
+  //         username: 'acharlas',
+  //         email: 'b@b.com',
+  //       };
+  //       return pactum
+  //         .spec()
+  //         .patch('/users')
+  //         .withHeaders({
+  //           Authorization: 'Bearer $S{userAt}',
+  //         })
+  //         .withBody(dto)
+  //         .expectStatus(200)
+  //         .expectBodyContains(dto.username)
+  //         .expectBodyContains(dto.email);
+  //     });
+  //   });
+  // });
 
   describe('Channel', () => {
     describe('Get empty channels', () => {
@@ -210,7 +197,9 @@ describe('App e2e', () => {
               password: 'password',
             })
             .expectStatus(201)
-            .expectBodyContains(ChannelType.public);
+            .expectBodyContains(
+              ChannelType.public,
+            );
         });
       });
 
@@ -486,8 +475,13 @@ describe('App e2e', () => {
         it('join public channel', () => {
           return pactum
             .spec()
-            .post('/channels/$S{pubChannelId}/join')
-            .withPathParams('id', '$S{pubChannelId}')
+            .post(
+              '/channels/$S{pubChannelId}/join',
+            )
+            .withPathParams(
+              'id',
+              '$S{pubChannelId}',
+            )
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })
@@ -498,8 +492,13 @@ describe('App e2e', () => {
         it('should throw if password incorrect', () => {
           return pactum
             .spec()
-            .post('/channels/$S{proChannelId}/join')
-            .withPathParams('id', '$S{proChannelId}')
+            .post(
+              '/channels/$S{proChannelId}/join',
+            )
+            .withPathParams(
+              'id',
+              '$S{proChannelId}',
+            )
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })
@@ -511,8 +510,13 @@ describe('App e2e', () => {
         it('should throw if password null', () => {
           return pactum
             .spec()
-            .post('/channels/$S{proChannelId}/join')
-            .withPathParams('id', '$S{proChannelId}')
+            .post(
+              '/channels/$S{proChannelId}/join',
+            )
+            .withPathParams(
+              'id',
+              '$S{proChannelId}',
+            )
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })
@@ -525,8 +529,13 @@ describe('App e2e', () => {
         it('should throw if password undefined', () => {
           return pactum
             .spec()
-            .post('/channels/$S{proChannelId}/join')
-            .withPathParams('id', '$S{proChannelId}')
+            .post(
+              '/channels/$S{proChannelId}/join',
+            )
+            .withPathParams(
+              'id',
+              '$S{proChannelId}',
+            )
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })
@@ -536,8 +545,13 @@ describe('App e2e', () => {
         it('should join protected channel', () => {
           return pactum
             .spec()
-            .post('/channels/$S{proChannelId}/join')
-            .withPathParams('id', '$S{proChannelId}')
+            .post(
+              '/channels/$S{proChannelId}/join',
+            )
+            .withPathParams(
+              'id',
+              '$S{proChannelId}',
+            )
             .withHeaders({
               Authorization: 'Bearer $S{userAt}',
             })
@@ -567,8 +581,13 @@ describe('App e2e', () => {
       it('leave channel', () => {
         return pactum
           .spec()
-          .post('/channels/$S{proChannelId}/leave')
-          .withPathParams('id', '$S{proChannelId}')
+          .post(
+            '/channels/$S{proChannelId}/leave',
+          )
+          .withPathParams(
+            'id',
+            '$S{proChannelId}',
+          )
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
           })
@@ -590,8 +609,13 @@ describe('App e2e', () => {
       it('send message', () => {
         return pactum
           .spec()
-          .post('/channels/{pubChannelId}/messages')
-          .withPathParams('pubChannelId', '$S{pubChannelId}')
+          .post(
+            '/channels/{pubChannelId}/messages',
+          )
+          .withPathParams(
+            'pubChannelId',
+            '$S{pubChannelId}',
+          )
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
           })
@@ -607,8 +631,13 @@ describe('App e2e', () => {
       it('should throw if content empty', () => {
         return pactum
           .spec()
-          .post('/channels/{pubChannelId}/messages')
-          .withPathParams('pubChannelId', '$S{pubChannelId}')
+          .post(
+            '/channels/{pubChannelId}/messages',
+          )
+          .withPathParams(
+            'pubChannelId',
+            '$S{pubChannelId}',
+          )
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
           })
@@ -638,8 +667,13 @@ describe('App e2e', () => {
       it('get messages from channel', () => {
         return pactum
           .spec()
-          .get('/channels/{pubChannelId}/messages')
-          .withPathParams('pubChannelId', '$S{pubChannelId}')
+          .get(
+            '/channels/{pubChannelId}/messages',
+          )
+          .withPathParams(
+            'pubChannelId',
+            '$S{pubChannelId}',
+          )
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
           })
@@ -651,7 +685,9 @@ describe('App e2e', () => {
       it('get messages by id', () => {
         return pactum
           .spec()
-          .get('/channels/{pubChannelId}/{messageId}')
+          .get(
+            '/channels/{pubChannelId}/{messageId}',
+          )
           .withPathParams({
             pubChannelId: '$S{pubChannelId}',
             messageId: '$S{messageId}',
