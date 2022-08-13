@@ -4,5 +4,6 @@
 `docker-compose up --build`
 
 ## Testings
-`curl --header "Content-Type:application/json" --request POST --data '{"name":"acharlas"}' http://localhost:8080/users`
-<p>http://localhost:8080/users</p>
+### Back
+  `yarn test:e2e`
+ ### Front
