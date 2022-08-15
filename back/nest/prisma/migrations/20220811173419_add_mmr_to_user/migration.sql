@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "mmr" INTEGER NOT NULL DEFAULT 1000;

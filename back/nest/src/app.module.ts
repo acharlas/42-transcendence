@@ -2,13 +2,14 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ChannelModule } from './channel/channel.module';
-import { ChannelUserModule } from './channel-user/channel-user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
-import { MsgModule } from './msg/msg.module';
 import { FriendModule } from './friend/friend.module';
 import { BlockModule } from './block/block.module';
 import { HistoryModule } from './history/history.module';
+import { MessageModule } from './message/message.module';
+import { LeaderboardModule } from './leaderboard/leaderboard.module';
+
 
 @Module({
   imports: [
@@ -18,12 +19,12 @@ import { HistoryModule } from './history/history.module';
     AuthModule,
     UserModule,
     ChannelModule,
-    ChannelUserModule,
     PrismaModule,
-    MsgModule,
     FriendModule,
     BlockModule,
     HistoryModule,
+    MessageModule,
+    LeaderboardModule,
   ],
 })
 export class AppModule {}
