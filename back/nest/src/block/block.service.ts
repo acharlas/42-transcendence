@@ -1,4 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { BlockDto } from './dto';
 
@@ -6,7 +7,7 @@ import { BlockDto } from './dto';
 export class BlockService {
   constructor(private prisma: PrismaService) {}
 
-  async addBlock(userId: string, dto: BlockDto) {
+  async addBlock(userId: string, dto: BlockDto): Promise<{ myblock: User[] }> {
     if (userId === dto.userId)
       throw new ForbiddenException("can't add yourself");
     let block = await this.prisma.user.findFirst({
@@ -48,7 +49,10 @@ export class BlockService {
     return user;
   }
 
-  async removeBlock(userId: string, dto: BlockDto) {
+  async removeBlock(
+    userId: string,
+    dto: BlockDto,
+  ): Promise<{ myblock: User[] }> {
     const block = await this.prisma.user.findFirst({
       where: {
         id: userId,
@@ -79,7 +83,7 @@ export class BlockService {
     return user;
   }
 
-  async getBlock(userId: string, id: string) {
+  async getBlock(userId: string, id: string): Promise<{ myblock: User[] }> {
     if (userId != id) {
       throw new ForbiddenException("can't access block from a other user");
     }

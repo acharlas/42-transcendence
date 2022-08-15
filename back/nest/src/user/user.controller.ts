@@ -1,4 +1,3 @@
-
 import {
   Body,
   Controller,
@@ -10,12 +9,9 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-import { User } from '@prisma/client';
+import { User, UserHistory } from '@prisma/client';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { EditUserDto } from './dto';
@@ -29,7 +25,7 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('me')
-  getMe(@GetUser() user: User) {
+  getMe(@GetUser() user: User): User {
     return user;
   }
 
@@ -37,22 +33,27 @@ export class UserController {
   getUserId(
     @GetUser('id') userId: string,
     @Param('id') id: string,
-  ) {
+  ): Promise<User> {
     return this.userService.getUserId(userId, id);
   }
 
   @Get()
-  getUsers() {
+  getUsers(): Promise<User[]> {
     return this.userService.getUsers();
   }
 
   @Get('history/:id')
-  getUserHistory(@Param('id') userId: string) {
+  getUserHistory(
+    @Param('id') userId: string,
+  ): Promise<{ history: UserHistory[] }> {
     return this.userService.getHistory(userId);
   }
 
   @Patch()
-  editUser(@GetUser('id') userId: string, @Body() dto: EditUserDto) {
+  editUser(
+    @GetUser('id') userId: string,
+    @Body() dto: EditUserDto,
+  ): Promise<User> {
     return this.userService.editUser(userId, dto);
   }
 }
