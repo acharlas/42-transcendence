@@ -18,22 +18,24 @@ model User {
   email String @unique
   hash  String
 
-  username String?
-  nickname String?
+  username String @unique
+  nickname String
   wins     Int     @default(0)
   losses   Int     @default(0)
+  mmr Int @default(1000)
 
   Channels ChannelUser[]
+  messages Message[]
 
   @@map("users")
 }
 
 model ChannelUser {
-  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  privilege UserPrivilege @default(DEFAULT)
+  privilege UserPrivilege
+  status UserStatus
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -42,6 +44,7 @@ model ChannelUser {
   channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
   @@map("channelusers")
+  @@id([userId, channelId])
 }
 
 model Channel {
@@ -49,25 +52,49 @@ model Channel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String
-  type ChannelType @default(PUBLIC)
+  name String @unique
+  type ChannelType @default(public)
+  hash String?
 
   users ChannelUser[]
+  messages Message[]
 
   @@map("channels")
 }
 
+model Message {
+  id String @unique @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  content String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channelId String
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+  @@id([channelId, id])
+
+}
+
+enum UserStatus {
+  connected
+  disconnected
+}
+
 enum UserPrivilege {
-  OWNER
-  ADMIN
-  DEFAULT
-  MUTED
-  BAN
+  owner
+  admin
+  default
+  muted
+  ban
 }
 
 enum ChannelType {
-  PUBLIC
-  PRIVATE
-  PROTECTED
-  DM
+  public
+  private
+  protected
+  dm
 }

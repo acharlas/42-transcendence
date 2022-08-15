@@ -4,5 +4,9 @@
 `docker-compose up --build`
 
 ## Testings
-`curl --header "Content-Type:application/json" --request POST --data '{"name":"acharlas"}' http://localhost:8080/users`
-<p>http://localhost:8080/users</p>
+### Back
+#### end to end tests
+ `yarn test:e2e`
+#### OpenApi
+  `localhost:3333/docs`
+ ### Front
