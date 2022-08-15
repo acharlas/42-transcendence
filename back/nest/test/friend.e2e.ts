@@ -1,166 +1,65 @@
-import { Test } from '@nestjs/testing';
-import {
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
-import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/prisma/prisma.service';
 import * as pactum from 'pactum';
-import { AuthDto } from '../src/auth/dto';
+
 import { EditUserDto } from '../src/user/dto';
 import { FriendDto } from 'src/friend/dto';
-import { UserController } from 'src/user/user.controller';
-import { userInfo } from 'os';
 import { BlockDto } from 'src/block/dto';
+import { AuthSigninDto, AuthSignupDto } from 'src/auth/dto';
 
-describe('App e2e', () => {
-  let app: INestApplication;
-  let prisma: PrismaService;
-
+describe('Friend Block Suite', () => {
   beforeAll(async () => {
-    const moduleRef =
-      await Test.createTestingModule({
-        imports: [AppModule],
-      }).compile();
-    app = moduleRef.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-      }),
-    );
-    await app.init();
-    await app.listen(3334);
-
-    prisma = app.get(PrismaService);
-    await prisma.cleanDb();
-    pactum.request.setBaseUrl(
-      'http://localhost:3334',
-    );
+    pactum.request.setBaseUrl('http://localhost:3334');
   });
 
-  afterAll(() => {
-    app.close();
+  //mockres
+  it('create amis1', () => {
+    const authDto: AuthSignupDto = {
+      email: 'amis1@a.toto',
+      password: 'string',
+      username: 'amis1.toto',
+    };
+    return pactum
+      .spec()
+      .post('/auth/signup')
+      .withBody(authDto)
+      .stores('userToken1', 'access_token')
+      .expectStatus(201);
+  });
+  it('get amis1 id', () => {
+    return pactum
+      .spec()
+      .get('/users/me')
+      .withHeaders({
+        Authorization: 'Bearer $S{userToken1}',
+      })
+      .stores('userId1', 'id')
+      .stores('userEmail1', 'email');
+  });
+  it('create amis2', () => {
+    const authDto: AuthSignupDto = {
+      email: 'amis2@a.toto',
+      password: 'string',
+      username: 'amis2.toto',
+    };
+    return pactum
+      .spec()
+      .post('/auth/signup')
+      .withBody(authDto)
+      .stores('userToken2', 'access_token')
+      .expectStatus(201);
+  });
+  it('get amis2 id', () => {
+    return pactum
+      .spec()
+      .get('/users/me')
+      .withHeaders({
+        Authorization: 'Bearer $S{userToken2}',
+      })
+      .stores('userId2', 'id')
+      .stores('userEmail2', 'email');
   });
 
-  describe('User', () => {
-    describe('Get user', () => {
-      describe('Get me', () => {
-        it('should get current user', () => {
-          return pactum
-            .spec()
-            .get('/users/me')
-            .withHeaders({
-              Authorization: 'Bearer $S{userAt}',
-            })
-            .expectStatus(200)
-            .expectJsonLike({
-              email: 'a@a.com',
-            })
-            .stores('userId', 'id')
-            .stores('userEmail', 'email');
-        });
-      });
-      it('should get User with id', () => {
-        return pactum
-          .spec()
-          .get('/users/$S{userId}')
-          .withHeaders({
-            Authorization: 'Bearer $S{userAt}',
-          })
-          .expectStatus(200)
-          .stores('userId', 'id')
-          .expectJsonLike({
-            email: 'a@a.com',
-          });
-      });
-      it('should throw error invalid id', () => {
-        return pactum
-          .spec()
-          .get('/users/hihohoho')
-          .withHeaders({
-            Authorization: 'Bearer $S{userAt}',
-          })
-          .expectStatus(403)
-          .expectJsonLike({
-            message: 'no such user',
-          });
-      });
-      it('get Users', () => {
-        return pactum
-          .spec()
-          .get('/users/')
-          .withHeaders({
-            Authorization: 'Bearer $S{userAt}',
-          })
-          .expectStatus(200);
-      });
-    });
-
-    describe('Edit user', () => {
-      it('shoult edit current user', () => {
-        const dto: EditUserDto = {
-          username: 'acharlas',
-          email: 'b@b.com',
-        };
-        return pactum
-          .spec()
-          .patch('/users')
-          .withHeaders({
-            Authorization: 'Bearer $S{userAt}',
-          })
-          .withBody(dto)
-          .expectStatus(200)
-          .expectBodyContains(dto.username)
-          .expectBodyContains(dto.email);
-      });
-    });
+  describe('Friend', () => {
     describe('add/remove friend', () => {
-      it('should create amis1', () => {
-        const authDto: AuthDto = {
-          email: 'amis1@a.com',
-          password: 'string',
-        };
-        return pactum
-          .spec()
-          .post('/auth/signup')
-          .withBody(authDto)
-          .stores('userToken1', 'access_token')
-          .expectStatus(201);
-      });
-      it('should get amis1 id', () => {
-        return pactum
-          .spec()
-          .get('/users/me')
-          .withHeaders({
-            Authorization:
-              'Bearer $S{userToken1}',
-          })
-          .stores('userId1', 'id')
-          .stores('userEmail1', 'email');
-      });
-      it('should create amis2', () => {
-        const authDto: AuthDto = {
-          email: 'amis2@a.com',
-          password: 'string',
-        };
-        return pactum
-          .spec()
-          .post('/auth/signup')
-          .withBody(authDto)
-          .stores('userToken2', 'access_token')
-          .expectStatus(201);
-      });
-      it('should get amis2 id', () => {
-        return pactum
-          .spec()
-          .get('/users/me')
-          .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
-          })
-          .stores('userId2', 'id')
-          .stores('userEmail2', 'email');
-      });
       it('should add a friend to amis2', () => {
         const dto: FriendDto = {
           userId: '$S{userId1}',
@@ -170,14 +69,13 @@ describe('App e2e', () => {
           .post('/friend/add')
           .withBody(dto)
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectJsonLike({
             myfriend: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.com',
+                email: 'amis1@a.toto',
               },
             ],
           })
@@ -192,8 +90,7 @@ describe('App e2e', () => {
           .post('/friend/add')
           .withBody(dto)
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectStatus(403)
           .expectJsonLike({
@@ -209,8 +106,7 @@ describe('App e2e', () => {
           .post('/friend/add')
           .withBody(dto)
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectStatus(403)
           .expectJsonLike({
@@ -222,15 +118,14 @@ describe('App e2e', () => {
           .spec()
           .get('/friend/$S{userId2}')
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectStatus(200)
           .expectJsonLike({
             myfriend: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.com',
+                email: 'amis1@a.toto',
               },
             ],
           });
@@ -240,13 +135,11 @@ describe('App e2e', () => {
           .spec()
           .get('/friend/$S{userId2}')
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken1}',
+            Authorization: 'Bearer $S{userToken1}',
           })
           .expectStatus(403)
           .expectJsonLike({
-            message:
-              "can't access friend from a other user",
+            message: "can't access friend from a other user",
           });
       });
       it('should remove friend', () => {
@@ -258,8 +151,7 @@ describe('App e2e', () => {
           .post('/friend/remove')
           .withBody(dto)
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectJson({
             myfriend: [],
@@ -275,8 +167,7 @@ describe('App e2e', () => {
           .post('/friend/remove')
           .withBody(dto)
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectJsonLike({
             message: 'no matching friend',
@@ -288,8 +179,7 @@ describe('App e2e', () => {
           .spec()
           .get('/friend/$S{userId2}')
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectStatus(200)
           .expectJson({
@@ -297,6 +187,8 @@ describe('App e2e', () => {
           });
       });
     });
+  });
+  describe('Block', () => {
     describe('add/remove block', () => {
       it('should add a block to amis2', () => {
         const dto: BlockDto = {
@@ -307,14 +199,13 @@ describe('App e2e', () => {
           .post('/block/add')
           .withBody(dto)
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectJsonLike({
             myblock: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.com',
+                email: 'amis1@a.toto',
               },
             ],
           })
@@ -329,8 +220,7 @@ describe('App e2e', () => {
           .post('/block/add')
           .withBody(dto)
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectStatus(403)
           .expectJsonLike({
@@ -346,8 +236,7 @@ describe('App e2e', () => {
           .post('/block/add')
           .withBody(dto)
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectStatus(403)
           .expectJsonLike({
@@ -359,15 +248,14 @@ describe('App e2e', () => {
           .spec()
           .get('/block/$S{userId2}')
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectStatus(200)
           .expectJsonLike({
             myblock: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.com',
+                email: 'amis1@a.toto',
               },
             ],
           });
@@ -377,13 +265,11 @@ describe('App e2e', () => {
           .spec()
           .get('/block/$S{userId2}')
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken1}',
+            Authorization: 'Bearer $S{userToken1}',
           })
           .expectStatus(403)
           .expectJsonLike({
-            message:
-              "can't access block from a other user",
+            message: "can't access block from a other user",
           });
       });
       it('should remove block', () => {
@@ -395,8 +281,7 @@ describe('App e2e', () => {
           .post('/block/remove')
           .withBody(dto)
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectJson({
             myblock: [],
@@ -412,8 +297,7 @@ describe('App e2e', () => {
           .post('/block/remove')
           .withBody(dto)
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectJsonLike({
             message: 'no matching block',
@@ -425,8 +309,7 @@ describe('App e2e', () => {
           .spec()
           .get('/block/$S{userId2}')
           .withHeaders({
-            Authorization:
-              'Bearer $S{userToken2}',
+            Authorization: 'Bearer $S{userToken2}',
           })
           .expectStatus(200)
           .expectJson({

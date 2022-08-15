@@ -1,12 +1,9 @@
 import * as pactum from 'pactum';
-import { AuthSignupDto } from 'src/auth/dto';
 import { EditUserDto } from 'src/user/dto';
 
 describe('User Suite', () => {
   beforeAll(async () => {
-    pactum.request.setBaseUrl(
-      'http://localhost:3334',
-    );
+    pactum.request.setBaseUrl('http://localhost:3334');
   });
   it('Create User1', () => {
     return pactum
@@ -47,6 +44,55 @@ describe('User Suite', () => {
         .expectStatus(200)
         .expectBodyContains(dto.username)
         .expectBodyContains(dto.email);
+    });
+  });
+  describe('Get user', () => {
+    it('should get current user', () => {
+      return pactum
+        .spec()
+        .get('/users/me')
+        .withHeaders({
+          Authorization: 'Bearer $S{U1AT}',
+        })
+        .expectStatus(200)
+        .expectJsonLike({
+          email: 'b@b.com',
+        })
+        .stores('userId', 'id')
+        .stores('userEmail', 'email');
+    });
+    it('should get User with id', () => {
+      return pactum
+        .spec()
+        .get('/users/$S{userId}')
+        .withHeaders({
+          Authorization: 'Bearer $S{U1AT}',
+        })
+        .expectStatus(200)
+        .expectJsonLike({
+          email: '$S{userEmail}',
+        });
+    });
+    it('should throw error invalid id', () => {
+      return pactum
+        .spec()
+        .get('/users/hihohohooooooooooooooooooo')
+        .withHeaders({
+          Authorization: 'Bearer $S{U1AT}',
+        })
+        .expectStatus(403)
+        .expectJsonLike({
+          message: 'no such user',
+        });
+    });
+    it('get Users', () => {
+      return pactum
+        .spec()
+        .get('/users/')
+        .withHeaders({
+          Authorization: 'Bearer $S{U1AT}',
+        })
+        .expectStatus(200);
     });
   });
 });

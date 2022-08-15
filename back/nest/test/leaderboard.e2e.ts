@@ -1,11 +1,8 @@
-import { ChannelType } from '@prisma/client';
 import * as pactum from 'pactum';
 
 describe('Leaderboard Suite', () => {
   beforeAll(async () => {
-    pactum.request.setBaseUrl(
-      'http://localhost:3334',
-    );
+    pactum.request.setBaseUrl('http://localhost:3334');
   });
 
   it('Create User1', () => {
@@ -30,9 +27,7 @@ describe('Leaderboard Suite', () => {
           Authorization: 'Bearer $S{U1AT}',
         })
         .expectStatus(200)
-        .expectBodyContains(
-          'us32fasdasdasdf4asdaassa@a.com',
-        );
+        .expectBodyContains('us32fasdasdasdf4asdaassa@a.com');
     });
   });
 });
