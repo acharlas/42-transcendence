@@ -8,6 +8,6 @@ COPY ./nest ./
 
 RUN npm install
 RUN nest build
-# RUN npm run prisma:dev:deploy
+#RUN npm run prisma:dev:deploy
 
 CMD ["npm", "run", "start:dev"]

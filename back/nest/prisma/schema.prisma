@@ -11,9 +11,9 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   email String @unique
   hash  String
@@ -25,8 +25,16 @@ model User {
   mmr Int @default(1000)
 
   Channels ChannelUser[]
-  messages Message[]
 
+  myfriend User[]   @relation("friends")
+  arefriend  User[]  @relation("friends")
+  
+  myblock User[]   @relation("blocks")
+  areblock  User[]  @relation("blocks")
+  
+  history UserHistory[]
+  messages Message[]
+  
   @@map("users")
 }
 
@@ -62,6 +70,31 @@ model Channel {
   @@map("channels")
 }
 
+model UserHistory {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  placement Int
+  yourScore Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  historyId String
+  history History @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  @@map("userhistorys")
+  @@id([userId, historyId])
+}
+
+model History {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mode GameMode
+  user UserHistory[] 
+}
+
 model Message {
   id String @unique @default(uuid())
   createdAt DateTime @default(now())
@@ -79,9 +112,15 @@ model Message {
 
 }
 
+enum GameMode {
+  BATTLEROYAL
+  CLASSIC
+ }
+
 enum UserStatus {
   connected
   disconnected
+
 }
 
 enum UserPrivilege {

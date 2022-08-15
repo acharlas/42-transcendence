@@ -4,8 +4,12 @@ import { UserModule } from './user/user.module';
 import { ChannelModule } from './channel/channel.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
+import { FriendModule } from './friend/friend.module';
+import { BlockModule } from './block/block.module';
+import { HistoryModule } from './history/history.module';
 import { MessageModule } from './message/message.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
+
 
 @Module({
   imports: [
@@ -16,6 +20,9 @@ import { LeaderboardModule } from './leaderboard/leaderboard.module';
     UserModule,
     ChannelModule,
     PrismaModule,
+    FriendModule,
+    BlockModule,
+    HistoryModule,
     MessageModule,
     LeaderboardModule,
   ],
