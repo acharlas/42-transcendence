@@ -20,6 +20,8 @@ export class PrismaService extends PrismaClient {
       this.channelUser.deleteMany(),
       this.channel.deleteMany(),
       this.message.deleteMany(),
+      this.history.deleteMany(),
+      this.userHistory.deleteMany()
     ]);
   }
 }

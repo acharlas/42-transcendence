@@ -46,7 +46,6 @@ services:
     networks:
       - network
 
-
   test-db:
     container_name: test-db
     image: postgres:14.2
@@ -61,7 +60,6 @@ services:
     restart: always
     networks:
       - network
-
     command: -p 5433
 
   # pgadmin:
