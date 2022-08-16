@@ -10,7 +10,6 @@ import { HistoryModule } from './history/history.module';
 import { MessageModule } from './message/message.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

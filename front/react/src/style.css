@@ -1,7 +1,25 @@
-Canvas {
-    height: 1000px;
+canvas {
+  height: 100%;
+  width: 100%;
 }
 
 body {
-    background-color: black;
+  background-color: black;
+}
+
+#game {
+  height: 100%;
+  width: 100%;
+}
+
+#chat {
+  height: 100%;
+  width: 100%;
+}
+
+#login {
+  color: aliceblue;
+  margin-left: 100px;
+  height: 100%;
+  width: 100%;
 }
