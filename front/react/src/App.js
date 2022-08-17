@@ -1,17 +1,21 @@
 import { AdaptiveDpr, OrbitControls, Stars, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React from "react";
+import React, { useState } from "react";
 import Box from "./componants/Box";
 import Plane from "./componants/Plane";
-import LoginForm from "./login/login-component";
+import loginService from "./LoginPage/Login_page_component";
 import "./style.css";
 
 function App() {
-  return (
+  let signinStatus = loginService.useSigninStatus(
+    window.sessionStorage.getItem("Token") === null ? false : true
+  );
+
+  return signinStatus.isSignin === true ? (
     <div>
-      <div id="login">
-        <LoginForm />
-      </div>
+      <button id="logout" onClick={signinStatus.Signout}>
+        Signout
+      </button>
       <div id="game">
         <Canvas camera={{ position: [0, 10, 5], fov: 90 }}>
           <Stats />
@@ -24,7 +28,10 @@ function App() {
         </Canvas>
       </div>
     </div>
+  ) : (
+    <div>
+      <loginService.LoginPage Status={signinStatus} />
+    </div>
   );
 }
-
 export default App;
