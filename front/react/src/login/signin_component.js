@@ -1,6 +1,13 @@
 import { useState } from "react";
 import loginService from "./login-service";
+import "./login_style.css";
 import "../style.css";
+import {
+  FaUserAstronaut,
+  FaRocket,
+  FaSpaceShuttle,
+  FaLock,
+} from "react-icons/fa";
 
 export default function SigninForm({ status }) {
   const [newEmail, setNewEmail] = useState("");
@@ -51,27 +58,60 @@ export default function SigninForm({ status }) {
   };
 
   return (
-    <div>
-      <div>
-        email: <input value={newEmail} onChange={HandleEmailChange} />
-      </div>
-      <div>
-        password:{" "}
-        <input
-          value={newPass}
-          type="password"
-          onChange={HandlePassChange}
-          id="inputPassword"
-        />
-      </div>
-      {ErrorMessage === null ? "" : <p id="error-msg">{ErrorMessage}</p>}
-      <div>
-        <input type="checkbox" onClick={ftShowPassword} />
-        show password
-      </div>
-      <div>
-        <button onClick={status.SignupState}>Signup</button>
-        <button onClick={addUser}>Connect</button>
+    <div className="container">
+      <div className="screen">
+        <div className="screen__content">
+          <form className="login">
+            <div className="login__field">
+              <FaUserAstronaut />
+              <input
+                className="login__input"
+                placeholder="Email"
+                value={newEmail}
+                onChange={HandleEmailChange}
+              />
+            </div>
+            <div className="login__field">
+              <FaLock />
+              <input
+                className="login__input"
+                placeholder="Password"
+                value={newPass}
+                type="password"
+                onChange={HandlePassChange}
+                id="inputPassword"
+              />
+            </div>
+            {ErrorMessage === null ? (
+              ""
+            ) : (
+              <p className="error-msg">{ErrorMessage}</p>
+            )}
+            <div>
+              <input className="" type="checkbox" onClick={ftShowPassword} />
+              show password
+            </div>
+            <div>
+              <button className="button login__submit" onClick={addUser}>
+                <span className="button__text">Log In Now</span>
+                <FaRocket className="login__icon" />
+              </button>
+              <button
+                className="button login__submit"
+                onClick={status.SignupState}
+              >
+                <span className="button__text">Signup Now</span>
+                <FaSpaceShuttle className="login__icon" />
+              </button>
+            </div>
+          </form>
+        </div>
+        <div className="screen__background">
+          <span className="screen__background__shape screen__background__shape4"></span>
+          <span className="screen__background__shape screen__background__shape3"></span>
+          <span className="screen__background__shape screen__background__shape2"></span>
+          <span className="screen__background__shape screen__background__shape1"></span>
+        </div>
       </div>
     </div>
   );

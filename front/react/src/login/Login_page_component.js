@@ -1,7 +1,8 @@
-import "./style.css";
-import SigninForm from "../login/signin_component";
+import "../style.css";
+import "./login_style.css";
+import SigninForm from "./signin_component";
 import { useState } from "react";
-import SignupForm from "../login/signup_component";
+import SignupForm from "./signup_component";
 
 function useSigninStatus(status) {
   const [isSignin, setSignin] = useState(status);

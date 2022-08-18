@@ -1,6 +1,14 @@
 import { useState } from "react";
 import loginService from "./login-service";
+import "./login_style.css";
 import "../style.css";
+import {
+  FaUserAstronaut,
+  FaRocket,
+  FaSpaceShuttle,
+  FaLock,
+  FaSatelliteDish,
+} from "react-icons/fa";
 
 export default function SignupForm({ status }) {
   const [newEmail, setNewEmail] = useState("");
@@ -35,11 +43,12 @@ export default function SignupForm({ status }) {
         username: newUsername,
       });
       window.sessionStorage.setItem("Token", token);
-      status.signin();
+      status.Signin();
       setNewEmail("");
       setNewPass("");
       setNewUsername("");
     } catch (e) {
+      console.log({ e });
       if (e.response.data.statusCode == 400)
         setErrorMessage(e.response.data.message);
       /*setTimeout(() => {
@@ -61,7 +70,7 @@ export default function SignupForm({ status }) {
     return (
       <div>
         {ErrorMessage.map((error, i) => (
-          <p key={i} id="error-msg">
+          <p key={i} className="error-msg">
             {error}
           </p>
         ))}
@@ -70,36 +79,71 @@ export default function SignupForm({ status }) {
   };
 
   return (
-    <div>
-      {ErrorMessage === null ? (
-        ""
-      ) : (
-        <div>
-          <ErrorMessageComp />
+    <div className="container">
+      <div className="screen">
+        <div className="screen__content">
+          <form className="login-signup">
+            {ErrorMessage === null ? (
+              ""
+            ) : (
+              <div>
+                <ErrorMessageComp />
+              </div>
+            )}
+            <div className="login__field">
+              <FaSatelliteDish />
+              <input
+                className="login__input"
+                placeholder="Email"
+                value={newEmail}
+                onChange={HandleEmailChange}
+              />
+            </div>
+            <div className="login__field">
+              <FaLock />
+              <input
+                className="login__input"
+                placeholder="Password"
+                value={newPass}
+                type="password"
+                onChange={HandlePassChange}
+                id="inputSignupPassword"
+              />
+            </div>
+            <div>
+              <input type="checkbox" onClick={ftShowPassword} />
+              show password
+            </div>
+            <div className="login__field">
+              <FaUserAstronaut />
+              <input
+                className="login__input"
+                placeholder="Username"
+                value={newUsername}
+                onChange={HandleUsernameChange}
+              />
+            </div>
+            <div>
+              <button className="button login__submit" onClick={createUser}>
+                <span className="button__text">Create account</span>
+                <FaRocket className="signup__icon" />
+              </button>
+              <button
+                className="button login__submit"
+                onClick={status.SigninState}
+              >
+                <span className="button__text">Already a account?</span>
+                <FaSpaceShuttle className="signin__icon" />
+              </button>
+            </div>
+          </form>
         </div>
-      )}
-      <div>
-        email: <input value={newEmail} onChange={HandleEmailChange} />
-      </div>
-      <div>
-        password:{" "}
-        <input
-          value={newPass}
-          type="password"
-          onChange={HandlePassChange}
-          id="inputSignupPassword"
-        />
-      </div>
-      <div>
-        <input type="checkbox" onClick={ftShowPassword} />
-        show password
-      </div>
-      <div>
-        username: <input value={newUsername} onChange={HandleUsernameChange} />
-      </div>
-      <div>
-        <button onClick={status.signinState}>Already a account?</button>
-        <button onClick={createUser}>Create account</button>
+        <div className="screen__background">
+          <span className="screen__background__shape screen__background__shape4"></span>
+          <span className="screen__background__shape screen__background__shape3"></span>
+          <span className="screen__background__shape screen__background__shape2"></span>
+          <span className="screen__background__shape screen__background__shape1"></span>
+        </div>
       </div>
     </div>
   );
