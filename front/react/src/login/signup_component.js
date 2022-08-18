@@ -44,6 +44,7 @@ export default function SignupForm({ status }) {
       });
       window.sessionStorage.setItem("Token", token);
       status.Signin();
+      status.SigninState();
       setNewEmail("");
       setNewPass("");
       setNewUsername("");
