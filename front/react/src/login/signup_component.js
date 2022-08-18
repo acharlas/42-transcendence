@@ -9,12 +9,14 @@ import {
   FaLock,
   FaSatelliteDish,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-export default function SignupForm({ status }) {
+export default function SignupForm() {
   const [newEmail, setNewEmail] = useState("");
   const [newPass, setNewPass] = useState("");
   const [newUsername, setNewUsername] = useState("");
   const [ErrorMessage, setErrorMessage] = useState([]);
+  let navigate = useNavigate();
 
   const HandleEmailChange = (event) => {
     setNewEmail(event.target.value);
@@ -25,6 +27,14 @@ export default function SignupForm({ status }) {
 
   const HandleUsernameChange = (event) => {
     setNewUsername(event.target.value);
+  };
+
+  const goSignin = () => {
+    navigate("/");
+  };
+
+  const goGame = () => {
+    navigate("/game");
   };
 
   const createUser = async (event) => {
@@ -43,11 +53,10 @@ export default function SignupForm({ status }) {
         username: newUsername,
       });
       window.sessionStorage.setItem("Token", token);
-      status.Signin();
-      status.SigninState();
       setNewEmail("");
       setNewPass("");
       setNewUsername("");
+      goGame();
     } catch (e) {
       console.log({ e });
       if (e.response.data.statusCode == 400)
@@ -129,10 +138,7 @@ export default function SignupForm({ status }) {
                 <span className="button__text">Create account</span>
                 <FaRocket className="signup__icon" />
               </button>
-              <button
-                className="button login__submit"
-                onClick={status.SigninState}
-              >
+              <button className="button login__submit" onClick={goSignin}>
                 <span className="button__text">Already a account?</span>
                 <FaSpaceShuttle className="signin__icon" />
               </button>

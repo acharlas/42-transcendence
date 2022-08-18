@@ -8,17 +8,27 @@ import {
   FaSpaceShuttle,
   FaLock,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-export default function SigninForm({ status }) {
+export default function SigninForm() {
   const [newEmail, setNewEmail] = useState("");
   const [newPass, setNewPass] = useState("");
   const [ErrorMessage, setErrorMessage] = useState("");
+  let navigate = useNavigate();
 
   const HandleEmailChange = (event) => {
     setNewEmail(event.target.value);
   };
   const HandlePassChange = (event) => {
     setNewPass(event.target.value);
+  };
+
+  const goSignup = () => {
+    navigate("/signup");
+  };
+
+  const goGame = () => {
+    navigate("/game");
   };
 
   const addUser = async (event) => {
@@ -36,9 +46,9 @@ export default function SigninForm({ status }) {
         password: newPass,
       });
       window.localStorage.setItem("Token", token);
-      status.Signin();
       setNewEmail("");
       setNewPass("");
+      goGame();
     } catch (e) {
       console.log({ e });
       setErrorMessage("wrong username or password");
@@ -96,10 +106,7 @@ export default function SigninForm({ status }) {
                 <span className="button__text">Log In Now</span>
                 <FaRocket className="login__icon" />
               </button>
-              <button
-                className="button login__submit"
-                onClick={status.SignupState}
-              >
+              <button className="button login__submit" onClick={goSignup}>
                 <span className="button__text">Signup Now</span>
                 <FaSpaceShuttle className="login__icon" />
               </button>

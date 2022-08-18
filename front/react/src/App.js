@@ -1,19 +1,22 @@
 import { AdaptiveDpr, OrbitControls, Stars, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Box from "./componants/Box";
 import Plane from "./componants/Plane";
-import loginService from "./login/Login_page_component";
 import "./style.css";
 
 function App() {
-  let signinStatus = loginService.useSigninStatus(
-    window.sessionStorage.getItem("Token") === null ? false : true
-  );
+  let navigate = useNavigate();
 
-  return signinStatus.isSignin === true ? (
+  const goSignin = () => {
+    window.sessionStorage.clear("Token");
+    navigate("/");
+  };
+
+  return (
     <div>
-      <button id="logout" onClick={signinStatus.Signout}>
+      <button id="logout" onClick={goSignin}>
         Signout
       </button>
       <div id="game">
@@ -27,10 +30,6 @@ function App() {
           <AdaptiveDpr />
         </Canvas>
       </div>
-    </div>
-  ) : (
-    <div>
-      <loginService.LoginPage Status={signinStatus} />
     </div>
   );
 }
