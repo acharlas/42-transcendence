@@ -7,8 +7,14 @@ import {
   FaRocket,
   FaSpaceShuttle,
   FaLock,
+  FaEye,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+
+/*<div className="api-signin">
+                <h3>Signin with</h3>
+                <input className="fortytwo-button" type="image" alt="" />
+              </div>*/
 
 export default function SigninForm() {
   const [newEmail, setNewEmail] = useState("");
@@ -58,7 +64,8 @@ export default function SigninForm() {
     }
   };
 
-  const ftShowPassword = () => {
+  const ftShowPassword = (event) => {
+    event.preventDefault();
     var x = document.getElementById("inputPassword");
     if (x.type === "password") {
       x.type = "text";
@@ -66,6 +73,22 @@ export default function SigninForm() {
       x.type = "password";
     }
   };
+  x;
+  function signinFortytwo(event) {
+    event.preventDefault();
+    let ungessable = "";
+    const possible =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const stringLength = Math.floor(Math.random() * 150);
+    let url =
+      "https://api.intra.42.fr/oauth/authorize?client_id=cc0a3271ddce31f6d121cb5a2a3489ca4200861da7da4a721eba8b5cf1c00ee2&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2F&response_type=code";
+
+    for (let i = 0; i < stringLength; i++) {
+      ungessable += possible.at(Math.floor(Math.random() * possible.length));
+    }
+    url += "&scope=public&state=" + ungessable;
+    window.location.replace(url);
+  }
 
   return (
     <div className="container">
@@ -91,16 +114,19 @@ export default function SigninForm() {
                 onChange={HandlePassChange}
                 id="inputPassword"
               />
+              <button
+                className="login__input___show-button"
+                type="checkbox"
+                onClick={ftShowPassword}
+              >
+                <FaEye />
+              </button>
             </div>
             {ErrorMessage === null ? (
               ""
             ) : (
               <p className="error-msg">{ErrorMessage}</p>
             )}
-            <div>
-              <input className="" type="checkbox" onClick={ftShowPassword} />
-              show password
-            </div>
             <div>
               <button className="button login__submit" onClick={addUser}>
                 <span className="button__text">Log In Now</span>
@@ -109,6 +135,9 @@ export default function SigninForm() {
               <button className="button login__submit" onClick={goSignup}>
                 <span className="button__text">Signup Now</span>
                 <FaSpaceShuttle className="login__icon" />
+              </button>
+              <button className="button login__submit" onClick={signinFortytwo}>
+                <span className="button__text">Signin with </span>
               </button>
             </div>
           </form>

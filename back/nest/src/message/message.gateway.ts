@@ -7,7 +7,7 @@ import { GetUser } from 'src/auth/decorator';
 import { CreateMessageDto, GetAllMessageDto } from './dto';
 import { MessageService } from './message.service';
 
-@WebSocketGateway({ namespace: 'chat' })
+/*@WebSocketGateway({ namespace: 'chat' })
 export class MessageGateway {
   constructor(private messageService: MessageService) {}
 
@@ -29,4 +29,4 @@ export class MessageGateway {
       getAllMessageDto.channelId,
     );
   }
-}
+}*/
