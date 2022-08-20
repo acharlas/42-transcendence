@@ -1,10 +1,11 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AuthSigninDto, AuthSignupDto } from './dto';
+import { AuthSigninApiDto, AuthSigninDto, AuthSignupDto } from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -82,5 +83,32 @@ export class AuthService {
     return {
       access_token: token,
     };
+  }
+
+  async signinApi(dto: AuthSigninApiDto) {
+    const payload = {
+      grant_type: 'authorization_code',
+      client_id: this.config.get<string>('UID'),
+      client_secret: this.config.get<string>('API_SECRET'),
+      code: dto.code,
+      redirect_uri: this.config.get<string>('APP_REDIRECT_URI'),
+      state: dto.state,
+    };
+    let ret;
+
+    console.log({ payload });
+    try {
+      const res = await axios({
+        method: 'post',
+        url: 'https://api.intra.42.fr/oauth/token',
+        data: JSON.stringify(payload),
+        headers: {
+          'content-type': 'application/json',
+        },
+      });
+      return res;
+    } catch (e) {
+      console.log({ e });
+    }
   }
 }

@@ -9,7 +9,7 @@ import {
   FaLock,
   FaEye,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 /*<div className="api-signin">
                 <h3>Signin with</h3>
@@ -66,6 +66,7 @@ export default function SigninForm() {
 
   const ftShowPassword = (event) => {
     event.preventDefault();
+
     var x = document.getElementById("inputPassword");
     if (x.type === "password") {
       x.type = "text";
@@ -73,21 +74,28 @@ export default function SigninForm() {
       x.type = "password";
     }
   };
-  x;
+
   function signinFortytwo(event) {
     event.preventDefault();
     let ungessable = "";
+    let url =
+      "https://api.intra.42.fr/oauth/authorize?client_id=cc0a3271ddce31f6d121cb5a2a3489ca4200861da7da4a721eba8b5cf1c00ee2&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2F42-redirect&response_type=code&state=";
     const possible =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const stringLength = Math.floor(Math.random() * 150);
-    let url =
-      "https://api.intra.42.fr/oauth/authorize?client_id=cc0a3271ddce31f6d121cb5a2a3489ca4200861da7da4a721eba8b5cf1c00ee2&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2F&response_type=code";
+    const stringLength = Math.floor(Math.random() * 200);
 
     for (let i = 0; i < stringLength; i++) {
       ungessable += possible.at(Math.floor(Math.random() * possible.length));
     }
-    url += "&scope=public&state=" + ungessable;
-    window.location.replace(url);
+
+    console.log({ ungessable });
+    return (
+      <Link
+        className="button login__submit"
+        to={(location = url + ungessable)}
+        target="_blank"
+      />
+    );
   }
 
   return (
@@ -137,7 +145,7 @@ export default function SigninForm() {
                 <FaSpaceShuttle className="login__icon" />
               </button>
               <button className="button login__submit" onClick={signinFortytwo}>
-                <span className="button__text">Signin with </span>
+                <span className="button__text">Signin with</span>
               </button>
             </div>
           </form>
