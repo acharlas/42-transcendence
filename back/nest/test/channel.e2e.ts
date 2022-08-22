@@ -5,9 +5,7 @@ import { CreateChannelDto } from 'src/channel/dto';
 
 describe('Channel Suite', () => {
   beforeAll(async () => {
-    pactum.request.setBaseUrl(
-      'http://localhost:3334',
-    );
+    pactum.request.setBaseUrl('http://localhost:3334');
   });
   it('Create User1', () => {
     return pactum
@@ -186,15 +184,12 @@ describe('Channel Suite', () => {
         return pactum
           .spec()
           .get('/channels/$S{proChannelId}')
-          .withPathParams(
-            'id',
-            '$S{proChannelId}',
-          )
+          .withPathParams('id', '$S{proChannelId}')
           .withHeaders({
             Authorization: 'Bearer $S{U1AT}',
           })
           .expectStatus(200)
-          .expectBodyContains('$S{proChannelId}')
+          .expectBodyContains('$S{proChannelId}');
       });
       it('should get empty channel with bad id', () => {
         return pactum

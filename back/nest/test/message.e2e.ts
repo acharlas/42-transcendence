@@ -3,9 +3,7 @@ import * as pactum from 'pactum';
 
 describe('Message Suite', () => {
   beforeAll(async () => {
-    pactum.request.setBaseUrl(
-      'http://localhost:3334',
-    );
+    pactum.request.setBaseUrl('http://localhost:3334');
   });
 
   it('Create User1', () => {
@@ -50,10 +48,7 @@ describe('Message Suite', () => {
     return pactum
       .spec()
       .post('/channels/{pubChannelId}/join')
-      .withPathParams(
-        'pubChannelId',
-        '$S{pubChannelId}',
-      )
+      .withPathParams('pubChannelId', '$S{pubChannelId}')
       .withHeaders({
         Authorization: 'Bearer $S{U1AT}',
       })
@@ -63,10 +58,7 @@ describe('Message Suite', () => {
     return pactum
       .spec()
       .post('/channels/{pubChannelId}/join')
-      .withPathParams(
-        'pubChannelId',
-        '$S{pubChannelId}',
-      )
+      .withPathParams('pubChannelId', '$S{pubChannelId}')
       .withHeaders({
         Authorization: 'Bearer $S{U2AT}',
       })
@@ -78,10 +70,7 @@ describe('Message Suite', () => {
       return pactum
         .spec()
         .post('/channels/{pubChannelId}/messages')
-        .withPathParams(
-          'pubChannelId',
-          '$S{pubChannelId}',
-        )
+        .withPathParams('pubChannelId', '$S{pubChannelId}')
         .withHeaders({
           Authorization: 'Bearer $S{U1AT}',
         })
@@ -98,10 +87,7 @@ describe('Message Suite', () => {
       return pactum
         .spec()
         .post('/channels/{pubChannelId}/messages')
-        .withPathParams(
-          'pubChannelId',
-          '$S{pubChannelId}',
-        )
+        .withPathParams('pubChannelId', '$S{pubChannelId}')
         .withHeaders({
           Authorization: 'Bearer $S{U2AT}',
         })
@@ -117,10 +103,7 @@ describe('Message Suite', () => {
       return pactum
         .spec()
         .post('/channels/{pubChannelId}/messages')
-        .withPathParams(
-          'pubChannelId',
-          '$S{pubChannelId}',
-        )
+        .withPathParams('pubChannelId', '$S{pubChannelId}')
         .withHeaders({
           Authorization: 'Bearer $S{U1AT}',
         })
@@ -151,10 +134,7 @@ describe('Message Suite', () => {
       return pactum
         .spec()
         .get('/channels/{pubChannelId}/messages')
-        .withPathParams(
-          'pubChannelId',
-          '$S{pubChannelId}',
-        )
+        .withPathParams('pubChannelId', '$S{pubChannelId}')
         .withHeaders({
           Authorization: 'Bearer $S{U1AT}',
         })
@@ -167,9 +147,7 @@ describe('Message Suite', () => {
     it('get messages by id', () => {
       return pactum
         .spec()
-        .get(
-          '/channels/{pubChannelId}/{messageId}',
-        )
+        .get('/channels/{pubChannelId}/{messageId}')
         .withPathParams({
           pubChannelId: '$S{pubChannelId}',
           messageId: '$S{messageId}',

@@ -1,8 +1,4 @@
-import {
-  Get,
-  Module,
-  Param,
-} from '@nestjs/common';
+import { Get, Module, Param } from '@nestjs/common';
 import { FriendService } from './friend.service';
 import { FriendController } from './friend.controller';
 

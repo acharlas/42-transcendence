@@ -12,17 +12,13 @@ import { CreateHistoryDto } from './dto/create-history.dto';
   },
 })
 export class HistoryGateway {
-  constructor(
-    private readonly historyService: HistoryService,
-  ) {}
+  constructor(private readonly historyService: HistoryService) {}
 
   @SubscribeMessage('createHistory')
   create(
     @MessageBody()
     createHistoryDto: CreateHistoryDto,
   ) {
-    return this.historyService.createhistory(
-      createHistoryDto,
-    );
+    return this.historyService.createhistory(createHistoryDto);
   }
 }

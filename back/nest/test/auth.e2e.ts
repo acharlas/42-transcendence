@@ -3,9 +3,7 @@ import { AuthSignupDto } from 'src/auth/dto';
 
 describe('Auth Suite', () => {
   beforeAll(async () => {
-    pactum.request.setBaseUrl(
-      'http://localhost:3334',
-    );
+    pactum.request.setBaseUrl('http://localhost:3334');
   });
 
   const dto: AuthSignupDto = {
@@ -16,10 +14,7 @@ describe('Auth Suite', () => {
 
   describe('Signup', () => {
     it('should throw if no body', () => {
-      return pactum
-        .spec()
-        .post('/auth/signup')
-        .expectStatus(400);
+      return pactum.spec().post('/auth/signup').expectStatus(400);
     });
     it('should throw if email empty', () => {
       return pactum
@@ -43,19 +38,12 @@ describe('Auth Suite', () => {
         .expectStatus(400);
     });
     it('should signup', () => {
-      return pactum
-        .spec()
-        .post('/auth/signup')
-        .withBody(dto)
-        .expectStatus(201);
+      return pactum.spec().post('/auth/signup').withBody(dto).expectStatus(201);
     });
   });
   describe('Signin', () => {
     it('should throw if no body', () => {
-      return pactum
-        .spec()
-        .post('/auth/signin')
-        .expectStatus(400);
+      return pactum.spec().post('/auth/signin').expectStatus(400);
     });
     it('should throw if email empty', () => {
       return pactum
@@ -93,11 +81,7 @@ describe('Auth Suite', () => {
         .expectStatus(403);
     });
     it('should signin', () => {
-      return pactum
-        .spec()
-        .post('/auth/signin')
-        .withBody(dto)
-        .expectStatus(200);
+      return pactum.spec().post('/auth/signin').withBody(dto).expectStatus(200);
     });
   });
 });

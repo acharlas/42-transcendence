@@ -1,18 +1,9 @@
-import {
-  ApiProperty,
-  ApiPropertyOptional,
-} from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class AuthSignupDto {
   @ApiProperty({
-    pattern:
-      '^([a-zA-Z0-9]{2,7})@([a-zA-Z0-9]{2,5})\\.([a-zA-Z]{2,3})$',
+    pattern: '^([a-zA-Z0-9]{2,7})@([a-zA-Z0-9]{2,5})\\.([a-zA-Z]{2,3})$',
   })
   @IsEmail()
   @IsNotEmpty()

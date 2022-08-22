@@ -3,9 +3,7 @@ import * as pactum from 'pactum';
 
 describe('Join/Leave Suite', () => {
   beforeAll(async () => {
-    pactum.request.setBaseUrl(
-      'http://localhost:3334',
-    );
+    pactum.request.setBaseUrl('http://localhost:3334');
   });
 
   it('Create User1', () => {
@@ -66,10 +64,7 @@ describe('Join/Leave Suite', () => {
         return pactum
           .spec()
           .post('/channels/{pubChannelId}/join')
-          .withPathParams(
-            'pubChannelId',
-            '$S{pubChannelId}',
-          )
+          .withPathParams('pubChannelId', '$S{pubChannelId}')
           .withHeaders({
             Authorization: 'Bearer $S{U2AT}',
           })
@@ -81,10 +76,7 @@ describe('Join/Leave Suite', () => {
         return pactum
           .spec()
           .post('/channels/{proChannelId}/join')
-          .withPathParams(
-            'pubChannelId',
-            '$S{proChannelId}',
-          )
+          .withPathParams('pubChannelId', '$S{proChannelId}')
           .withHeaders({
             Authorization: 'Bearer $S{U2AT}',
           })
@@ -97,10 +89,7 @@ describe('Join/Leave Suite', () => {
         return pactum
           .spec()
           .post('/channels/$S{proChannelId}/join')
-          .withPathParams(
-            'id',
-            '$S{proChannelId}',
-          )
+          .withPathParams('id', '$S{proChannelId}')
           .withHeaders({
             Authorization: 'Bearer $S{U2AT}',
           })
@@ -113,10 +102,7 @@ describe('Join/Leave Suite', () => {
         return pactum
           .spec()
           .post('/channels/{proChannelId}/join')
-          .withPathParams(
-            'proChannelId',
-            '$S{proChannelId}',
-          )
+          .withPathParams('proChannelId', '$S{proChannelId}')
           .withHeaders({
             Authorization: 'Bearer $S{U2AT}',
           })
@@ -127,10 +113,7 @@ describe('Join/Leave Suite', () => {
         return pactum
           .spec()
           .post('/channels/{proChannelId}/join')
-          .withPathParams(
-            'proChannelId',
-            '$S{proChannelId}',
-          )
+          .withPathParams('proChannelId', '$S{proChannelId}')
           .withHeaders({
             Authorization: 'Bearer $S{U2AT}',
           })
