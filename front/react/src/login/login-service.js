@@ -19,22 +19,18 @@ const signup = async (credentials) => {
 };
 
 const fortyTwoSign = async (credentials) => {
-  return new Promise((resolve, reject) => {
-    console.log({ credentials });
-    axios
-      .post("http://localhost:3333/auth/signinApi", {
-        code: credentials.code,
-        state: credentials.state,
-      })
-      .then((ret) => {
-        console.log({ ret });
-        return resolve(ret);
-      })
-      .catch((err) => {
-        console.log({ err });
-        return reject(err);
-      });
-  });
+  console.log({ credentials });
+  try {
+    const token = await axios.post("http://localhost:3333/auth/signinApi", {
+      code: credentials.code,
+      state: credentials.state,
+    });
+    console.log("Token", { token });
+    window.localStorage.setItem("Token", token.data.access_token);
+  } catch (e) {
+    console.log("erreur", { e });
+    return e;
+  }
 };
 
 export default { signup, signin, fortyTwoSign };

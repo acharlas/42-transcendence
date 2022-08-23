@@ -10,7 +10,7 @@ function App() {
   let navigate = useNavigate();
 
   const goSignin = () => {
-    window.sessionStorage.clear("Token");
+    window.localStorage.clear("Token");
     navigate("/");
   };
 

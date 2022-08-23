@@ -1,6 +1,11 @@
-import { ConsoleLogger, ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AuthSigninApiDto, AuthSigninDto, AuthSignupDto } from './dto';
+import {
+  AuthSigninDto,
+  AuthSigninWithApiDto,
+  AuthSignupDto,
+  getApiToken,
+} from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
@@ -37,11 +42,10 @@ export class AuthService {
         },
       });
 
-      return this.signToken(user.id, user.email);
+      return this.signToken(user.id);
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError) {
         if (e.code === 'P2002') {
-          console.log(e.meta);
           throw new ForbiddenException('Credentials taken');
         }
       }
@@ -65,16 +69,12 @@ export class AuthService {
     if (!pwMathes) throw new ForbiddenException('Credentials incorrect');
 
     //send back the user
-    return this.signToken(user.id, user.email);
+    return this.signToken(user.id);
   }
 
-  async signToken(
-    userId: String,
-    email: String,
-  ): Promise<{ access_token: string }> {
+  async signToken(userId: String): Promise<{ access_token: string }> {
     const payload = {
       sub: userId,
-      email,
     };
     const secret = this.config.get('JWT_SECRET');
 
@@ -88,8 +88,8 @@ export class AuthService {
     };
   }
 
-  async getFortyTwoMe(Token: string) {
-    return new Promise((resolve, reject) => {
+  async getFortyTwoMe(Token: string): Promise<AuthSigninWithApiDto> {
+    return new Promise<AuthSigninWithApiDto>((resolve, reject) => {
       axios({
         method: 'get',
         headers: {
@@ -106,7 +106,7 @@ export class AuthService {
     });
   }
 
-  async signinApi(dto: AuthSigninApiDto): Promise<string> {
+  async getApiToken(dto: getApiToken): Promise<string> {
     const payload = {
       grant_type: 'authorization_code',
       client_id: this.config.get<string>('UID'),
@@ -115,6 +115,7 @@ export class AuthService {
       redirect_uri: 'http://localhost:3001/42-redirect',
       state: dto.state,
     };
+    console.log({ payload });
     return new Promise<string>((resolve, reject) => {
       axios({
         method: 'post',
@@ -131,6 +132,58 @@ export class AuthService {
           console.log('error:', err);
           return reject(err);
         });
+    });
+  }
+
+  async signWithApi(
+    user: AuthSigninWithApiDto,
+  ): Promise<{ access_token: string }> {
+    /*let uname = user.login;
+        let sameUname = await this.prisma.user.findFirst({
+          where: { username: uname },
+        });
+        console.log('find', { sameUname });
+        while (sameUname) {
+          uname += '_';
+          sameUname = await this.prisma.user.findFirst({
+            where: { username: uname },
+          });*/
+    const found = await this.prisma.user.findFirst({
+      where: {
+        userType: 'fortyTwo',
+        fortyTwoId: user.id,
+      },
+    });
+    return new Promise<{ access_token: string }>((resolve, reject) => {
+      console.log('found', { found });
+      if (found !== null) {
+        this.signToken(found.id)
+          .then((ret) => {
+            return resolve(ret);
+          })
+          .catch((err) => {
+            return reject(err);
+          });
+      } else {
+        this.prisma.user
+          .create({
+            data: {
+              email: '',
+              username: user.login,
+              hash: '',
+              nickname: user.login,
+              userType: 'fortyTwo',
+              fortyTwoId: user.id,
+            },
+          })
+          .then((ret) => {
+            console.log('token');
+            return resolve(this.signToken(ret.id));
+          })
+          .catch((err) => {
+            return reject(err);
+          });
+      }
     });
   }
 }

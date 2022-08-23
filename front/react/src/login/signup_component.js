@@ -39,37 +39,28 @@ export default function SignupForm() {
 
   const createUser = async (event) => {
     event.preventDefault();
-
     const user = {
       email: newEmail,
       password: newPass,
     };
 
     try {
+      console.log("click");
       setErrorMessage(null);
-      loginService
-        .signup({
-          email: newEmail,
-          password: newPass,
-          username: newUsername,
-        })
-        .then((ret) => {
-          window.sessionStorage.setItem("Token", token);
-          setNewEmail("");
-          setNewPass("");
-          setNewUsername("");
-          goGame();
-        })
-        .catch((e) => {
-          console.log({ e });
-          if (e.response.data.statusCode == 400)
-            setErrorMessage(e.response.data.message);
-        });
+      const token = await loginService.signup({
+        email: newEmail,
+        password: newPass,
+        username: newUsername,
+      });
+      console.log({ token });
+      window.localStorage.setItem("Token", token);
+      setNewEmail("");
+      setNewPass("");
+      setNewUsername("");
+      goGame();
     } catch (e) {
-      /*setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);*/
-      //hide the wrong password message after a short moment
+      console.log({ e });
+      return e;
     }
   };
 

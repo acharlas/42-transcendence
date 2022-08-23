@@ -10,7 +10,6 @@ import {
   FaEye,
 } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
-import { Path } from "three";
 
 /*<div className="api-signin">
                 <h3>Signin with</h3>
