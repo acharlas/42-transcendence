@@ -10,6 +10,7 @@ import {
   FaEye,
 } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
+import { Path } from "three";
 
 /*<div className="api-signin">
                 <h3>Signin with</h3>
@@ -76,6 +77,7 @@ export default function SigninForm() {
   };
 
   function signinFortytwo(event) {
+    console.log("signinfortytwo");
     event.preventDefault();
     let ungessable = "";
     let url =

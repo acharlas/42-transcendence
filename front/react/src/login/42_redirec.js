@@ -9,9 +9,9 @@ export default function Redirect() {
   const state = searchParams.get("state");
 
   try {
-    loginService.fortyTwoSign({ code, state });
+    loginService.fortyTwoSign({ code: code, state: state });
     return <div className="container"></div>;
   } catch (e) {
-    console.log(e);
+    console.log("error:", { e });
   }
 }

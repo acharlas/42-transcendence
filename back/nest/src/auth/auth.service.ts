@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ConsoleLogger, ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthSigninApiDto, AuthSigninDto, AuthSignupDto } from './dto';
 import * as argon from 'argon2';
@@ -6,6 +6,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { url } from 'inspector';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +32,8 @@ export class AuthService {
           username: dto.username,
           hash,
           nickname,
+          userType: 'normal',
+          fortyTwoId: -1,
         },
       });
 
@@ -85,30 +88,49 @@ export class AuthService {
     };
   }
 
-  async signinApi(dto: AuthSigninApiDto) {
+  async getFortyTwoMe(Token: string) {
+    return new Promise((resolve, reject) => {
+      axios({
+        method: 'get',
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+        url: 'https://api.intra.42.fr/v2/me',
+      })
+        .then((ret) => {
+          return resolve(ret.data);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  async signinApi(dto: AuthSigninApiDto): Promise<string> {
     const payload = {
       grant_type: 'authorization_code',
       client_id: this.config.get<string>('UID'),
       client_secret: this.config.get<string>('API_SECRET'),
       code: dto.code,
-      redirect_uri: this.config.get<string>('APP_REDIRECT_URI'),
+      redirect_uri: 'http://localhost:3001/42-redirect',
       state: dto.state,
     };
-    let ret;
-
-    console.log({ payload });
-    try {
-      const res = await axios({
+    return new Promise<string>((resolve, reject) => {
+      axios({
         method: 'post',
         url: 'https://api.intra.42.fr/oauth/token',
-        data: JSON.stringify(payload),
+        data: payload,
         headers: {
           'content-type': 'application/json',
         },
-      });
-      return res;
-    } catch (e) {
-      console.log({ e });
-    }
+      })
+        .then((ret) => {
+          return resolve(ret.data.access_token);
+        })
+        .catch((err) => {
+          console.log('error:', err);
+          return reject(err);
+        });
+    });
   }
 }

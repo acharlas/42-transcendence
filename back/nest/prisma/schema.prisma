@@ -35,6 +35,10 @@ model User {
   history UserHistory[]
   messages Message[]
   
+  userType UserType
+
+  fortyTwoId Int
+
   @@map("users")
 }
 
@@ -129,6 +133,11 @@ enum UserPrivilege {
   default
   muted
   ban
+}
+
+enum UserType {
+  fortyTwo
+  normal
 }
 
 enum ChannelType {

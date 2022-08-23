@@ -47,23 +47,29 @@ export default function SignupForm() {
 
     try {
       setErrorMessage(null);
-      const token = await loginService.signup({
-        email: newEmail,
-        password: newPass,
-        username: newUsername,
-      });
-      window.sessionStorage.setItem("Token", token);
-      setNewEmail("");
-      setNewPass("");
-      setNewUsername("");
-      goGame();
+      loginService
+        .signup({
+          email: newEmail,
+          password: newPass,
+          username: newUsername,
+        })
+        .then((ret) => {
+          window.sessionStorage.setItem("Token", token);
+          setNewEmail("");
+          setNewPass("");
+          setNewUsername("");
+          goGame();
+        })
+        .catch((e) => {
+          console.log({ e });
+          if (e.response.data.statusCode == 400)
+            setErrorMessage(e.response.data.message);
+        });
     } catch (e) {
-      console.log({ e });
-      if (e.response.data.statusCode == 400)
-        setErrorMessage(e.response.data.message);
       /*setTimeout(() => {
           setErrorMessage(null);
-        }, 5000);*/ //hide the wrong password message after a short moment
+        }, 5000);*/
+      //hide the wrong password message after a short moment
     }
   };
 

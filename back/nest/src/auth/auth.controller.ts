@@ -28,6 +28,14 @@ export class AuthController {
 
   @Post('signinApi')
   async signinApi(@Body() dto: AuthSigninApiDto) {
-    return this.authService.signinApi(dto);
+    console.log('siginin', { dto });
+    try {
+      const token = await this.authService.signinApi(dto);
+      console.log('token', { token });
+      const user = await this.authService.getFortyTwoMe(token);
+      console.log('user', { user });
+    } catch (e) {
+      console.log({ e });
+    }
   }
 }
