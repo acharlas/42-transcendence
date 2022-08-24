@@ -27,6 +27,7 @@ const fortyTwoSign = async (credentials) => {
     });
     console.log("Token", { token });
     window.localStorage.setItem("Token", token.data.access_token);
+    return token;
   } catch (e) {
     console.log("erreur", { e });
     return e;
