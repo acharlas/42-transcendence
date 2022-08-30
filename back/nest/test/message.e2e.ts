@@ -1,7 +1,7 @@
 import { ChannelType } from '@prisma/client';
 import * as pactum from 'pactum';
 
-describe('Message Suite', () => {
+/*describe('Message Suite', () => {
   beforeAll(async () => {
     pactum.request.setBaseUrl(
       'http://localhost:3334',
@@ -182,3 +182,4 @@ describe('Message Suite', () => {
     });
   });
 });
+*/

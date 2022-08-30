@@ -29,7 +29,16 @@ export class BlockController {
     @GetUser('id') userId: string,
     @Body() dto: BlockDto,
   ): Promise<{ myblock: User[] }> {
-    return this.blockService.addBlock(userId, dto);
+    return new Promise<{ myblock: User[] }>((resolve, reject) => {
+      this.blockService
+        .addBlock(userId, dto)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @HttpCode(HttpStatus.OK)
@@ -38,7 +47,16 @@ export class BlockController {
     @GetUser('id') userId: string,
     @Body() dto: BlockDto,
   ): Promise<{ myblock: User[] }> {
-    return this.blockService.removeBlock(userId, dto);
+    return new Promise<{ myblock: User[] }>((resolve, reject) => {
+      this.blockService
+        .removeBlock(userId, dto)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @Get(':id')
@@ -46,6 +64,15 @@ export class BlockController {
     @GetUser('id') userId: string,
     @Param('id') id: string,
   ): Promise<{ myblock: User[] }> {
-    return this.blockService.getBlock(userId, id);
+    return new Promise<{ myblock: User[] }>((resolve, reject) => {
+      this.blockService
+        .getBlock(userId, id)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 }

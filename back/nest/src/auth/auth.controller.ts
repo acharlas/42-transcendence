@@ -17,37 +17,61 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() dto: AuthSignupDto): Promise<{ access_token: string }> {
-    return this.authService.signup(dto);
+    return new Promise<{ access_token: string }>((resolve, reject) => {
+      this.authService
+        .signup(dto)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          console.log('error:', { err });
+          return reject(err);
+        });
+    });
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('signin')
   async signin(@Body() dto: AuthSigninDto): Promise<{ access_token: string }> {
-    return this.authService.signin(dto);
+    return new Promise<{ access_token: string }>((resolve, reject) => {
+      this.authService
+        .signin(dto)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @Post('signinApi')
   async signinApi(@Body() dto: getApiToken): Promise<{ access_token: string }> {
     console.log('siginin', { dto });
-    try {
-      const token = await this.authService.getApiToken(dto);
-      console.log('token', { token });
-      const user = await this.authService.getFortyTwoMe(token);
-      console.log('user', { user });
-      return new Promise<{ access_token: string }>((resolve, reject) => {
-        this.authService
-          .signWithApi(user)
-          .then((ret) => {
-            console.log({ ret });
-            return resolve(ret);
-          })
-          .catch((err) => {
-            return reject(err);
-          });
-      });
-    } catch (e) {
-      console.log('erreur', { e });
-      return e;
-    }
+    return new Promise<{ access_token: string }>((resolve, reject) => {
+      this.authService
+        .getApiToken(dto)
+        .then((ret) => {
+          this.authService
+            .getFortyTwoMe(ret)
+            .then((ret) => {
+              this.authService
+                .signWithApi(ret)
+                .then((ret) => {
+                  console.log({ ret });
+                  return resolve(ret);
+                })
+                .catch((err) => {
+                  return reject(err);
+                });
+            })
+            .catch((err) => {
+              return reject(err);
+            });
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 }

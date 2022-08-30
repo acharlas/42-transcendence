@@ -1,16 +1,17 @@
 import { AdaptiveDpr, OrbitControls, Stars, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { io, Socket } from "socket.io-client";
+import MessageInput from "./chat/chat";
 import Box from "./componants/Box";
 import Plane from "./componants/Plane";
 import "./style.css";
 
 function App() {
   let navigate = useNavigate();
-
   const goSignin = () => {
-    window.localStorage.clear("Token");
+    window.localStorage.clear();
     navigate("/");
   };
 

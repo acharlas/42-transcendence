@@ -10,5 +10,5 @@ export class CreateMessageDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  channelId: string;
+  name: string;
 }

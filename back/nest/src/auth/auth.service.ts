@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   AuthSigninDto,
@@ -7,11 +12,9 @@ import {
   getApiToken,
 } from './dto';
 import * as argon from 'argon2';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { url } from 'inspector';
 
 @Injectable()
 export class AuthService {
@@ -21,55 +24,110 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
-  async signup(dto: AuthSignupDto) {
+  async signup(dto: AuthSignupDto): Promise<{ access_token: string }> {
     //generate password hash
     const hash = await argon.hash(dto.password);
 
-    try {
-      //save the new user in db
-      let nickname = dto.username;
-      if (!dto.nickname && dto.nickname !== '' && dto.nickname !== undefined) {
-        nickname = dto.nickname;
-      }
-      const user = await this.prisma.user.create({
-        data: {
-          email: dto.email,
-          username: dto.username,
-          hash,
-          nickname,
-          userType: 'normal',
-          fortyTwoId: -1,
-        },
-      });
-
-      return this.signToken(user.id);
-    } catch (e) {
-      if (e instanceof PrismaClientKnownRequestError) {
-        if (e.code === 'P2002') {
-          throw new ForbiddenException('Credentials taken');
-        }
-      }
-      throw e;
+    //save the new user in db
+    let nickname = dto.username;
+    if (!dto.nickname && dto.nickname !== '' && dto.nickname !== undefined) {
+      nickname = dto.nickname;
     }
+    return new Promise<{ access_token: string }>((resolve, reject) => {
+      this.prisma.user
+        .create({
+          data: {
+            email: dto.email,
+            username: dto.username,
+            hash,
+            nickname,
+            userType: 'normal',
+            fortyTwoId: -1,
+          },
+        })
+        .then((ret) => {
+          this.signToken(ret.id)
+            .then((ret) => {
+              return resolve(ret);
+            })
+            .catch((err) => {
+              return reject(err);
+            });
+        })
+        .catch((err) => {
+          /*if (err.meta.target[0] === 'email') {
+            return reject(
+              new HttpException(
+                {
+                  status: HttpStatus.FORBIDDEN,
+                  error: 'email already take',
+                  code: '101',
+                },
+                HttpStatus.FORBIDDEN,
+              ),
+            );
+          } else {
+            return reject(
+              new HttpException(
+                {
+                  status: HttpStatus.FORBIDDEN,
+                  error: 'username already take',
+                  code: '102',
+                },
+                HttpStatus.FORBIDDEN,
+              ),
+            );
+          }*/
+        });
+    });
   }
 
-  async signin(dto: AuthSigninDto) {
+  async signin(dto: AuthSigninDto): Promise<{ access_token: string }> {
     // find  the user by email
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email: dto.email,
-      },
+    return new Promise<{ access_token: string }>((resolve, reject) => {
+      this.prisma.user
+        .findUnique({
+          where: {
+            email: dto.email,
+          },
+        })
+        .then((ret) => {
+          if (!ret) {
+            return reject(
+              new HttpException(
+                {
+                  status: HttpStatus.FORBIDDEN,
+                  error: 'wrong email',
+                  code: 103,
+                },
+                HttpStatus.FORBIDDEN,
+              ),
+            );
+          }
+          return resolve(
+            new Promise<{ access_token: string }>((resolve, reject) => {
+              argon.verify(ret.hash, dto.password).then((res) => {
+                if (!res) {
+                  return reject(
+                    new HttpException(
+                      {
+                        status: HttpStatus.FORBIDDEN,
+                        error: 'wrong password',
+                        code: 104,
+                      },
+                      HttpStatus.FORBIDDEN,
+                    ),
+                  );
+                }
+                return resolve(this.signToken(ret.id));
+              });
+            }),
+          );
+        })
+        .catch((err) => {
+          return reject(err);
+        });
     });
-    //if user does not exist throw exception
-    if (!user) throw new ForbiddenException('Credentials incorrect');
-
-    //compare password
-    const pwMathes = await argon.verify(user.hash, dto.password);
-    //if password incorrect throw error
-    if (!pwMathes) throw new ForbiddenException('Credentials incorrect');
-
-    //send back the user
-    return this.signToken(user.id);
   }
 
   async signToken(userId: String): Promise<{ access_token: string }> {
@@ -138,16 +196,6 @@ export class AuthService {
   async signWithApi(
     user: AuthSigninWithApiDto,
   ): Promise<{ access_token: string }> {
-    /*let uname = user.login;
-        let sameUname = await this.prisma.user.findFirst({
-          where: { username: uname },
-        });
-        console.log('find', { sameUname });
-        while (sameUname) {
-          uname += '_';
-          sameUname = await this.prisma.user.findFirst({
-            where: { username: uname },
-          });*/
     const found = await this.prisma.user.findFirst({
       where: {
         userType: 'fortyTwo',
