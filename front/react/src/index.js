@@ -5,7 +5,7 @@ import App from "./App";
 import SigninForm from "./login/signin_component";
 import SignupForm from "./login/signup_component";
 import Redirect from "./login/42_redirec";
-import Chat from "./chat/chat";
+import Chat from "./chat/chat.tsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
