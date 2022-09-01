@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import loginService from "./login-service";
 import "./login_style.css";
@@ -10,22 +11,21 @@ import {
   FaEye,
 } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
-
 /*<div className="api-signin">
                 <h3>Signin with</h3>
                 <input className="fortytwo-button" type="image" alt="" />
               </div>*/
 
-export default function SigninForm() {
+export function SigninForm() {
   const [newEmail, setNewEmail] = useState("");
   const [newPass, setNewPass] = useState("");
   const [ErrorMessage, setErrorMessage] = useState("");
   let navigate = useNavigate();
 
-  const HandleEmailChange = (event) => {
+  const HandleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewEmail(event.target.value);
   };
-  const HandlePassChange = (event) => {
+  const HandlePassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewPass(event.target.value);
   };
 
@@ -37,16 +37,11 @@ export default function SigninForm() {
     navigate("/game");
   };
 
-  const addUser = async (event) => {
+  const addUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
-    const user = {
-      email: newEmail,
-      password: newPass,
-    };
-
     try {
-      setErrorMessage(null);
+      setErrorMessage("");
       const token = await loginService.signin({
         email: newEmail,
         password: newPass,
@@ -64,10 +59,12 @@ export default function SigninForm() {
     }
   };
 
-  const ftShowPassword = (event) => {
+  const ftShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
     var x = document.getElementById("inputPassword");
+    if (!(x instanceof HTMLScriptElement))
+      throw new Error("can't get password element");
     if (x.type === "password") {
       x.type = "text";
     } else {
@@ -75,9 +72,8 @@ export default function SigninForm() {
     }
   };
 
-  function signinFortytwo(event) {
+  function signinFortytwo(/*event: React.MouseEvent<HTMLButtonElement>*/): string {
     console.log("signinfortytwo");
-    event.preventDefault();
     let ungessable = "";
     let url =
       "https://api.intra.42.fr/oauth/authorize?client_id=cc0a3271ddce31f6d121cb5a2a3489ca4200861da7da4a721eba8b5cf1c00ee2&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2F42-redirect&response_type=code&state=";
@@ -89,14 +85,8 @@ export default function SigninForm() {
       ungessable += possible.at(Math.floor(Math.random() * possible.length));
     }
 
-    console.log({ ungessable });
-    return (
-      <Link
-        className="button login__submit"
-        to={(location = url + ungessable)}
-        target="_blank"
-      />
-    );
+    //console.log({ ungessable });
+    return url + ungessable;
   }
 
   return (
@@ -125,7 +115,6 @@ export default function SigninForm() {
               />
               <button
                 className="login__input___show-button"
-                type="checkbox"
                 onClick={ftShowPassword}
               >
                 <FaEye />
@@ -145,9 +134,9 @@ export default function SigninForm() {
                 <span className="button__text">Signup Now</span>
                 <FaSpaceShuttle className="login__icon" />
               </button>
-              <button className="button login__submit" onClick={signinFortytwo}>
+              <a className="button login__submit" href={signinFortytwo()}>
                 <span className="button__text">Signin with</span>
-              </button>
+              </a>
             </div>
           </form>
         </div>

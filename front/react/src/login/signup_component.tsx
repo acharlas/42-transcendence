@@ -11,21 +11,21 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-export default function SignupForm() {
+export function SignupForm() {
   const [newEmail, setNewEmail] = useState("");
   const [newPass, setNewPass] = useState("");
   const [newUsername, setNewUsername] = useState("");
-  const [ErrorMessage, setErrorMessage] = useState([]);
+  const [ErrorMessage, setErrorMessage] = useState("");
   let navigate = useNavigate();
 
-  const HandleEmailChange = (event) => {
+  const HandleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewEmail(event.target.value);
   };
-  const HandlePassChange = (event) => {
+  const HandlePassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewPass(event.target.value);
   };
 
-  const HandleUsernameChange = (event) => {
+  const HandleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewUsername(event.target.value);
   };
 
@@ -37,16 +37,12 @@ export default function SignupForm() {
     navigate("/game");
   };
 
-  const createUser = async (event) => {
+  const createUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    const user = {
-      email: newEmail,
-      password: newPass,
-    };
 
     try {
       console.log("click");
-      setErrorMessage(null);
+      setErrorMessage("");
       const token = await loginService.signup({
         email: newEmail,
         password: newPass,
@@ -66,6 +62,8 @@ export default function SignupForm() {
 
   const ftShowPassword = () => {
     var x = document.getElementById("inputSignupPassword");
+    if (!(x instanceof HTMLScriptElement))
+      throw new Error("can't get password element");
     if (x.type === "password") {
       x.type = "text";
     } else {
@@ -76,11 +74,7 @@ export default function SignupForm() {
   const ErrorMessageComp = () => {
     return (
       <div>
-        {ErrorMessage.map((error, i) => (
-          <p key={i} className="error-msg">
-            {error}
-          </p>
-        ))}
+        <p className="error-msg">{ErrorMessage}</p>
       </div>
     );
   };

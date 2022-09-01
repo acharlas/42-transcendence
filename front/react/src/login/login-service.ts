@@ -1,7 +1,22 @@
 import axios from "axios";
-const baseUrl = "localhost:3333";
 
-const signin = async (credentials) => {
+export interface loginDto {
+  email: string;
+  password: string;
+}
+
+export interface signupDto {
+  email: string;
+  password: string;
+  username: string;
+}
+
+export interface fortyTwoLoginDto {
+  code: string;
+  state: string;
+}
+
+const signin = async (credentials: loginDto) => {
   const response = await axios.post("http://localhost:3333/auth/signin", {
     email: credentials.email,
     password: credentials.password,
@@ -9,7 +24,7 @@ const signin = async (credentials) => {
   return response.data.access_token;
 };
 
-const signup = async (credentials) => {
+const signup = async (credentials: signupDto) => {
   const response = await axios.post("http://localhost:3333/auth/signup", {
     email: credentials.email,
     password: credentials.password,
@@ -18,7 +33,7 @@ const signup = async (credentials) => {
   return response.data.access_token;
 };
 
-const fortyTwoSign = async (credentials) => {
+const fortyTwoSign = async (credentials: fortyTwoLoginDto) => {
   console.log({ credentials });
   try {
     const token = await axios.post("http://localhost:3333/auth/signinApi", {
