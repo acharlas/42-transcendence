@@ -10,7 +10,7 @@ import {
   FaLock,
   FaEye,
 } from "react-icons/fa";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 /*<div className="api-signin">
                 <h3>Signin with</h3>
                 <input className="fortytwo-button" type="image" alt="" />
