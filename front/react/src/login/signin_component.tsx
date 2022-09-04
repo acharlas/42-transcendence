@@ -76,7 +76,8 @@ export function SigninForm() {
     console.log("signinfortytwo");
     let ungessable = "";
     let url =
-      "https://api.intra.42.fr/oauth/authorize?client_id=cc0a3271ddce31f6d121cb5a2a3489ca4200861da7da4a721eba8b5cf1c00ee2&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2F42-redirect&response_type=code&state=";
+      "https://api.intra.42.fr/oauth/authorize?client_id=64540081a9e86e0f3021ae0a3106565238272a37243a4d46071d14a546fda80f&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2F42-redirect&response_type=code&state=";
+    //todo: get data from env
     const possible =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     const stringLength = Math.floor(Math.random() * 200);
