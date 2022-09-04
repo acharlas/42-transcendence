@@ -39,6 +39,9 @@ model User {
 
   fortyTwoId Int
 
+  mfaEnabled      Boolean   @default(false)
+  mfaPhoneNumber  String?
+
   @@map("users")
 }
 
