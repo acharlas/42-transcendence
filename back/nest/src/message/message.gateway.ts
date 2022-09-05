@@ -10,6 +10,14 @@ import {
 import { Server, Socket } from 'socket.io';
 import { CreateMessageDto, GetAllMessageDto } from './dto';
 import { MessageService } from './message.service';
+import { nanoid } from 'nanoid';
+
+const EVENTS = {
+  connecttion: 'connection',
+  CLIENT: {
+    CREATE_ROOM: 'CREATE_ROOM',
+  },
+};
 
 @WebSocketGateway()
 export class MessageGateway
@@ -26,27 +34,6 @@ export class MessageGateway
   handleDisconnect(client: Socket) {
     console.log(`CLient disconnected ${client.id}`);
   }
-  // @SubscribeMessage('createMessage')
-  // create(
-  //   @GetUser('id') userId: string,
-  //   @MessageBody() createMessageDto: CreateMessageDto,
-  // ): Promise<CreateMessageDto> {
-  //   return this.messageService.postMessage(
-  //     userId,
-  //     createMessageDto.channelId,
-  //     createMessageDto,
-  //   );
-  // }
-
-  // @SubscribeMessage('join')
-  // joinRoom() {}
-
-  // @SubscribeMessage('findAllMessages')
-  // findAll(@MessageBody() getAllMessageDto: GetAllMessageDto) {
-  //   return this.messageService.getMessagesfromChannel(
-  //     getAllMessageDto.channelId,
-  //   );
-  // }
 
   @SubscribeMessage('createMessage')
   create(
@@ -64,24 +51,59 @@ export class MessageGateway
         });
     });
   }
+  /* USER CREATE A NEW ROOM*/
+  rooms: Record<string, { name: string }> = {};
 
-  @SubscribeMessage('join')
-  joinRoom(
-    @MessageBody('name') name: string,
+  @SubscribeMessage('CreateRoom')
+  CreateRoom(
+    @MessageBody('roomName') roomName: string,
     @ConnectedSocket() client: Socket,
-  ): Promise<unknown[]> {
-    return new Promise<unknown[]>((resolve, reject) => {
-      this.messageService
-        .identify(name, client.id)
-        .then((ret) => {
-          return resolve(ret);
-        })
-        .catch((err) => {
-          return reject(err);
-        });
-    });
-  }
+  ): Promise<void> {
+    const roomId = nanoid();
 
+    this.rooms[roomId] = {
+      name: roomName,
+    };
+
+    client.join(roomId);
+    client.broadcast.emit('Rooms', this.rooms);
+    client.emit('Rooms', this.rooms);
+    client.emit('JoinedRoom', roomId);
+    return;
+  }
+  /*==========================================*/
+
+  /*USER SEND A ROOM MESSAGE*/
+  @SubscribeMessage('SendRoomMessage')
+  sendRoomMessage(
+    @MessageBody('roomId') roomId: string,
+    @MessageBody('message') message: string,
+    @MessageBody('roomId') username: string,
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
+    const date = new Date();
+
+    client.to(roomId).emit('RoomMessage', {
+      message,
+      username,
+      time: `${date.getHours()}:${date.getMinutes()}`,
+    });
+    return;
+  }
+  /*=====================================*/
+  /*JOINING ROOM */
+  @SubscribeMessage('JoinRoom')
+  joinRoom(
+    @MessageBody('key') roomId: string,
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
+    console.log({ roomId });
+    client.join(roomId);
+    client.emit('JoinedRoom', roomId);
+    console.log(roomId);
+    return;
+  }
+  /*============================================*/
   @SubscribeMessage('findAllMessages')
   findAll(@MessageBody() getAllMessageDto: GetAllMessageDto) {
     return new Promise<unknown[]>((resolve, reject) => {
