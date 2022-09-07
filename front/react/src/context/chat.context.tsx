@@ -1,13 +1,24 @@
 import { createContext, useContext, useState } from "react";
 import io, { Socket } from "socket.io-client";
 
+interface Message {
+  message: string;
+  username: string;
+  time: string;
+}
+
+interface Room {
+  id: string;
+  name: string;
+}
+
 interface Context {
   socket: Socket;
   username?: string;
   setUsername: Function;
   roomId?: string;
-  rooms: object;
-  messages?: { message: string; time: string; username: string }[];
+  rooms: Room[];
+  messages?: Message[];
   setMessages: Function;
 }
 
@@ -18,7 +29,7 @@ const SocketContext = createContext<Context>({
   setUsername: () => false,
   setMessages: () => false,
   messages: [],
-  rooms: {},
+  rooms: [],
 });
 
 function SocketProvider(props: any) {
@@ -27,21 +38,29 @@ function SocketProvider(props: any) {
   const [rooms, setRooms] = useState([]);
   const [messages, setMessages] = useState([]);
 
-  socket.on("Rooms", (value) => {
-    setRooms(value);
-  });
+  socket.on(
+    "Rooms",
+    ({
+      id,
+      name,
+      message,
+    }: {
+      id: string;
+      name: string;
+      message: Message[];
+    }) => {
+      setRooms([...rooms, { id, name }]);
+      console.log(rooms);
+    }
+  );
 
-  socket.on("JoinedRoom", (value) => {
-    console.log("joining room", value);
+  socket.on("JoinedRoom", (value: string) => {
     setRoomId(value);
     setMessages([]);
-    console.log("message", messages);
   });
 
   socket.on("RoomMessage", ({ message, username, time }) => {
-    console.log({ messages });
     setMessages([...messages, { message, username, time }]);
-    console.log(messages);
   });
 
   return (

@@ -1,5 +1,5 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { prisma, UserPrivilege, UserStatus } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { Channel } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMessageDto } from './dto';
 
@@ -10,10 +10,14 @@ export class MessageService {
   messages: CreateMessageDto[] = [{ name: 'Toto', content: 'coucou' }];
   clientToUser = {};
 
-  async create(createMessageDto: CreateMessageDto): Promise<CreateMessageDto> {
-    const message = { ...createMessageDto };
-    this.messages.push(createMessageDto);
-    return message;
+  async create_channel(channelName: string): Promise<Channel> {
+    const channel = await this.prisma.channel.create({
+      data: {
+        name: channelName,
+        type: 'public',
+      },
+    });
+    return channel;
   }
 
   async findAll(): Promise<CreateMessageDto[]> {

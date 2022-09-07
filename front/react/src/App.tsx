@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 export function App() {
   let navigate = useNavigate();
   const goSignin = () => {
-    window.localStorage.clear();
+    window.sessionStorage.clear();
     navigate("/");
   };
 

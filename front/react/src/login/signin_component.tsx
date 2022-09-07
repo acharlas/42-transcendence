@@ -22,6 +22,8 @@ export function SigninForm() {
   const [ErrorMessage, setErrorMessage] = useState("");
   let navigate = useNavigate();
 
+  sessionStorage.clear();
+
   const HandleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewUsername(event.target.value);
   };
@@ -34,6 +36,7 @@ export function SigninForm() {
   };
 
   const goGame = () => {
+    console.log("chat");
     navigate("/chat");
   };
 
@@ -46,7 +49,7 @@ export function SigninForm() {
         username: newUsername,
         password: newPass,
       });
-      window.localStorage.setItem("Token", token);
+      window.sessionStorage.setItem("Token", token);
       setNewUsername("");
       setNewPass("");
       goGame();

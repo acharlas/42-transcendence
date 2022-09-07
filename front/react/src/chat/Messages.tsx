@@ -7,6 +7,7 @@ function MessagesContainer() {
 
   function handleSendMessage() {
     const message = newMessageRef.current.value;
+    newMessageRef.current.value = "";
 
     if (!String(message).trim()) {
       return;
@@ -17,27 +18,30 @@ function MessagesContainer() {
     setMessages([
       ...messages,
       {
-        username: "you",
+        username: sessionStorage.getItem("username"),
         message,
         time: `${date.getHours()}:${date.getMinutes()}`,
       },
     ]);
-    setMessages([
-      ...messages,
-      {
-        username: "you",
-        message,
-        time: `${date.getHours()}:${date.getMinutes()}`,
-      },
-    ]);
+    // setMessages([
+    //   ...messages,
+    //   {
+    //     username: sessionStorage.getItem("username"),
+    //     message,
+    //     time: `${date.getHours()}:${date.getMinutes()}`,
+    //   },
+    // ]);
   }
   console.log({ messages });
   if (!roomId) return <div />;
   return (
     <div>
       {messages.map((message, index) => {
-        console.log({ messages });
-        return <p key={index}>{message.message}</p>;
+        return (
+          <p key={index}>
+            {message.username}: {message.message}
+          </p>
+        );
       })}
 
       <div>

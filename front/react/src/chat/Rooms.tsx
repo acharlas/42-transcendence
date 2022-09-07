@@ -10,13 +10,13 @@ function RoomsContainer() {
 
     if (!String(roomName).trim()) return;
 
-    socket.emit("CreateRoom", { roomName });
+    socket.emit("CreateRoom", { roomName, old: roomId });
     newRoomRef.current.value = "";
   }
 
   function handleJoinRoom(key: string) {
     if (key === roomId) return;
-    socket.emit("JoinRoom", { key });
+    socket.emit("JoinRoom", { key, old: roomId });
   }
 
   return (
@@ -25,15 +25,16 @@ function RoomsContainer() {
         <input ref={newRoomRef} placeholder="Room name" />
         <button onClick={handleCreateRoom}>CREATE ROOM</button>
       </div>
-      {Object.keys(rooms).map((key) => {
+      {rooms.map((room, id) => {
+        console.log("log", roomId);
         return (
-          <div key={key}>
+          <div key={id}>
             <button
-              disabled={key === roomId}
-              title={`Join ${rooms[key].name}`}
-              onClick={() => handleJoinRoom(key)}
+              disabled={room.id === roomId}
+              title={`Join ${room.name}`}
+              onClick={() => handleJoinRoom(room.id)}
             >
-              {rooms[key].name}
+              {room.name}
             </button>
           </div>
         );

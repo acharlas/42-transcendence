@@ -2,38 +2,31 @@ import { useSockets } from "../context/chat.context";
 import "./chat-style.css";
 import RoomsContainer from "./Rooms";
 import MessagesContainer from "./Messages";
-import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function Home() {
+export default function ChatIndex() {
   const { socket, username, setUsername } = useSockets();
-  const usernameRef = useRef(null);
   console.log("socket", socket);
   console.log("socket", socket.connected);
+  let navigate = useNavigate();
 
-  function handleSetUsername() {
-    const value = usernameRef.current.value;
-    if (!value) {
-      return;
-    }
-    setUsername(value);
-    localStorage.setItem("username", value);
-  }
+  setUsername(sessionStorage.getItem("username"));
+
+  const goSignin = () => {
+    window.sessionStorage.clear();
+    navigate("/");
+  };
 
   return (
     <div className="container">
+      <button id="logout" onClick={goSignin}>
+        Signout
+      </button>
       <div className="screen">
-        {!username && (
-          <div>
-            <input placeholder="Username" ref={usernameRef} />
-            <button onClick={handleSetUsername}>start</button>
-          </div>
-        )}
-        {username && (
-          <>
-            <RoomsContainer />
-            <MessagesContainer />
-          </>
-        )}
+        <>
+          <RoomsContainer />
+          <MessagesContainer />
+        </>
       </div>
     </div>
   );

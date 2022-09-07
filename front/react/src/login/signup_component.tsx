@@ -17,6 +17,8 @@ export function SignupForm() {
   const [ErrorMessage, setErrorMessage] = useState("");
   let navigate = useNavigate();
 
+  sessionStorage.clear();
+
   const HandlePassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewPass(event.target.value);
   };
@@ -44,7 +46,7 @@ export function SignupForm() {
         username: newUsername,
       });
       console.log({ token });
-      window.localStorage.setItem("Token", token);
+      window.sessionStorage.setItem("Token", token);
       setNewPass("");
       setNewUsername("");
       goGame();

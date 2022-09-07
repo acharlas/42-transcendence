@@ -8,9 +8,11 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { CreateMessageDto, GetAllMessageDto } from './dto';
+import { GetAllMessageDto } from './dto';
 import { MessageService } from './message.service';
-//import { nanoid } from 'nanoid';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ChannelService } from 'src/channel/channel.service';
+import { CreateChannelDto } from 'src/channel/dto';
 
 @WebSocketGateway()
 export class MessageGateway
@@ -18,7 +20,11 @@ export class MessageGateway
 {
   @WebSocketServer()
   server: Server;
-  constructor(private messageService: MessageService) {}
+  constructor(
+    private messageService: MessageService,
+    private prisma: PrismaService,
+    private channelService: ChannelService,
+  ) {}
 
   async handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
@@ -28,41 +34,30 @@ export class MessageGateway
     console.log(`CLient disconnected ${client.id}`);
   }
 
-  @SubscribeMessage('createMessage')
-  create(
-    @MessageBody() createMessageDto: CreateMessageDto,
-  ): Promise<CreateMessageDto> {
-    return new Promise<CreateMessageDto>((resolve, reject) => {
-      this.messageService
-        .create(createMessageDto)
-        .then((ret) => {
-          this.server.emit('message', ret);
-          return resolve(ret);
-        })
-        .catch((err) => {
-          return reject(err);
-        });
-    });
-  }
-  /* USER CREATE A NEW ROOM*/
-  rooms: Record<string, { name: string }> = {};
-
   @SubscribeMessage('CreateRoom')
   CreateRoom(
-    @MessageBody('roomName') roomName: string,
+    @MessageBody('old') oldRoom: string,
+    @MessageBody('dto') dto: CreateChannelDto,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
-    const roomId = "adsasd";
-
-    this.rooms[roomId] = {
-      name: roomName,
-    };
-
-    client.join(roomId);
-    client.broadcast.emit('Rooms', this.rooms);
-    client.emit('Rooms', this.rooms);
-    client.emit('JoinedRoom', roomId);
+    console.log({ client });
     return;
+    // return new Promise<void>((resolve, reject) => {
+    //   this.channelService
+    //     .createChannel(userId, dto)
+    //     .then((ret) => {
+    //       console.log({ ret });
+    //       client.leave(oldRoom);
+    //       client.join(ret.id);
+    //       client.broadcast.emit('Rooms', { id: ret.id, name: ret.name });
+    //       client.emit('Rooms', { id: ret.id, name: ret.name });
+    //       client.emit('JoinedRoom', ret.id, oldRoom);
+    //       return resolve();
+    //     })
+    //     .catch((err) => {
+    //       return reject(err);
+    //     });
+    //});
   }
   /*==========================================*/
 
@@ -71,7 +66,7 @@ export class MessageGateway
   sendRoomMessage(
     @MessageBody('roomId') roomId: string,
     @MessageBody('message') message: string,
-    @MessageBody('roomId') username: string,
+    @MessageBody('username') username: string,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     const date = new Date();
@@ -87,10 +82,12 @@ export class MessageGateway
   /*JOINING ROOM */
   @SubscribeMessage('JoinRoom')
   joinRoom(
+    @MessageBody('old') oldRoom: string,
     @MessageBody('key') roomId: string,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     console.log({ roomId });
+    client.leave(oldRoom);
     client.join(roomId);
     client.emit('JoinedRoom', roomId);
     console.log(roomId);
