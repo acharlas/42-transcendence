@@ -1,12 +1,11 @@
 import axios from "axios";
 
 export interface loginDto {
-  email: string;
+  username: string;
   password: string;
 }
 
 export interface signupDto {
-  email: string;
   password: string;
   username: string;
 }
@@ -18,7 +17,7 @@ export interface fortyTwoLoginDto {
 
 const signin = async (credentials: loginDto) => {
   const response = await axios.post("http://localhost:3333/auth/signin", {
-    email: credentials.email,
+    username: credentials.username,
     password: credentials.password,
   });
   return response.data.access_token;
@@ -26,7 +25,6 @@ const signin = async (credentials: loginDto) => {
 
 const signup = async (credentials: signupDto) => {
   const response = await axios.post("http://localhost:3333/auth/signup", {
-    email: credentials.email,
     password: credentials.password,
     username: credentials.username,
   });

@@ -17,13 +17,13 @@ import { useNavigate } from "react-router-dom";
               </div>*/
 
 export function SigninForm() {
-  const [newEmail, setNewEmail] = useState("");
+  const [newUsername, setNewUsername] = useState("");
   const [newPass, setNewPass] = useState("");
   const [ErrorMessage, setErrorMessage] = useState("");
   let navigate = useNavigate();
 
-  const HandleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewEmail(event.target.value);
+  const HandleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewUsername(event.target.value);
   };
   const HandlePassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewPass(event.target.value);
@@ -34,7 +34,7 @@ export function SigninForm() {
   };
 
   const goGame = () => {
-    navigate("/game");
+    navigate("/chat");
   };
 
   const addUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -43,11 +43,11 @@ export function SigninForm() {
     try {
       setErrorMessage("");
       const token = await loginService.signin({
-        email: newEmail,
+        username: newUsername,
         password: newPass,
       });
       window.localStorage.setItem("Token", token);
-      setNewEmail("");
+      setNewUsername("");
       setNewPass("");
       goGame();
     } catch (e) {
@@ -98,9 +98,9 @@ export function SigninForm() {
               <FaUserAstronaut />
               <input
                 className="login__input"
-                placeholder="Email"
-                value={newEmail}
-                onChange={HandleEmailChange}
+                placeholder="username"
+                value={newUsername}
+                onChange={HandleUsernameChange}
               />
             </div>
             <div className="login__field">

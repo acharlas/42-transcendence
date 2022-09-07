@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { prisma, UserPrivilege, UserStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMessageDto } from './dto';
-import { nanoid } from 'nanoid';
 
 @Injectable()
 export class MessageService {

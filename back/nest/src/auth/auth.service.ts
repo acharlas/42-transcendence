@@ -37,7 +37,6 @@ export class AuthService {
       this.prisma.user
         .create({
           data: {
-            email: dto.email,
             username: dto.username,
             hash,
             nickname,
@@ -55,40 +54,17 @@ export class AuthService {
             });
         })
         .catch((err) => {
-          /*if (err.meta.target[0] === 'email') {
-            return reject(
-              new HttpException(
-                {
-                  status: HttpStatus.FORBIDDEN,
-                  error: 'email already take',
-                  code: '101',
-                },
-                HttpStatus.FORBIDDEN,
-              ),
-            );
-          } else {
-            return reject(
-              new HttpException(
-                {
-                  status: HttpStatus.FORBIDDEN,
-                  error: 'username already take',
-                  code: '102',
-                },
-                HttpStatus.FORBIDDEN,
-              ),
-            );
-          }*/
+          return reject(err);
         });
     });
   }
 
   async signin(dto: AuthSigninDto): Promise<{ access_token: string }> {
-    // find  the user by email
     return new Promise<{ access_token: string }>((resolve, reject) => {
       this.prisma.user
         .findUnique({
           where: {
-            email: dto.email,
+            username: dto.username,
           },
         })
         .then((ret) => {
@@ -97,7 +73,7 @@ export class AuthService {
               new HttpException(
                 {
                   status: HttpStatus.FORBIDDEN,
-                  error: 'wrong email',
+                  error: 'wrong username',
                   code: 103,
                 },
                 HttpStatus.FORBIDDEN,
@@ -167,14 +143,14 @@ export class AuthService {
   async getApiToken(dto: getApiToken): Promise<string> {
     const payload = {
       grant_type: 'authorization_code',
-      client_id: this.config.get<string>('42API_UID'),
-      client_secret: this.config.get<string>('42API_SECRET'),
+      client_id: this.config.get<string>('UID'),
+      client_secret: this.config.get<string>('API_SECRET'),
       code: dto.code,
       redirect_uri: this.config.get<string>('42API_REDIRECT'),
       state: dto.state,
     };
-    console.log({ payload });
     return new Promise<string>((resolve, reject) => {
+      console.log({ payload });
       axios({
         method: 'post',
         url: 'https://api.intra.42.fr/oauth/token',
@@ -187,7 +163,7 @@ export class AuthService {
           return resolve(ret.data.access_token);
         })
         .catch((err) => {
-          console.log('error:', err);
+          console.log('axios error:', err);
           return reject(err);
         });
     });
@@ -203,7 +179,6 @@ export class AuthService {
       },
     });
     return new Promise<{ access_token: string }>((resolve, reject) => {
-      console.log('found', { found });
       if (found !== null) {
         this.signToken(found.id)
           .then((ret) => {
@@ -216,7 +191,6 @@ export class AuthService {
         this.prisma.user
           .create({
             data: {
-              email: '',
               username: user.login,
               hash: '',
               nickname: user.login,
@@ -225,7 +199,6 @@ export class AuthService {
             },
           })
           .then((ret) => {
-            console.log('token');
             return resolve(this.signToken(ret.id));
           })
           .catch((err) => {

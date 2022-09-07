@@ -10,14 +10,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { CreateMessageDto, GetAllMessageDto } from './dto';
 import { MessageService } from './message.service';
-import { nanoid } from 'nanoid';
-
-const EVENTS = {
-  connecttion: 'connection',
-  CLIENT: {
-    CREATE_ROOM: 'CREATE_ROOM',
-  },
-};
+//import { nanoid } from 'nanoid';
 
 @WebSocketGateway()
 export class MessageGateway
@@ -59,7 +52,7 @@ export class MessageGateway
     @MessageBody('roomName') roomName: string,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
-    const roomId = nanoid();
+    const roomId = "adsasd";
 
     this.rooms[roomId] = {
       name: roomName,
