@@ -3,35 +3,46 @@ import {
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Server, Socket, Namespace } from 'socket.io';
 import { GetAllMessageDto } from './dto';
 import { MessageService } from './message.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { ChannelService } from 'src/channel/channel.service';
 import { CreateChannelDto } from 'src/channel/dto';
+import { SocketWithAuth } from './types';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  namespace: 'chat',
+})
 export class MessageGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  @WebSocketServer()
-  server: Server;
-  constructor(
-    private messageService: MessageService,
-    private prisma: PrismaService,
-    private channelService: ChannelService,
-  ) {}
+  constructor(private messageService: MessageService) {}
 
-  async handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
+  @WebSocketServer() io: Namespace;
+  server: Server;
+
+  afterInit(client: Socket): void {
+    console.log(`client after init: ${client.id}`);
   }
 
-  handleDisconnect(client: Socket) {
-    console.log(`CLient disconnected ${client.id}`);
+  handleConnection(client: SocketWithAuth): void {
+    const socket = this.io.sockets;
+    console.log(
+      `Client connected: ${client.id} | pollid: ${client.pollID} | name: ${client.name}`,
+    );
+    console.log(`number of soket connected: ${socket.size}`);
+  }
+
+  handleDisconnect(client: SocketWithAuth): void {
+    const socket = this.io.sockets;
+    console.log(
+      `Client disconnected: ${client.id} | pollid: ${client.pollID} | name: ${client.name}`,
+    );
+    console.log(`number of soket connected: ${socket.size}`);
   }
 
   @SubscribeMessage('CreateRoom')

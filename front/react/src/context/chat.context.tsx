@@ -22,7 +22,12 @@ interface Context {
   setMessages: Function;
 }
 
-const socket = io("http://localhost:3333");
+console.log("log bearer " + sessionStorage.getItem("Token"));
+const socket = io("http://localhost:3333/chat", {
+  auth: {
+    token: "bearer " + sessionStorage.getItem("Token"),
+  },
+});
 
 const SocketContext = createContext<Context>({
   socket,

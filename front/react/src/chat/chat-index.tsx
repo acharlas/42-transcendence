@@ -5,7 +5,7 @@ import MessagesContainer from "./Messages";
 import { useNavigate } from "react-router-dom";
 
 export default function ChatIndex() {
-  const { socket, username, setUsername } = useSockets();
+  const { socket, setUsername } = useSockets();
   console.log("socket", socket);
   console.log("socket", socket.connected);
   let navigate = useNavigate();

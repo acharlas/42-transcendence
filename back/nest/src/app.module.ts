@@ -9,6 +9,7 @@ import { BlockModule } from './block/block.module';
 import { HistoryModule } from './history/history.module';
 import { MessageModule } from './message/message.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LeaderboardModule } from './leaderboard/leaderboard.module';
     HistoryModule,
     MessageModule,
     LeaderboardModule,
+    JwtModule,
   ],
 })
 export class AppModule {}
