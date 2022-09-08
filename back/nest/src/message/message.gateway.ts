@@ -9,9 +9,9 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket, Namespace } from 'socket.io';
+import { ChannelService } from 'src/channel/channel.service';
 import { GetAllMessageDto } from './dto';
 import { MessageService } from './message.service';
-import { CreateChannelDto } from 'src/channel/dto';
 import { SocketWithAuth } from './types';
 
 @WebSocketGateway({
@@ -20,7 +20,10 @@ import { SocketWithAuth } from './types';
 export class MessageGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(private messageService: MessageService) {}
+  constructor(
+    private messageService: MessageService,
+    private channelService: ChannelService,
+  ) {}
 
   @WebSocketServer() io: Namespace;
   server: Server;
@@ -31,6 +34,16 @@ export class MessageGateway
 
   handleConnection(client: SocketWithAuth): void {
     const socket = this.io.sockets;
+    this.channelService
+      .getChannels('public')
+      .then((res) => {
+        console.log(res);
+        client.broadcast.emit('Rooms', { rooms: res });
+        client.emit('Rooms', { rooms: res });
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     console.log(
       `Client connected: ${client.id} | pollid: ${client.pollID} | name: ${client.name}`,
     );
@@ -48,27 +61,36 @@ export class MessageGateway
   @SubscribeMessage('CreateRoom')
   CreateRoom(
     @MessageBody('old') oldRoom: string,
-    @MessageBody('dto') dto: CreateChannelDto,
+    @MessageBody('roomName') roomName: string,
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
     console.log({ client });
-    return;
-    // return new Promise<void>((resolve, reject) => {
-    //   this.channelService
-    //     .createChannel(userId, dto)
-    //     .then((ret) => {
-    //       console.log({ ret });
-    //       client.leave(oldRoom);
-    //       client.join(ret.id);
-    //       client.broadcast.emit('Rooms', { id: ret.id, name: ret.name });
-    //       client.emit('Rooms', { id: ret.id, name: ret.name });
-    //       client.emit('JoinedRoom', ret.id, oldRoom);
-    //       return resolve();
-    //     })
-    //     .catch((err) => {
-    //       return reject(err);
-    //     });
-    //});
+    return new Promise<void>((resolve, reject) => {
+      this.messageService
+        .create_channel(roomName)
+        .then((ret) => {
+          console.log({ ret });
+          client.leave(oldRoom);
+          client.join(ret.id);
+          return new Promise<void>((resolve, reject) => {
+            this.channelService
+              .getChannels('public')
+              .then((res) => {
+                console.log(res);
+                client.broadcast.emit('Rooms', { rooms: res });
+                client.emit('Rooms', { rooms: res });
+                client.emit('JoinedRoom', ret.id, oldRoom);
+                return resolve();
+              })
+              .catch((err) => {
+                return reject(err);
+              });
+          });
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
   /*==========================================*/
 

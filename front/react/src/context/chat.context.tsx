@@ -13,7 +13,8 @@ interface Room {
 }
 
 interface Context {
-  socket: Socket;
+  socket?: Socket;
+  setSocket: Function;
   username?: string;
   setUsername: Function;
   roomId?: string;
@@ -22,17 +23,10 @@ interface Context {
   setMessages: Function;
 }
 
-console.log("log bearer " + sessionStorage.getItem("Token"));
-const socket = io("http://localhost:3333/chat", {
-  auth: {
-    token: "bearer " + sessionStorage.getItem("Token"),
-  },
-});
-
 const SocketContext = createContext<Context>({
-  socket,
   setUsername: () => false,
   setMessages: () => false,
+  setSocket: () => false,
   messages: [],
   rooms: [],
 });
@@ -42,6 +36,7 @@ function SocketProvider(props: any) {
   const [roomId, setRoomId] = useState("");
   const [rooms, setRooms] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [socket, setSocket] = useState<Socket>();
 
   socket.on(
     "Rooms",
@@ -78,6 +73,7 @@ function SocketProvider(props: any) {
         roomId,
         messages,
         setMessages,
+        setSocket,
       }}
       {...props}
     />

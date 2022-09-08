@@ -1,13 +1,22 @@
 import { useRef } from "react";
+import { Socket } from "socket.io-client";
 import { useSockets } from "../context/chat.context";
+import { Room } from "./type";
 
-function RoomsContainer() {
-  const { socket, roomId, rooms } = useSockets();
+function RoomsContainer({
+  socket,
+  roomId,
+  rooms,
+}: {
+  socket: Socket;
+  roomId: string;
+  rooms: Room[];
+}) {
   const newRoomRef = useRef(null);
 
   function handleCreateRoom() {
     const roomName = newRoomRef.current.value || "";
-
+    console.log("create room", roomName);
     if (!String(roomName).trim()) return;
 
     socket.emit("CreateRoom", { roomName, old: roomId });

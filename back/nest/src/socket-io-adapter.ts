@@ -4,17 +4,17 @@ import { JwtService } from '@nestjs/jwt';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { ServerOptions, Server } from 'socket.io';
 import { SocketWithAuth } from './message/types';
+import { PrismaService } from './prisma/prisma.service';
 
 export class SokcetIOAdapter extends IoAdapter {
   constructor(
     private app: INestApplicationContext,
     private configService: ConfigService,
+    private prisma: PrismaService,
   ) {
     super(app);
   }
-
   createIOServer(port: number, options?: ServerOptions) {
-    const clientPort = parseInt(this.configService.get(`CLIENT_PORT`));
     const cors = {
       origin: [
         `http://localhost:3001`,
@@ -33,25 +33,45 @@ export class SokcetIOAdapter extends IoAdapter {
 
     const server: Server = super.createIOServer(port, optionsWithCORS);
 
-    server.of('chat').use(createTokenMiddleware(jwtService));
+    server.of('chat').use(
+      createTokenMiddleware(
+        jwtService,
+        this.configService.get('JWT_SECRET'),
+        async (payload: { sub: string }) => {
+          const user = await this.prisma.user.findUnique({
+            where: {
+              id: payload.sub,
+            },
+          });
+          delete user.hash;
+          return user;
+        },
+      ),
+    );
 
     return server;
   }
 }
 
 const createTokenMiddleware =
-  (JwtService: JwtService) => (socket: SocketWithAuth, next) => {
+  (JwtService: JwtService, secret: string, validate: Function) =>
+  (socket: SocketWithAuth, next) => {
     const token =
       socket.handshake.auth.token || socket.handshake.headers['token'];
-    console.log(`validating auth token before connection: ${token}`);
+    console.log(
+      `middleware: validating auth token before connection: ${token}`,
+    );
 
     try {
-      const payload = JwtService.verify(token);
-      socket.userID = payload.sub;
-      socket.pollID = payload.pollID;
-      socket.name = payload.name;
+      console.log({ token }, 'secret: ', secret);
+      const payload = JwtService.verify(token, { secret });
+      console.log({ payload });
+      const user = validate({ sub: payload.sub });
+      socket.userID = user.id;
+      socket.name = user.username;
       next();
-    } catch {
+    } catch (e) {
+      console.log(e);
       next(new Error('FORBIDDEN'));
     }
   };

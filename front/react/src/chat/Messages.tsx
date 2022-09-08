@@ -1,8 +1,21 @@
 import { useRef } from "react";
+import { Socket } from "socket.io-client";
 import { useSockets } from "../context/chat.context";
+import { Message } from "./type";
 
-function MessagesContainer() {
-  const { socket, messages, roomId, username, setMessages } = useSockets();
+function MessagesContainer({
+  socket,
+  messages,
+  roomId,
+  username,
+  setMessages,
+}: {
+  socket: Socket;
+  messages: Message[];
+  roomId: string;
+  username: string;
+  setMessages: Function;
+}) {
   const newMessageRef = useRef(null);
 
   function handleSendMessage() {
@@ -23,14 +36,6 @@ function MessagesContainer() {
         time: `${date.getHours()}:${date.getMinutes()}`,
       },
     ]);
-    // setMessages([
-    //   ...messages,
-    //   {
-    //     username: sessionStorage.getItem("username"),
-    //     message,
-    //     time: `${date.getHours()}:${date.getMinutes()}`,
-    //   },
-    // ]);
   }
   console.log({ messages });
   if (!roomId) return <div />;
