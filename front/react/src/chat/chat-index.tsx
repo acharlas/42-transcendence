@@ -8,13 +8,7 @@ import { io, Socket } from "socket.io-client";
 import { Message, Room } from "./type";
 
 export default function ChatIndex() {
-  const [socket, setSocket] = useState<Socket>(
-    io("http://localhost:3333/chat", {
-      auth: {
-        token: sessionStorage.getItem("Token"),
-      },
-    })
-  );
+  const [socket, setSocket] = useState<Socket>(io());
   const [username, setUsername] = useState(sessionStorage.getItem("username"));
   const [roomId, setRoomId] = useState("");
   const [rooms, setRooms] = useState([]);
@@ -26,16 +20,16 @@ export default function ChatIndex() {
     navigate("/");
   };
 
-  // useEffect(() => {
-  //   console.log("bearer " + sessionStorage.getItem("Token"));
-  //   setSocket(
-  //     io("http://localhost:3333/chat", {
-  //       auth: {
-  //         token: sessionStorage.getItem("Token"),
-  //       },
-  //     })
-  //   );
-  // }, []);
+  useEffect(() => {
+    console.log("bearer " + sessionStorage.getItem("Token"));
+    setSocket(
+      io("http://localhost:3333/chat", {
+        auth: {
+          token: sessionStorage.getItem("Token"),
+        },
+      })
+    );
+  }, []);
 
   useEffect(() => {
     socket.on("Rooms", ({ rooms }: { rooms: Room[] }) => {
@@ -48,8 +42,8 @@ export default function ChatIndex() {
       setMessages([]);
     });
 
-    socket.on("RoomMessage", ({ message, username, time }) => {
-      setMessages([...messages, { message, username, time }]);
+    socket.on("RoomMessage", ({ messages }: { messages: Message[] }) => {
+      setMessages(messages);
     });
     console.log(socket);
   }, [socket]);

@@ -7,6 +7,7 @@ import {
   Channel,
   ChannelType,
   ChannelUser,
+  Message,
   UserPrivilege,
   UserStatus,
 } from '@prisma/client';
@@ -14,13 +15,14 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import * as argon from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateChannelDto, EditChannelDto, JoinChannelDto } from './dto';
+import { GetChannelById, MessageCont } from './type_channel';
 
 @Injectable()
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
 
-  async createChannel(userId: string, dto: CreateChannelDto) {
-    try {
+  async createChannel(userID: string, dto: CreateChannelDto): Promise<Channel> {
+    return new Promise<Channel>((resolve, reject) => {
       let hash = null;
       if (dto.type === ChannelType.protected) {
         if (dto.password === undefined || dto.password === null) {
@@ -28,80 +30,111 @@ export class ChannelService {
             'Cannot create protected channel without password',
           );
         }
-        hash = await argon.hash(dto.password);
       }
-      const channel = await this.prisma.channel.create({
-        data: {
-          name: dto.name,
-          type: dto.type,
-          hash: hash,
-          users: {
-            create: [
-              {
-                privilege: UserPrivilege.owner,
-                status: UserStatus.connected,
+      argon
+        .hash(dto.password)
+        .then((res) => {
+          return resolve(
+            new Promise<Channel>((resolve, reject) => {
+              this.prisma.channel
+                .create({
+                  data: {
+                    name: dto.name,
+                    type: dto.type,
+                    hash: res,
+                    users: {
+                      create: [
+                        {
+                          privilege: UserPrivilege.owner,
+                          status: UserStatus.connected,
+                          user: {
+                            connect: {
+                              id: userID,
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                })
+                .then((resp) => {
+                  return resolve(resp);
+                })
+                .catch((err) => {
+                  return reject(new ForbiddenException(403));
+                });
+            }),
+          );
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  async getChannels(type: ChannelType): Promise<
+    {
+      type: ChannelType;
+      name: string;
+      id: string;
+    }[]
+  > {
+    return new Promise<
+      {
+        type: ChannelType;
+        name: string;
+        id: string;
+      }[]
+    >((resolve, reject) => {
+      if (type === 'dm') {
+        return reject(new BadRequestException('Cannot find ressource'));
+      }
+      this.prisma.channel
+        .findMany({
+          where: {
+            type: type,
+          },
+          select: {
+            type: true,
+            name: true,
+            id: true,
+          },
+        })
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(new BadRequestException('Cannot find ressource'));
+        });
+    });
+  }
+
+  async getChannelById(channelId: string): Promise<GetChannelById> {
+    return new Promise<GetChannelById>((resolve, reject) => {
+      this.prisma.channel
+        .findUnique({
+          where: { id: channelId },
+          include: {
+            users: {
+              select: {
+                userId: true,
                 user: {
-                  connect: {
-                    id: userId,
+                  select: {
+                    nickname: true,
                   },
                 },
               },
-            ],
-          },
-        },
-      });
-      return channel;
-    } catch (e) {
-      if (e instanceof PrismaClientKnownRequestError) {
-        if (e.code === 'P2002') {
-          throw new ForbiddenException('Name already taken');
-        }
-      }
-      throw e;
-    }
-  }
-
-  async getChannels(type: ChannelType) {
-    if (type === 'dm') {
-      throw new BadRequestException('Cannot find ressource');
-    }
-    try {
-      return await this.prisma.channel.findMany({
-        where: {
-          type: type,
-        },
-        select: {
-          type: true,
-          name: true,
-          id: true,
-        },
-      });
-    } catch (e) {
-      throw new BadRequestException('Cannot find ressource');
-    }
-  }
-
-  async getChannelById(channelId: string) {
-    const channel = await this.prisma.channel.findUnique({
-      where: { id: channelId },
-      include: {
-        users: {
-          select: {
-            userId: true,
-            user: {
-              select: {
-                nickname: true,
-              },
             },
           },
-        },
-      },
+        })
+        .then((ret) => {
+          delete ret.hash;
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(new ForbiddenException('Access to resource denied'));
+        });
     });
-    if (!channel) {
-      throw new ForbiddenException('Access to resource denied');
-    }
-    delete channel.hash;
-    return channel;
   }
 
   async editChannel(userId: string, channelId: string, dto: EditChannelDto) {
@@ -305,6 +338,86 @@ export class ChannelService {
       data: {
         status: UserStatus.disconnected,
       },
+    });
+  }
+
+  async getChannelMessage(
+    channelId: string,
+    userId: string,
+  ): Promise<MessageCont[]> {
+    return new Promise<MessageCont[]>((resolve, reject) => {
+      this.prisma.channel
+        .findFirst({
+          where: {
+            id: channelId,
+          },
+          select: {
+            messages: true,
+          },
+        })
+        .then((ret) => {
+          return resolve(
+            ret.messages.map((elem) => {
+              return { username: elem.username, content: elem.content };
+            }),
+          );
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  async addChannelMessage(
+    userId: string,
+    channelId: string,
+    username: string,
+    content: string,
+  ): Promise<MessageCont> {
+    return new Promise<MessageCont>((resolve, reject) => {
+      this.prisma.channelUser
+        .findUnique({
+          where: {
+            userId_channelId: { channelId: channelId, userId: userId },
+          },
+        })
+        .then((ret) => {
+          return resolve(
+            new Promise<MessageCont>((resolve, reject) => {
+              if (ret.privilege === 'muted' || ret.privilege === 'ban')
+                return reject(
+                  new ForbiddenException("this user can't post message"),
+                );
+              this.prisma.message
+                .create({
+                  data: {
+                    content: content,
+                    username: username,
+                    user: {
+                      connect: {
+                        id: userId,
+                      },
+                    },
+                    channel: {
+                      connect: {
+                        id: channelId,
+                      },
+                    },
+                  },
+                })
+                .then((ret) => {
+                  return resolve(ret);
+                })
+                .catch((err) => {
+                  return reject(err);
+                });
+            }),
+          );
+        })
+        .catch((err) => {
+          console.log({ err });
+          return reject(new ForbiddenException("user isn't on channel"));
+        });
     });
   }
 }

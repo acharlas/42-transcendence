@@ -2,8 +2,9 @@ import { INestApplicationContext } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import { User } from '@prisma/client';
 import { ServerOptions, Server } from 'socket.io';
-import { SocketWithAuth } from './message/types';
+import { SocketWithAuth } from './message/types_message';
 import { PrismaService } from './prisma/prisma.service';
 
 export class SokcetIOAdapter extends IoAdapter {
@@ -66,10 +67,16 @@ const createTokenMiddleware =
       console.log({ token }, 'secret: ', secret);
       const payload = JwtService.verify(token, { secret });
       console.log({ payload });
-      const user = validate({ sub: payload.sub });
-      socket.userID = user.id;
-      socket.name = user.username;
-      next();
+      validate({ sub: payload.sub })
+        .then((ret: User) => {
+          console.log('user', { ret });
+          socket.userID = ret.id;
+          socket.username = ret.username;
+          next();
+        })
+        .catch((err) => {
+          return err;
+        });
     } catch (e) {
       console.log(e);
       next(new Error('FORBIDDEN'));

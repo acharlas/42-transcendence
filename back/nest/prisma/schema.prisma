@@ -104,7 +104,8 @@ model Message {
   updatedAt DateTime @updatedAt
 
   content String
-
+  username String
+  
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   channelId String

@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RequestWithAuth } from './types';
+import { RequestWithAuth } from './types_message';
 
 @Injectable()
 export class ControllerAuthGuard implements CanActivate {
@@ -19,9 +19,8 @@ export class ControllerAuthGuard implements CanActivate {
 
     try {
       const payload = this.jwtService.verify(accessToken);
-      request.userID = payload.sub;
-      request.pollID = payload.pollID;
-      request.name = payload.name;
+      request.userID = payload.id;
+      request.username = payload.username;
       return true;
     } catch {
       throw new ForbiddenException('invalid authorization token');

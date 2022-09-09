@@ -3,8 +3,7 @@ import { Socket } from 'socket.io';
 
 type AuthPayload = {
   userID: string;
-  pollID: string;
-  name: string;
+  username: string;
 };
 
 export type RequestWithAuth = Request & AuthPayload;

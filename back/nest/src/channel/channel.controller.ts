@@ -16,7 +16,8 @@ import { JwtGuard } from '../auth/guard';
 import { GetUser } from '../auth/decorator';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto, EditChannelDto, JoinChannelDto } from './dto';
-import { ChannelType } from '@prisma/client';
+import { Channel, ChannelType, ChannelUser, Message } from '@prisma/client';
+import { GetChannelById, MessageCont } from './type_channel';
 
 @Controller('channels')
 @ApiTags('channels')
@@ -26,8 +27,20 @@ export class ChannelController {
   constructor(private channelService: ChannelService) {}
 
   @Post()
-  createChannel(@GetUser('id') userId: string, @Body() dto: CreateChannelDto) {
-    return this.channelService.createChannel(userId, dto);
+  createChannel(
+    @GetUser('id') userId: string,
+    @Body() dto: CreateChannelDto,
+  ): Promise<Channel> {
+    return new Promise<Channel>((resolve, reject) => {
+      this.channelService
+        .createChannel(userId, dto)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @ApiQuery({
@@ -36,13 +49,35 @@ export class ChannelController {
     required: false,
   })
   @Get()
-  getChannels(@Query('type') type: ChannelType) {
-    return this.channelService.getChannels(type);
+  getChannels(
+    @Query('type') type: ChannelType,
+  ): Promise<{ id: string; name: string; type: ChannelType }[]> {
+    return new Promise<{ id: string; name: string; type: ChannelType }[]>(
+      (resolve, reject) => {
+        this.channelService
+          .getChannels(type)
+          .then((ret) => {
+            return resolve(ret);
+          })
+          .catch((err) => {
+            return reject(err);
+          });
+      },
+    );
   }
 
   @Get(':id')
-  getChannelById(@Param('id') channelId: string) {
-    return this.channelService.getChannelById(channelId);
+  getChannelById(@Param('id') channelId: string): Promise<GetChannelById> {
+    return new Promise<GetChannelById>((resolve, reject) => {
+      this.channelService
+        .getChannelById(channelId)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @Patch(':id')
@@ -50,8 +85,17 @@ export class ChannelController {
     @GetUser('id') userId: string,
     @Param('id') channelId: string,
     @Body() dto: EditChannelDto,
-  ) {
-    return this.channelService.editChannel(userId, channelId, dto);
+  ): Promise<Channel> {
+    return new Promise<Channel>((resolve, reject) => {
+      this.channelService
+        .editChannel(userId, channelId, dto)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -59,8 +103,17 @@ export class ChannelController {
   deleteChannelById(
     @GetUser('id') userId: string,
     @Param('id') channelId: string,
-  ) {
-    return this.channelService.deleteChannelById(userId, channelId);
+  ): Promise<Channel> {
+    return new Promise<Channel>((resolve, reject) => {
+      this.channelService
+        .deleteChannelById(userId, channelId)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @HttpCode(HttpStatus.OK)
@@ -69,13 +122,52 @@ export class ChannelController {
     @GetUser('id') userId: string,
     @Param('id') channelId: string,
     @Body() dto: JoinChannelDto,
-  ) {
-    return this.channelService.joinChannelById(userId, channelId, dto);
+  ): Promise<Channel | ChannelUser> {
+    return new Promise<Channel | ChannelUser>((resolve, reject) => {
+      this.channelService
+        .joinChannelById(userId, channelId, dto)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @HttpCode(HttpStatus.OK)
   @Post(':id/leave')
-  leaveChannel(@GetUser('id') userId: string, @Param('id') channelId: string) {
-    return this.channelService.leaveChannel(userId, channelId);
+  leaveChannel(
+    @GetUser('id') userId: string,
+    @Param('id') channelId: string,
+  ): Promise<ChannelUser> {
+    return new Promise<ChannelUser>((resolve, reject) => {
+      this.channelService
+        .leaveChannel(userId, channelId)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post(':id/message')
+  getChannelMessage(
+    @GetUser('id') userId: string,
+    @Param('id') channelId: string,
+  ): Promise<MessageCont[]> {
+    return new Promise<MessageCont[]>((resolve, reject) => {
+      this.channelService
+        .getChannelMessage(channelId, userId)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 }
