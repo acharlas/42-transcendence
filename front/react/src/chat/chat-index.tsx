@@ -12,7 +12,7 @@ export default function ChatIndex() {
   const [username, setUsername] = useState(sessionStorage.getItem("username"));
   const [roomId, setRoomId] = useState("");
   const [rooms, setRooms] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   let navigate = useNavigate();
 
   const goSignin = () => {
@@ -33,18 +33,40 @@ export default function ChatIndex() {
 
   useEffect(() => {
     socket.on("Rooms", ({ rooms }: { rooms: Room[] }) => {
-      console.log(rooms);
+      console.log("Rooms: ", rooms);
       setRooms(rooms);
     });
 
-    socket.on("JoinedRoom", (value: string) => {
-      setRoomId(value);
-      setMessages([]);
+    socket.on(
+      "JoinedRoom",
+      ({ roomId, messages }: { roomId: string; messages: Message[] }) => {
+        console.log("joinedRoom");
+        console.log("joinedRoom: ", roomId, "message:", { messages });
+        setRoomId(roomId);
+        if (messages) {
+          setMessages(messages);
+          console.log("set new message: ", messages);
+        } else setMessages([]);
+        console.log("roomID: ", roomId);
+      }
+    );
+
+    socket.on("RoomMessage", ({ message }: { message: Message[] }) => {
+      console.log("RoomMessage: ", { message });
+      setMessages(message);
     });
 
-    socket.on("RoomMessage", ({ messages }: { messages: Message[] }) => {
-      setMessages(messages);
+    socket.on("newMessage", ({ message }: { message: Message }) => {
+      console.log("newMessage arrive: ", message);
+      console.log("oldMessage: ", { messages });
+      setMessages([
+        ...messages,
+        { message: message.message, username: message.username },
+      ]);
+      setMessages([message]);
+      console.log("new message set:", { messages });
     });
+
     console.log(socket);
   }, [socket]);
 

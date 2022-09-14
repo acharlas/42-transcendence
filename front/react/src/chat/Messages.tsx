@@ -22,22 +22,13 @@ function MessagesContainer({
     const message = newMessageRef.current.value;
     newMessageRef.current.value = "";
 
-    if (!String(message).trim()) {
+    /*if (!String(message).trim()) {
       return;
-    }
-    socket.emit("SendRoomMessage", { roomId, message, username });
-    const date = new Date();
-    console.log({ messages });
-    setMessages([
-      ...messages,
-      {
-        username: sessionStorage.getItem("username"),
-        message,
-        time: `${date.getHours()}:${date.getMinutes()}`,
-      },
-    ]);
+    }*/
+    console.log("send message roomId:", roomId);
+    console.log("message send:", message);
+    socket.emit("SendRoomMessage", { roomId: roomId, message: message });
   }
-  console.log({ messages });
   if (!roomId) return <div />;
   return (
     <div>
@@ -48,7 +39,6 @@ function MessagesContainer({
           </p>
         );
       })}
-
       <div>
         <textarea rows={1} placeholder="time to talk" ref={newMessageRef} />
         <button onClick={handleSendMessage}>Send</button>

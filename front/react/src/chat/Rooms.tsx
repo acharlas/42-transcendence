@@ -35,7 +35,6 @@ function RoomsContainer({
         <button onClick={handleCreateRoom}>CREATE ROOM</button>
       </div>
       {rooms.map((room, id) => {
-        console.log("log", roomId);
         return (
           <div key={id}>
             <button

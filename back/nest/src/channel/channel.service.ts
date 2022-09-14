@@ -374,6 +374,7 @@ export class ChannelService {
     username: string,
     content: string,
   ): Promise<MessageCont> {
+    console.log('chanelid:', channelId, 'userid:', userId);
     return new Promise<MessageCont>((resolve, reject) => {
       this.prisma.channelUser
         .findUnique({

@@ -82,13 +82,15 @@ export class MessageGateway
                   console.log(res);
                   client.broadcast.emit('Rooms', { rooms: res });
                   client.emit('Rooms', { rooms: res });
-                  client.emit('JoinedRoom', ret.id, oldRoom);
                   return resolve(
                     new Promise<void>((resolve, reject) => {
                       this.channelService
                         .getChannelMessage(ret.id, client.userID)
                         .then((res) => {
-                          client.emit('JoinedRoom', { message: res });
+                          client.emit('JoinedRoom', {
+                            roomId: ret.id,
+                            message: res,
+                          });
                           return resolve();
                         })
                         .catch((err) => {
@@ -115,15 +117,23 @@ export class MessageGateway
   sendRoomMessage(
     @MessageBody('roomId') roomId: string,
     @MessageBody('message') message: string,
-    @MessageBody('username') username: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
     const date = new Date();
     return new Promise<void>((resolve, reject) => {
+      console.log('SendRoom message', { message }, 'channelId:', roomId);
       this.channelService
         .addChannelMessage(client.userID, roomId, client.username, message)
         .then((ret) => {
-          client.to(roomId).emit('RoomMessage', ret);
+          console.log('message send back: ', { ret }, 'to: ', roomId);
+          client.emit('newMessage', {
+            message: ret.content,
+            username: client.username,
+          });
+          client.broadcast.to(roomId).emit('newMessage', {
+            message: ret.content,
+            username: client.username,
+          });
           return resolve();
         })
         .catch((err) => {
@@ -132,7 +142,6 @@ export class MessageGateway
     });
   }
   /*=====================================*/
-  /*JOINING ROOM */
   @SubscribeMessage('JoinRoom')
   joinRoom(
     @MessageBody('old') oldRoom: string,
@@ -146,14 +155,14 @@ export class MessageGateway
           console.log({ roomId });
           client.leave(oldRoom);
           client.join(roomId);
-          client.emit('JoinedRoom', roomId);
           console.log(roomId);
           return resolve(
             new Promise<void>((resolve, reject) => {
               this.channelService
                 .getChannelMessage(roomId, client.userID)
-                .then((ret) => {
-                  client.emit('JoinedRoom', { message: ret });
+                .then((res) => {
+                  console.log('join message', res);
+                  client.emit('JoinedRoom', { roomId: roomId, message: res });
                   return resolve();
                 })
                 .catch((err) => {
