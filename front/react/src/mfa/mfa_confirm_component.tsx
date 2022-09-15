@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { FaSms } from "react-icons/fa";
-import "./2fa.css";
+import "./mfa.css";
 import "../login/login_style.css";
 import "../style.css";
 
-export default function Sms2faConfirm() {
+export default function MfaConfirm() {
   let navigate = useNavigate();
   const goChallenge = () => {
     navigate("/sms-challenge");

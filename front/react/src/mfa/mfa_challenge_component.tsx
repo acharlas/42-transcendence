@@ -1,35 +1,37 @@
-import { FaLock, FaRocket } from "react-icons/fa";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./2fa.css";
+import { FaLock, FaRocket } from "react-icons/fa";
+import mfaService from "./mfa-service";
+import "./mfa.css";
 import "../login/login_style.css";
 import "../style.css";
 
-export default function Sms2faChallenge() {
+export default function MfaChallenge() {
   let navigate = useNavigate();
   const goGame = () => {
     navigate("/game");
   };
 
   const [smsCode, setSmsCode] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const HandleSmsCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSmsCode(event.target.value);
   }
 
-  // const checkSmsCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
-  //   event.preventDefault();
+  const checkSmsCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
 
-  //   try {
-  //     setErrorMessage("");
-  //     await mfaService.checkSmsCode({
-  //       phoneNumber: "",
-  //       codeToCheck: smsCode,
-  //     });
-  //     goGame();
-  //   } catch (e) {
-  //     console.log({ e });
-  //   }
-  // }
+    try {
+      setErrorMessage("");
+      await mfaService.requestCheckMfa({
+        codeToCheck: smsCode,
+      });
+      goGame();
+    } catch (e) {
+      console.log({ e });
+      setErrorMessage("incorrect code");
+    }
+  }
   return (
     <div className="container">
       <div className="screen">
@@ -50,6 +52,13 @@ export default function Sms2faChallenge() {
                 }}
                 onChange={HandleSmsCodeChange}
               />
+            </div>
+            <div>
+              {errorMessage === null ? (
+                ""
+              ) : (
+                <p className="error-msg">{errorMessage}</p>
+              )}
             </div>
             <button className="button__sms__check__submit" onClick={checkSmsCode}>
               <span className="button__text">Check code</span>

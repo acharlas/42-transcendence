@@ -4,8 +4,8 @@ import { App } from "./App";
 import { SigninForm } from "./login/signin_component";
 import { SignupForm } from "./login/signup_component";
 import Redirect from "./login/42_redirec";
-import Sms2faConfirm from "./2fa/sms2fa_confirm_component";
-import Sms2faChallenge from "./2fa/sms2fa_challenge_component";
+import Sms2faConfirm from "./mfa/mfa_confirm_component";
+import Sms2faChallenge from "./mfa/mfa_challenge_component";
 //import Chat from "./chat/chat";
 //<Route path="/chat" element={<Chat />} />
 
