@@ -7,7 +7,7 @@ import "../style.css";
 export default function MfaConfirm() {
   let navigate = useNavigate();
   const goChallenge = () => {
-    navigate("/sms-challenge");
+    navigate("/sms-verify");
   };
 
   return (
