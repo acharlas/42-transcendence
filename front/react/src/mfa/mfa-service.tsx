@@ -8,19 +8,30 @@ export interface activateMfaDto {
   phoneNumber: string;
 }
 
-const requestCheckMfa = async (params: checkMfaDto) => {
-  const response = await axios.post("http://localhost:3333/mfa/signin", {
-    codeToCheck: params.codeToCheck,
-  });
-  return response.data.access_token;
-  //modify JWT to add that user has validated 2fa?
+const requestDisableMfa = async (params: activateMfaDto) => {
+  const response = await axios.post("http://localhost:3333/mfa/disable");
+  return response;
 }
 
-const requestActivateMfa = async (params: activateMfaDto) => {
-  const response = await axios.post("http://localhost:3333/mfa/activate", {
+const requestInitSetupMfa = async (params: activateMfaDto) => {
+  const response = await axios.post("http://localhost:3333/mfa/init-setup", {
     phoneNumber: params.phoneNumber,
   });
   return response;
 }
 
-export default { requestCheckMfa, requestActivateMfa };
+const requestFinishSetupMfa = async (params: checkMfaDto) => {
+  const response = await axios.post("http://localhost:3333/mfa/finish-setup", {
+    codeToCheck: params.codeToCheck,
+  });
+  return response;
+}
+
+const requestCheckMfa = async (params: checkMfaDto) => {
+  const response = await axios.post("http://localhost:3333/mfa/signin", {
+    codeToCheck: params.codeToCheck,
+  });
+  return response.data.access_token;
+}
+
+export default { requestDisableMfa, requestInitSetupMfa, requestFinishSetupMfa, requestCheckMfa };

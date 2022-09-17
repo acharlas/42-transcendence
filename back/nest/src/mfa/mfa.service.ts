@@ -5,7 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { PhoneNumber } from 'twilio/lib/interfaces';
 
-import { mfaEnableDto } from './dto/mfa-enable.dto';
+import { MfaSetupDto } from './dto/mfa-setup.dto';
+import { MfaValidateDto } from './dto/mfa-validate.dto';
 
 @Injectable()
 export class MfaService {
@@ -44,7 +45,7 @@ export class MfaService {
       return false;
   }
 
-  mfaEnable(userId: string, dto: mfaEnableDto) {
+  initSetup(userId: string, dto: MfaSetupDto) {
     //front asks user for phone number
     //server sends sms to user
     //front asks user for 2fa code
@@ -55,14 +56,16 @@ export class MfaService {
     //  -set mfa as active
   }
 
-  mfaDisable() {
+  finishSetup(userId: string, dto: MfaValidateDto) {
+  }
+
+  disable(userId: string) {
     //modify user data:
     //-delete phone number
     //-set mfa as unactive
   }
 
-  //to call when user signs in with or without oauth
-  mfaSignIn() {
+  mfaSignIn(userId: string) {
   }
 }
 
