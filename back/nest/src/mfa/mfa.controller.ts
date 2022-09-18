@@ -1,42 +1,61 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
+  Delete,
   Post,
+  UseGuards
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
+import { JwtGuard } from '../auth/guard';
 import { GetUser } from '../auth/decorator';
 import { MfaService } from './mfa.service';
 import { MfaSetupDto } from './dto/mfa-setup.dto';
 import { MfaValidateDto } from './dto/mfa-validate.dto';
 
-@Controller('Mfa')
+@Controller('mfa')
+@ApiBearerAuth()
+@UseGuards(JwtGuard)
 @ApiTags('Mfa')
 export class MfaController {
   constructor(private mfaService: MfaService) { }
 
-  @Post('init-setup')
+  @Post('setup/init')
+  @HttpCode(HttpStatus.CREATED)
   async initSetup(
     @GetUser('id') userId: string,
     @Body() dto: MfaSetupDto) {
-    //TODO
+    console.log('mfa/init-setup', { dto });
     return this.mfaService.initSetup(userId, dto);
   }
 
-  @Post('finish-setup')
+  @Post('setup/validate')
+  @HttpCode(HttpStatus.CREATED)
   async finishSetup(
     @GetUser('id') userId: string,
     @Body() dto: MfaValidateDto) {
-    //TODO
+    console.log('mfa/finish-setup', { dto });
     return this.mfaService.finishSetup(userId, dto);
   }
 
-  @Get('disable')
+  @Delete('disable')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async disable(@GetUser('id') userId: string) {
-    //TODO
+    console.log('mfa/diable');
     return this.mfaService.disable(userId);
+  }
+
+  @Post('signin/init')
+  async initSignIn(@GetUser('id') userId: string) {
+    console.log('mfa/signin/init');
+    return this.mfaService.initSignIn(userId);
+  }
+
+  @Post('signin/validate')
+  async validateSignIn(@GetUser('id') userId: string) {
+    console.log('mfa/signin/validate');
+    return this.mfaService.initSignIn(userId);
   }
 }

@@ -9,6 +9,7 @@ import { BlockModule } from './block/block.module';
 import { HistoryModule } from './history/history.module';
 import { MessageModule } from './message/message.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
+import { MfaModule } from './mfa/mfa.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LeaderboardModule } from './leaderboard/leaderboard.module';
     HistoryModule,
     MessageModule,
     LeaderboardModule,
+    MfaModule
   ],
 })
-export class AppModule {}
+export class AppModule { }
