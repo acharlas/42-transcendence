@@ -1,18 +1,17 @@
-import { useSockets } from "../context/chat.context";
 import "./chat-style.css";
 import RoomsContainer from "./Rooms";
 import MessagesContainer from "./Messages";
 import { useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { Message, Room } from "./type";
+import { useChat } from "../context/chat.context";
+import { FaAngleLeft } from "react-icons/fa";
 
 export default function ChatIndex() {
   const [socket, setSocket] = useState<Socket>(io());
-  const [username, setUsername] = useState(sessionStorage.getItem("username"));
-  const [roomId, setRoomId] = useState("");
-  const [rooms, setRooms] = useState([]);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { setRooms, setRoomId, setMessages, messages } = useChat();
+  const [showRoom, setShowRoom] = useState(false);
   let navigate = useNavigate();
 
   const goSignin = () => {
@@ -39,12 +38,12 @@ export default function ChatIndex() {
 
     socket.on(
       "JoinedRoom",
-      ({ roomId, messages }: { roomId: string; messages: Message[] }) => {
+      ({ roomId, message }: { roomId: string; message: Message[] }) => {
         console.log("joinedRoom");
         console.log("joinedRoom: ", roomId, "message:", { messages });
         setRoomId(roomId);
         if (messages) {
-          setMessages(messages);
+          setMessages(message);
           console.log("set new message: ", messages);
         } else setMessages([]);
         console.log("roomID: ", roomId);
@@ -56,35 +55,40 @@ export default function ChatIndex() {
       setMessages(message);
     });
 
-    socket.on("newMessage", ({ message }: { message: Message }) => {
+    socket.on("newMessage", ({ message }: { message: Message[] }) => {
       console.log("newMessage arrive: ", message);
       console.log("oldMessage: ", { messages });
-      setMessages([
-        ...messages,
-        { message: message.message, username: message.username },
-      ]);
-      setMessages([message]);
-      console.log("new message set:", { messages });
+      setMessages(message);
     });
 
     console.log(socket);
   }, [socket]);
+
+  const handleShowRoom = (event) => {
+    showRoom ? setShowRoom(false) : setShowRoom(true);
+  };
 
   return (
     <div className="container">
       <button id="logout" onClick={goSignin}>
         Signout
       </button>
-      <div className="screen">
+      <div className="chat-container">
         <>
-          <RoomsContainer socket={socket} roomId={roomId} rooms={rooms} />
-          <MessagesContainer
-            socket={socket}
-            messages={messages}
-            roomId={roomId}
-            username={username}
-            setMessages={setMessages}
-          />
+          {showRoom ? (
+            <RoomsContainer
+              socket={socket}
+              setShowRoom={setShowRoom}
+              showRoom={showRoom}
+            />
+          ) : (
+            <>
+              <button className="room-button" onClick={handleShowRoom}>
+                <FaAngleLeft />
+              </button>
+            </>
+          )}
+          <MessagesContainer socket={socket} />
         </>
       </div>
     </div>

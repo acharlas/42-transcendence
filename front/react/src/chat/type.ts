@@ -1,7 +1,7 @@
 import { type } from "@testing-library/user-event/dist/type";
 
 export interface Message {
-  message: string;
+  content: string;
   username: string;
 }
 

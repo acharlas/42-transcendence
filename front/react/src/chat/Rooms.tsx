@@ -1,18 +1,19 @@
 import { useRef } from "react";
+import { FaAngleLeft } from "react-icons/fa";
 import { Socket } from "socket.io-client";
-import { useSockets } from "../context/chat.context";
-import { Room } from "./type";
+import { useChat } from "../context/chat.context";
 
 function RoomsContainer({
   socket,
-  roomId,
-  rooms,
+  setShowRoom,
+  showRoom,
 }: {
   socket: Socket;
-  roomId: string;
-  rooms: Room[];
+  setShowRoom: Function;
+  showRoom: boolean;
 }) {
   const newRoomRef = useRef(null);
+  const { roomId, rooms } = useChat();
 
   function handleCreateRoom() {
     const roomName = newRoomRef.current.value || "";
@@ -28,8 +29,15 @@ function RoomsContainer({
     socket.emit("JoinRoom", { key, old: roomId });
   }
 
+  const handleShowRoom = (event) => {
+    showRoom ? setShowRoom(false) : setShowRoom(true);
+  };
+
   return (
-    <nav>
+    <nav className="room-menu">
+      <button className="room-button" onClick={handleShowRoom}>
+        <FaAngleLeft />
+      </button>
       <div>
         <input ref={newRoomRef} placeholder="Room name" />
         <button onClick={handleCreateRoom}>CREATE ROOM</button>

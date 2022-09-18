@@ -126,15 +126,21 @@ export class MessageGateway
         .addChannelMessage(client.userID, roomId, client.username, message)
         .then((ret) => {
           console.log('message send back: ', { ret }, 'to: ', roomId);
-          client.emit('newMessage', {
-            message: ret.content,
-            username: client.username,
-          });
-          client.broadcast.to(roomId).emit('newMessage', {
-            message: ret.content,
-            username: client.username,
-          });
-          return resolve();
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              this.channelService
+                .getChannelMessage(roomId, client.userID)
+                .then((res) => {
+                  client.broadcast.to(roomId).emit('newMessage', {
+                    message: res,
+                  });
+                  return resolve();
+                })
+                .catch((err) => {
+                  return reject(err);
+                });
+            }),
+          );
         })
         .catch((err) => {
           return reject(err);

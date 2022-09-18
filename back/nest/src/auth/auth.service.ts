@@ -146,7 +146,7 @@ export class AuthService {
       client_id: this.config.get<string>('UID'),
       client_secret: this.config.get<string>('API_SECRET'),
       code: dto.code,
-      redirect_uri: this.config.get<string>('42API_REDIRECT'),
+      redirect_uri: this.config.get<string>('API_REDIRECT'),
       state: dto.state,
     };
     return new Promise<string>((resolve, reject) => {
