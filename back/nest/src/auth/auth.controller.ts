@@ -47,7 +47,6 @@ export class AuthController {
 
   @Post('signinApi')
   async signinApi(@Body() dto: getApiToken): Promise<{ access_token: string }> {
-    console.log('siginin', { dto });
     return new Promise<{ access_token: string }>((resolve, reject) => {
       this.authService
         .getApiToken(dto)

@@ -1,12 +1,11 @@
 import axios from "axios";
 
 export interface loginDto {
-  email: string;
+  username: string;
   password: string;
 }
 
 export interface signupDto {
-  email: string;
   password: string;
   username: string;
 }
@@ -16,20 +15,47 @@ export interface fortyTwoLoginDto {
   state: string;
 }
 
+export interface getMeDto {
+  token: string;
+}
+
+const getMe = async (Credential: getMeDto): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
+    axios
+      .get("http://localhost:3333/users/me", {
+        headers: {
+          Authorization: "Bearer " + Credential.token,
+        },
+      })
+      .then((ret) => {
+        console.log(ret.data.nickname);
+        sessionStorage.setItem("username", ret.data.username);
+        sessionStorage.setItem("nickname", ret.data.nickname);
+        return resolve();
+      })
+      .catch((err) => {
+        console.log({ err });
+        return reject(err);
+      });
+  });
+};
+
 const signin = async (credentials: loginDto) => {
   const response = await axios.post("http://localhost:3333/auth/signin", {
-    email: credentials.email,
+    username: credentials.username,
     password: credentials.password,
   });
+  console.log(response.data.access_token);
+  await getMe({ token: response.data.access_token });
   return response.data.access_token;
 };
 
 const signup = async (credentials: signupDto) => {
   const response = await axios.post("http://localhost:3333/auth/signup", {
-    email: credentials.email,
     password: credentials.password,
     username: credentials.username,
   });
+  await getMe({ token: response.data.access_token });
   return response.data.access_token;
 };
 
@@ -41,7 +67,8 @@ const fortyTwoSign = async (credentials: fortyTwoLoginDto) => {
       state: credentials.state,
     });
     console.log("Token", { token });
-    window.localStorage.setItem("Token", token.data.access_token);
+    window.sessionStorage.setItem("Token", token.data.access_token);
+    await getMe({ token: token.data.access_token });
     return token;
   } catch (e) {
     console.log("erreur", { e });

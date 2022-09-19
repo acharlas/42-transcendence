@@ -9,6 +9,7 @@ import { BlockModule } from './block/block.module';
 import { HistoryModule } from './history/history.module';
 import { MessageModule } from './message/message.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
+import { JwtModule } from '@nestjs/jwt';
 import { MfaModule } from './mfa/mfa.module';
 
 @Module({
@@ -25,6 +26,7 @@ import { MfaModule } from './mfa/mfa.module';
     HistoryModule,
     MessageModule,
     LeaderboardModule,
+    JwtModule,
     MfaModule
   ],
 })

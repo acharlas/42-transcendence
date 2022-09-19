@@ -12,15 +12,13 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export function SignupForm() {
-  const [newEmail, setNewEmail] = useState("");
   const [newPass, setNewPass] = useState("");
   const [newUsername, setNewUsername] = useState("");
   const [ErrorMessage, setErrorMessage] = useState("");
   let navigate = useNavigate();
 
-  const HandleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewEmail(event.target.value);
-  };
+  sessionStorage.clear();
+
   const HandlePassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewPass(event.target.value);
   };
@@ -34,7 +32,7 @@ export function SignupForm() {
   };
 
   const goGame = () => {
-    navigate("/game");
+    navigate("/chat");
   };
 
   const createUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -44,13 +42,11 @@ export function SignupForm() {
       console.log("click");
       setErrorMessage("");
       const token = await loginService.signup({
-        email: newEmail,
         password: newPass,
         username: newUsername,
       });
       console.log({ token });
-      window.localStorage.setItem("Token", token);
-      setNewEmail("");
+      window.sessionStorage.setItem("Token", token);
       setNewPass("");
       setNewUsername("");
       goGame();
@@ -92,12 +88,12 @@ export function SignupForm() {
               </div>
             )}
             <div className="login__field">
-              <FaSatelliteDish />
+              <FaUserAstronaut />
               <input
                 className="login__input"
-                placeholder="Email"
-                value={newEmail}
-                onChange={HandleEmailChange}
+                placeholder="Username"
+                value={newUsername}
+                onChange={HandleUsernameChange}
               />
             </div>
             <div className="login__field">
@@ -115,15 +111,7 @@ export function SignupForm() {
               <input type="checkbox" onClick={ftShowPassword} />
               show password
             </div>
-            <div className="login__field">
-              <FaUserAstronaut />
-              <input
-                className="login__input"
-                placeholder="Username"
-                value={newUsername}
-                onChange={HandleUsernameChange}
-              />
-            </div>
+
             <div>
               <button className="button login__submit" onClick={createUser}>
                 <span className="button__text">Create account</span>

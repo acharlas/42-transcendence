@@ -15,7 +15,6 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  email String @unique
   hash  String
 
   username String @unique
@@ -108,7 +107,8 @@ model Message {
   updatedAt DateTime @updatedAt
 
   content String
-
+  username String
+  
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   channelId String
@@ -122,7 +122,7 @@ model Message {
 enum GameMode {
   BATTLEROYAL
   CLASSIC
- }
+}
 
 enum UserStatus {
   connected

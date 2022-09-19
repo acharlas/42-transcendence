@@ -13,7 +13,6 @@ describe('Friend Block Suite', () => {
   //mockres
   it('create amis1', () => {
     const authDto: AuthSignupDto = {
-      email: 'amis1@a.toto',
       password: 'string',
       username: 'amis1.toto',
     };
@@ -32,11 +31,10 @@ describe('Friend Block Suite', () => {
         Authorization: 'Bearer $S{userToken1}',
       })
       .stores('userId1', 'id')
-      .stores('userEmail1', 'email');
+      .stores('username1', 'username');
   });
   it('create amis2', () => {
     const authDto: AuthSignupDto = {
-      email: 'amis2@a.toto',
       password: 'string',
       username: 'amis2.toto',
     };
@@ -55,7 +53,7 @@ describe('Friend Block Suite', () => {
         Authorization: 'Bearer $S{userToken2}',
       })
       .stores('userId2', 'id')
-      .stores('userEmail2', 'email');
+      .stores('username2', 'username');
   });
 
   describe('Friend', () => {
@@ -75,7 +73,7 @@ describe('Friend Block Suite', () => {
             myfriend: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.toto',
+                username: 'amis1.toto',
               },
             ],
           })
@@ -125,7 +123,7 @@ describe('Friend Block Suite', () => {
             myfriend: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.toto',
+                username: 'amis1.toto',
               },
             ],
           });
@@ -205,7 +203,7 @@ describe('Friend Block Suite', () => {
             myblock: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.toto',
+                username: 'amis1.toto',
               },
             ],
           })
@@ -255,7 +253,7 @@ describe('Friend Block Suite', () => {
             myblock: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.toto',
+                username: 'amis1.toto',
               },
             ],
           });

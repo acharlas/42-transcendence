@@ -1,6 +1,5 @@
 {
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.stickyScroll.enabled": true,
-  "editor.tabSize": 2
+  "editor.stickyScroll.enabled": true
 }
