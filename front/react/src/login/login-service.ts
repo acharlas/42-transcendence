@@ -28,8 +28,9 @@ const getMe = async (Credential: getMeDto): Promise<void> => {
         },
       })
       .then((ret) => {
-        console.log(ret.data.username);
+        console.log(ret.data.nickname);
         sessionStorage.setItem("username", ret.data.username);
+        sessionStorage.setItem("nickname", ret.data.nickname);
         return resolve();
       })
       .catch((err) => {

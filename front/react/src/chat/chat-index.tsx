@@ -4,14 +4,19 @@ import MessagesContainer from "./Messages";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { Message, Room } from "./type";
+import { Message, Room, User } from "./type";
 import { useChat } from "../context/chat.context";
 import { FaAngleLeft } from "react-icons/fa";
+import CreateRoomsContainer from "./create-room";
+import LockScreen from "./lock-screen";
+import UserMenu from "./user-menu";
 
 export default function ChatIndex() {
   const [socket, setSocket] = useState<Socket>(io());
-  const { setRooms, setRoomId, setMessages, messages } = useChat();
+  const { setRooms, setRoomId, setMessages, messages, roomId } = useChat();
   const [showRoom, setShowRoom] = useState(false);
+  const [nextRoom, setNextRoom] = useState<string>("");
+  const [showUser, setShowUser] = useState<User>();
   let navigate = useNavigate();
 
   const goSignin = () => {
@@ -80,6 +85,8 @@ export default function ChatIndex() {
               socket={socket}
               setShowRoom={setShowRoom}
               showRoom={showRoom}
+              setNextRoom={setNextRoom}
+              setShowUser={setShowUser}
             />
           ) : (
             <>
@@ -88,7 +95,36 @@ export default function ChatIndex() {
               </button>
             </>
           )}
-          <MessagesContainer socket={socket} />
+          {roomId.length === 0 ? (
+            <>
+              {nextRoom ? (
+                <LockScreen
+                  socket={socket}
+                  nextRoom={nextRoom}
+                  setNextRoom={setNextRoom}
+                />
+              ) : (
+                <CreateRoomsContainer socket={socket} />
+              )}
+            </>
+          ) : (
+            <>
+              {showUser ? (
+                <UserMenu
+                  socket={socket}
+                  showUser={showUser}
+                  setShowUser={setShowUser}
+                />
+              ) : (
+                ""
+              )}
+              <MessagesContainer
+                socket={socket}
+                showUser={showUser}
+                setShowUser={setShowUser}
+              />
+            </>
+          )}
         </>
       </div>
     </div>

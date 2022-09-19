@@ -72,7 +72,7 @@ export class ChannelService {
     });
   }
 
-  async getChannels(type: ChannelType): Promise<
+  async getChannels(userId: string): Promise<
     {
       type: ChannelType;
       name: string;
@@ -86,13 +86,12 @@ export class ChannelService {
         id: string;
       }[]
     >((resolve, reject) => {
-      if (type === 'dm') {
-        return reject(new BadRequestException('Cannot find ressource'));
-      }
       this.prisma.channel
         .findMany({
           where: {
-            type: type,
+            type: {
+              not: 'private',
+            },
           },
           select: {
             type: true,
@@ -101,7 +100,41 @@ export class ChannelService {
           },
         })
         .then((ret) => {
-          return resolve(ret);
+          return resolve(
+            new Promise<
+              {
+                type: ChannelType;
+                name: string;
+                id: string;
+              }[]
+            >((resolve, reject) => {
+              this.prisma.channel
+                .findMany({
+                  where: {
+                    type: 'private',
+                    users: {
+                      some: {
+                        userId: userId,
+                      },
+                    },
+                  },
+                  select: {
+                    type: true,
+                    name: true,
+                    id: true,
+                  },
+                })
+                .then((res) => {
+                  res.map((elem) => {
+                    ret.push(elem);
+                  });
+                  return resolve(ret);
+                })
+                .catch((err) => {
+                  return reject(err);
+                });
+            }),
+          );
         })
         .catch((err) => {
           return reject(new BadRequestException('Cannot find ressource'));
@@ -351,14 +384,22 @@ export class ChannelService {
           where: {
             id: channelId,
           },
-          select: {
-            messages: true,
+          include: {
+            messages: {
+              include: {
+                user: true,
+              },
+            },
           },
         })
         .then((ret) => {
           return resolve(
             ret.messages.map((elem) => {
-              return { username: elem.username, content: elem.content };
+              return {
+                nickname: elem.user.nickname,
+                username: elem.username,
+                content: elem.content,
+              };
             }),
           );
         })
@@ -407,7 +448,11 @@ export class ChannelService {
                   },
                 })
                 .then((ret) => {
-                  return resolve(ret);
+                  return resolve({
+                    username: ret.username,
+                    nickname: ret.username,
+                    content: ret.content,
+                  });
                 })
                 .catch((err) => {
                   return reject(err);

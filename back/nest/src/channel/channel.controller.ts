@@ -50,12 +50,12 @@ export class ChannelController {
   })
   @Get()
   getChannels(
-    @Query('type') type: ChannelType,
+    @GetUser('id') userId: string,
   ): Promise<{ id: string; name: string; type: ChannelType }[]> {
     return new Promise<{ id: string; name: string; type: ChannelType }[]>(
       (resolve, reject) => {
         this.channelService
-          .getChannels(type)
+          .getChannels(userId)
           .then((ret) => {
             return resolve(ret);
           })

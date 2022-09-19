@@ -9,9 +9,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket, Namespace } from 'socket.io';
+import { CreateChannelDto } from 'src/channel/dto';
 import { ChannelService } from '../channel/channel.service';
-import { GetAllMessageDto } from './dto';
-import { MessageService } from './message.service';
 import { SocketWithAuth } from './types_message';
 
 @WebSocketGateway({
@@ -20,10 +19,7 @@ import { SocketWithAuth } from './types_message';
 export class MessageGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(
-    private messageService: MessageService,
-    private channelService: ChannelService,
-  ) {}
+  constructor(private channelService: ChannelService) {}
 
   @WebSocketServer() io: Namespace;
   server: Server;
@@ -35,7 +31,7 @@ export class MessageGateway
   handleConnection(client: SocketWithAuth): void {
     const socket = this.io.sockets;
     this.channelService
-      .getChannels('public')
+      .getChannels(client.userID)
       .then((res) => {
         console.log(res);
         client.broadcast.emit('Rooms', { rooms: res });
@@ -56,20 +52,19 @@ export class MessageGateway
     console.log(`number of soket connected: ${socket.size}`);
   }
 
+  /*==========================================*/
+  /*USER CREATE A ROOM*/
   @SubscribeMessage('CreateRoom')
   CreateRoom(
     @MessageBody('old') oldRoom: string,
-    @MessageBody('roomName') roomName: string,
-    @ConnectedSocket() client: SocketWithAuth,
+    @MessageBody('CreateChannelDto') roomDto: CreateChannelDto,
+    @ConnectedSocket()
+    client: SocketWithAuth,
   ): Promise<void> {
-    console.log('id:', client.userID);
+    console.log('id:', client.userID, { roomDto });
     return new Promise<void>((resolve, reject) => {
       this.channelService
-        .createChannel(client.userID, {
-          name: roomName,
-          type: 'public',
-          password: '',
-        })
+        .createChannel(client.userID, roomDto)
         .then((ret) => {
           console.log({ ret });
           client.leave(oldRoom);
@@ -77,9 +72,9 @@ export class MessageGateway
           return resolve(
             new Promise<void>((resolve, reject) => {
               this.channelService
-                .getChannels('public')
+                .getChannels(client.userID)
                 .then((res) => {
-                  console.log(res);
+                  console.log('room return:', res);
                   client.broadcast.emit('Rooms', { rooms: res });
                   client.emit('Rooms', { rooms: res });
                   return resolve(
@@ -119,13 +114,11 @@ export class MessageGateway
     @MessageBody('message') message: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    const date = new Date();
     return new Promise<void>((resolve, reject) => {
       console.log('SendRoom message', { message }, 'channelId:', roomId);
       this.channelService
         .addChannelMessage(client.userID, roomId, client.username, message)
         .then((ret) => {
-          console.log('message send back: ', { ret }, 'to: ', roomId);
           return resolve(
             new Promise<void>((resolve, reject) => {
               this.channelService
@@ -148,15 +141,18 @@ export class MessageGateway
     });
   }
   /*=====================================*/
+  /* USER JOIN A ROOM*/
   @SubscribeMessage('JoinRoom')
   joinRoom(
     @MessageBody('old') oldRoom: string,
     @MessageBody('key') roomId: string,
+    @MessageBody('password') password: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
+    console.log('join room:', roomId, 'old room:', oldRoom, 'pass', password);
     return new Promise<void>((resolve, reject) => {
       this.channelService
-        .joinChannelById(client.userID, roomId, {})
+        .joinChannelById(client.userID, roomId, { password: password })
         .then((ret) => {
           console.log({ roomId });
           client.leave(oldRoom);
@@ -182,37 +178,24 @@ export class MessageGateway
         });
     });
   }
-  /*============================================*/
-  @SubscribeMessage('findAllMessages')
-  findAll(@MessageBody() getAllMessageDto: GetAllMessageDto) {
-    return new Promise<unknown[]>((resolve, reject) => {
-      console.log('findAllMessages');
-      this.messageService
-        .findAll()
-        .then((ret) => {
-          return resolve(ret);
-        })
-        .catch((err) => {
-          return reject(err);
-        });
-    });
-  }
 
-  @SubscribeMessage('typing')
-  async typing(
-    @MessageBody('isTyping') isTyping: boolean,
-    @ConnectedSocket() client: Socket,
-  ): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      this.messageService
-        .getClientName(client.id)
+  /*=====================================*/
+  /* USER JOIN A ROOM*/
+  @SubscribeMessage('LeaveRoom')
+  LeaveRoom(
+    @MessageBody('roomId') roomId: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.channelService
+        .leaveChannel(client.userID, roomId)
         .then((ret) => {
-          client.broadcast.emit('typing', { ret, isTyping });
-          return resolve(ret);
+          return resolve();
         })
         .catch((err) => {
           return reject(err);
         });
     });
   }
+  /*============================================*/
 }

@@ -4,6 +4,7 @@ import io, { Socket } from "socket.io-client";
 interface Message {
   content: string;
   username: string;
+  nickname: string;
 }
 
 interface Room {

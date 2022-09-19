@@ -119,7 +119,7 @@ model Message {
 enum GameMode {
   BATTLEROYAL
   CLASSIC
- }
+}
 
 enum UserStatus {
   connected

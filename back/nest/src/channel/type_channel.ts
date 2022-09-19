@@ -10,6 +10,7 @@ type UserNickname = {
 };
 
 export type MessageCont = {
+  nickname: string;
   username: string;
   content: string;
 };

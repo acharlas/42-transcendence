@@ -32,9 +32,34 @@
   word-wrap: break-word;
 }
 
+.user-menu {
+  position: absolute;
+  background-color: white;
+  width: 50%;
+  height: inherit;
+  overflow-y: scroll;
+  word-wrap: break-word;
+}
+
+.create-room {
+  height: 100%;
+}
+
 .room-button {
   position: absolute;
   right: 0;
+}
+
+.create-room-button-menu {
+  width: 90%;
+}
+
+.create-room-button {
+  width: 100%;
+}
+
+.join-room-button {
+  width: 100%;
 }
 
 .chat-message {
