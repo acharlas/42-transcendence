@@ -6,7 +6,7 @@ import "./mfa.css";
 import "../login/login_style.css";
 import "../style.css";
 
-export default function MfaChallenge() {
+export default function MfaSetupValidate() {
   let navigate = useNavigate();
   const goGame = () => {
     navigate("/game");
@@ -14,6 +14,7 @@ export default function MfaChallenge() {
 
   const [smsCode, setSmsCode] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
   const HandleSmsCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSmsCode(event.target.value);
   }
@@ -23,13 +24,11 @@ export default function MfaChallenge() {
 
     try {
       setErrorMessage("");
-      await mfaService.requestCheckMfa({
-        codeToCheck: smsCode,
-      });
+      await mfaService.requestMfaSetupFinish({ codeToCheck: smsCode });
       goGame();
     } catch (e) {
       console.log({ e });
-      setErrorMessage("incorrect code");
+      setErrorMessage("Incorrect code."); //TODO: improve error msg
     }
   }
   return (
