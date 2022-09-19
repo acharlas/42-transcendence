@@ -1,8 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Twilio } from 'twilio';
-import { PhoneNumber } from 'twilio/lib/interfaces';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MfaSetupDto } from './dto/mfa-setup.dto';
 import { MfaValidateDto } from './dto/mfa-validate.dto';
