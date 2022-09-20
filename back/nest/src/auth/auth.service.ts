@@ -22,7 +22,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
-  ) {}
+  ) { }
 
   async signup(dto: AuthSignupDto): Promise<{ access_token: string }> {
     //generate password hash
@@ -45,7 +45,7 @@ export class AuthService {
           },
         })
         .then((ret) => {
-          this.signToken(ret.id)
+          this.signToken(ret.id, ret.mfaEnabled)
             .then((ret) => {
               return resolve(ret);
             })
@@ -95,7 +95,7 @@ export class AuthService {
                     ),
                   );
                 }
-                return resolve(this.signToken(ret.id));
+                return resolve(this.signToken(ret.id, ret.mfaEnabled));
               });
             }),
           );
@@ -106,7 +106,8 @@ export class AuthService {
     });
   }
 
-  async signToken(userId: String): Promise<{ access_token: string }> {
+  async signToken(userId: string, mfaEnabled: boolean): Promise<{ access_token: string }> {
+
     const payload = {
       sub: userId,
     };
@@ -180,7 +181,7 @@ export class AuthService {
     });
     return new Promise<{ access_token: string }>((resolve, reject) => {
       if (found !== null) {
-        this.signToken(found.id)
+        this.signToken(found.id, found.mfaEnabled)
           .then((ret) => {
             return resolve(ret);
           })
@@ -199,7 +200,7 @@ export class AuthService {
             },
           })
           .then((ret) => {
-            return resolve(this.signToken(ret.id));
+            return resolve(this.signToken(ret.id, ret.mfaEnabled));
           })
           .catch((err) => {
             return reject(err);
