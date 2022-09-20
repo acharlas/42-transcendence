@@ -110,6 +110,7 @@ export class AuthService {
 
     const payload = {
       sub: userId,
+      fullyAuth: mfaEnabled,
     };
     const secret = this.config.get('JWT_SECRET');
 
