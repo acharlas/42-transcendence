@@ -13,6 +13,12 @@ interface Room {
   type: string;
 }
 
+interface User {
+  username: string;
+  nickname: string;
+  privilege: string;
+}
+
 interface Context {
   username?: string;
   setUsername: Function;
@@ -22,6 +28,8 @@ interface Context {
   setRooms: Function;
   messages?: Message[];
   setMessages: Function;
+  userList: User[];
+  setUserList: Function;
 }
 
 const ChatContext = createContext<Context>({
@@ -29,6 +37,8 @@ const ChatContext = createContext<Context>({
   setMessages: () => false,
   setRoomId: () => false,
   setRooms: () => false,
+  setUserList: () => false,
+  userList: [],
   username: "",
   roomId: "",
   messages: [],
@@ -40,10 +50,13 @@ function ChatProvider(props: any) {
   const [roomId, setRoomId] = useState("");
   const [rooms, setRooms] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [userList, setUserList] = useState<User[]>([]);
 
   return (
     <ChatContext.Provider
       value={{
+        userList,
+        setUserList,
         username,
         setUsername,
         rooms,

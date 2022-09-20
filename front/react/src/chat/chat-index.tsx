@@ -13,7 +13,15 @@ import UserMenu from "./user-menu";
 
 export default function ChatIndex() {
   const [socket, setSocket] = useState<Socket>(io());
-  const { setRooms, setRoomId, setMessages, messages, roomId } = useChat();
+  const {
+    setRooms,
+    setRoomId,
+    setMessages,
+    messages,
+    roomId,
+    userList,
+    setUserList,
+  } = useChat();
   const [showRoom, setShowRoom] = useState(false);
   const [nextRoom, setNextRoom] = useState<string>("");
   const [showUser, setShowUser] = useState<User>();
@@ -64,6 +72,11 @@ export default function ChatIndex() {
       console.log("newMessage arrive: ", message);
       console.log("oldMessage: ", { messages });
       setMessages(message);
+    });
+
+    socket.on("userList", ({ user }: { user: User[] }) => {
+      console.log("user list receive:", { user });
+      setUserList(user);
     });
 
     console.log(socket);

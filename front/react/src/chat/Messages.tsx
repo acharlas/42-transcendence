@@ -55,6 +55,7 @@ function MessagesContainer({
                     user: {
                       nickname: message.nickname,
                       username: message.username,
+                      privilege: "",
                     },
                   })
                 }

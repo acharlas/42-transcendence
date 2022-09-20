@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "channelusers" ALTER COLUMN "time" SET DEFAULT CURRENT_TIMESTAMP;

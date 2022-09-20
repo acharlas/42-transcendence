@@ -21,6 +21,7 @@ function UserMenu({
         <button onClick={handleClose}>
           <FaWindowClose />
         </button>
+        <button>admin</button>
         <p>{showUser.nickname}</p>
         <p>{showUser.username}</p>
       </div>

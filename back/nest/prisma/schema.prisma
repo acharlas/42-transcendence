@@ -46,6 +46,7 @@ model ChannelUser {
   updatedAt DateTime @updatedAt
 
   privilege UserPrivilege
+  time  DateTime @default(now())
   status UserStatus
 
   userId String

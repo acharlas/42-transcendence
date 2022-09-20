@@ -8,6 +8,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { UserPrivilege } from '@prisma/client';
 import { Server, Socket, Namespace } from 'socket.io';
 import { CreateChannelDto } from 'src/channel/dto';
 import { ChannelService } from '../channel/channel.service';
@@ -80,13 +81,28 @@ export class MessageGateway
                   return resolve(
                     new Promise<void>((resolve, reject) => {
                       this.channelService
-                        .getChannelMessage(ret.id, client.userID)
-                        .then((res) => {
-                          client.emit('JoinedRoom', {
-                            roomId: ret.id,
-                            message: res,
-                          });
-                          return resolve();
+                        .getChannelUser(ret.id)
+                        .then((user) => {
+                          client.emit('userList', { user });
+                          client.broadcast
+                            .to(ret.id)
+                            .emit('userList', { user });
+                          return resolve(
+                            new Promise<void>((resolve, reject) => {
+                              this.channelService
+                                .getChannelMessage(ret.id, client.userID)
+                                .then((res) => {
+                                  client.emit('JoinedRoom', {
+                                    roomId: ret.id,
+                                    message: res,
+                                  });
+                                  return resolve();
+                                })
+                                .catch((err) => {
+                                  return reject(err);
+                                });
+                            }),
+                          );
                         })
                         .catch((err) => {
                           return reject(err);
@@ -105,8 +121,8 @@ export class MessageGateway
         });
     });
   }
-  /*==========================================*/
 
+  /*==========================================*/
   /*USER SEND A ROOM MESSAGE*/
   @SubscribeMessage('SendRoomMessage')
   sendRoomMessage(
@@ -140,6 +156,7 @@ export class MessageGateway
         });
     });
   }
+
   /*=====================================*/
   /* USER JOIN A ROOM*/
   @SubscribeMessage('JoinRoom')
@@ -165,7 +182,21 @@ export class MessageGateway
                 .then((res) => {
                   console.log('join message', res);
                   client.emit('JoinedRoom', { roomId: roomId, message: res });
-                  return resolve();
+                  return resolve(
+                    new Promise<void>((resolve, reject) => {
+                      this.channelService
+                        .getChannelUser(roomId)
+                        .then((user) => {
+                          client.emit('userList', { user });
+                          client.broadcast
+                            .to(roomId)
+                            .emit('userList', { user });
+                        })
+                        .catch((err) => {
+                          return reject(err);
+                        });
+                    }),
+                  );
                 })
                 .catch((err) => {
                   return reject(err);
@@ -197,5 +228,28 @@ export class MessageGateway
         });
     });
   }
+
+  /*============================================*/
+  /*User uppdate*/
+  @SubscribeMessage('UpdateUserPrivilege')
+  UpdateUserPrivilege(
+    @MessageBody('roomId') roomId: string,
+    @MessageBody('privilege') privilege: UserPrivilege,
+    @MessageBody('time') time: Date,
+    @MessageBody('toModifie') toModifie: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.channelService
+        .channelUserUpdate(client.userID, toModifie, roomId, privilege, time)
+        .then(() => {
+          return resolve();
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
   /*============================================*/
 }

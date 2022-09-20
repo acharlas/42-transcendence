@@ -422,11 +422,14 @@ export class ChannelService {
           where: {
             userId_channelId: { channelId: channelId, userId: userId },
           },
+          include: {
+            user: true,
+          },
         })
-        .then((ret) => {
+        .then((res) => {
           return resolve(
             new Promise<MessageCont>((resolve, reject) => {
-              if (ret.privilege === 'muted' || ret.privilege === 'ban')
+              if (res.privilege === 'muted' || res.privilege === 'ban')
                 return reject(
                   new ForbiddenException("this user can't post message"),
                 );
@@ -450,7 +453,7 @@ export class ChannelService {
                 .then((ret) => {
                   return resolve({
                     username: ret.username,
-                    nickname: ret.username,
+                    nickname: res.user.nickname,
                     content: ret.content,
                   });
                 })
@@ -465,5 +468,148 @@ export class ChannelService {
           return reject(new ForbiddenException("user isn't on channel"));
         });
     });
+  }
+
+  async channelUserUpdate(
+    userId: string,
+    toModified: string,
+    channelId: string,
+    privilege: UserPrivilege,
+    time: Date,
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.prisma.user
+        .findUnique({
+          where: {
+            username: toModified,
+          },
+        })
+        .then((userModified) => {
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              this.prisma.channelUser
+                .findUnique({
+                  where: {
+                    userId_channelId: {
+                      userId,
+                      channelId,
+                    },
+                  },
+                  select: {
+                    privilege: true,
+                  },
+                })
+                .then((userPriv) => {
+                  if (
+                    userPriv.privilege !== 'admin' &&
+                    userPriv.privilege !== 'owner'
+                  )
+                    return new ForbiddenException("can't modifie right");
+                  return resolve(
+                    new Promise<void>((resolve, reject) => {
+                      this.prisma.channelUser
+                        .findUnique({
+                          where: {
+                            userId_channelId: {
+                              userId: toModified,
+                              channelId,
+                            },
+                          },
+                          select: {
+                            privilege: true,
+                          },
+                        })
+                        .then((modifPriv) => {
+                          if (modifPriv.privilege === privilege) return;
+                          if (
+                            (modifPriv.privilege === 'admin' ||
+                              modifPriv.privilege === 'owner') &&
+                            (privilege === 'ban' || privilege === 'muted')
+                          )
+                            return new ForbiddenException(
+                              "can't ban/muted a admin/owner",
+                            );
+                          return resolve(
+                            new Promise<void>((resolve, reject) => {
+                              this.prisma.channelUser
+                                .update({
+                                  where: {
+                                    userId_channelId: {
+                                      userId: toModified,
+                                      channelId,
+                                    },
+                                  },
+                                  data: {
+                                    privilege: privilege,
+                                    time: time,
+                                  },
+                                })
+                                .then(() => {
+                                  return resolve;
+                                })
+                                .catch((err) => {
+                                  return reject(err);
+                                });
+                            }),
+                          );
+                        })
+                        .catch((err) => {
+                          return reject(err);
+                        });
+                    }),
+                  );
+                })
+                .catch((err) => {
+                  return reject(err);
+                });
+            }),
+          );
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  async getChannelUser(channelId: string): Promise<
+    {
+      privilele: string;
+      username: string;
+      nickname: string;
+    }[]
+  > {
+    return new Promise<
+      {
+        privilele: string;
+        username: string;
+        nickname: string;
+      }[]
+    >((resolve, reject) => {
+      this.prisma.channelUser
+        .findMany({
+          where: {
+            channelId: channelId,
+          },
+          select: {
+            user: true,
+            privilege: true,
+          },
+        })
+        .then((ret) => {
+          return resolve(
+            ret.map((elem) => {
+              return {
+                privilele: elem.privilege,
+                username: elem.user.username,
+                nickname: elem.user.nickname,
+              };
+            }),
+          );
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+    return;
   }
 }
