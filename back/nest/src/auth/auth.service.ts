@@ -107,10 +107,11 @@ export class AuthService {
   }
 
   async signToken(userId: string, mfaEnabled: boolean): Promise<{ access_token: string }> {
-
+    //if mfa is disabled, the user is fully authenticated
+    //if mfa is enabled, the user still needs to pass mfa
     const payload = {
       sub: userId,
-      fullyAuth: mfaEnabled,
+      fullyAuth: !mfaEnabled,
     };
     const secret = this.config.get('JWT_SECRET');
 

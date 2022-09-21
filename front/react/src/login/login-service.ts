@@ -71,9 +71,9 @@ const fortyTwoSign = async (credentials: fortyTwoLoginDto) => {
     await getMe({ token: token.data.access_token });
     return token;
   } catch (e) {
-    console.log("erreur", { e });
+    console.log("Oauth error", { e });
     return e;
   }
 };
 
-export default { signup, signin, fortyTwoSign };
+export default { signup, signin, fortyTwoSign, getMe };

@@ -11,10 +11,19 @@ import {
   FaEye,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import jwt_decode from 'jwt-decode';
+
 /*<div className="api-signin">
                 <h3>Signin with</h3>
                 <input className="fortytwo-button" type="image" alt="" />
               </div>*/
+
+interface DecodedToken {
+  sub: string,
+  fullyAuth: boolean,
+  iat: string,
+  exp: string,
+}
 
 export function SigninForm() {
   const [newUsername, setNewUsername] = useState("");
@@ -34,32 +43,12 @@ export function SigninForm() {
   const goSignup = () => {
     navigate("/signup");
   };
-
   const goGame = () => {
     console.log("chat");
     navigate("/chat");
   };
-
-  const addUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-
-    try {
-      setErrorMessage("");
-      const token = await loginService.signin({
-        username: newUsername,
-        password: newPass,
-      });
-      window.sessionStorage.setItem("Token", token);
-      setNewUsername("");
-      setNewPass("");
-      goGame();
-    } catch (e) {
-      console.log({ e });
-      setErrorMessage("wrong username or password");
-      /*setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);*/ //hide the wrong password message after a short moment
-    }
+  const goSigninMfa = () => {
+    navigate("/mfa-signin");
   };
 
   const ftShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -75,22 +64,50 @@ export function SigninForm() {
     }
   };
 
+  const signinClassic = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+
+    try {
+      setErrorMessage("");
+      const token = await loginService.signin({
+        username: newUsername,
+        password: newPass,
+      });
+      window.sessionStorage.setItem("Token", token);
+      setNewUsername("");
+      setNewPass("");
+      const tokenInfo: DecodedToken = jwt_decode(token); //can throw InvalidTokenError
+      //const t:  = JSON.parse(tokenInfo);
+      console.log(tokenInfo);
+      console.log(tokenInfo.fullyAuth);
+
+      if (tokenInfo.fullyAuth) {
+        goGame();
+      }
+      else {
+        goSigninMfa();
+      }
+    } catch (e) {
+      console.log({ e });
+      setErrorMessage("wrong username or password");
+    }
+  };
+
   function signinFortytwo(/*event: React.MouseEvent<HTMLButtonElement>*/): string {
     console.log("signinfortytwo");
-    let ungessable = "";
+    let secretState = "";
     let url =
       "https://api.intra.42.fr/oauth/authorize?client_id=64540081a9e86e0f3021ae0a3106565238272a37243a4d46071d14a546fda80f&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2F42-redirect&response_type=code&state=";
     //todo: get data from env
+
     const possible =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     const stringLength = Math.floor(Math.random() * 200);
-
     for (let i = 0; i < stringLength; i++) {
-      ungessable += possible.at(Math.floor(Math.random() * possible.length));
+      secretState += possible.at(Math.floor(Math.random() * possible.length));
     }
 
-    //console.log({ ungessable });
-    return url + ungessable;
+    return url + secretState;
   }
 
   return (
@@ -130,7 +147,7 @@ export function SigninForm() {
               <p className="error-msg">{ErrorMessage}</p>
             )}
             <div>
-              <button className="button login__submit" onClick={addUser}>
+              <button className="button login__submit" onClick={signinClassic}>
                 <span className="button__text">Log In Now</span>
                 <FaRocket className="login__icon" />
               </button>

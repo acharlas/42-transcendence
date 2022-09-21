@@ -14,7 +14,7 @@ export class MfaService {
 
   async mfaSendSms(phoneNumber: string): Promise<boolean> {
     //TMP
-    return true; //to test stuff without calling external API
+    // return true; //to test stuff without calling external API
     const accountSid = this.config.get<string>('TWILIO_ACCOUNT_SID');
     const authToken = this.config.get<string>('TWILIO_AUTH_TOKEN');
     const serviceSid = this.config.get<string>('TWILIO_SERVICE_SID');
@@ -38,7 +38,7 @@ export class MfaService {
 
   async mfaCheckCode(phoneNumber: string, codeToCheck: string): Promise<boolean> {
     //TMP
-    return true; //to test stuff without calling external API
+    // return true; //to test stuff without calling external API
     const accountSid = this.config.get<string>('TWILIO_ACCOUNT_SID');
     const authToken = this.config.get<string>('TWILIO_AUTH_TOKEN');
     const serviceSid = this.config.get<string>('TWILIO_SERVICE_SID');
