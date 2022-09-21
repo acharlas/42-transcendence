@@ -1,30 +1,14 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
-
-interface Message {
-  content: string;
-  username: string;
-  nickname: string;
-}
-
-interface Room {
-  id: string;
-  name: string;
-  type: string;
-}
-
-interface User {
-  username: string;
-  nickname: string;
-  privilege: string;
-}
+import { Message, Room, User } from "../chat/type";
 
 interface Context {
+  socket?: Socket;
   username?: string;
   setUsername: Function;
   roomId?: string;
   setRoomId: Function;
-  rooms: Room[];
+  rooms?: Room[];
   setRooms: Function;
   messages?: Message[];
   setMessages: Function;
@@ -40,17 +24,65 @@ const ChatContext = createContext<Context>({
   setUserList: () => false,
   userList: [],
   username: "",
-  roomId: "",
   messages: [],
-  rooms: [],
 });
 
 function ChatProvider(props: any) {
-  const [username, setUsername] = useState("");
-  const [roomId, setRoomId] = useState("");
-  const [rooms, setRooms] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [socket, setSocket] = useState<Socket>(
+    io("http://localhost:3333/chat", {
+      auth: {
+        token: sessionStorage.getItem("Token"),
+      },
+    })
+  );
+  const [username, setUsername] = useState<string>("");
+  const [roomId, setRoomId] = useState<string>("");
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [userList, setUserList] = useState<User[]>([]);
+
+  useEffect(() => {
+    socket.on("Rooms", ({ room }: { room: Room[] }) => {
+      console.log("Roomsssss: ", room);
+      console.log("roomssssss: ", rooms);
+      setRooms(room);
+    });
+
+    socket.on("NewRoom", ({ newRoom }: { newRoom: Room }) => {
+      console.log("newRoom", newRoom, "add to", rooms);
+      setRooms([...rooms, newRoom]);
+    });
+
+    socket.on("JoinedRoom", ({ roomId }: { roomId: string }) => {
+      console.log("joinedRoom");
+      console.log("joinedRoom: ", roomId);
+      setRoomId(roomId);
+      const curRoom = rooms.find((room) => {
+        room.channel.id === roomId;
+      });
+      setMessages(curRoom.message);
+      setUserList(curRoom.user);
+    });
+
+    socket.on(
+      "RoomMessage",
+      ({ roomId, message }: { roomId: string; message: Message }) => {
+        console.log("RoomMessage: ", { message });
+        const curRoom = rooms.find((room) => {
+          room.channel.id === roomId;
+        });
+        curRoom.message.push(message);
+      }
+    );
+
+    socket.on("newUser", ({ roomId, user }: { roomId: string; user: User }) => {
+      console.log("user list receive:", { user });
+      const curRoom = rooms.find((room) => {
+        room.channel.id === roomId;
+      });
+      curRoom.user.push(user);
+    });
+  });
 
   return (
     <ChatContext.Provider
@@ -65,6 +97,7 @@ function ChatProvider(props: any) {
         setRoomId,
         messages,
         setMessages,
+        socket,
       }}
       {...props}
     />

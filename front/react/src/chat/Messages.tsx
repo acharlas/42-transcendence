@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Socket } from "socket.io-client";
 import { useChat } from "../context/chat.context";
 import "./chat-style.css";
-import { User } from "./type";
+import { User, UserPrivilege } from "./type";
 
 function MessagesContainer({
   socket,
@@ -55,7 +55,7 @@ function MessagesContainer({
                     user: {
                       nickname: message.nickname,
                       username: message.username,
-                      privilege: "",
+                      privilege: UserPrivilege.default,
                     },
                   })
                 }

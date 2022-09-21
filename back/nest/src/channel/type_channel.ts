@@ -1,4 +1,4 @@
-import { Channel } from '@prisma/client';
+import { Channel, ChannelType, UserPrivilege } from '@prisma/client';
 
 type UserNickname = {
   users: {
@@ -9,10 +9,27 @@ type UserNickname = {
   }[];
 };
 
+export type ChannelCont = {
+  id: string;
+  name: string;
+  type: ChannelType;
+};
+
 export type MessageCont = {
-  nickname: string;
-  username: string;
   content: string;
+  username: string;
+};
+
+export type User = {
+  username: string;
+  nickname: string;
+  privilege: UserPrivilege;
+};
+
+export type Room = {
+  channel: ChannelCont;
+  user: User[];
+  message: MessageCont[];
 };
 
 export type GetChannelById = Channel & UserNickname;

@@ -1,10 +1,12 @@
 import { useRef, useState } from "react";
 import { Socket } from "socket.io-client";
+import { useChat } from "../context/chat.context";
 
 function CreateRoomsContainer({ socket }: { socket: Socket }) {
   const newRoomRef = useRef(null);
   const newPassword = useRef(null);
   const [type, setType] = useState<string>("public");
+  const { rooms } = useChat();
 
   function handleCreateRoom() {
     const roomName = newRoomRef.current.value || "";

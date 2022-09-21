@@ -1,6 +1,7 @@
 import { FaAngleRight, FaLock } from "react-icons/fa";
 import { Socket } from "socket.io-client";
 import { useChat } from "../context/chat.context";
+import { ChannelType } from "./type";
 
 function RoomsContainer({
   socket,
@@ -17,9 +18,9 @@ function RoomsContainer({
 }) {
   const { roomId, setRoomId, rooms } = useChat();
 
-  function handleJoinRoom(key: string, type: string) {
+  function handleJoinRoom(key: string, type: ChannelType) {
     if (key === roomId) return;
-    if (type === "protected") {
+    if (type === ChannelType.protected) {
       setNextRoom(key);
       if (roomId) {
         socket.emit("LeaveRoom", { roomId });
@@ -61,16 +62,17 @@ function RoomsContainer({
         </button>
       </div>
       {rooms.map((room, id) => {
+        const channel = room.channel;
         return (
           <div key={id}>
             <button
               className="join-room-button"
-              disabled={room.id === roomId}
-              title={`Join ${room.name}`}
-              onClick={() => handleJoinRoom(room.id, room.type)}
+              disabled={channel.id === roomId}
+              title={`Join ${channel.name}`}
+              onClick={() => handleJoinRoom(channel.id, channel.type)}
             >
-              {room.type === "protected" ? <FaLock /> : ""}
-              {room.name}
+              {channel.type === ChannelType.protected ? <FaLock /> : ""}
+              {channel.name}
             </button>
           </div>
         );

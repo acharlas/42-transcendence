@@ -8,14 +8,16 @@ import {
   ChannelType,
   ChannelUser,
   Message,
+  User,
   UserPrivilege,
   UserStatus,
 } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import * as argon from 'argon2';
+import { channel } from 'diagnostics_channel';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateChannelDto, EditChannelDto, JoinChannelDto } from './dto';
-import { GetChannelById, MessageCont } from './type_channel';
+import { ChannelCont, GetChannelById, MessageCont, Room } from './type_channel';
 
 @Injectable()
 export class ChannelService {
@@ -243,39 +245,63 @@ export class ChannelService {
     userId: string,
     channelId: string,
     dto: JoinChannelDto,
-  ) {
-    const channel = await this.prisma.channel.findUnique({
-      where: {
-        id: channelId,
-      },
-    });
-    if (!channel) {
-      throw new ForbiddenException('Access to resource denied');
-    }
-    if (channel.type === ChannelType.public)
-      return await this.joinPublicChannel(userId, channel);
-    if (channel.type === ChannelType.protected)
-      return await this.joinProtectedChannel(userId, channel, dto);
-  }
+  ): Promise<Room> {
+    return new Promise<Room>((resolve, reject) => {
+      this.prisma.channel
+        .findUnique({
+          where: {
+            id: channelId,
+          },
+        })
+        .then((channel) => {
+          return resolve(
+            new Promise<Room>((resolve, reject) => {
+              this.prisma.user
+                .findUnique({ where: { id: userId } })
+                .then((user) => {
+                  if (channel.type === ChannelType.public)
+                    return resolve(
+                      new Promise<Room>((resolve, reject) => {
+                        this.joinUpdateChannel(user, channel)
+                          .then((room) => {
+                            return resolve(room);
+                          })
+                          .catch((err) => {
+                            return reject(err);
+                          });
+                      }),
+                    );
 
-  async joinPublicChannel(userId: string, channel: Channel) {
-    const channelUser = await this.prisma.channelUser.findUnique({
-      where: {
-        userId_channelId: {
-          userId,
-          channelId: channel.id,
-        },
-      },
+                  if (channel.type === ChannelType.protected)
+                    return resolve(
+                      new Promise<Room>((resolve, reject) => {
+                        this.joinProtectedChannel(user, channel, dto)
+                          .then((room) => {
+                            return resolve(room);
+                          })
+                          .catch((err) => {
+                            return reject(err);
+                          });
+                      }),
+                    );
+                })
+                .catch((err) => {
+                  return reject(err);
+                });
+            }),
+          );
+        })
+        .catch((err) => {
+          throw new ForbiddenException('Access to resource denied');
+        });
     });
-
-    return await this.joinUpdateChannel(userId, channel, channelUser);
   }
 
   async joinProtectedChannel(
-    userId: string,
+    user: User,
     channel: Channel,
     dto: JoinChannelDto,
-  ) {
+  ): Promise<Room> {
     if (
       dto.password === null ||
       dto.password === undefined ||
@@ -287,90 +313,88 @@ export class ChannelService {
     if (!pwMathes) {
       throw new ForbiddenException('Password incorrect');
     }
-    const channelUser = await this.prisma.channelUser.findUnique({
-      where: {
-        userId_channelId: {
-          userId,
-          channelId: channel.id,
-        },
-      },
+    return new Promise<Room>((resolve, reject) => {
+      this.joinUpdateChannel(user, channel)
+        .then((room) => {
+          return resolve(room);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
     });
-    return await this.joinUpdateChannel(userId, channel, channelUser);
   }
 
-  async joinUpdateChannel(
-    userId: string,
-    channel: Channel,
-    channelUser: ChannelUser,
-  ) {
-    if (!channelUser) {
-      return await this.prisma.channel.update({
-        where: {
-          id: channel.id,
-        },
-        data: {
-          users: {
-            create: [
-              {
-                privilege: UserPrivilege.default,
-                status: UserStatus.connected,
-                user: {
-                  connect: {
-                    id: userId,
+  async joinUpdateChannel(user: User, channel: Channel): Promise<Room> {
+    return new Promise<Room>((resolve, reject) => {
+      this.prisma.channel
+        .update({
+          where: {
+            id: channel.id,
+          },
+          data: {
+            users: {
+              create: [
+                {
+                  privilege: UserPrivilege.default,
+                  status: UserStatus.connected,
+                  user: {
+                    connect: {
+                      id: user.id,
+                    },
                   },
                 },
+              ],
+            },
+          },
+          include: {
+            users: {
+              include: {
+                user: true,
               },
-            ],
+            },
+            messages: {
+              select: {
+                content: true,
+                user: true,
+              },
+            },
           },
-        },
-      });
-    } else {
-      return await this.prisma.channelUser.update({
-        where: {
-          userId_channelId: {
-            userId,
-            channelId: channel.id,
-          },
-        },
-        data: {
-          status: UserStatus.connected,
-        },
-      });
-    }
+        })
+        .then((channel) => {
+          return resolve({
+            channel: { id: channel.id, name: channel.name, type: channel.type },
+            user: channel.users.map((user) => {
+              return {
+                username: user.user.username,
+                nickname: user.user.nickname,
+                privilege: user.privilege,
+              };
+            }),
+            message: channel.messages.map((msg) => {
+              return { content: msg.content, username: msg.user.username };
+            }),
+          });
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
-  async leaveChannel(userId: string, channelId: string) {
-    const channel = await this.getChannelById(channelId);
-
-    if (!channel) {
-      throw new ForbiddenException('Access to resource denied');
-    }
-
-    const channelUser = await this.prisma.channelUser.findUnique({
-      where: {
-        userId_channelId: {
-          userId,
-          channelId: channel.id,
-        },
-      },
-    });
-    if (!channelUser) {
-      throw new ForbiddenException('You are not on the channel');
-    }
-    if (channelUser.status === UserStatus.disconnected) {
-      throw new ForbiddenException('Already left the channel');
-    }
-
-    return await this.prisma.channelUser.update({
-      where: {
-        userId_channelId: {
-          userId,
-          channelId,
-        },
-      },
-      data: {
-        status: UserStatus.disconnected,
-      },
+  async leaveChannel(userId: string, channelId: string): Promise<ChannelUser> {
+    return new Promise<ChannelUser>((resolve, reject) => {
+      this.prisma.channelUser
+        .delete({
+          where: {
+            userId_channelId: { channelId: channelId, userId: userId },
+          },
+        })
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
     });
   }
 
@@ -396,9 +420,8 @@ export class ChannelService {
           return resolve(
             ret.messages.map((elem) => {
               return {
-                nickname: elem.user.nickname,
-                username: elem.username,
                 content: elem.content,
+                username: elem.username,
               };
             }),
           );
@@ -452,9 +475,8 @@ export class ChannelService {
                 })
                 .then((ret) => {
                   return resolve({
-                    username: ret.username,
-                    nickname: res.user.nickname,
                     content: ret.content,
+                    username: ret.username,
                   });
                 })
                 .catch((err) => {
@@ -610,6 +632,54 @@ export class ChannelService {
           return reject(err);
         });
     });
-    return;
+  }
+
+  async getUserRoom(userId: string): Promise<Room[]> {
+    return new Promise<Room[]>((resolve, reject) => {
+      this.prisma.channelUser
+        .findMany({
+          where: {
+            userId: userId,
+          },
+          include: {
+            channel: {
+              include: {
+                messages: true,
+                users: {
+                  include: {
+                    user: true,
+                  },
+                },
+              },
+            },
+          },
+        })
+        .then((ret) => {
+          return resolve(
+            ret.map((elem) => {
+              return {
+                channel: {
+                  id: elem.channelId,
+                  name: elem.channel.name,
+                  type: elem.channel.type,
+                },
+                user: elem.channel.users.map((user) => {
+                  return {
+                    privilege: user.privilege,
+                    username: user.user.username,
+                    nickname: user.user.nickname,
+                  };
+                }),
+                message: elem.channel.messages.map((msg) => {
+                  return { content: msg.content, username: msg.username };
+                }),
+              };
+            }),
+          );
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 }

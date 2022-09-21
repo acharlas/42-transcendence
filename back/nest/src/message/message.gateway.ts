@@ -32,11 +32,10 @@ export class MessageGateway
   handleConnection(client: SocketWithAuth): void {
     const socket = this.io.sockets;
     this.channelService
-      .getChannels(client.userID)
+      .getUserRoom(client.userID)
       .then((res) => {
-        console.log(res);
-        client.broadcast.emit('Rooms', { rooms: res });
-        client.emit('Rooms', { rooms: res });
+        console.log('room on connection:', res);
+        client.emit('Rooms', { room: res });
       })
       .catch((err) => {
         console.log(err);
@@ -57,7 +56,6 @@ export class MessageGateway
   /*USER CREATE A ROOM*/
   @SubscribeMessage('CreateRoom')
   CreateRoom(
-    @MessageBody('old') oldRoom: string,
     @MessageBody('CreateChannelDto') roomDto: CreateChannelDto,
     @ConnectedSocket()
     client: SocketWithAuth,
@@ -68,53 +66,32 @@ export class MessageGateway
         .createChannel(client.userID, roomDto)
         .then((ret) => {
           console.log({ ret });
-          client.leave(oldRoom);
           client.join(ret.id);
-          return resolve(
-            new Promise<void>((resolve, reject) => {
-              this.channelService
-                .getChannels(client.userID)
-                .then((res) => {
-                  console.log('room return:', res);
-                  client.broadcast.emit('Rooms', { rooms: res });
-                  client.emit('Rooms', { rooms: res });
-                  return resolve(
-                    new Promise<void>((resolve, reject) => {
-                      this.channelService
-                        .getChannelUser(ret.id)
-                        .then((user) => {
-                          client.emit('userList', { user });
-                          client.broadcast
-                            .to(ret.id)
-                            .emit('userList', { user });
-                          return resolve(
-                            new Promise<void>((resolve, reject) => {
-                              this.channelService
-                                .getChannelMessage(ret.id, client.userID)
-                                .then((res) => {
-                                  client.emit('JoinedRoom', {
-                                    roomId: ret.id,
-                                    message: res,
-                                  });
-                                  return resolve();
-                                })
-                                .catch((err) => {
-                                  return reject(err);
-                                });
-                            }),
-                          );
-                        })
-                        .catch((err) => {
-                          return reject(err);
-                        });
-                    }),
-                  );
-                })
-                .catch((err) => {
-                  return reject(err);
-                });
-            }),
-          );
+          client.emit('NewRoom', {
+            newRoom: {
+              channel: {
+                id: ret.id,
+                name: ret.name,
+                type: ret.type,
+              },
+              user: [],
+              message: [],
+            },
+          });
+          // return resolve(
+          //   new Promise<void>((resolve, reject) => {
+          //     this.channelService
+          //       .getUserRoom(client.userID)
+          //       .then((res) => {
+          //         client.emit('Rooms', { room: res });
+          //         client.emit('JoinedRoom', { roomId: ret.id });
+          //         return resolve();
+          //       })
+          //       .catch((err) => {
+          //         return reject(err);
+          //       });
+          //   }),
+          // );
         })
         .catch((err) => {
           return reject(err);
@@ -135,21 +112,10 @@ export class MessageGateway
       this.channelService
         .addChannelMessage(client.userID, roomId, client.username, message)
         .then((ret) => {
-          return resolve(
-            new Promise<void>((resolve, reject) => {
-              this.channelService
-                .getChannelMessage(roomId, client.userID)
-                .then((res) => {
-                  client.broadcast.to(roomId).emit('newMessage', {
-                    message: res,
-                  });
-                  return resolve();
-                })
-                .catch((err) => {
-                  return reject(err);
-                });
-            }),
-          );
+          client.broadcast
+            .to(roomId)
+            .emit('RoomMessage', { roomId: roomId, message: ret });
+          return resolve();
         })
         .catch((err) => {
           return reject(err);
@@ -161,48 +127,19 @@ export class MessageGateway
   /* USER JOIN A ROOM*/
   @SubscribeMessage('JoinRoom')
   joinRoom(
-    @MessageBody('old') oldRoom: string,
     @MessageBody('key') roomId: string,
     @MessageBody('password') password: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    console.log('join room:', roomId, 'old room:', oldRoom, 'pass', password);
+    console.log('join room:', roomId, 'pass', password);
     return new Promise<void>((resolve, reject) => {
       this.channelService
         .joinChannelById(client.userID, roomId, { password: password })
         .then((ret) => {
           console.log({ roomId });
-          client.leave(oldRoom);
           client.join(roomId);
-          console.log(roomId);
-          return resolve(
-            new Promise<void>((resolve, reject) => {
-              this.channelService
-                .getChannelMessage(roomId, client.userID)
-                .then((res) => {
-                  console.log('join message', res);
-                  client.emit('JoinedRoom', { roomId: roomId, message: res });
-                  return resolve(
-                    new Promise<void>((resolve, reject) => {
-                      this.channelService
-                        .getChannelUser(roomId)
-                        .then((user) => {
-                          client.emit('userList', { user });
-                          client.broadcast
-                            .to(roomId)
-                            .emit('userList', { user });
-                        })
-                        .catch((err) => {
-                          return reject(err);
-                        });
-                    }),
-                  );
-                })
-                .catch((err) => {
-                  return reject(err);
-                });
-            }),
-          );
+          client.emit('NewRoom', { newRoom: ret });
+          return resolve();
         })
         .catch((err) => {
           return reject(err);

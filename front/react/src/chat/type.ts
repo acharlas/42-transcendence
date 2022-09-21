@@ -4,15 +4,35 @@ export interface Message {
   nickname: string;
 }
 
-export interface Room {
+export enum ChannelType {
+  public,
+  private,
+  protected,
+  dm,
+}
+
+export enum UserPrivilege {
+  owner,
+  admin,
+  default,
+  muted,
+  ban,
+}
+
+export interface Channel {
   id: string;
   name: string;
-  type: string;
+  type: ChannelType;
+}
+
+export interface Room {
+  channel: Channel;
   user: User[];
+  message: Message[];
 }
 
 export interface User {
   username: string;
   nickname: string;
-  privilege: string;
+  privilege: UserPrivilege;
 }
