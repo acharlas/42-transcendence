@@ -8,8 +8,8 @@ import "../style.css";
 
 export default function MfaSetupValidate() {
   let navigate = useNavigate();
-  const goGame = () => {
-    navigate("/game");
+  const goSettings = () => {
+    navigate("/settings");
   };
 
   const [smsCode, setSmsCode] = useState('');
@@ -25,7 +25,7 @@ export default function MfaSetupValidate() {
     try {
       setErrorMessage("");
       await mfaService.requestMfaSetupFinish({ codeToCheck: smsCode });
-      goGame();
+      goSettings();
     } catch (e) {
       console.log({ e });
       setErrorMessage("Incorrect code."); //TODO: improve error msg

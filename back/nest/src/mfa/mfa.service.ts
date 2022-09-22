@@ -1,20 +1,25 @@
 import { ConfigService } from '@nestjs/config';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Twilio } from 'twilio';
+import { JwtService } from '@nestjs/jwt';
+
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MfaSetupDto } from './dto/mfa-setup.dto';
 import { MfaValidateDto } from './dto/mfa-validate.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { AuthController } from 'src/auth/auth.controller';
 
 @Injectable()
 export class MfaService {
   constructor(
     private config: ConfigService,
-    private prisma: PrismaService
+    private prisma: PrismaService,
+    private jwt: JwtService,
   ) { }
 
   async mfaSendSms(phoneNumber: string): Promise<boolean> {
     //TMP
-    // return true; //to test stuff without calling external API
+    return true; //to test stuff without calling external API
     const accountSid = this.config.get<string>('TWILIO_ACCOUNT_SID');
     const authToken = this.config.get<string>('TWILIO_AUTH_TOKEN');
     const serviceSid = this.config.get<string>('TWILIO_SERVICE_SID');
@@ -38,7 +43,7 @@ export class MfaService {
 
   async mfaCheckCode(phoneNumber: string, codeToCheck: string): Promise<boolean> {
     //TMP
-    // return true; //to test stuff without calling external API
+    return true; //to test stuff without calling external API
     const accountSid = this.config.get<string>('TWILIO_ACCOUNT_SID');
     const authToken = this.config.get<string>('TWILIO_AUTH_TOKEN');
     const serviceSid = this.config.get<string>('TWILIO_SERVICE_SID');
@@ -95,24 +100,54 @@ export class MfaService {
     if (user.mfaEnabled === false) throw new ForbiddenException('mfa not enabled');
     if (user.mfaPhoneNumber === null) throw new ForbiddenException('no phone number');
 
-    this.mfaSendSms(user.mfaPhoneNumber);
-
+    const success = await this.mfaSendSms(user.mfaPhoneNumber);
+    if (success) {
+      console.log("mfa init signin ok");
+    } else {
+      console.log("mfa init signin failed");
+    }
     //success:
-    //redirect to challenge page
-    //TODO
+    //front must redirect to challenge page
   }
 
-  async validateSignIn(userId: string, dto: MfaValidateDto) {
+  async signToken(userId: string): Promise<{ access_token: string }> {
+    const payload = {
+      sub: userId,
+      fullyAuth: true,
+    };
+    const secret = this.config.get('JWT_SECRET');
+
+    const token = await this.jwt.signAsync(payload, {
+      expiresIn: '60m',
+      secret: secret,
+    });
+
+    return {
+      access_token: token,
+    };
+  }
+
+  async validateSignIn(userId: string, dto: MfaValidateDto): Promise<{ access_token: string }> {
     const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (user === null) throw new ForbiddenException('no such user');
     if (user.mfaEnabled === false) throw new ForbiddenException('mfa not enabled');
     if (user.mfaPhoneNumber === null) throw new ForbiddenException('no phone number');
 
-    this.mfaCheckCode(user.mfaPhoneNumber, dto.codeToCheck);
+    const success = await this.mfaCheckCode(user.mfaPhoneNumber, dto.codeToCheck);
+
+    if (success) {
+      console.log("mfa setup signin ok");
+      const token = this.signToken(userId);
+      console.log(await token);
+
+      return token;
+    } else {
+      console.log("mfa setup signin failed");
+    }
 
     //success:
-    //allow log-in and redirect to homepage
-    //TODO
+    //return new auth token
+    //front must save auth token
   }
 
   async disable(userId: string) {

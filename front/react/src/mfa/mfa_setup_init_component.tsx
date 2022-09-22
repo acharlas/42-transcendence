@@ -10,7 +10,7 @@ export default function MfaSetupInit() {
   let navigate = useNavigate();
 
   const goValidate = () => {
-    navigate("/mfa/setup/validate");
+    navigate("/settings/mfa-finish-setup");
   };
 
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -28,7 +28,7 @@ export default function MfaSetupInit() {
       goValidate();
     }
     catch (e) {
-      console.log(e);
+      console.log({ e });
       setErrorMessage("Request failed."); //TODO: improve error msg
     }
   }
