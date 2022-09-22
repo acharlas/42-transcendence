@@ -2,8 +2,8 @@ import "./chat-style.css";
 import RoomsContainer from "./Rooms";
 import MessagesContainer from "./Messages";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { User } from "./type";
+import { useEffect, useState } from "react";
+import { Message, Room, User } from "./type";
 import { useChat } from "../context/chat.context";
 import { FaAngleLeft } from "react-icons/fa";
 import UserMenu from "./user-menu";
@@ -12,11 +12,12 @@ import ChatBodyComponent from "./chat-body";
 export default function ChatIndex() {
   const {
     socket,
-    setRooms,
-    setRoomId,
-    setMessages,
-    messages,
     roomId,
+    setRooms,
+    rooms,
+    setRoomId,
+    setRoomShow,
+    setMessages,
     setUserList,
   } = useChat();
   const [showRoom, setShowRoom] = useState<boolean>(false);

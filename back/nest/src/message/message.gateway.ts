@@ -34,8 +34,11 @@ export class MessageGateway
     this.channelService
       .getUserRoom(client.userID)
       .then((res) => {
-        console.log('room on connection:', res);
+        console.log('room on connection:', { res });
         client.emit('Rooms', { room: res });
+        res.forEach((room) => {
+          client.join(room.channel.id);
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -95,11 +98,13 @@ export class MessageGateway
     @MessageBody('message') message: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
+    console.log('new message arrive:', message);
     return new Promise<void>((resolve, reject) => {
       console.log('SendRoom message', { message }, 'channelId:', roomId);
       this.channelService
         .addChannelMessage(client.userID, roomId, client.username, message)
         .then((ret) => {
+          console.log('message resend:', ret, 'roomid: ', roomId);
           client.broadcast
             .to(roomId)
             .emit('RoomMessage', { roomId: roomId, message: ret });
@@ -126,6 +131,13 @@ export class MessageGateway
         .then((ret) => {
           client.join(ret.channel.id);
           client.emit('NewRoom', { newRoom: ret });
+          client.broadcast.to(ret.channel.id).emit('JoinRoom', {
+            id: ret.channel.id,
+            user: ret.user.find((user) => {
+              if (user.username === client.username) return true;
+              return false;
+            }),
+          });
           return resolve();
         })
         .catch((err) => {

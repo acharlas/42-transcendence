@@ -32,13 +32,7 @@ const ChatContext = createContext<Context>({
 });
 
 function ChatProvider(props: any) {
-  const [socket, setSocket] = useState<Socket>(
-    io("http://localhost:3333/chat", {
-      auth: {
-        token: sessionStorage.getItem("Token"),
-      },
-    })
-  );
+  const [socket, setSocket] = useState<Socket>(io());
   const [username, setUsername] = useState<string>("");
   const [roomId, setRoomId] = useState<string>("");
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -47,15 +41,29 @@ function ChatProvider(props: any) {
   const [userList, setUserList] = useState<User[]>([]);
 
   useEffect(() => {
+    console.log("reopen socket");
+    setSocket(
+      io("http://localhost:3333/chat", {
+        auth: {
+          token: sessionStorage.getItem("Token"),
+        },
+      })
+    );
+    return () => {
+      socket.close();
+      return;
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("NewRoom", ({ newRoom }: { newRoom: Room }) => {
+      console.log("newRoom", newRoom, "add to", rooms);
+      setRooms([...rooms, newRoom]);
+    });
     socket.on("Rooms", ({ room }: { room: Room[] }) => {
       console.log("Roomsssss: ", room);
       console.log("roomssssss: ", rooms);
       setRooms(room);
-    });
-
-    socket.on("NewRoom", ({ newRoom }: { newRoom: Room }) => {
-      console.log("newRoom", newRoom, "add to", rooms);
-      setRooms([...rooms, newRoom]);
     });
 
     socket.on("JoinedRoom", ({ roomId }: { roomId: string }) => {
@@ -84,9 +92,27 @@ function ChatProvider(props: any) {
     socket.on("newUser", ({ roomId, user }: { roomId: string; user: User }) => {
       console.log("user list receive:", { user });
       const curRoom = rooms.find((room) => {
-        room.channel.id === roomId;
+        if (room.channel.id === roomId) return true;
+        return false;
       });
       curRoom.user.push(user);
+    });
+    socket.on("JoinRoom", ({ id, user }: { id: string; user: User }) => {
+      const newUser = rooms.find((room) => {
+        if (room.channel.id === id) return true;
+        return false;
+      }).user;
+      newUser.push(user);
+      const newRooms = rooms.map((room) => {
+        if (room.channel.id !== id) return room;
+        return {
+          channel: room.channel,
+          message: room.message,
+          user: newUser,
+        };
+      });
+      setRooms(newRooms);
+      if (roomId === id) setUserList(newUser);
     });
   });
 

@@ -14,8 +14,17 @@ function MessagesContainer({
   setShowUser: Function;
 }) {
   const newMessageRef = useRef(null);
-  const { roomShow, setMessages, messages, username, roomId, rooms, userList } =
-    useChat();
+  const {
+    setRooms,
+    rooms,
+    roomShow,
+    setMessages,
+    messages,
+    username,
+    roomId,
+    userList,
+    setRoomShow,
+  } = useChat();
 
   function handleSendMessage() {
     const message = newMessageRef.current.value;
@@ -28,13 +37,40 @@ function MessagesContainer({
     console.log("message send:", message);
     if (message[0] != null) {
       const user = userList.find((user) => {
-        user.username = username;
+        if (user.username === window.sessionStorage.getItem("username"))
+          return true;
+        return false;
       });
+      console.log("user find:", user, "username:", username);
       socket.emit("SendRoomMessage", {
         roomId: roomId,
         message: message,
       });
-      roomShow.message.push({ content: message, username: user.username });
+      console.log(roomShow);
+
+      const newRooms = [...rooms];
+
+      newRooms
+        .find((room) => {
+          if (room.channel.id === roomShow.channel.id) return true;
+          return false;
+        })
+        .message.push({
+          content: message,
+          username: user.username,
+          nickname: user.nickname,
+        });
+
+      setRooms(newRooms);
+      setRoomShow(
+        newRooms.find((room) => {
+          if (room.channel.id === roomShow.channel.id) return true;
+          return false;
+        })
+      );
+      console.log("oldmessage: ", messages);
+      console.log("newMessage", roomShow.message);
+
       setMessages(roomShow.message);
     }
   }
@@ -61,7 +97,7 @@ function MessagesContainer({
                   })
                 }
               >
-                {user.nickname}:
+                {user ? user.nickname : message.nickname}:
               </button>
               <p className="chat-message">{message.content}</p>
             </nav>

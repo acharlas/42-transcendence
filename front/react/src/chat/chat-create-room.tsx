@@ -21,7 +21,7 @@ function CreateRoomsContainer({ socket }: { socket: Socket }) {
       roomName,
       CreateChannelDto: { name: roomName, type: type, password: password },
     });
-    newRoomRef.current.value = "";
+    if (newRoomRef.current) newRoomRef.current.value = "";
     if (newPassword.current) newPassword.current.value = "";
   }
 

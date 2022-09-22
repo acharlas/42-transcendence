@@ -412,7 +412,9 @@ export class ChannelService {
           include: {
             messages: {
               include: {
-                user: true,
+                user: {
+                  select: {},
+                },
               },
             },
           },
