@@ -23,22 +23,24 @@ export default function Profile() {
           <div>
             profile picture
           </div>
-          <div>
+          <button>
             update
+          </button>
+          <button>
             delete
-          </div>
+          </button>
           <div>
             Two-factor authentication
           </div>
           <div>
             Enabled/diabled
           </div>
-          <div>
-            Enable
-          </div>
-          <div>
+          <button>
+            enable
+          </button>
+          <button>
             disable
-          </div>
+          </button>
 
 
         </div>
