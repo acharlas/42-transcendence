@@ -8,6 +8,7 @@ import MfaSetupInit from "./mfa/mfa_setup_init_component";
 import MfaSetupValidate from "./mfa/mfa_setup_validate_component";
 import MfaSignin from "./mfa/mfa_signin_component";
 import Chat from "./chat/chat";
+import Settings from "./settings/settings_component";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");
@@ -23,6 +24,7 @@ root.render(
       <Route path="/mfa/setup/validate" element={< MfaSetupValidate />} />
       <Route path="/mfa-signin/" element={<MfaSignin />} />
       <Route path="/chat" element={<Chat />} />
+      <Route path="/settings" element={<Settings />} />
     </Routes>
   </BrowserRouter>
 );
