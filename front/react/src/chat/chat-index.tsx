@@ -2,14 +2,12 @@ import "./chat-style.css";
 import RoomsContainer from "./Rooms";
 import MessagesContainer from "./Messages";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
-import { Message, Room, User } from "./type";
+import { useState } from "react";
+import { User } from "./type";
 import { useChat } from "../context/chat.context";
 import { FaAngleLeft } from "react-icons/fa";
-import CreateRoomsContainer from "./create-room";
-import LockScreen from "./lock-screen";
 import UserMenu from "./user-menu";
+import ChatBodyComponent from "./chat-body";
 
 export default function ChatIndex() {
   const {
@@ -21,9 +19,10 @@ export default function ChatIndex() {
     roomId,
     setUserList,
   } = useChat();
-  const [showRoom, setShowRoom] = useState(false);
+  const [showRoom, setShowRoom] = useState<boolean>(false);
   const [nextRoom, setNextRoom] = useState<string>();
   const [showUser, setShowUser] = useState<User>();
+  const [JoinNewRoom, setJoinNewRoom] = useState<boolean>(false);
   let navigate = useNavigate();
 
   const goSignin = () => {
@@ -49,6 +48,8 @@ export default function ChatIndex() {
               showRoom={showRoom}
               setNextRoom={setNextRoom}
               setShowUser={setShowUser}
+              setJoinNewRoom={setJoinNewRoom}
+              JoinNewRoom={JoinNewRoom}
             />
           ) : (
             <>
@@ -59,15 +60,12 @@ export default function ChatIndex() {
           )}
           {!roomId ? (
             <>
-              {nextRoom ? (
-                <LockScreen
-                  socket={socket}
-                  nextRoom={nextRoom}
-                  setNextRoom={setNextRoom}
-                />
-              ) : (
-                <CreateRoomsContainer socket={socket} />
-              )}
+              <ChatBodyComponent
+                socket={socket}
+                setNextRoom={setNextRoom}
+                nextRoom={nextRoom}
+                JoinNewRoom={JoinNewRoom}
+              />
             </>
           ) : (
             <>

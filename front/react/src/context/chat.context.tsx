@@ -14,6 +14,8 @@ interface Context {
   setMessages: Function;
   userList: User[];
   setUserList: Function;
+  roomShow: Room;
+  setRoomShow: Function;
 }
 
 const ChatContext = createContext<Context>({
@@ -22,6 +24,8 @@ const ChatContext = createContext<Context>({
   setRoomId: () => false,
   setRooms: () => false,
   setUserList: () => false,
+  roomShow: null,
+  setRoomShow: () => false,
   userList: [],
   username: "",
   messages: [],
@@ -38,6 +42,7 @@ function ChatProvider(props: any) {
   const [username, setUsername] = useState<string>("");
   const [roomId, setRoomId] = useState<string>("");
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [roomShow, setRoomShow] = useState<Room>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [userList, setUserList] = useState<User[]>([]);
 
@@ -60,6 +65,7 @@ function ChatProvider(props: any) {
       const curRoom = rooms.find((room) => {
         room.channel.id === roomId;
       });
+      setRoomShow(curRoom);
       setMessages(curRoom.message);
       setUserList(curRoom.user);
     });
@@ -98,6 +104,8 @@ function ChatProvider(props: any) {
         messages,
         setMessages,
         socket,
+        setRoomShow,
+        roomShow,
       }}
       {...props}
     />

@@ -8,6 +8,7 @@ import {
   ChannelType,
   ChannelUser,
   Message,
+  Prisma,
   User,
   UserPrivilege,
   UserStatus,
@@ -674,6 +675,37 @@ export class ChannelService {
                   return { content: msg.content, username: msg.username };
                 }),
               };
+            }),
+          );
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  async JoinChannelByName(
+    name: string,
+    userId: string,
+    dto: JoinChannelDto,
+  ): Promise<Room> {
+    return new Promise<Room>((resolve, reject) => {
+      this.prisma.channel
+        .findUnique({
+          where: {
+            name: name,
+          },
+        })
+        .then((channel) => {
+          return resolve(
+            new Promise<Room>((resolve, reject) => {
+              this.joinChannelById(userId, channel.id, dto)
+                .then((room) => {
+                  return resolve(room);
+                })
+                .catch((err) => {
+                  return reject(err);
+                });
             }),
           );
         })

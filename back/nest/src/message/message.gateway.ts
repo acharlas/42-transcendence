@@ -78,20 +78,8 @@ export class MessageGateway
               message: [],
             },
           });
-          // return resolve(
-          //   new Promise<void>((resolve, reject) => {
-          //     this.channelService
-          //       .getUserRoom(client.userID)
-          //       .then((res) => {
-          //         client.emit('Rooms', { room: res });
-          //         client.emit('JoinedRoom', { roomId: ret.id });
-          //         return resolve();
-          //       })
-          //       .catch((err) => {
-          //         return reject(err);
-          //       });
-          //   }),
-          // );
+          client.emit('JoinedRoom', { roomId: ret.id });
+          return resolve();
         })
         .catch((err) => {
           return reject(err);
@@ -127,17 +115,16 @@ export class MessageGateway
   /* USER JOIN A ROOM*/
   @SubscribeMessage('JoinRoom')
   joinRoom(
-    @MessageBody('key') roomId: string,
+    @MessageBody('name') name: string,
     @MessageBody('password') password: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    console.log('join room:', roomId, 'pass', password);
+    console.log('join room:', name, 'pass', password);
     return new Promise<void>((resolve, reject) => {
       this.channelService
-        .joinChannelById(client.userID, roomId, { password: password })
+        .JoinChannelByName(name, client.userID, { password: password })
         .then((ret) => {
-          console.log({ roomId });
-          client.join(roomId);
+          client.join(ret.channel.id);
           client.emit('NewRoom', { newRoom: ret });
           return resolve();
         })

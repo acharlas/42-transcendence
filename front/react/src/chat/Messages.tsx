@@ -14,27 +14,28 @@ function MessagesContainer({
   setShowUser: Function;
 }) {
   const newMessageRef = useRef(null);
-  const { setMessages, messages, roomId, username, rooms } = useChat();
+  const { roomShow, setMessages, messages, username, roomId, rooms, userList } =
+    useChat();
 
   function handleSendMessage() {
     const message = newMessageRef.current.value;
     newMessageRef.current.value = "";
 
-    /*if (!String(message).trim()) {
+    if (!String(message).trim()) {
       return;
-    }*/
+    }
     console.log("send message roomId:", roomId);
     console.log("message send:", message);
     if (message[0] != null) {
-      socket.emit("SendRoomMessage", { roomId: roomId, message: message });
-      setMessages([
-        ...messages,
-        {
-          nickname: window.sessionStorage.getItem("nickname"),
-          username: window.sessionStorage.getItem("username"),
-          content: message,
-        },
-      ]);
+      const user = userList.find((user) => {
+        user.username = username;
+      });
+      socket.emit("SendRoomMessage", {
+        roomId: roomId,
+        message: message,
+      });
+      roomShow.message.push({ content: message, username: user.username });
+      setMessages(roomShow.message);
     }
   }
 
@@ -47,20 +48,20 @@ function MessagesContainer({
     <>
       <div className="chat">
         {messages.map((message, index) => {
+          const user = userList.find((user) => {
+            if (user.username === message.username) return true;
+            return false;
+          });
           return (
             <nav key={index}>
               <button
                 onClick={() =>
                   handleShowUser({
-                    user: {
-                      nickname: message.nickname,
-                      username: message.username,
-                      privilege: UserPrivilege.default,
-                    },
+                    user: user,
                   })
                 }
               >
-                {message.nickname}:
+                {user.nickname}:
               </button>
               <p className="chat-message">{message.content}</p>
             </nav>

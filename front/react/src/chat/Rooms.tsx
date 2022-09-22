@@ -9,28 +9,44 @@ function RoomsContainer({
   showRoom,
   setNextRoom,
   setShowUser,
+  setJoinNewRoom,
+  JoinNewRoom,
 }: {
   socket: Socket;
   setShowRoom: Function;
   showRoom: boolean;
   setNextRoom: Function;
   setShowUser: Function;
+  setJoinNewRoom: Function;
+  JoinNewRoom: boolean;
 }) {
-  const { roomId, setRoomId, rooms } = useChat();
+  const {
+    roomId,
+    setRoomId,
+    rooms,
+    setMessages,
+    setUserList,
+    setRoomShow,
+    roomShow,
+  } = useChat();
 
-  function handleJoinRoom(key: string, type: ChannelType) {
+  function handleJoinRoom(key: string) {
+    console.log("try to join:", key);
     if (key === roomId) return;
-    if (type === ChannelType.protected) {
-      setNextRoom(key);
-      if (roomId) {
-        socket.emit("LeaveRoom", { roomId });
-        setRoomId("");
-      }
-      setShowUser(null);
-      showRoom ? setShowRoom(false) : setShowRoom(true);
-      return;
-    } else socket.emit("JoinRoom", { key, old: roomId });
-    showRoom ? setShowRoom(false) : setShowRoom(true);
+    setRoomId(key);
+    rooms.map((room) => {
+      console.log("channel id:", room.channel.id);
+    });
+    const curRoom = rooms.find((room) => {
+      if (room.channel.id === key) return true;
+      return false;
+    });
+    console.log(curRoom, curRoom.message, curRoom.user);
+    setRoomShow(curRoom);
+    console.log(curRoom, curRoom.message, curRoom.user);
+    setMessages(curRoom.message);
+    setUserList(curRoom.user);
+    showRoom ? setShowRoom(false) : "";
     setShowUser(null);
   }
 
@@ -40,11 +56,18 @@ function RoomsContainer({
 
   const handleShowCreateRoom = (event) => {
     if (roomId) {
-      socket.emit("LeaveRoom", { roomId });
       setRoomId("");
     }
+    setJoinNewRoom(false);
     setShowUser(null);
-    showRoom ? setShowRoom(false) : setShowRoom(true);
+    showRoom ? setShowRoom(false) : "";
+  };
+
+  const handleJoinNewRoom = (event) => {
+    setJoinNewRoom(true);
+    setShowUser(null);
+    setRoomId("");
+    showRoom ? setShowRoom(false) : "";
   };
 
   return (
@@ -53,12 +76,20 @@ function RoomsContainer({
         <button
           className="create-room-button-menu"
           onClick={handleShowCreateRoom}
-          disabled={roomId === ""}
+          disabled={roomId === "" && !JoinNewRoom}
         >
           create room
         </button>
         <button className="room-button" onClick={handleShowRoom}>
           <FaAngleRight />
+        </button>
+      </div>
+      <div>
+        <button
+          disabled={roomId === "" && JoinNewRoom}
+          onClick={handleJoinNewRoom}
+        >
+          join Room
         </button>
       </div>
       {rooms.map((room, id) => {
@@ -69,7 +100,7 @@ function RoomsContainer({
               className="join-room-button"
               disabled={channel.id === roomId}
               title={`Join ${channel.name}`}
-              onClick={() => handleJoinRoom(channel.id, channel.type)}
+              onClick={() => handleJoinRoom(channel.id)}
             >
               {channel.type === ChannelType.protected ? <FaLock /> : ""}
               {channel.name}

@@ -6,7 +6,6 @@ function CreateRoomsContainer({ socket }: { socket: Socket }) {
   const newRoomRef = useRef(null);
   const newPassword = useRef(null);
   const [type, setType] = useState<string>("public");
-  const { rooms } = useChat();
 
   function handleCreateRoom() {
     const roomName = newRoomRef.current.value || "";
