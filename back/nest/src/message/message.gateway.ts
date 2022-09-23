@@ -35,7 +35,7 @@ export class MessageGateway
       .getUserRoom(client.userID)
       .then((res) => {
         console.log('room on connection:', { res });
-        client.emit('Rooms', { room: res });
+        client.emit('Rooms', res);
         res.forEach((room) => {
           client.join(room.channel.id);
         });
@@ -55,6 +55,14 @@ export class MessageGateway
     console.log(`number of soket connected: ${socket.size}`);
   }
 
+  /*==========================================*/
+  /*USER CREATE A ROOM*/
+  @SubscribeMessage('handshake')
+  handshake(client: SocketWithAuth): Promise<void> {
+    console.log('sending back user id....');
+    client.emit('new_user', client.id);
+    return;
+  }
   /*==========================================*/
   /*USER CREATE A ROOM*/
   @SubscribeMessage('CreateRoom')

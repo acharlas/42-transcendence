@@ -3,23 +3,7 @@ import { Socket } from "socket.io-client";
 import { useChat } from "../context/chat.context";
 import { ChannelType } from "./type";
 
-function RoomsContainer({
-  socket,
-  setShowRoom,
-  showRoom,
-  setNextRoom,
-  setShowUser,
-  setJoinNewRoom,
-  JoinNewRoom,
-}: {
-  socket: Socket;
-  setShowRoom: Function;
-  showRoom: boolean;
-  setNextRoom: Function;
-  setShowUser: Function;
-  setJoinNewRoom: Function;
-  JoinNewRoom: boolean;
-}) {
+function RoomsContainer({}) {
   const {
     roomId,
     setRoomId,
@@ -41,38 +25,39 @@ function RoomsContainer({
       if (room.channel.id === key) return true;
       return false;
     });
-    console.log(curRoom, curRoom.message, curRoom.user);
-    setRoomShow(curRoom);
-    console.log(curRoom, curRoom.message, curRoom.user);
-    setMessages(curRoom.message);
-    setUserList(curRoom.user);
-    showRoom ? setShowRoom(false) : "";
-    setShowUser(null);
   }
+  //   console.log(curRoom, curRoom.message, curRoom.user);
+  //   setRoomShow(curRoom);
+  //   console.log(curRoom, curRoom.message, curRoom.user);
+  //   setMessages(curRoom.message);
+  //   setUserList(curRoom.user);
+  //   showRoom ? setShowRoom(false) : "";
+  //   setShowUser(null);
+  // }
 
-  const handleShowRoom = (event) => {
-    showRoom ? setShowRoom(false) : setShowRoom(true);
-  };
+  // const handleShowRoom = (event) => {
+  //   showRoom ? setShowRoom(false) : setShowRoom(true);
+  // };
 
-  const handleShowCreateRoom = (event) => {
-    if (roomId) {
-      setRoomId("");
-    }
-    setJoinNewRoom(false);
-    setShowUser(null);
-    showRoom ? setShowRoom(false) : "";
-  };
+  // const handleShowCreateRoom = (event) => {
+  //   if (roomId) {
+  //     setRoomId("");
+  //   }
+  //   setJoinNewRoom(false);
+  //   setShowUser(null);
+  //   showRoom ? setShowRoom(false) : "";
+  // };
 
-  const handleJoinNewRoom = (event) => {
-    setJoinNewRoom(true);
-    setShowUser(null);
-    setRoomId("");
-    showRoom ? setShowRoom(false) : "";
-  };
+  // const handleJoinNewRoom = (event) => {
+  //   setJoinNewRoom(true);
+  //   setShowUser(null);
+  //   setRoomId("");
+  //   showRoom ? setShowRoom(false) : "";
+  // };
 
   return (
     <nav className="room-menu">
-      <div>
+      {/* <div>
         <button
           className="create-room-button-menu"
           onClick={handleShowCreateRoom}
@@ -107,7 +92,7 @@ function RoomsContainer({
             </button>
           </div>
         );
-      })}
+      })} */}
     </nav>
   );
 }

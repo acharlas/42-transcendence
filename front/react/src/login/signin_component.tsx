@@ -37,7 +37,7 @@ export function SigninForm() {
 
   const goGame = () => {
     console.log("chat");
-    navigate("/chat");
+    navigate("/game");
   };
 
   const addUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
