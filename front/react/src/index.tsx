@@ -24,8 +24,8 @@ root.render(
       <Route path="/game" element={<App />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/settings" element={<Settings />} />
-      <Route path="/mfa/setup/init" element={< MfaSetupInit />} />
-      <Route path="/mfa/setup/validate" element={< MfaSetupValidate />} />
+      <Route path="/settings/mfa-init-setup" element={< MfaSetupInit />} />
+      <Route path="/settings/mfa-finish-setup" element={< MfaSetupValidate />} />
     </Routes>
   </BrowserRouter>
 );

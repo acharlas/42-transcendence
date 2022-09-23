@@ -7,7 +7,7 @@ export default function Profile() {
   const navigate = useNavigate();
 
   const goSetupMfa = () => {
-    navigate("/mfa/setup/init");
+    navigate("/settings/mfa-init-setup");
   }
 
   const enableMfa = async (event: React.MouseEvent<HTMLButtonElement>) => {
