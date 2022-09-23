@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import mfaService from "../mfa/mfa-service";
+import defaultPicture from "../image/defaultPicture.png"
+import "./settings.css"
+import "../style.css"
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -17,6 +20,8 @@ export default function Profile() {
 
   const disableMfa = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    console.log(defaultPicture);
+
     try {
       const response = await mfaService.requestMfaDisable();
       if (response.status === 204) {
@@ -34,39 +39,58 @@ export default function Profile() {
     <div className="container">
       <div className="screen">
         <div className="screen__content">
-          <div>
+
+          <div className="settings__subtitle">
             Settings
           </div>
-          <div>
-            Account information
+
+          <br></br>
+
+          <div className="settings__block">
+            <div className="settings__subtitle">
+              Account information
+            </div>
+            <div>
+              username
+            </div>
+            <div>
+              nickname
+            </div>
           </div>
-          <div>
-            username
+
+          <br></br>
+
+          <div className="settings__block">
+            <div className="settings__subtitle">
+              Profile picture
+            </div>
+            <div className="settings__profile__picture__container">
+              <img className="settings__profile__picture" src={defaultPicture} alt="default pic" />
+            </div>
+            <button>
+              update
+            </button>
+            <button>
+              delete
+            </button>
           </div>
-          <div>
-            nickname
+
+          <br></br>
+
+          <div className="settings__block">
+            <div className="settings__subtitle">
+              Two-factor authentication
+            </div>
+            <div>
+              Enabled/diabled
+            </div>
+            <button onClick={enableMfa}>
+              enable
+            </button>
+            <button onClick={disableMfa}>
+              disable
+            </button>
           </div>
-          <div>
-            profile picture
-          </div>
-          <button>
-            update
-          </button>
-          <button>
-            delete
-          </button>
-          <div>
-            Two-factor authentication
-          </div>
-          <div>
-            Enabled/diabled
-          </div>
-          <button onClick={enableMfa}>
-            enable
-          </button>
-          <button onClick={disableMfa}>
-            disable
-          </button>
 
 
         </div>

@@ -1,0 +1,14 @@
+.settings__profile__picture {
+  width: 100px;
+  max-width: 100%;
+  height: auto;
+
+  border-radius: 50%;
+  border: 2px solid rgb(0, 0, 0);
+}
+
+.settings__profile__picture__container {
+  display: flex;
+  align-items: center;
+  margin: auto;
+}
