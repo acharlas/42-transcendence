@@ -43,9 +43,8 @@ export function SigninForm() {
   const goSignup = () => {
     navigate("/signup");
   };
-  const goGame = () => {
-    console.log("chat");
-    navigate("/chat");
+  const goHome = () => {
+    navigate("/game");
   };
   const goSigninMfa = () => {
     navigate("/mfa-signin");
@@ -82,7 +81,7 @@ export function SigninForm() {
       console.log(tokenInfo.fullyAuth);
 
       if (tokenInfo.fullyAuth) {
-        goGame();
+        goHome();
       }
       else {
         goSigninMfa();

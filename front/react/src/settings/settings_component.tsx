@@ -1,9 +1,35 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import requestMfaDisable from "../mfa/mfa-service"
+import mfaService from "../mfa/mfa-service";
 
 export default function Profile() {
+  const navigate = useNavigate();
+
+  const goSetupMfa = () => {
+    navigate("/mfa/setup/init");
+  }
+
+  const enableMfa = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    goSetupMfa();
+  }
+
+  const disableMfa = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    try {
+      const response = await mfaService.requestMfaDisable();
+      if (response.status === 204) {
+        console.log("disable successful");
+      } else {
+        console.log("disable failed");
+      }
+    }
+    catch (e) {
+      console.log({ e });
+      //TODO
+    }
+  }
   return (
     <div className="container">
       <div className="screen">
@@ -35,10 +61,10 @@ export default function Profile() {
           <div>
             Enabled/diabled
           </div>
-          <button>
+          <button onClick={enableMfa}>
             enable
           </button>
-          <button>
+          <button onClick={disableMfa}>
             disable
           </button>
 

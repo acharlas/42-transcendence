@@ -28,7 +28,7 @@ export default function MfaSetupInit() {
       goValidate();
     }
     catch (e) {
-      console.log(e);
+      console.log({ e });
       setErrorMessage("Request failed."); //TODO: improve error msg
     }
   }
