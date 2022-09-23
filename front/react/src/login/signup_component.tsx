@@ -31,8 +31,8 @@ export function SignupForm() {
     navigate("/");
   };
 
-  const goGame = () => {
-    navigate("/game");
+  const goHome = () => {
+    navigate("/home");
   };
 
   const createUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -49,7 +49,7 @@ export function SignupForm() {
       window.sessionStorage.setItem("Token", token);
       setNewPass("");
       setNewUsername("");
-      goGame();
+      goHome();
     } catch (e) {
       console.log({ e });
       return e;

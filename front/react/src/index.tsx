@@ -18,13 +18,14 @@ root.render(
     <Routes>
       <Route path="/" element={<SigninForm />} />
       <Route path="/signup" element={<SignupForm />} />
-      <Route path="/game" element={<App />} />
       <Route path="/42-redirect" element={<Redirect />} />
-      <Route path="/mfa/setup/init" element={< MfaSetupInit />} />
-      <Route path="/mfa/setup/validate" element={< MfaSetupValidate />} />
       <Route path="/mfa-signin/" element={<MfaSignin />} />
+      <Route path="/home" element={<App />} />
+      <Route path="/game" element={<App />} />
       <Route path="/chat" element={<Chat />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/mfa/setup/init" element={< MfaSetupInit />} />
+      <Route path="/mfa/setup/validate" element={< MfaSetupValidate />} />
     </Routes>
   </BrowserRouter>
 );

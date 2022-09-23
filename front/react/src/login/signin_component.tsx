@@ -44,7 +44,7 @@ export function SigninForm() {
     navigate("/signup");
   };
   const goHome = () => {
-    navigate("/game");
+    navigate("/home");
   };
   const goSigninMfa = () => {
     navigate("/mfa-signin");

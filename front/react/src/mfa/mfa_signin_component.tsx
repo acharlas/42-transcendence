@@ -8,8 +8,8 @@ import "../style.css";
 
 export default function MfaSignin() {
   let navigate = useNavigate();
-  const goGame = () => {
-    navigate("/game");
+  const goHome = () => {
+    navigate("/home");
   };
 
   const [smsCode, setSmsCode] = useState('');
@@ -27,7 +27,7 @@ export default function MfaSignin() {
       const token = await mfaService.signinWithMfa({ codeToCheck: smsCode });
 
 
-      goGame();
+      goHome();
     } catch (e) {
       console.log({ e });
       setErrorMessage("Incorrect code."); //TODO: improve error msg
