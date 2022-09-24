@@ -35,6 +35,47 @@ export default function Profile() {
       //TODO
     }
   }
+
+
+  type User = {
+    username: string
+    nickname: string
+    mfaEnabled: boolean
+    mfaPhoneNumber: string | null
+  }
+
+  const userdata: User = {
+    username: "test username",
+    nickname: "test nickname",
+    mfaEnabled: true,
+    mfaPhoneNumber: "+2211223344",
+  }
+
+  function whenMfaEnabled() {
+    return (
+      <div>
+        <div>
+          2FA is enabled
+        </div>
+        <button onClick={disableMfa}>
+          disable
+        </button>
+      </div>
+    );
+  }
+  function whenMfaDisabled() {
+    return (
+      <div>
+        <div>
+          2FA is disabled
+        </div>
+        <button onClick={enableMfa}>
+          enable
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="container">
       <div className="screen">
@@ -50,11 +91,23 @@ export default function Profile() {
             <div className="settings__subtitle">
               Account information
             </div>
+
             <div>
-              username
+              <div className="settings__nameleft">
+                username
+              </div>
+              <div className="settings__nameright">
+                {userdata.username}
+              </div>
             </div>
+
             <div>
-              nickname
+              <div className="settings__nameleft">
+                nickname
+              </div>
+              <div className="settings__nameright">
+                {userdata.nickname}
+              </div>
             </div>
           </div>
 
@@ -82,14 +135,8 @@ export default function Profile() {
               Two-factor authentication
             </div>
             <div>
-              Enabled/diabled
+              {(userdata.mfaEnabled && whenMfaEnabled()) || whenMfaDisabled()}
             </div>
-            <button onClick={enableMfa}>
-              enable
-            </button>
-            <button onClick={disableMfa}>
-              disable
-            </button>
           </div>
 
 
@@ -97,6 +144,6 @@ export default function Profile() {
         <div className="screen__background">
         </div>
       </div>
-    </div>
+    </div >
   );
 }
