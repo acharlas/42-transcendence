@@ -1,3 +1,15 @@
+.settings__title {
+  color: antiquewhite;
+  font-size: large;
+}
+
+.settings__subtitle {
+  color: bisque;
+  font-size: large;
+}
+
+/* profile picture */
+
 .settings__profile__picture {
   width: 100px;
   max-width: 100%;
@@ -9,6 +21,63 @@
 
 .settings__profile__picture__container {
   display: flex;
+  /* align-items: center; */
+  /* margin: auto; */
+  width: 50%;
+}
+
+/* names */
+
+.settings__namewrap {
+  text-align: justify;
+  display: flex;
+}
+
+.settings__nameleft {
+  flex: 1;
+  text-align: left;
+
+  color: #f0ddff;
+  font-weight: bold;
+  font-size: medium;
+}
+
+.settings__nameright {
+  flex: 1;
+  text-align: right;
+
+  color: #f0ddff;
+  font-size: medium;
+}
+
+/* mfa */
+
+.settings__mfa__status {
+  color: #f0ddff;
+}
+
+/* background */
+
+.settings__block {
+  background: #28122b;
+  position: relative;
+  width: 360px;
+}
+
+.settings_screen {
+  background: #46234b;
+  position: relative;
+  height: 600px;
+  width: 360px;
+  box-shadow: 0px 0px 24px #3c4977;
+}
+
+.container {
+  background-image: url("../image/background-login.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
   align-items: center;
-  margin: auto;
+  justify-content: center;
+  min-height: 100vh;
 }

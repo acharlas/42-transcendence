@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import mfaService from "../mfa/mfa-service";
 import defaultPicture from "../image/defaultPicture.png"
 import "./settings.css"
-import "../style.css"
+// import "../style.css"
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ export default function Profile() {
   function whenMfaEnabled() {
     return (
       <div>
-        <div>
+        <div className="settings__mfa__status">
           2FA is enabled
         </div>
         <button onClick={disableMfa}>
@@ -66,7 +66,7 @@ export default function Profile() {
   function whenMfaDisabled() {
     return (
       <div>
-        <div>
+        <div className="settings__mfa__status">
           2FA is disabled
         </div>
         <button onClick={enableMfa}>
@@ -78,10 +78,10 @@ export default function Profile() {
 
   return (
     <div className="container">
-      <div className="screen">
+      <div className="settings_screen">
         <div className="screen__content">
 
-          <div className="settings__subtitle">
+          <div className="settings__title">
             Settings
           </div>
 
@@ -92,7 +92,7 @@ export default function Profile() {
               Account information
             </div>
 
-            <div>
+            <div className="settings__namewrap">
               <div className="settings__nameleft">
                 username
               </div>
@@ -101,7 +101,7 @@ export default function Profile() {
               </div>
             </div>
 
-            <div>
+            <div className="settings__namewrap">
               <div className="settings__nameleft">
                 nickname
               </div>
@@ -141,9 +141,7 @@ export default function Profile() {
 
 
         </div>
-        <div className="screen__background">
-        </div>
       </div>
-    </div >
+    </div>
   );
 }
