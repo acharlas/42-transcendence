@@ -4,26 +4,16 @@ import { useChat } from "../context/chat.context";
 import "./chat-style.css";
 import { User, UserPrivilege } from "./type";
 
-function MessagesContainer({
-  socket,
-  showUser,
-  setShowUser,
-}: {
-  socket: Socket;
-  showUser: User;
-  setShowUser: Function;
-}) {
+function MessagesContainer() {
   const newMessageRef = useRef(null);
   const {
     setRooms,
     rooms,
-    roomShow,
-    setMessages,
-    messages,
-    username,
-    roomId,
+    setMessage,
+    message,
+    actChannel,
     userList,
-    setRoomShow,
+    setActChannel,
   } = useChat();
 
   function handleSendMessage() {

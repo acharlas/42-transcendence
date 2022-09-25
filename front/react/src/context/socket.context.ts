@@ -32,7 +32,8 @@ export const SocketReducer = (
 
   switch (action.type) {
     case "update_socket":
-      return { ...state, Socket: action.payload as Socket };
+      console.log("newsocket", action.payload);
+      return { ...state, socket: action.payload as Socket };
     case "update_uid":
       return { ...state, uid: action.payload as string };
     default:

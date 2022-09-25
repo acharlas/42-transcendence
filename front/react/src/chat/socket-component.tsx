@@ -1,5 +1,11 @@
-import { PropsWithChildren, useEffect, useReducer, useState } from "react";
-import { useChat } from "../context/chat.context";
+import {
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
+import ChatContext, { useChat } from "../context/chat.context";
 import {
   defaultSocketContextState,
   SocketContextProvider,
@@ -49,22 +55,31 @@ const SocketContextComponent: React.FunctionComponent<
     /** save socket in context */
     SocketDispatch({ type: "update_socket", payload: socket });
     /** start the event listeners */
-    StartListener();
     /** send the handshake */
     Sendhandshake();
   }, []);
+
+  useEffect(() => {
+    /** start the event listeners */
+    StartListener();
+  }, [socket, rooms]);
 
   const StartListener = () => {
     /**room list */
     socket.on("Rooms", (res: Room[]) => {
       console.log("room receive:", res);
       setRooms(res);
-      SocketDispatch({ type: "Rooms", payload: res });
     });
     /** receive new id */
     socket.on("new_user", (uid: string) => {
       console.log("User connected, new user receive", uid, "last uid");
       SocketDispatch({ type: "update_uid", payload: uid });
+    });
+    /**receive a new room */
+    socket.on("NewRoom", ({ newRoom }: { newRoom: Room }) => {
+      const nRoom = [...rooms];
+      nRoom.push(newRoom);
+      setRooms(nRoom);
     });
     /** reconnect event*/
     socket.io.on("reconnect", (attempt) => {
@@ -101,7 +116,7 @@ const SocketContextComponent: React.FunctionComponent<
   if (loading) return <p>loading</p>;
   return (
     <SocketContextProvider value={{ SocketState, SocketDispatch }}>
-      <ChatIndex />
+      {children}
     </SocketContextProvider>
   );
 };

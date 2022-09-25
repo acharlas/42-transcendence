@@ -1,58 +1,66 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import io, { Socket } from "socket.io-client";
-import { Message, Room, User } from "../chat/type";
+import { Channel, Message, Room, User } from "../chat/type";
 
-interface Context {
-  username?: string;
-  setUsername: Function;
-  roomId?: string;
-  setRoomId: Function;
-  rooms?: Room[];
+export interface IoChatContextState {
+  rooms: Room[];
   setRooms: Function;
-  messages?: Message[];
-  setMessages: Function;
+  user: User | undefined;
+  setUser: Function;
+  message: Message[];
+  setMessage: Function;
   userList: User[];
   setUserList: Function;
-  roomShow: Room;
-  setRoomShow: Function;
+  actChannel: string | undefined;
+  setActChannel: Function;
+  showRoomMenu: boolean;
+  setShowRoomMenu: Function;
+  showCreateMenu: boolean;
+  SetShowCreateMenu: Function;
 }
 
-const ChatContext = createContext<Context>({
-  setUsername: () => false,
-  setMessages: () => false,
-  setRoomId: () => false,
-  setRooms: () => false,
-  setUserList: () => false,
-  roomShow: null,
-  setRoomShow: () => false,
+const ChatContext = createContext<IoChatContextState>({
+  rooms: [],
+  setRooms: () => {},
+  user: undefined,
+  setUser: () => {},
+  message: [],
+  setMessage: () => {},
   userList: [],
-  username: "",
-  messages: [],
+  setUserList: () => {},
+  actChannel: "",
+  setActChannel: () => {},
+  showRoomMenu: false,
+  setShowRoomMenu: () => {},
+  showCreateMenu: false,
+  SetShowCreateMenu: () => {},
 });
 
 function ChatProvider(props: any) {
-  const [username, setUsername] = useState<string>("");
-  const [roomId, setRoomId] = useState<string>("");
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [roomShow, setRoomShow] = useState<Room>();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [user, setUser] = useState<User>();
+  const [message, setMessage] = useState<Message[]>([]);
   const [userList, setUserList] = useState<User[]>([]);
+  const [actChannel, setActChannel] = useState<string>("");
+  const [showRoomMenu, setShowRoomMenu] = useState<boolean>(false);
+  const [showCreateMenu, SetShowCreateMenu] = useState<boolean>(false);
 
   return (
     <ChatContext.Provider
       value={{
         userList,
         setUserList,
-        username,
-        setUsername,
         rooms,
         setRooms,
-        roomId,
-        setRoomId,
-        messages,
-        setMessages,
-        setRoomShow,
-        roomShow,
+        actChannel,
+        setActChannel,
+        message,
+        setMessage,
+        user,
+        setUser,
+        showRoomMenu,
+        setShowRoomMenu,
+        showCreateMenu,
+        SetShowCreateMenu,
       }}
       {...props}
     />

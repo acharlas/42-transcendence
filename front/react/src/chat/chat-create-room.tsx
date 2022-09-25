@@ -1,13 +1,15 @@
-import { useRef, useState } from "react";
-import { Socket } from "socket.io-client";
-import { useChat } from "../context/chat.context";
+import { useContext, useReducer, useRef, useState } from "react";
+import ChatContext from "../context/chat.context";
+import SocketContext from "../context/socket.context";
 
-function CreateRoomsContainer({ socket }: { socket: Socket }) {
+function CreateRoomsContainer() {
   const newRoomRef = useRef(null);
   const newPassword = useRef(null);
   const [type, setType] = useState<string>("public");
+  const { socket } = useContext(SocketContext).SocketState;
 
   function handleCreateRoom() {
+    console.log("socket", socket);
     const roomName = newRoomRef.current.value || "";
     let password: string;
 

@@ -31,7 +31,7 @@ function ChatBodyComponent({
       />
     );
   } else {
-    return <CreateRoomsContainer socket={socket} />;
+    return <CreateRoomsContainer />;
   }
 }
 
