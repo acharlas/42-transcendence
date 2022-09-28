@@ -76,20 +76,9 @@ export class MessageGateway
       this.channelService
         .createChannel(client.userID, roomDto)
         .then((ret) => {
-          console.log({ ret });
-          client.join(ret.id);
-          client.emit('NewRoom', {
-            newRoom: {
-              channel: {
-                id: ret.id,
-                name: ret.name,
-                type: ret.type,
-              },
-              user: [],
-              message: [],
-            },
-          });
-          client.emit('JoinedRoom', { roomId: ret.id });
+          console.log('NewRoom Create Send: ', { ret });
+          client.join(ret.channel.id);
+          client.emit('NewRoom', { room: ret });
           return resolve();
         })
         .catch((err) => {
@@ -138,7 +127,7 @@ export class MessageGateway
         .JoinChannelByName(name, client.userID, { password: password })
         .then((ret) => {
           client.join(ret.channel.id);
-          client.emit('NewRoom', { newRoom: ret });
+          client.emit('NewRoom', { room: ret });
           client.broadcast.to(ret.channel.id).emit('JoinRoom', {
             id: ret.channel.id,
             user: ret.user.find((user) => {

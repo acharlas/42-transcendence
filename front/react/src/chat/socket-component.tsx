@@ -5,15 +5,14 @@ import {
   useReducer,
   useState,
 } from "react";
-import ChatContext, { useChat } from "../context/chat.context";
+import { useChat } from "../context/chat.context";
 import {
   defaultSocketContextState,
   SocketContextProvider,
   SocketReducer,
 } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
-import ChatIndex from "./chat-index";
-import { Channel, Message, Room, User } from "./type";
+import { Message, Room, User } from "./type";
 
 // function Chat() {
 //   return (
@@ -34,7 +33,18 @@ const SocketContextComponent: React.FunctionComponent<
     defaultSocketContextState
   );
   const [loading, setLoading] = useState(true);
-  const { rooms, setRooms } = useChat();
+  const {
+    rooms,
+    setRooms,
+    messages,
+    userList,
+    setActChannel,
+    setMessages,
+    setUserList,
+    setShowRoomMenu,
+    SetShowCreateMenu,
+    actChannel,
+  } = useChat();
 
   const socket = useSocket("http://localhost:3333/chat", {
     reconnectionAttempts: 5,
@@ -44,13 +54,10 @@ const SocketContextComponent: React.FunctionComponent<
       token: sessionStorage.getItem("Token"),
     },
   });
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [userList, setUserList] = useState<User[]>([]);
-  const [roomId, setRoomId] = useState<string>("");
-  const [channel, setChannel] = useState<Channel>();
 
   useEffect(() => {
     /** connect to the web socket */
+    console.log("SOCKET CONNECT");
     socket.connect();
     /** save socket in context */
     SocketDispatch({ type: "update_socket", payload: socket });
@@ -61,10 +68,50 @@ const SocketContextComponent: React.FunctionComponent<
 
   useEffect(() => {
     /** start the event listeners */
+    socket.removeAllListeners();
     StartListener();
-  }, [socket, rooms]);
+  }, [socket, rooms, messages, userList]);
 
   const StartListener = () => {
+    /** A new User join a room*/
+    socket.on("JoinRoom", ({ id, user }: { id: string; user: User }) => {
+      const newRooms = [...rooms];
+      const room = newRooms.find((room) => {
+        if (room.channel.id === id) return true;
+        return false;
+      });
+      room.user.push(user);
+      if (actChannel === id) setUserList(room.user);
+      setRooms(newRooms);
+    });
+    /**receive Room message */
+    socket.on(
+      "RoomMessage",
+      ({ roomId, message }: { roomId: string; message: Message }) => {
+        console.log("message receive on: ", roomId, " message: ", { message });
+        const newRooms = [...rooms];
+        const room = newRooms.find((room) => {
+          if (room.channel.id === roomId) return true;
+          return false;
+        });
+        room.message.push(message);
+        setRooms(newRooms);
+        if (roomId === actChannel) setMessages(room.message);
+      }
+    );
+    /**add a new room */
+    socket.on("NewRoom", ({ room }: { room: Room }) => {
+      console.log("new room receive: ", room, "try to create: ", [
+        ...rooms,
+        room,
+      ]);
+      setRooms([...rooms, room]);
+      setMessages(room.message);
+      setUserList(room.user);
+      setActChannel(room.channel.id);
+      SetShowCreateMenu(false);
+      setShowRoomMenu(false);
+    });
     /**room list */
     socket.on("Rooms", (res: Room[]) => {
       console.log("room receive:", res);
@@ -74,12 +121,6 @@ const SocketContextComponent: React.FunctionComponent<
     socket.on("new_user", (uid: string) => {
       console.log("User connected, new user receive", uid, "last uid");
       SocketDispatch({ type: "update_uid", payload: uid });
-    });
-    /**receive a new room */
-    socket.on("NewRoom", ({ newRoom }: { newRoom: Room }) => {
-      const nRoom = [...rooms];
-      nRoom.push(newRoom);
-      setRooms(nRoom);
     });
     /** reconnect event*/
     socket.io.on("reconnect", (attempt) => {

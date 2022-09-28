@@ -6,8 +6,8 @@ export interface IoChatContextState {
   setRooms: Function;
   user: User | undefined;
   setUser: Function;
-  message: Message[];
-  setMessage: Function;
+  messages: Message[];
+  setMessages: Function;
   userList: User[];
   setUserList: Function;
   actChannel: string | undefined;
@@ -23,8 +23,8 @@ const ChatContext = createContext<IoChatContextState>({
   setRooms: () => {},
   user: undefined,
   setUser: () => {},
-  message: [],
-  setMessage: () => {},
+  messages: [],
+  setMessages: () => {},
   userList: [],
   setUserList: () => {},
   actChannel: "",
@@ -38,7 +38,7 @@ const ChatContext = createContext<IoChatContextState>({
 function ChatProvider(props: any) {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [user, setUser] = useState<User>();
-  const [message, setMessage] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [userList, setUserList] = useState<User[]>([]);
   const [actChannel, setActChannel] = useState<string>("");
   const [showRoomMenu, setShowRoomMenu] = useState<boolean>(false);
@@ -53,8 +53,8 @@ function ChatProvider(props: any) {
         setRooms,
         actChannel,
         setActChannel,
-        message,
-        setMessage,
+        messages,
+        setMessages,
         user,
         setUser,
         showRoomMenu,

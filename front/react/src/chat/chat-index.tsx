@@ -6,14 +6,16 @@ import { useChat } from "../context/chat.context";
 import CreateRoomsContainer from "./chat-create-room";
 import { FaAngleLeft } from "react-icons/fa";
 import RoomsMenuContainer from "./chat-rooms-menu";
-import MessagesContainer from "./chat-messages";
+import JoinNewRoomComponent from "./chat-join-new-room";
+import MessagesComponent from "./chat-messages";
 
 export interface IChatIndexProps {}
 
 const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
   let navigate = useNavigate();
   const { socket } = useContext(SocketContext).SocketState;
-  const { rooms, showRoomMenu, setShowRoomMenu, actChannel } = useChat();
+  const { showCreateMenu, rooms, showRoomMenu, setShowRoomMenu, actChannel } =
+    useChat();
 
   const goSignin = () => {
     window.sessionStorage.clear();
@@ -24,7 +26,7 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
     showRoomMenu ? setShowRoomMenu(false) : setShowRoomMenu(true);
   };
 
-  if (rooms) console.log({ rooms });
+  if (rooms) console.log("rooms at start:", rooms);
   return (
     <div className="container">
       <button id="logout" onClick={goSignin}>
@@ -41,7 +43,13 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
               </button>
             </>
           )}
-          {actChannel ? <></> : <></>}
+          {actChannel ? (
+            <MessagesComponent />
+          ) : showCreateMenu ? (
+            <CreateRoomsContainer />
+          ) : (
+            <JoinNewRoomComponent />
+          )}
         </div>
       </div>
     </div>

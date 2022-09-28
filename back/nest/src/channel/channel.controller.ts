@@ -30,8 +30,8 @@ export class ChannelController {
   createChannel(
     @GetUser('id') userId: string,
     @Body() dto: CreateChannelDto,
-  ): Promise<Channel> {
-    return new Promise<Channel>((resolve, reject) => {
+  ): Promise<Room> {
+    return new Promise<Room>((resolve, reject) => {
       this.channelService
         .createChannel(userId, dto)
         .then((ret) => {

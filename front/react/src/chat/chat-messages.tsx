@@ -1,20 +1,22 @@
-import { useRef } from "react";
+import { useContext, useRef } from "react";
 import { Socket } from "socket.io-client";
 import { useChat } from "../context/chat.context";
+import SocketContext from "../context/socket.context";
 import "./chat-style.css";
 import { User, UserPrivilege } from "./type";
 
-function MessagesContainer() {
+function MessagesComponent() {
   const newMessageRef = useRef(null);
   const {
     setRooms,
     rooms,
-    setMessage,
-    message,
+    setMessages,
+    messages,
     actChannel,
     userList,
     setActChannel,
   } = useChat();
+  const { socket } = useContext(SocketContext).SocketState;
 
   function handleSendMessage() {
     const message = newMessageRef.current.value;
@@ -23,7 +25,7 @@ function MessagesContainer() {
     if (!String(message).trim()) {
       return;
     }
-    console.log("send message roomId:", roomId);
+    console.log("send message roomId:", actChannel);
     console.log("message send:", message);
     if (message[0] != null) {
       const user = userList.find((user) => {
@@ -31,45 +33,42 @@ function MessagesContainer() {
           return true;
         return false;
       });
-      console.log("user find:", user, "username:", username);
+      console.log(
+        "user find:",
+        user,
+        "username:",
+        window.sessionStorage.getItem("username")
+      );
       socket.emit("SendRoomMessage", {
-        roomId: roomId,
+        roomId: actChannel,
         message: message,
       });
-      console.log(roomShow);
 
       const newRooms = [...rooms];
 
-      newRooms
-        .find((room) => {
-          if (room.channel.id === roomShow.channel.id) return true;
-          return false;
-        })
-        .message.push({
-          content: message,
-          username: user.username,
-          nickname: user.nickname,
-        });
+      const room = newRooms.find((room) => {
+        if (room.channel.id === actChannel) return true;
+        return false;
+      });
+
+      room.message.push({
+        username: window.sessionStorage.getItem("username"),
+        content: message,
+      });
+
+      console.log("add message after send: ", newRooms);
 
       setRooms(newRooms);
-      setRoomShow(
-        newRooms.find((room) => {
-          if (room.channel.id === roomShow.channel.id) return true;
-          return false;
-        })
-      );
+      setMessages(room.message);
       console.log("oldmessage: ", messages);
-      console.log("newMessage", roomShow.message);
-
-      setMessages(roomShow.message);
     }
   }
 
-  const handleShowUser = ({ user }: { user: User }) => {
-    setShowUser(user);
-  };
+  // const handleShowUser = ({ user }: { user: User }) => {
+  //   setShowUser(user);
+  // };
 
-  if (!roomId) return <div />;
+  if (!actChannel) return <div />;
   return (
     <>
       <div className="chat">
@@ -81,13 +80,13 @@ function MessagesContainer() {
           return (
             <nav key={index}>
               <button
-                onClick={() =>
-                  handleShowUser({
-                    user: user,
-                  })
-                }
+              // onClick={() =>
+              //   handleShowUser({
+              //     user: user,
+              //   })
+              // }
               >
-                {user ? user.nickname : message.nickname}:
+                {user ? user.nickname : user.nickname}:
               </button>
               <p className="chat-message">{message.content}</p>
             </nav>
@@ -102,4 +101,4 @@ function MessagesContainer() {
   );
 }
 
-export default MessagesContainer;
+export default MessagesComponent;

@@ -1,7 +1,6 @@
 export interface Message {
   content: string;
   username: string;
-  nickname: string;
 }
 
 export enum ChannelType {

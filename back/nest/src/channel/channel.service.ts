@@ -23,9 +23,8 @@ import { ChannelCont, GetChannelById, MessageCont, Room } from './type_channel';
 @Injectable()
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
-
-  async createChannel(userID: string, dto: CreateChannelDto): Promise<Channel> {
-    return new Promise<Channel>((resolve, reject) => {
+  async createChannel(userID: string, dto: CreateChannelDto): Promise<Room> {
+    return new Promise<Room>((resolve, reject) => {
       let hash = null;
       if (dto.type === ChannelType.protected) {
         if (dto.password === undefined || dto.password === null) {
@@ -38,7 +37,7 @@ export class ChannelService {
         .hash(dto.password)
         .then((res) => {
           return resolve(
-            new Promise<Channel>((resolve, reject) => {
+            new Promise<Room>((resolve, reject) => {
               this.prisma.channel
                 .create({
                   data: {
@@ -59,9 +58,38 @@ export class ChannelService {
                       ],
                     },
                   },
+                  include: {
+                    users: {
+                      include: {
+                        user: true,
+                      },
+                    },
+                    messages: {
+                      select: {
+                        content: true,
+                        user: true,
+                      },
+                    },
+                  },
                 })
                 .then((resp) => {
-                  return resolve(resp);
+                  return resolve({
+                    channel: { id: resp.id, name: resp.name, type: resp.type },
+                    user: resp.users.map((user) => {
+                      return {
+                        nickname: user.user.nickname,
+                        privilege: user.privilege,
+                        username: user.user.username,
+                      };
+                    }),
+                    message: resp.messages.map((msg) => {
+                      return {
+                        content: msg.content,
+                        username: msg.user.username,
+                        nickname: msg.user.nickname,
+                      };
+                    }),
+                  });
                 })
                 .catch((err) => {
                   return reject(new ForbiddenException(403));
@@ -697,19 +725,24 @@ export class ChannelService {
           where: {
             name: name,
           },
+          select: {
+            id: true,
+          },
         })
         .then((channel) => {
-          return resolve(
-            new Promise<Room>((resolve, reject) => {
-              this.joinChannelById(userId, channel.id, dto)
-                .then((room) => {
-                  return resolve(room);
-                })
-                .catch((err) => {
-                  return reject(err);
-                });
-            }),
-          );
+          if (channel) {
+            return resolve(
+              new Promise<Room>((resolve, reject) => {
+                this.joinChannelById(userId, channel.id, dto)
+                  .then((room) => {
+                    return resolve(room);
+                  })
+                  .catch((err) => {
+                    return reject(err);
+                  });
+              }),
+            );
+          }
         })
         .catch((err) => {
           return reject(err);

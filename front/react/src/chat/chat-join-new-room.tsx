@@ -1,15 +1,10 @@
-import { useRef } from "react";
-import { Socket } from "socket.io-client";
+import { useContext, useRef } from "react";
+import SocketContext from "../context/socket.context";
 
-function JoinNewRoomComponent({
-  socket,
-}: {
-  socket: Socket;
-  nextRoom: string;
-  setNextRoom: Function;
-}) {
+function JoinNewRoomComponent() {
   const newRoomRef = useRef(null);
   const newPassRef = useRef(null);
+  const { socket } = useContext(SocketContext).SocketState;
 
   const handleJoinRoom = (event) => {
     const name = newRoomRef.current.value || "";
@@ -29,7 +24,7 @@ function JoinNewRoomComponent({
         <h2>New Room Name</h2>
         <input ref={newRoomRef} placeholder="Room name..." />
         <h2>New Room password</h2>
-        <input ref={newPassRef} placeholder="Room name..." />
+        <input ref={newPassRef} placeholder="Room password..." />
         <button onClick={handleJoinRoom}>join room</button>
       </div>
     </>
