@@ -135,7 +135,7 @@ export default function Profile() {
               Two-factor authentication
             </div>
             <div>
-              {(userdata.mfaEnabled && whenMfaEnabled()) || whenMfaDisabled()}
+              {userdata.mfaEnabled ? whenMfaEnabled() : whenMfaDisabled()}
             </div>
           </div>
 
