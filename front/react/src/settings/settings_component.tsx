@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { getUserData } from "./getUserData"
 import mfaService from "../mfa/mfa-service";
 import defaultPicture from "../image/defaultPicture.png"
 import "./settings.css"
 // import "../style.css"
+
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -13,6 +15,35 @@ export default function Profile() {
     navigate("/settings/mfa-init-setup");
   }
 
+  const goSignIn = () => {
+    navigate("/");
+  }
+
+  // State variables
+  const [username, setUsername] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      await getUserData()
+        .then((res) => {
+          setUsername(res.username);
+          setNickname(res.nickname);
+          setMfaEnabled(res.mfaEnabled);
+        })
+        .catch((e) => {
+          console.log("Settings: Error while fetching user data", { e });
+          // redirect to auth page if auth failed
+          if (e.response.status === 401) {
+            goSignIn();
+          }
+        })
+    };
+    fetchUserData();
+  });
+
+  // MFA
   const enableMfa = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     goSetupMfa();
@@ -20,8 +51,6 @@ export default function Profile() {
 
   const disableMfa = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    console.log(defaultPicture);
-
     try {
       const response = await mfaService.requestMfaDisable();
       if (response.status === 204) {
@@ -34,21 +63,6 @@ export default function Profile() {
       console.log({ e });
       //TODO
     }
-  }
-
-
-  type User = {
-    username: string
-    nickname: string
-    mfaEnabled: boolean
-    mfaPhoneNumber: string | null
-  }
-
-  const userdata: User = {
-    username: "test username",
-    nickname: "test nickname",
-    mfaEnabled: true,
-    mfaPhoneNumber: "+2211223344",
   }
 
   function whenMfaEnabled() {
@@ -76,6 +90,7 @@ export default function Profile() {
     );
   }
 
+
   return (
     <div className="container">
       <div className="settings_screen">
@@ -94,19 +109,19 @@ export default function Profile() {
 
             <div className="settings__namewrap">
               <div className="settings__nameleft">
-                username
+                username:
               </div>
               <div className="settings__nameright">
-                {userdata.username}
+                {username}
               </div>
             </div>
 
             <div className="settings__namewrap">
               <div className="settings__nameleft">
-                nickname
+                nickname:
               </div>
               <div className="settings__nameright">
-                {userdata.nickname}
+                {nickname}
               </div>
             </div>
           </div>
@@ -135,10 +150,9 @@ export default function Profile() {
               Two-factor authentication
             </div>
             <div>
-              {userdata.mfaEnabled ? whenMfaEnabled() : whenMfaDisabled()}
+              {mfaEnabled ? whenMfaEnabled() : whenMfaDisabled()}
             </div>
           </div>
-
 
         </div>
       </div>
