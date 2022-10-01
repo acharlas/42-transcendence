@@ -8,11 +8,8 @@ type User = {
 
 export const getUserData = async (): Promise<User> => {
   return new Promise<User>((resolve, reject) => {
-    axios
-      .get(
-        "http://localhost:3333/users/me",
-        { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem("Token") } },
-      )
+    axios.get("http://localhost:3333/users/me",
+      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem("Token") } })
       .then((ret) => {
         return resolve(ret.data);
       })

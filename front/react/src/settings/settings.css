@@ -21,33 +21,34 @@
 
 .settings__profile__picture__container {
   display: flex;
+  flex-wrap: nowrap;
   /* align-items: center; */
   /* margin: auto; */
-  width: 50%;
+  /* width: 50%; */
 }
 
 /* names */
 
 .settings__namewrap {
-  text-align: justify;
-  display: flex;
-}
-
-.settings__nameleft {
-  flex: 1;
-  text-align: left;
 
   color: #f0ddff;
-  font-weight: bold;
-  font-size: medium;
 }
 
-.settings__nameright {
-  flex: 1;
-  text-align: right;
-
+.settings__name__title {
   color: #f0ddff;
-  font-size: medium;
+}
+
+.settings__name__noedit {
+  color: #f0ddff;
+}
+
+.settings__name__edit {
+  color: #000000;
+  background: rgb(255, 203, 203);
+}
+
+.settings__name__edit__button {
+  color: #000000;
 }
 
 /* mfa */
