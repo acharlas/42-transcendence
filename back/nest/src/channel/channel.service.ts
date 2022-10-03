@@ -7,22 +7,20 @@ import {
   Channel,
   ChannelType,
   ChannelUser,
-  Message,
-  Prisma,
   User,
   UserPrivilege,
   UserStatus,
 } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import * as argon from 'argon2';
-import { channel } from 'diagnostics_channel';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateChannelDto, EditChannelDto, JoinChannelDto } from './dto';
-import { ChannelCont, GetChannelById, MessageCont, Room } from './type_channel';
+import { GetChannelById, MessageCont, Room } from './type_channel';
 
 @Injectable()
 export class ChannelService {
   constructor(private prisma: PrismaService) {}
+
   async createChannel(userID: string, dto: CreateChannelDto): Promise<Room> {
     return new Promise<Room>((resolve, reject) => {
       let hash = null;
@@ -413,9 +411,12 @@ export class ChannelService {
   async leaveChannel(userId: string, channelId: string): Promise<ChannelUser> {
     return new Promise<ChannelUser>((resolve, reject) => {
       this.prisma.channelUser
-        .delete({
+        .update({
           where: {
             userId_channelId: { channelId: channelId, userId: userId },
+          },
+          data: {
+            status: UserStatus.disconnected,
           },
         })
         .then((ret) => {
@@ -527,10 +528,11 @@ export class ChannelService {
     userId: string,
     toModified: string,
     channelId: string,
-    privilege: UserPrivilege,
+    priv: UserPrivilege,
     time: Date,
   ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
+      console.log('user update type: ', priv);
       this.prisma.user
         .findUnique({
           where: {
@@ -553,18 +555,21 @@ export class ChannelService {
                   },
                 })
                 .then((userPriv) => {
+                  console.log('find channelUser modifie', priv);
                   if (
-                    userPriv.privilege !== 'admin' &&
-                    userPriv.privilege !== 'owner'
-                  )
+                    userPriv.privilege !== UserPrivilege.admin &&
+                    userPriv.privilege !== UserPrivilege.owner
+                  ) {
                     return new ForbiddenException("can't modifie right");
+                  }
+                  console.log('is admin owner');
                   return resolve(
                     new Promise<void>((resolve, reject) => {
                       this.prisma.channelUser
                         .findUnique({
                           where: {
                             userId_channelId: {
-                              userId: toModified,
+                              userId: userModified.id,
                               channelId,
                             },
                           },
@@ -573,40 +578,67 @@ export class ChannelService {
                           },
                         })
                         .then((modifPriv) => {
-                          if (modifPriv.privilege === privilege) return;
+                          console.log(
+                            'aaaaaaaaaaaaaaaaaafind channelUser modifie',
+                            priv,
+                          );
+                          if (modifPriv.privilege === priv) return;
                           if (
                             (modifPriv.privilege === 'admin' ||
                               modifPriv.privilege === 'owner') &&
-                            (privilege === 'ban' || privilege === 'muted')
+                            (priv === 'ban' || priv === 'muted')
                           )
-                            return new ForbiddenException(
-                              "can't ban/muted a admin/owner",
+                            return reject(
+                              new ForbiddenException(
+                                "can't ban/muted a admin/owner",
+                              ),
                             );
-                          return resolve(
-                            new Promise<void>((resolve, reject) => {
-                              this.prisma.channelUser
-                                .update({
-                                  where: {
-                                    userId_channelId: {
-                                      userId: toModified,
-                                      channelId,
-                                    },
-                                  },
-                                  data: {
-                                    privilege: privilege,
-                                    time: time,
-                                  },
-                                })
-                                .then(() => {
-                                  return resolve;
-                                })
-                                .catch((err) => {
-                                  return reject(err);
-                                });
-                            }),
-                          );
+                          console.log('modifie');
+                          if (priv === 'ban')
+                            return resolve(
+                              new Promise<void>((resolve, reject) => {
+                                this.banUser(userModified.id, channelId, time)
+                                  .then((ret) => {
+                                    return resolve(ret);
+                                  })
+                                  .catch((err) => {
+                                    return reject(err);
+                                  });
+                              }),
+                            );
+                          else if (priv === UserPrivilege.muted) {
+                            return resolve(
+                              new Promise<void>((resolve, reject) => {
+                                this.muteUser(userModified.id, channelId, time)
+                                  .then((ret) => {
+                                    return resolve(ret);
+                                  })
+                                  .catch((err) => {
+                                    return reject(err);
+                                  });
+                              }),
+                            );
+                          } else {
+                            return resolve(
+                              new Promise<void>((resolve, reject) => {
+                                this.changeUserPrivilege(
+                                  userModified.id,
+                                  channelId,
+                                  time,
+                                  priv,
+                                )
+                                  .then((ret) => {
+                                    return resolve(ret);
+                                  })
+                                  .catch((err) => {
+                                    return reject(err);
+                                  });
+                              }),
+                            );
+                          }
                         })
                         .catch((err) => {
+                          console.log('errror', err);
                           return reject(err);
                         });
                     }),
@@ -617,6 +649,85 @@ export class ChannelService {
                 });
             }),
           );
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  async banUser(userId: string, channelId: string, Time: Date): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      console.log('ban player', userId);
+      this.prisma.channelUser
+        .update({
+          where: {
+            userId_channelId: {
+              userId: userId,
+              channelId,
+            },
+          },
+          data: {
+            privilege: UserPrivilege.ban,
+            time: Time,
+            status: UserStatus.disconnected,
+          },
+        })
+        .then(() => {
+          return resolve;
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  async muteUser(userId: string, channelId: string, Time: Date): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.prisma.channelUser
+        .update({
+          where: {
+            userId_channelId: {
+              userId: userId,
+              channelId,
+            },
+          },
+          data: {
+            privilege: UserPrivilege.muted,
+            time: Time,
+          },
+        })
+        .then(() => {
+          return resolve;
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  async changeUserPrivilege(
+    userId: string,
+    channelId: string,
+    Time: Date,
+    privilege: UserPrivilege,
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.prisma.channelUser
+        .update({
+          where: {
+            userId_channelId: {
+              userId: userId,
+              channelId,
+            },
+          },
+          data: {
+            privilege: privilege,
+          },
+        })
+        .then(() => {
+          console.log('end of modif change userprivilige');
+          return resolve();
         })
         .catch((err) => {
           return reject(err);
@@ -671,6 +782,7 @@ export class ChannelService {
         .findMany({
           where: {
             userId: userId,
+            status: UserStatus.connected,
           },
           include: {
             channel: {

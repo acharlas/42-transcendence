@@ -15,7 +15,9 @@ export interface IoChatContextState {
   showRoomMenu: boolean;
   setShowRoomMenu: Function;
   showCreateMenu: boolean;
-  SetShowCreateMenu: Function;
+  setShowCreateMenu: Function;
+  selectUser: User | undefined;
+  setSelectUser: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
@@ -32,7 +34,9 @@ const ChatContext = createContext<IoChatContextState>({
   showRoomMenu: false,
   setShowRoomMenu: () => {},
   showCreateMenu: false,
-  SetShowCreateMenu: () => {},
+  setShowCreateMenu: () => {},
+  selectUser: undefined,
+  setSelectUser: () => {},
 });
 
 function ChatProvider(props: any) {
@@ -42,11 +46,14 @@ function ChatProvider(props: any) {
   const [userList, setUserList] = useState<User[]>([]);
   const [actChannel, setActChannel] = useState<string>("");
   const [showRoomMenu, setShowRoomMenu] = useState<boolean>(false);
-  const [showCreateMenu, SetShowCreateMenu] = useState<boolean>(false);
+  const [showCreateMenu, setShowCreateMenu] = useState<boolean>(false);
+  const [selectUser, setSelectUser] = useState<User>();
 
   return (
     <ChatContext.Provider
       value={{
+        selectUser,
+        setSelectUser,
         userList,
         setUserList,
         rooms,
@@ -60,7 +67,7 @@ function ChatProvider(props: any) {
         showRoomMenu,
         setShowRoomMenu,
         showCreateMenu,
-        SetShowCreateMenu,
+        setShowCreateMenu,
       }}
       {...props}
     />

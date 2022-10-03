@@ -12,7 +12,7 @@ import {
   SocketReducer,
 } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
-import { Message, Room, User } from "./type";
+import { Message, Room, User, UserPrivilege } from "./type";
 
 // function Chat() {
 //   return (
@@ -42,8 +42,9 @@ const SocketContextComponent: React.FunctionComponent<
     setMessages,
     setUserList,
     setShowRoomMenu,
-    SetShowCreateMenu,
+    setShowCreateMenu,
     actChannel,
+    setUser,
   } = useChat();
 
   const socket = useSocket("http://localhost:3333/chat", {
@@ -109,7 +110,13 @@ const SocketContextComponent: React.FunctionComponent<
       setMessages(room.message);
       setUserList(room.user);
       setActChannel(room.channel.id);
-      SetShowCreateMenu(false);
+      const user = room.user.find((user) => {
+        if (user.username === window.sessionStorage.getItem("username"))
+          return true;
+        return false;
+      });
+      setUser(user);
+      setShowCreateMenu(false);
       setShowRoomMenu(false);
     });
     /**room list */
@@ -117,6 +124,34 @@ const SocketContextComponent: React.FunctionComponent<
       console.log("room receive:", res);
       setRooms(res);
     });
+    /**UserList update */
+    socket.on(
+      "UpdateUserList",
+      ({ user, roomId }: { user: User[]; roomId: string }) => {
+        console.log("updateUserList", user);
+        const newRooms = [...rooms];
+
+        const room = newRooms.find((room) => {
+          if (room.channel.id === roomId) return true;
+          return false;
+        });
+
+        room.user = user;
+
+        if (actChannel === roomId) {
+          setUserList(user);
+          const newUser = room.user.find((user) => {
+            if (user.username === window.sessionStorage.getItem("username"))
+              return true;
+            return false;
+          });
+          console.log(user[0].privilege);
+          setUser(newUser);
+        }
+        console.log("userList", userList);
+        setRooms(newRooms);
+      }
+    );
     /** receive new id */
     socket.on("new_user", (uid: string) => {
       console.log("User connected, new user receive", uid, "last uid");

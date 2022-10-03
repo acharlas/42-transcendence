@@ -14,7 +14,8 @@ function MessagesComponent() {
     messages,
     actChannel,
     userList,
-    setActChannel,
+    setSelectUser,
+    selectUser,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -64,9 +65,11 @@ function MessagesComponent() {
     }
   }
 
-  // const handleShowUser = ({ user }: { user: User }) => {
-  //   setShowUser(user);
-  // };
+  const handleShowUser = ({ user }: { user: User }) => {
+    if (selectUser && selectUser.username === user.username)
+      setSelectUser(undefined);
+    else setSelectUser(user);
+  };
 
   if (!actChannel) return <div />;
   return (
@@ -80,11 +83,11 @@ function MessagesComponent() {
           return (
             <nav key={index}>
               <button
-              // onClick={() =>
-              //   handleShowUser({
-              //     user: user,
-              //   })
-              // }
+                onClick={() =>
+                  handleShowUser({
+                    user: user,
+                  })
+                }
               >
                 {user ? user.nickname : user.nickname}:
               </button>

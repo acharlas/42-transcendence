@@ -13,11 +13,14 @@ function RoomsMenuContainer({}) {
     setMessages,
     setUserList,
     showCreateMenu,
-    SetShowCreateMenu,
+    setShowCreateMenu,
+    setUser,
+    setSelectUser,
   } = useChat();
 
   function handleJoinRoom(key: string) {
     console.log("try to join:", key);
+    setSelectUser(undefined);
     if (key === actChannel) return;
     setActChannel(key);
     rooms.map((room) => {
@@ -32,6 +35,13 @@ function RoomsMenuContainer({}) {
     console.log(curRoom, curRoom.message, curRoom.user);
     setMessages(curRoom.message);
     setUserList(curRoom.user);
+    const user = curRoom.user.find((user) => {
+      if (user.username === window.sessionStorage.getItem("username"))
+        return true;
+      return false;
+    });
+    setUser(user);
+    console.log("user set to: ", user);
     setShowRoomMenu(false);
   }
 
@@ -42,7 +52,8 @@ function RoomsMenuContainer({}) {
   const handleShowCreateRoom = (event) => {
     setActChannel(null);
     setShowRoomMenu(false);
-    SetShowCreateMenu(true);
+    setShowCreateMenu(true);
+    setSelectUser(undefined);
     setMessages([]);
     setUserList([]);
   };
@@ -50,7 +61,8 @@ function RoomsMenuContainer({}) {
   const handleJoinNewRoom = (event) => {
     setActChannel(null);
     setShowRoomMenu(false);
-    SetShowCreateMenu(false);
+    setShowCreateMenu(false);
+    setSelectUser(undefined);
     setMessages([]);
     setUserList([]);
   };

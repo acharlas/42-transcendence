@@ -11,11 +11,11 @@ export enum ChannelType {
 }
 
 export enum UserPrivilege {
-  owner,
-  admin,
-  default,
-  muted,
-  ban,
+  owner = "owner",
+  admin = "admin",
+  default = "default",
+  muted = "muted",
+  ban = "ban",
 }
 
 export interface Channel {

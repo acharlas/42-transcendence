@@ -172,15 +172,51 @@ export class MessageGateway
     @MessageBody('toModifie') toModifie: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
+    console.log('date: ', time, 'Privilege: ', privilege);
     return new Promise<void>((resolve, reject) => {
       this.channelService
         .channelUserUpdate(client.userID, toModifie, roomId, privilege, time)
-        .then(() => {
-          return resolve();
+        .then((ret) => {
+          console.log('uwerqwuo');
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              this.channelService
+                .getChannelUser(roomId)
+                .then((user) => {
+                  console.log('send msg back');
+                  client
+                    .to(roomId)
+                    .emit('UpdateUserList', { roomId: roomId, user: user });
+                  client.emit('UpdateUserList', { roomId: roomId, user: user });
+                })
+                .catch((err) => {
+                  return reject(err);
+                });
+              return resolve();
+            }).catch((err) => {
+              console.log(err);
+              return reject(err);
+            }),
+          );
         })
         .catch((err) => {
           return reject(err);
         });
+    });
+  }
+
+  /*============================================*/
+  /*============================================*/
+  /*Ban User*/
+  @SubscribeMessage('UpdateUserPrivilege')
+  BanUser(
+    @MessageBody('user') user: string,
+    @MessageBody('Date') time: Date,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('date');
+    return new Promise<void>((resolve, reject) => {
+      return resolve();
     });
   }
 

@@ -8,14 +8,21 @@ import { FaAngleLeft } from "react-icons/fa";
 import RoomsMenuContainer from "./chat-rooms-menu";
 import JoinNewRoomComponent from "./chat-join-new-room";
 import MessagesComponent from "./chat-messages";
+import UserMenu from "./chat-user-menu";
 
 export interface IChatIndexProps {}
 
 const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
   let navigate = useNavigate();
   const { socket } = useContext(SocketContext).SocketState;
-  const { showCreateMenu, rooms, showRoomMenu, setShowRoomMenu, actChannel } =
-    useChat();
+  const {
+    showCreateMenu,
+    rooms,
+    showRoomMenu,
+    setShowRoomMenu,
+    actChannel,
+    selectUser,
+  } = useChat();
 
   const goSignin = () => {
     window.sessionStorage.clear();
@@ -34,6 +41,7 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
       </button>
       <div className="chat-container">
         <div>
+          {selectUser ? <UserMenu /> : <></>}
           {showRoomMenu ? (
             <RoomsMenuContainer />
           ) : (
