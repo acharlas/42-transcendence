@@ -29,7 +29,7 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
     navigate("/");
   };
 
-  const handleShowRoomMenu = (event) => {
+  const handleShowRoomMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     showRoomMenu ? setShowRoomMenu(false) : setShowRoomMenu(true);
   };
 

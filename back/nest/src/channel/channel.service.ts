@@ -606,7 +606,8 @@ export class ChannelService {
                                   });
                               }),
                             );
-                          else if (priv === UserPrivilege.muted) {
+                          else if (priv === 'muted') {
+                            console.log('switch to muted');
                             return resolve(
                               new Promise<void>((resolve, reject) => {
                                 this.muteUser(userModified.id, channelId, time)
@@ -674,7 +675,7 @@ export class ChannelService {
           },
         })
         .then(() => {
-          return resolve;
+          return resolve();
         })
         .catch((err) => {
           return reject(err);
@@ -698,7 +699,7 @@ export class ChannelService {
           },
         })
         .then(() => {
-          return resolve;
+          return resolve();
         })
         .catch((err) => {
           return reject(err);
@@ -737,14 +738,14 @@ export class ChannelService {
 
   async getChannelUser(channelId: string): Promise<
     {
-      privilele: string;
+      privilege: string;
       username: string;
       nickname: string;
     }[]
   > {
     return new Promise<
       {
-        privilele: string;
+        privilege: string;
         username: string;
         nickname: string;
       }[]
@@ -763,7 +764,7 @@ export class ChannelService {
           return resolve(
             ret.map((elem) => {
               return {
-                privilele: elem.privilege,
+                privilege: elem.privilege,
                 username: elem.user.username,
                 nickname: elem.user.nickname,
               };

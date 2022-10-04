@@ -129,14 +129,23 @@ const SocketContextComponent: React.FunctionComponent<
       "UpdateUserList",
       ({ user, roomId }: { user: User[]; roomId: string }) => {
         console.log("updateUserList", user);
-        const newRooms = [...rooms];
+        const newRooms = rooms.map((room) => {
+          if (room.channel.id === roomId) {
+            room.user = [...user];
+            return room;
+          }
+        });
+
+        setRooms(newRooms);
 
         const room = newRooms.find((room) => {
           if (room.channel.id === roomId) return true;
           return false;
         });
 
-        room.user = user;
+        console.log(room);
+        room.user = [...user];
+        console.log(room);
 
         if (actChannel === roomId) {
           setUserList(user);
@@ -145,11 +154,10 @@ const SocketContextComponent: React.FunctionComponent<
               return true;
             return false;
           });
-          console.log(user[0].privilege);
-          setUser(newUser);
+          console.log(user);
+          setUser({ ...newUser });
+          console.log("userList", userList, "priv: ", newUser.privilege);
         }
-        console.log("userList", userList);
-        setRooms(newRooms);
       }
     );
     /** receive new id */

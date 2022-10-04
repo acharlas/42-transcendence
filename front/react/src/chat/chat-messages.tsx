@@ -1,12 +1,12 @@
-import { useContext, useRef } from "react";
-import { Socket } from "socket.io-client";
+import { useContext, useEffect, useRef } from "react";
 import { useChat } from "../context/chat.context";
 import SocketContext from "../context/socket.context";
 import "./chat-style.css";
-import { User, UserPrivilege } from "./type";
+import { User } from "./type";
 
 function MessagesComponent() {
   const newMessageRef = useRef(null);
+  const bottomRef = useRef(null);
   const {
     setRooms,
     rooms,
@@ -19,6 +19,11 @@ function MessagesComponent() {
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
+  useEffect(() => {
+    // 👇️ scroll to bottom every time messages change
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   function handleSendMessage() {
     const message = newMessageRef.current.value;
     newMessageRef.current.value = "";
@@ -26,20 +31,12 @@ function MessagesComponent() {
     if (!String(message).trim()) {
       return;
     }
-    console.log("send message roomId:", actChannel);
-    console.log("message send:", message);
     if (message[0] != null) {
       const user = userList.find((user) => {
         if (user.username === window.sessionStorage.getItem("username"))
           return true;
         return false;
       });
-      console.log(
-        "user find:",
-        user,
-        "username:",
-        window.sessionStorage.getItem("username")
-      );
       socket.emit("SendRoomMessage", {
         roomId: actChannel,
         message: message,
@@ -57,11 +54,8 @@ function MessagesComponent() {
         content: message,
       });
 
-      console.log("add message after send: ", newRooms);
-
       setRooms(newRooms);
       setMessages(room.message);
-      console.log("oldmessage: ", messages);
     }
   }
 
@@ -71,36 +65,50 @@ function MessagesComponent() {
     else setSelectUser(user);
   };
 
-  if (!actChannel) return <div />;
+  const handleEnter = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSendMessage();
+      newMessageRef.current.value = "";
+    }
+  };
+
+  if (!actChannel) return <></>;
   return (
-    <>
-      <div className="chat">
+    <div className="room-chat-container">
+      <div className="room-chat-message-container">
         {messages.map((message, index) => {
           const user = userList.find((user) => {
             if (user.username === message.username) return true;
             return false;
           });
           return (
-            <nav key={index}>
+            <nav key={index} className="room-chat-message-text">
               <button
+                className="room-chat-button-user"
                 onClick={() =>
                   handleShowUser({
                     user: user,
                   })
                 }
               >
-                {user ? user.nickname : user.nickname}:
+                {user ? user.nickname : user.nickname} {" :"}
               </button>
-              <p className="chat-message">{message.content}</p>
+              {message.content}
             </nav>
           );
         })}
+        <div ref={bottomRef}></div>
       </div>
-      <div>
-        <textarea rows={1} placeholder="time to talk" ref={newMessageRef} />
-        <button onClick={handleSendMessage}>Send</button>
+      <div className="room-chat-textbox-container">
+        <textarea
+          className="room-chat-textbox"
+          placeholder="time to talk"
+          ref={newMessageRef}
+          onKeyDown={handleEnter}
+        />
       </div>
-    </>
+    </div>
   );
 }
 

@@ -1,8 +1,9 @@
-import { FaUserAstronaut, FaWindowClose } from "react-icons/fa";
+import { FaUserAstronaut } from "react-icons/fa";
 import { MdAddModerator, MdRemoveModerator } from "react-icons/md";
-import { AiFillHeart } from "react-icons/ai";
-import { HiMail, HiXCircle, HiBan } from "react-icons/hi";
-import { TbMessageOff } from "react-icons/tb";
+import { AiFillHeart, AiFillUnlock } from "react-icons/ai";
+import { HiMail, HiXCircle } from "react-icons/hi";
+import { GiPrisoner } from "react-icons/gi";
+import { TbMessage, TbMessageOff } from "react-icons/tb";
 import { ImUserMinus } from "react-icons/im";
 import { useChat } from "../context/chat.context";
 import { useContext, useRef } from "react";
@@ -36,6 +37,7 @@ function UserMenu() {
       time: newDate,
       toModifie: selectUser.username,
     });
+    setSelectUser(undefined);
   };
 
   const MuteUser = () => {
@@ -50,14 +52,13 @@ function UserMenu() {
       date.getTime() + 1000 * 60 * 60 * nbHour + 1000 * 60 * nbMin
     );
 
-    console.log("newdate: ", newDate);
-
     socket.emit("UpdateUserPrivilege", {
       roomId: actChannel,
       privilege: "muted",
       time: newDate,
       toModifie: selectUser.username,
     });
+    setSelectUser(undefined);
   };
 
   const AdminUser = () => {
@@ -69,10 +70,11 @@ function UserMenu() {
       time: null,
       toModifie: selectUser.username,
     });
+    setSelectUser(undefined);
   };
 
   const setToDefault = () => {
-    console.log("remove admin");
+    console.log("set to default");
 
     socket.emit("UpdateUserPrivilege", {
       roomId: actChannel,
@@ -80,8 +82,9 @@ function UserMenu() {
       time: null,
       toModifie: selectUser.username,
     });
+    setSelectUser(undefined);
   };
-  console.log("userpivilege: ", user.privilege);
+
   if (user.username === selectUser.username) return <></>;
   return (
     <nav className="user-menu">
@@ -119,12 +122,25 @@ function UserMenu() {
                 <button onClick={AdminUser}>
                   <MdAddModerator />
                 </button>
-                <button onClick={MuteUser}>
-                  <TbMessageOff />
-                </button>
-                <button onClick={banUser}>
-                  <HiBan />
-                </button>
+                {selectUser.privilege === UserPrivilege.muted ? (
+                  <button onClick={setToDefault}>
+                    <TbMessage />
+                  </button>
+                ) : (
+                  <button onClick={MuteUser}>
+                    <TbMessageOff />
+                  </button>
+                )}
+                {selectUser.privilege === UserPrivilege.ban ? (
+                  <button onClick={setToDefault}>
+                    <AiFillUnlock />
+                  </button>
+                ) : (
+                  <button onClick={banUser}>
+                    <GiPrisoner />
+                  </button>
+                )}
+
                 <input
                   type="number"
                   min="0"
