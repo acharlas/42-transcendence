@@ -8,9 +8,9 @@
   font-size: large;
 }
 
-/* profile picture */
+/* avatar */
 
-.settings__profile__picture {
+.settings__avatar {
   width: 100px;
   max-width: 100%;
   height: auto;
@@ -19,7 +19,7 @@
   border: 2px solid rgb(0, 0, 0);
 }
 
-.settings__profile__picture__container {
+.settings__avatar__container {
   display: flex;
   flex-wrap: nowrap;
   /* align-items: center; */

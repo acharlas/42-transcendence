@@ -236,8 +236,8 @@ export default function Profile() {
             <div className="settings__subtitle">
               Profile picture
             </div>
-            <div className="settings__profile__picture__container">
-              <img className="settings__profile__picture"
+            <div className="settings__avatar__container">
+              <img className="settings__avatar"
                 src={defaultPicture}
                 alt="" />
               {

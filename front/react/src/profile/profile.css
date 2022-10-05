@@ -1,0 +1,202 @@
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  /* border: 1px solid #ddd; */
+}
+
+.profile__screen {
+  background: #46234b;
+  position: relative;
+  /* height: 600px; */
+  width: 360px;
+  box-shadow: 0px 0px 24px #3c4977;
+}
+
+.profile__button__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 40%;
+  margin: auto;
+}
+
+.profile__button {
+  display: inline-flex;
+  /*
+  background-color: antiquewhite;
+  margin: 0.5em;
+
+  
+  box-shadow: 0px 2px 2px #2c385e;
+  border: 1px solid #d4d3e8;
+  align-items: center;*/
+  cursor: pointer;
+  transition: 0.2s;
+
+  display: flex;
+  align-items: center;
+
+  border-radius: 0.5em;
+  margin-top: 0.5em;
+  padding: 0.5em;
+  width: 100%;
+
+  color: #2c385e;
+  border: 1px solid #d4d3e8;
+  box-shadow: 0px 2px 2px #2c385e;
+
+  font-size: large;
+  font-weight: bold;
+}
+
+.profile__container {
+  background-image: url("../image/background-login.svg");
+  background-repeat: repeat-y;
+  background-size: auto;
+  min-height: 100vh;
+  max-height: fit-content;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.profile__content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* header (avatar + nickname + friend/block) */
+
+.profile__avatar {
+  /* width: 100px; */
+  max-width: 40%;
+  height: auto;
+
+  border-radius: 10px;
+  /* border-radius: 50%; */
+  border: 2px solid rgb(0, 0, 0);
+  margin: auto;
+}
+
+.profile__avatar__container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  /* margin: auto; */
+  /* width: 50%; */
+}
+
+.profile__nickname {
+  display: flexbox;
+  text-align: center;
+  margin: auto;
+}
+
+/* stats */
+
+.profile__stats__container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+}
+
+/* panels */
+
+.profile__panel {
+  display: flex;
+  background-color: blue;
+}
+
+.profile__panel__title {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+
+  font-weight: bold;
+  text-align: center;
+}
+
+.profile__bubble {
+  background-color: rgb(158, 158, 199);
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+
+  text-align: center;
+}
+
+.profile__panel__top {
+  background-color: rgb(158, 158, 199);
+  border-radius: 10px 10px 0 0;
+  padding: 10px;
+  margin: 10px 10px 0;
+
+  font-weight: bold;
+  text-align: center;
+}
+
+.profile__panel__bottom {
+  background-color: aliceblue;
+  border-radius: 0 0 10px 10px;
+  padding: 10px;
+  margin: 0 10px 10px;
+
+  text-align: center;
+}
+
+/* match history */
+
+.profile__hist {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.profile__hist table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.profile__hist__head {
+  background-color: rgb(146, 170, 146);
+}
+
+.profile__hist__w {
+  background-color: rgb(55, 116, 55);
+}
+
+.profile__hist__l {
+  background-color: rgb(230, 75, 75);
+}
+
+.profile__list__head th {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  font-weight: bold;
+}
+
+.profile__hist__w th {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  font-weight: normal;
+}
+
+.profile__hist__l th {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  font-weight: normal;
+}
+
+/* achievements */
+
+.profile__achiev__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile__achiev {
+  background-color: rgb(212, 228, 74);
+}

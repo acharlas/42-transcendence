@@ -6,6 +6,9 @@ export interface GetUserDto {
 
 export interface User {
   nickname: string,
+  wins: number,
+  losses: number,
+  mmr: number,
 }
 
 export const getUser = async (params: GetUserDto): Promise<User> => {
