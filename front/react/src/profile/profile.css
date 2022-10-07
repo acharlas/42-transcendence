@@ -83,7 +83,6 @@
 }
 
 .profile__nickname {
-  display: flexbox;
   text-align: center;
   margin: auto;
 }

@@ -14,7 +14,7 @@ export interface User {
 export const getUser = async (params: GetUserDto): Promise<User> => {
   return new Promise<User>((resolve, reject) => {
     axios.get(`http://localhost:3333/users/` + params.id,
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem("Token") } })
+      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret.data);
       })

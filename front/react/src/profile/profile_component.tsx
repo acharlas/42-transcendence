@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom'
-import { FaRocket } from "react-icons/fa";
+// import { FaRocket } from "react-icons/fa";
 
 import { User, getUser } from "./getUser";
+import { addFriend, removeFriend, checkIfFriend } from "./friend-api"
+import { addBlock, removeBlock, checkIfBlock } from "./block-api"
 import defaultPicture from "../image/defaultPicture.png"
 import "../style.css";
 import "./profile.css";
@@ -18,14 +20,51 @@ export default function ProfilePage() {
   // State variables
   const { id } = useParams();
   const [userData, setUserData] = useState<User>({ nickname: '', wins: 0, losses: 0, mmr: 0 });
+  const [isFriend, setIsFriend] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+
+  useEffect(() => {
+    const fetchFriendBlockStates = async () => {
+      await checkIfFriend({ sourceId: "6b8d5dd7-58e5-4e9d-b8b6-cc985266235c", targetId: id })
+        .then((res) => {
+          setIsFriend(res);
+        })
+        .catch((e) => {
+          console.log("checkIfFriend err");
+          if (e.response.status === 401) {
+            console.log("Not identified: redirecting", e);
+            goSignIn();
+          }
+          else {
+            console.log("checkIfFriend err: " + e);
+          }
+        });
+      await checkIfBlock({ sourceId: "6b8d5dd7-58e5-4e9d-b8b6-cc985266235c", targetId: id })
+        .then((res) => {
+          setIsBlocked(res);
+        })
+        .catch((e) => {
+          console.log("checkIfFriend err");
+          if (e.response.status === 401) {
+            console.log("Not identified: redirecting", e);
+            goSignIn();
+          }
+          else {
+            console.log("checkIfFriend err: " + e);
+          }
+        });
+    }
+    fetchFriendBlockStates();
+    console.log("isfriend: " + isFriend);
+    console.log("isblocked: " + isBlocked);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     const fetchUserData = async () => {
       await getUser({ id })
         .then((res) => {
-          console.log("res:", res);
           setUserData(res);
-          console.log("userData:", userData);
         })
         .catch((e) => {
           // redirect to auth page if auth failed
@@ -37,26 +76,48 @@ export default function ProfilePage() {
             console.log(e);
             //todo: no such user
           }
-        })
+        });
     }
     fetchUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // FRIEND
-  const addFriend = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const friendClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-  }
-  const removeFriend = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+    console.log("isfriend: " + isFriend);
+    try {
+      if (isFriend) {
+        removeFriend({ id: id });
+        setIsFriend(false);
+      }
+      else {
+        addFriend({ id: id });
+        setIsFriend(true);
+      }
+    }
+    catch (e) {
+      console.log("Failed friend event.", e);
+    }
   }
 
   // BLOCK
-  const addBlock = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const blockClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-  }
-  const removeBlock = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
+    console.log("isblocked: " + isBlocked);
+    try {
+      if (isBlocked) {
+        removeBlock({ id: id });
+        setIsBlocked(false);
+      }
+      else {
+        addBlock({ id: id });
+        setIsBlocked(true);
+      }
+    }
+    catch (e) {
+      console.log("Failed block event.", e);
+    }
   }
 
   return (
@@ -81,21 +142,13 @@ export default function ProfilePage() {
                 <div className="profile__button__container">
 
                   <button className="profile__button"
-                    onClick={addFriend}>
-                    +FRIEND
+                    onClick={friendClick}>
+                    {isFriend ? "UNFRIEND" : "FRIEND"}
                   </button>
-                  {/* <button className="profile__button"
-                  onClick={removeFriend}>
-                  -FRIEND
-                </button> */}
                   <button className="profile__button"
-                    onClick={addBlock}>
-                    +BLOCK
+                    onClick={blockClick}>
+                    {isBlocked ? "UNBLOCK" : "BLOCK"}
                   </button>
-                  {/* <button className="profile__button"
-                  onClick={removeBlock}>
-                  -BLOCK
-                </button> */}
                 </div>
               </div>
 
@@ -143,18 +196,18 @@ export default function ProfilePage() {
           </div>
           <table className="profile__panel__bottom profile__hist__table">
             {/*TODO: match history*/}
-            {/* <table> */}
-            <tr className="profile__hist__head"><th>W/L</th><th>SCORE</th><th>MODE</th></tr>
-            <tr className="profile__hist__w"><th>W</th><th>10-8</th><th>classic</th></tr>
-            <tr className="profile__hist__l"><th>L</th><th>3-10</th><th>classic</th></tr>
-            <tr className="profile__hist__l"><th>L</th><th>6-10</th><th>classic</th></tr>
-            <tr className="profile__hist__w"><th>W</th><th>10-9</th><th>classic</th></tr>
-            <tr className="profile__hist__l"><th>L</th><th>3-10</th><th>classic</th></tr>
-            <tr className="profile__hist__w"><th>W</th><th>10-9</th><th>classic</th></tr>
-            <tr className="profile__hist__w"><th>W</th><th>10-8</th><th>classic</th></tr>
-            <tr className="profile__hist__l"><th>L</th><th>6-10</th><th>classic</th></tr>
+            <tbody>
+              <tr className="profile__hist__head"><th>W/L</th><th>SCORE</th><th>MODE</th></tr>
+              <tr className="profile__hist__w"><th>W</th><th>10-8</th><th>classic</th></tr>
+              <tr className="profile__hist__l"><th>L</th><th>3-10</th><th>classic</th></tr>
+              <tr className="profile__hist__l"><th>L</th><th>6-10</th><th>classic</th></tr>
+              <tr className="profile__hist__w"><th>W</th><th>10-9</th><th>classic</th></tr>
+              <tr className="profile__hist__l"><th>L</th><th>3-10</th><th>classic</th></tr>
+              <tr className="profile__hist__w"><th>W</th><th>10-9</th><th>classic</th></tr>
+              <tr className="profile__hist__w"><th>W</th><th>10-8</th><th>classic</th></tr>
+              <tr className="profile__hist__l"><th>L</th><th>6-10</th><th>classic</th></tr>
+            </tbody>
           </table>
-          {/* </div> */}
 
           <br></br>
 
