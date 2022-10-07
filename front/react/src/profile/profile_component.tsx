@@ -137,20 +137,20 @@ export default function ProfilePage() {
               MATCH HISTORY
             </div>
           </div>
-          <div className="profile__panel__bottom profile__hist">
+          <table className="profile__panel__bottom profile__hist__table">
             {/*TODO: match history*/}
-            <table>
-              <tr className="profile__hist__head"><th>W/L</th><th>SCORE</th><th>MODE</th></tr>
-              <tr className="profile__hist__w"><th>W</th><th>10-8</th><th>classic</th></tr>
-              <tr className="profile__hist__l"><th>L</th><th>3-10</th><th>classic</th></tr>
-              <tr className="profile__hist__l"><th>L</th><th>6-10</th><th>classic</th></tr>
-              <tr className="profile__hist__w"><th>W</th><th>10-9</th><th>classic</th></tr>
-              <tr className="profile__hist__l"><th>L</th><th>3-10</th><th>classic</th></tr>
-              <tr className="profile__hist__w"><th>W</th><th>10-9</th><th>classic</th></tr>
-              <tr className="profile__hist__w"><th>W</th><th>10-8</th><th>classic</th></tr>
-              <tr className="profile__hist__l"><th>L</th><th>6-10</th><th>classic</th></tr>
-            </table>
-          </div>
+            {/* <table> */}
+            <tr className="profile__hist__head"><th>W/L</th><th>SCORE</th><th>MODE</th></tr>
+            <tr className="profile__hist__w"><th>W</th><th>10-8</th><th>classic</th></tr>
+            <tr className="profile__hist__l"><th>L</th><th>3-10</th><th>classic</th></tr>
+            <tr className="profile__hist__l"><th>L</th><th>6-10</th><th>classic</th></tr>
+            <tr className="profile__hist__w"><th>W</th><th>10-9</th><th>classic</th></tr>
+            <tr className="profile__hist__l"><th>L</th><th>3-10</th><th>classic</th></tr>
+            <tr className="profile__hist__w"><th>W</th><th>10-9</th><th>classic</th></tr>
+            <tr className="profile__hist__w"><th>W</th><th>10-8</th><th>classic</th></tr>
+            <tr className="profile__hist__l"><th>L</th><th>6-10</th><th>classic</th></tr>
+          </table>
+          {/* </div> */}
 
           <br></br>
 
