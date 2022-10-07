@@ -16,14 +16,13 @@
 
 .profile__button {
   display: inline-flex;
-  /*
-  background-color: antiquewhite;
+  /*background-color: antiquewhite;
   margin: 0.5em;
 
   
   box-shadow: 0px 2px 2px #2c385e;
   border: 1px solid #d4d3e8;
-  align-items: center;*/
+  align-items: center;
   cursor: pointer;
   transition: 0.2s;
 
@@ -40,7 +39,7 @@
   box-shadow: 0px 2px 2px #2c385e;
 
   font-size: large;
-  font-weight: bold;
+  font-weight: bold; */
 }
 
 .profile__container {

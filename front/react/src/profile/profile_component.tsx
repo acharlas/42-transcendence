@@ -66,35 +66,39 @@ export default function ProfilePage() {
 
           <div>
 
-            <div className="profile__nickname">
-              {userData.nickname}
+            <div className="profile__panel__top">
+              <div className="profile__nickname">
+                {userData.nickname}
+              </div>
             </div>
 
-            <div className="profile__avatar__container">
-              <img className="profile__avatar"
-                src={defaultPicture}
-                alt="" />
-              {/*TODO: display profile pictures */}
+            <div className="profile__panel__bottom">
+              <div className="profile__avatar__container">
+                <img className="profile__avatar"
+                  src={defaultPicture}
+                  alt="" />
+                {/*TODO: display profile pictures */}
+                <div className="profile__button__container">
 
-              <div className="profile__button__container">
-
-                <button className="profile__button"
-                  onClick={addFriend}>
-                  +FRIEND
-                </button>
-                {/* <button className="profile__button"
+                  <button className="profile__button"
+                    onClick={addFriend}>
+                    +FRIEND
+                  </button>
+                  {/* <button className="profile__button"
                   onClick={removeFriend}>
                   -FRIEND
                 </button> */}
-                <button className="profile__button"
-                  onClick={addBlock}>
-                  +BLOCK
-                </button>
-                {/* <button className="profile__button"
+                  <button className="profile__button"
+                    onClick={addBlock}>
+                    +BLOCK
+                  </button>
+                  {/* <button className="profile__button"
                   onClick={removeBlock}>
                   -BLOCK
                 </button> */}
+                </div>
               </div>
+
             </div>
 
           </div>
