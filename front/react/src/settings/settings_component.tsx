@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { getUserData } from "./getUserData"
-import { patchUsername, patchNickname } from "./patchUserData"
+import { patchNickname } from "./patchUserData"
 import mfaService from "../mfa/mfa-service";
 import defaultPicture from "../image/defaultPicture.png"
-import "./settings.css"
+import "../profile/profile.css"
 import "../style.css"
 
 export default function Profile() {
@@ -20,11 +20,8 @@ export default function Profile() {
   }
 
   // State variables
-  const [username, setUsername] = useState("");
   const [nickname, setNickname] = useState("");
-  const [newUsername, setNewUsername] = useState("");
   const [newNickname, setNewNickname] = useState("");
-  const [editingUsername, setEditingUsername] = useState(false);
   const [editingNickname, setEditingNickname] = useState(false);
   const [mfaEnabled, setMfaEnabled] = useState(false);
 
@@ -32,7 +29,6 @@ export default function Profile() {
     const fetchUserData = async () => {
       await getUserData()
         .then((res) => {
-          setUsername(res.username);
           setNickname(res.nickname);
           setMfaEnabled(res.mfaEnabled);
         })
@@ -48,38 +44,22 @@ export default function Profile() {
   });
 
   // NAMES
-  const editUsername = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    patchUsername({ username: newUsername });
-    setEditingUsername(false);
-    setNewUsername("");
-  }
   const editNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    patchNickname({ nickname: newNickname });
+    await patchNickname({ nickname: newNickname });
     setEditingNickname(false);
     setNewNickname("");
   }
 
-  const startEditingUsername = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    setEditingUsername(true);
-  }
   const startEditingNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
     setEditingNickname(true);
   }
 
-  const stopEditingUsername = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    setEditingUsername(false);
-    setNewUsername("");
-  }
   const stopEditingNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
     setEditingNickname(false);
     setNewNickname("");
   }
 
-  const handleNewUsernameChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewUsername(event.target.value);
-  }
   const handleNewNicknameChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewNickname(event.target.value);
   }
@@ -109,7 +89,7 @@ export default function Profile() {
   function whenMfaEnabled() {
     return (
       <div>
-        <div className="settings__mfa__status">
+        <div>
           2FA is enabled
         </div>
         <button onClick={disableMfa}>
@@ -121,7 +101,7 @@ export default function Profile() {
   function whenMfaDisabled() {
     return (
       <div>
-        <div className="settings__mfa__status">
+        <div>
           2FA is disabled
         </div>
         <button onClick={enableMfa}>
@@ -133,138 +113,98 @@ export default function Profile() {
 
 
   return (
-    <div className="container">
-      <div className="settings_screen">
-        <div className="screen__content">
+    <div className="profile__container">
+      <div className="profile__screen">
+        <div className="profile__content">
 
-          <div className="settings__title">
-            Settings
-          </div>
-
-          <br></br>
-
-          <div className="settings__block">
-            <div className="settings__subtitle">
-              Account information
-            </div>
-
-            <div className="settings__name__title">
-              username:
-            </div>
-            <div className="settings__namewrap">
-              <div>
-                {editingUsername
-                  ?
-                  <div>
-                    <input className="settings__name__edit"
-                      placeholder="new username"
-                      value={newUsername}
-                      onChange={handleNewUsernameChange}
-                      type="text"
-                    />
-                    <div>
-                      <button className="settings__name__edit__button"
-                        onClick={editUsername}>
-                        edit
-                      </button>
-                      <button className="settings__name__edit__button"
-                        onClick={stopEditingUsername}>
-                        cancel
-                      </button>
-                    </div>
-                  </div>
-                  :
-                  <div>
-                    <div className="settings__name__noedit">
-                      {username}
-                    </div>
-                    <div>
-                      <button className="settings__name__edit__button"
-                        onClick={startEditingUsername}>
-                        edit
-                      </button>
-                    </div>
-                  </div>
-                }
+          <div>
+            <div className="profile__panel__top">
+              <div className="profile__panel__title">
+                Account information
               </div>
             </div>
 
-
-            <div className="settings__name__title">
-              nickname:
-            </div>
-            <div className="settings__namewrap">
+            <div className="profile__panel__bottom">
               <div>
-                {editingNickname
-                  ?
-                  <div>
-                    <input className="settings__name__edit"
-                      placeholder="new nickname"
-                      value={newNickname}
-                      onChange={handleNewNicknameChange}
-                      type="text"
-                    />
+                nickname:
+              </div>
+              <div>
+                <div>
+                  {editingNickname
+                    ?
                     <div>
-                      <button className="settings__name__edit__button"
-                        onClick={editNickname}>
+                      <input
+                        placeholder="new nickname"
+                        value={newNickname}
+                        onChange={handleNewNicknameChange}
+                        type="text"
+                      />
+                      <div>
+                        <button onClick={editNickname}>
+                          edit
+                        </button>
+                        <button onClick={stopEditingNickname}>
+                          cancel
+                        </button>
+                      </div>
+                    </div>
+                    :
+                    <div>
+                      <div>
+                        {nickname}
+                      </div>
+                      <button
+                        onClick={startEditingNickname}>
                         edit
                       </button>
-                      <button className="settings__name__edit__button"
-                        onClick={stopEditingNickname}>
-                        cancel
-                      </button>
                     </div>
-                  </div>
-                  :
-                  <div>
-                    <div className="settings__name__noedit">
-                      {nickname}
-                    </div>
-                    <button className="settings__name__edit__button"
-                      onClick={startEditingNickname}>
-                      edit
-                    </button>
-                  </div>
-                }
+                  }
+                </div>
               </div>
             </div>
           </div>
 
           <br></br>
 
-          <div className="settings__block">
-            <div className="settings__subtitle">
-              Profile picture
+          <div>
+            <div className="profile__panel__top">
+              <div className="profile__panel__title">
+                Profile picture
+              </div>
             </div>
-            <div className="settings__avatar__container">
-              <img className="settings__avatar"
-                src={defaultPicture}
-                alt="" />
-              {
-                //TODO: display profile pictures
-              }
+            <div className="profile__panel__bottom">
+              <div className="profile__avatar__container">
+                <img className="profile__avatar"
+                  src={defaultPicture}
+                  alt="" />
+                {
+                  //TODO: display profile pictures
+                }
+              </div>
+              <button>
+                update
+              </button>
+              <button>
+                delete
+              </button>
             </div>
-            <button>
-              update
-            </button>
-            <button>
-              delete
-            </button>
           </div>
 
           <br></br>
 
-          <div className="settings__block">
-            <div className="settings__subtitle">
-              Two-factor authentication
+          <div>
+            <div className="profile__panel__top">
+              <div className="profile__panel__title">
+                Two-factor authentication
+              </div>
             </div>
-            <div>
+            <div className="profile__panel__bottom">
               {mfaEnabled ? whenMfaEnabled() : whenMfaDisabled()}
             </div>
           </div>
 
         </div>
       </div>
-    </div>
+    </div >
   );
 }

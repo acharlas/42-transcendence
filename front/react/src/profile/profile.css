@@ -6,42 +6,6 @@
   box-shadow: 0px 0px 24px #3c4977;
 }
 
-.profile__button__container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 40%;
-  margin: auto;
-}
-
-.profile__button {
-  display: inline-flex;
-  /*background-color: antiquewhite;
-  margin: 0.5em;
-
-  
-  box-shadow: 0px 2px 2px #2c385e;
-  border: 1px solid #d4d3e8;
-  align-items: center;
-  cursor: pointer;
-  transition: 0.2s;
-
-  display: flex;
-  align-items: center;
-
-  border-radius: 0.5em;
-  margin-top: 0.5em;
-  padding: 0.5em;
-  width: 100%;
-
-  color: #2c385e;
-  border: 1px solid #d4d3e8;
-  box-shadow: 0px 2px 2px #2c385e;
-
-  font-size: large;
-  font-weight: bold; */
-}
-
 .profile__container {
   background-image: url("../image/background-login.svg");
   background-repeat: repeat-y;
@@ -59,41 +23,6 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-}
-
-/* header (avatar + nickname + friend/block) */
-
-.profile__avatar {
-  /* width: 100px; */
-  max-width: 40%;
-  height: auto;
-
-  border-radius: 10px;
-  /* border-radius: 50%; */
-  border: 2px solid rgb(0, 0, 0);
-  margin: auto;
-}
-
-.profile__avatar__container {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  /* margin: auto; */
-  /* width: 50%; */
-}
-
-.profile__nickname {
-  text-align: center;
-  margin: auto;
-}
-
-/* stats */
-
-.profile__stats__container {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  justify-content: center;
 }
 
 /* panels */
@@ -137,6 +66,51 @@
   margin: 0 10px 10px;
 
   text-align: center;
+}
+
+/* header (avatar + nickname + friend/block) */
+
+.profile__nickname {
+  text-align: center;
+  margin: auto;
+}
+
+.profile__avatar {
+  /* width: 100px; */
+  max-width: 40%;
+  height: auto;
+
+  border-radius: 10px;
+  /* border-radius: 50%; */
+  border: 2px solid rgb(0, 0, 0);
+  margin: auto;
+}
+
+.profile__avatar__container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.profile__button__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 40%;
+  margin: auto;
+}
+
+.profile__button {
+  display: inline-flex;
+}
+
+/* stats */
+
+.profile__stats__container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
 }
 
 /* match history */
