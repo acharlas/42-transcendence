@@ -24,9 +24,7 @@ export default function MfaSignin() {
 
     try {
       setErrorMessage("");
-      const token = await mfaService.signinWithMfa({ codeToCheck: smsCode });
-
-
+      await mfaService.signinWithMfa({ codeToCheck: smsCode });
       goHome();
     } catch (e) {
       console.log({ e });

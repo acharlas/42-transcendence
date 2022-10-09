@@ -76,4 +76,5 @@ const fortyTwoSign = async (credentials: fortyTwoLoginDto) => {
   }
 };
 
+// eslint-disable-next-line
 export default { signup, signin, fortyTwoSign, getMe };
