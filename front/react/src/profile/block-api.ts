@@ -10,7 +10,9 @@ export interface CheckIfBlockDto {
 
 export const addBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/block/add` + params.id,
+    axios.post(
+      `http://localhost:3333/block/add/`,
+      { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);
@@ -24,7 +26,9 @@ export const addBlock = async (params: BlockDto): Promise<any> => {
 
 export const removeBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/block/remove` + params.id,
+    axios.post(
+      `http://localhost:3333/block/remove/`,
+      { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);

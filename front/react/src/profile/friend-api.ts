@@ -10,7 +10,9 @@ export interface CheckIfFriendDto {
 
 export const addFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/friend/add` + params.id,
+    axios.post(
+      `http://localhost:3333/friend/add/`,
+      { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);
@@ -24,7 +26,9 @@ export const addFriend = async (params: FriendDto): Promise<any> => {
 
 export const removeFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/friend/remove` + params.id,
+    axios.post(
+      `http://localhost:3333/friend/remove/`,
+      { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);
