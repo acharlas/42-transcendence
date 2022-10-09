@@ -13,11 +13,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import jwt_decode from 'jwt-decode';
 
-/*<div className="api-signin">
-                <h3>Signin with</h3>
-                <input className="fortytwo-button" type="image" alt="" />
-              </div>*/
-
 interface DecodedToken {
   sub: string,
   fullyAuth: boolean,
@@ -76,7 +71,6 @@ export function SigninForm() {
       setNewUsername("");
       setNewPass("");
       const tokenInfo: DecodedToken = jwt_decode(token); //can throw InvalidTokenError
-      //const t:  = JSON.parse(tokenInfo);
       console.log(tokenInfo);
       console.log(tokenInfo.fullyAuth);
 

@@ -27,7 +27,7 @@ root.render(
       <Route path="/settings" element={<Settings />} />
       <Route path="/settings/mfa-init-setup" element={< MfaSetupInit />} />
       <Route path="/settings/mfa-finish-setup" element={< MfaSetupValidate />} />
-      <Route path="/profile/:id" element={< Profile />} />
+      <Route path="/profile/:urlId" element={< Profile />} />
     </Routes>
   </BrowserRouter>
 );

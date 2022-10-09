@@ -67,16 +67,11 @@ export const getFriendlist = async (params: FriendDto): Promise<any> => {
 }
 
 export const checkIfFriend = async (params: CheckIfFriendDto): Promise<boolean> => {
-  try {
-    const ret = await getFriendlist({ id: "b45c2b44-1ac8-4fba-aa7c-c1c82c0158b9" });
-    for (let i = 0; i < ret.length; i++) {
-      if (ret[i].id === params.targetId) {
-        return (true);
-      }
+  const ret = await getFriendlist({ id: sessionStorage.getItem("userid") });
+  for (let i = 0; i < ret.length; i++) {
+    if (ret[i].id === params.targetId) {
+      return (true);
     }
-    return (false);
   }
-  catch (e) {
-
-  };
+  return (false);
 }

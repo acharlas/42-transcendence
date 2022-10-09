@@ -9,7 +9,18 @@ import defaultPicture from "../image/defaultPicture.png"
 import "../style.css";
 import "./profile.css";
 
+//preliminary checks before using the display component
 export default function ProfilePage() {
+  const { urlId } = useParams();
+
+  const userId = sessionStorage.getItem("userid");
+
+  const realId = (urlId === "me") ? userId : urlId;
+  const isSelfProfile = (realId === userId);
+  return (DisplayProfilePage(realId, isSelfProfile));
+}
+
+function DisplayProfilePage(id: string, isSelfProfile: boolean) {
 
   // Navigation
   const navigate = useNavigate();
@@ -18,56 +29,19 @@ export default function ProfilePage() {
   }
 
   // State variables
-  const { id } = useParams();
   const [userData, setUserData] = useState<User>({ nickname: '', wins: 0, losses: 0, mmr: 0 });
   const [isFriend, setIsFriend] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
 
+  //useEffect once to get user data and friend/block initial status
   useEffect(() => {
-    const fetchFriendBlockStates = async () => {
-      await checkIfFriend({ sourceId: "6b8d5dd7-58e5-4e9d-b8b6-cc985266235c", targetId: id })
-        .then((res) => {
-          setIsFriend(res);
-        })
-        .catch((e) => {
-          console.log("checkIfFriend err");
-          if (e.response.status === 401) {
-            console.log("Not identified: redirecting", e);
-            goSignIn();
-          }
-          else {
-            console.log("checkIfFriend err: " + e);
-          }
-        });
-      await checkIfBlock({ sourceId: "6b8d5dd7-58e5-4e9d-b8b6-cc985266235c", targetId: id })
-        .then((res) => {
-          setIsBlocked(res);
-        })
-        .catch((e) => {
-          console.log("checkIfFriend err");
-          if (e.response.status === 401) {
-            console.log("Not identified: redirecting", e);
-            goSignIn();
-          }
-          else {
-            console.log("checkIfFriend err: " + e);
-          }
-        });
-    }
-    fetchFriendBlockStates();
-    console.log("isfriend: " + isFriend);
-    console.log("isblocked: " + isBlocked);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
-  useEffect(() => {
     const fetchUserData = async () => {
       await getUser({ id })
         .then((res) => {
           setUserData(res);
         })
         .catch((e) => {
-          // redirect to auth page if auth failed
           if (e.response.status === 401) {
             console.log("Not identified: redirecting", e);
             goSignIn();
@@ -78,7 +52,39 @@ export default function ProfilePage() {
           }
         });
     }
+
+    const fetchFriendBlockStates = async () => {
+      await checkIfFriend({ sourceId: "6b8d5dd7-58e5-4e9d-b8b6-cc985266235c", targetId: id })
+        .then((res) => {
+          setIsFriend(res);
+        })
+        .catch((e) => {
+          if (e.response.status === 401) {
+            console.log("Not identified: redirecting", e);
+            goSignIn();
+          }
+          else {
+            console.log("checkIfFriend err: " + e);
+          }
+        });
+
+      await checkIfBlock({ sourceId: "6b8d5dd7-58e5-4e9d-b8b6-cc985266235c", targetId: id })
+        .then((res) => {
+          setIsBlocked(res);
+        })
+        .catch((e) => {
+          if (e.response.status === 401) {
+            console.log("Not identified: redirecting", e);
+            goSignIn();
+          }
+          else {
+            console.log("checkIfFriend err: " + e);
+          }
+        });
+    }
+    console.log(id);
     fetchUserData();
+    fetchFriendBlockStates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -88,17 +94,19 @@ export default function ProfilePage() {
     console.log("isfriend: " + isFriend);
     try {
       if (isFriend) {
-        removeFriend({ id: id });
+        await removeFriend({ id: id });
         setIsFriend(false);
       }
       else {
-        addFriend({ id: id });
+        await addFriend({ id: id });
         setIsFriend(true);
       }
     }
     catch (e) {
       console.log("Failed friend event.", e);
+      //TODO: improve error
     }
+    console.log("isfriend: " + isFriend);
   }
 
   // BLOCK
@@ -107,16 +115,17 @@ export default function ProfilePage() {
     console.log("isblocked: " + isBlocked);
     try {
       if (isBlocked) {
-        removeBlock({ id: id });
+        await removeBlock({ id: id });
         setIsBlocked(false);
       }
       else {
-        addBlock({ id: id });
+        await addBlock({ id: id });
         setIsBlocked(true);
       }
     }
     catch (e) {
       console.log("Failed block event.", e);
+      //TODO: improve error
     }
   }
 
@@ -139,17 +148,19 @@ export default function ProfilePage() {
                   src={defaultPicture}
                   alt="" />
                 {/*TODO: display profile pictures */}
-                <div className="profile__button__container">
 
-                  <button className="profile__button"
-                    onClick={friendClick}>
-                    {isFriend ? "UNFRIEND" : "FRIEND"}
-                  </button>
-                  <button className="profile__button"
-                    onClick={blockClick}>
-                    {isBlocked ? "UNBLOCK" : "BLOCK"}
-                  </button>
-                </div>
+                {isSelfProfile ||
+                  <div className="profile__button__container">
+                    <button className="profile__button"
+                      onClick={friendClick}>
+                      {isFriend ? "UNFRIEND" : "FRIEND"}
+                    </button>
+                    <button className="profile__button"
+                      onClick={blockClick}>
+                      {isBlocked ? "UNBLOCK" : "BLOCK"}
+                    </button>
+                  </div>}
+
               </div>
 
             </div>

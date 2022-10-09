@@ -7,7 +7,7 @@ import {
   FaRocket,
   FaSpaceShuttle,
   FaLock,
-  FaSatelliteDish,
+  // FaSatelliteDish,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
