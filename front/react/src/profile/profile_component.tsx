@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 
 import { User, getUser } from "./getUser";
 import { addFriend, removeFriend, checkIfFriend } from "./friend-api"
-import { addBlock, removeBlock, checkIfBlock } from "./block-api"
+import { addBlock, removeBlock, checkIfBlocked } from "./block-api"
 import defaultPicture from "../image/defaultPicture.png"
 import "../style.css";
 import "./profile.css";
@@ -68,7 +68,7 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
           }
         });
 
-      await checkIfBlock({ sourceId: "6b8d5dd7-58e5-4e9d-b8b6-cc985266235c", targetId: id })
+      await checkIfBlocked({ sourceId: "6b8d5dd7-58e5-4e9d-b8b6-cc985266235c", targetId: id })
         .then((res) => {
           setIsBlocked(res);
         })
@@ -78,11 +78,11 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
             goSignIn();
           }
           else {
-            console.log("checkIfFriend err: " + e);
+            console.log("checkIfBlocked err: " + e);
           }
         });
     }
-    console.log(id);
+
     fetchUserData();
     fetchFriendBlockStates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,7 +91,6 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
   // FRIEND
   const friendClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    console.log("isfriend: " + isFriend);
     try {
       if (isFriend) {
         await removeFriend({ id: id });
@@ -106,13 +105,11 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
       console.log("Failed friend event.", e);
       //TODO: improve error
     }
-    console.log("isfriend: " + isFriend);
   }
 
   // BLOCK
   const blockClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    console.log("isblocked: " + isBlocked);
     try {
       if (isBlocked) {
         await removeBlock({ id: id });

@@ -66,7 +66,7 @@ export const getBlocklist = async (params: BlockDto): Promise<any> => {
   });
 }
 
-export const checkIfBlock = async (params: CheckIfBlockDto): Promise<boolean> => {
+export const checkIfBlocked = async (params: CheckIfBlockDto): Promise<boolean> => {
   const ret = await getBlocklist({ id: sessionStorage.getItem("userid") });
   for (let i = 0; i < ret.length; i++) {
     if (ret[i].id === params.targetId) {
