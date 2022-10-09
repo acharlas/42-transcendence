@@ -16,24 +16,35 @@ export function App() {
   const goChat = () => {
     navigate("/chat");
   }
+  const goLeaderboard = () => {
+    navigate("/leaderboard");
+  }
   const goList = () => {
     navigate("/userlist");
   }
 
   return (
     <div>
-      <button id="logout button" onClick={goSignin}>
-        Signout
+      <button onClick={goSignin}>
+        signout
       </button>
-      <button id="settings button" onClick={goSettings}>
+      <br></br>
+      <button onClick={goSettings}>
         settings
       </button>
-      <button id="game button" onClick={goGame}>
+      <br></br>
+      <button onClick={goGame}>
         game
       </button>
-      <button id="chat button" onClick={goChat}>
+      <br></br>
+      <button onClick={goChat}>
         chat
       </button>
+      <br></br>
+      <button onClick={goLeaderboard}>
+        leaderboard
+      </button>
+      <br></br>
       <button onClick={goList}>
         userlist
       </button>
