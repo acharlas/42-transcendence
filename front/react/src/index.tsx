@@ -10,6 +10,7 @@ import MfaSignin from "./mfa/mfa_signin_component";
 import Chat from "./chat/chat";
 import Settings from "./settings/settings_component";
 import Profile from "./profile/profile_component";
+import Userlist from "./userlist/userlist_component";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");
@@ -28,6 +29,7 @@ root.render(
       <Route path="/settings/mfa-init-setup" element={< MfaSetupInit />} />
       <Route path="/settings/mfa-finish-setup" element={< MfaSetupValidate />} />
       <Route path="/profile/:urlId" element={< Profile />} />
+      <Route path="/userlist" element={< Userlist />} />
     </Routes>
   </BrowserRouter>
 );

@@ -16,6 +16,9 @@ export function App() {
   const goChat = () => {
     navigate("/chat");
   }
+  const goList = () => {
+    navigate("/userlist");
+  }
 
   return (
     <div>
@@ -30,6 +33,9 @@ export function App() {
       </button>
       <button id="chat button" onClick={goChat}>
         chat
+      </button>
+      <button onClick={goList}>
+        userlist
       </button>
     </div>
   );
