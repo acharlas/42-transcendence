@@ -11,9 +11,8 @@ import SocketContext from "../context/socket.context";
 import { UserPrivilege } from "./type";
 
 function UserMenu() {
-  const newHour = useRef(null);
-  const newMin = useRef(null);
-  const { setSelectUser, selectUser, actChannel, user } = useChat();
+  const { setSelectUser, selectUser, actChannel, user, setShowTimeSelector } =
+    useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
   const handleClose = () => {
@@ -21,44 +20,11 @@ function UserMenu() {
   };
 
   const banUser = () => {
-    const date = new Date();
-    const hour = newHour.current.value || "";
-    const nbHour = +hour;
-    const min = newMin.current.value || "";
-    const nbMin = +min;
-
-    const newDate = new Date(
-      date.getTime() + 1000 * 60 * 60 * nbHour + 1000 * 60 * nbMin
-    );
-
-    socket.emit("UpdateUserPrivilege", {
-      roomId: actChannel,
-      privilege: "ban",
-      time: newDate,
-      toModifie: selectUser.username,
-    });
-    setSelectUser(undefined);
+    setShowTimeSelector(UserPrivilege.ban);
   };
 
   const MuteUser = () => {
-    console.log("mute user");
-    const date = new Date();
-    const hour = newHour.current.value || "";
-    const nbHour = +hour;
-    const min = newMin.current.value || "";
-    const nbMin = +min;
-
-    const newDate = new Date(
-      date.getTime() + 1000 * 60 * 60 * nbHour + 1000 * 60 * nbMin
-    );
-
-    socket.emit("UpdateUserPrivilege", {
-      roomId: actChannel,
-      privilege: "muted",
-      time: newDate,
-      toModifie: selectUser.username,
-    });
-    setSelectUser(undefined);
+    setShowTimeSelector(UserPrivilege.muted);
   };
 
   const AdminUser = () => {
@@ -89,29 +55,29 @@ function UserMenu() {
   return (
     <nav className="user-menu">
       <div>
-        <p>{selectUser.nickname}</p>
-        <button onClick={handleClose}>
-          <HiXCircle />
+        <p className="user-menu-username">{selectUser.nickname}</p>
+        <button onClick={handleClose} className="user-menu-button">
+          <HiXCircle className="user-menu-button-icon" />
         </button>
-        <button>
-          <FaUserAstronaut />
+        <button className="user-menu-button">
+          <FaUserAstronaut className="user-menu-button-icon" />
         </button>
-        <button>
-          <HiMail />
+        <button className="user-menu-button">
+          <HiMail className="user-menu-button-icon" />
         </button>
-        <button>
-          <AiFillHeart />
+        <button className="user-menu-button">
+          <AiFillHeart className="user-menu-button-icon" />
         </button>
-        <button>
-          <ImUserMinus />
+        <button className="user-menu-button">
+          <ImUserMinus className="user-menu-button-icon" />
         </button>
         {user.privilege !== "admin" && user.privilege !== "owner" ? (
-          <>allo{user.privilege}</>
+          <>{user.privilege}</>
         ) : (
           <div>
             {selectUser.privilege === "admin" && user.privilege === "owner" ? (
-              <button onClick={setToDefault}>
-                <MdRemoveModerator />
+              <button onClick={setToDefault} className="user-menu-button">
+                <MdRemoveModerator className="user-menu-button-icon" />
               </button>
             ) : (
               <></>
@@ -119,42 +85,27 @@ function UserMenu() {
             {selectUser.privilege !== "owner" &&
             selectUser.privilege !== "admin" ? (
               <div>
-                <button onClick={AdminUser}>
-                  <MdAddModerator />
+                <button onClick={AdminUser} className="user-menu-button">
+                  <MdAddModerator className="user-menu-button-icon" />
                 </button>
                 {selectUser.privilege === UserPrivilege.muted ? (
-                  <button onClick={setToDefault}>
-                    <TbMessage />
+                  <button onClick={setToDefault} className="user-menu-button">
+                    <TbMessage className="user-menu-button-icon" />
                   </button>
                 ) : (
-                  <button onClick={MuteUser}>
-                    <TbMessageOff />
+                  <button onClick={MuteUser} className="user-menu-button">
+                    <TbMessageOff className="user-menu-button-icon" />
                   </button>
                 )}
                 {selectUser.privilege === UserPrivilege.ban ? (
-                  <button onClick={setToDefault}>
-                    <AiFillUnlock />
+                  <button onClick={setToDefault} className="user-menu-button">
+                    <AiFillUnlock className="user-menu-button-icon" />
                   </button>
                 ) : (
-                  <button onClick={banUser}>
-                    <GiPrisoner />
+                  <button onClick={banUser} className="user-menu-button">
+                    <GiPrisoner className="user-menu-button-icon" />
                   </button>
                 )}
-
-                <input
-                  type="number"
-                  min="0"
-                  max="9999"
-                  ref={newHour}
-                  placeholder="Hour"
-                />
-                <input
-                  type="number"
-                  min="0"
-                  max="59"
-                  ref={newMin}
-                  placeholder="Minutes"
-                />
               </div>
             ) : (
               <></>

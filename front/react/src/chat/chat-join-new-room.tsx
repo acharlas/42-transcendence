@@ -19,15 +19,26 @@ function JoinNewRoomComponent() {
   };
 
   return (
-    <>
-      <div>
-        <h2>New Room Name</h2>
-        <input ref={newRoomRef} placeholder="Room name..." />
-        <h2>New Room password</h2>
-        <input ref={newPassRef} placeholder="Room password..." />
-        <button onClick={handleJoinRoom}>join room</button>
-      </div>
-    </>
+    <div className="create-join-menu-contaner">
+      <form className="create-join-menu-title">
+        Join Name:
+        <input
+          ref={newRoomRef}
+          placeholder="Room name..."
+          className="create-join-menu-input"
+        />
+        <p />
+        Room password
+        <input
+          ref={newPassRef}
+          placeholder="Room password (optional) ..."
+          className="create-join-menu-input"
+        />
+      </form>
+      <button className="create-join-menu-button" onClick={handleJoinRoom}>
+        JOIN ROOM
+      </button>
+    </div>
   );
 }
 

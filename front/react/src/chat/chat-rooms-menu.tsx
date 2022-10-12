@@ -23,6 +23,7 @@ function RoomsMenuContainer({}) {
     setUser,
     setSelectUser,
     selectUser,
+    user,
   } = useChat();
 
   function handleJoinRoom(key: string) {
@@ -74,7 +75,7 @@ function RoomsMenuContainer({}) {
     setUserList([]);
   };
 
-  const handleShowUser = ({ user }: { user: User }) => {
+  const handleShowUser = (user: User) => {
     if (selectUser && selectUser.username === user.username)
       setSelectUser(undefined);
     else setSelectUser(user);
@@ -125,47 +126,48 @@ function RoomsMenuContainer({}) {
                       className="room-menu-input-friend"
                     />
                     <ul>
-                      {room.user.map((user, id) => {
+                      {room.user.map((actUser, id) => {
                         //searchFriend.current.value = "";
-                        if (!user.nickname.search(searchFriend))
+                        if (!actUser.nickname.search(searchFriend))
                           return (
                             <li key={id}>
                               <button
                                 className="room-menu-button-user"
                                 onClick={() => {
-                                  handleShowUser({ user });
+                                  handleShowUser(actUser);
                                 }}
+                                disabled={user.username === actUser.username}
                               >
-                                {user.privilege === UserPrivilege.admin ? (
+                                {actUser.privilege === UserPrivilege.admin ? (
                                   <GiAlienStare className="room-menu-user-icon" />
                                 ) : (
                                   <></>
                                 )}
-                                {user.privilege === UserPrivilege.owner ? (
+                                {actUser.privilege === UserPrivilege.owner ? (
                                   <SiStarship className="room-menu-user-icon" />
                                 ) : (
                                   <></>
                                 )}
-                                {user.privilege === UserPrivilege.ban ? (
-                                  <FaBan />
+                                {actUser.privilege === UserPrivilege.ban ? (
+                                  <FaBan className="room-menu-user-icon" />
                                 ) : (
                                   <></>
                                 )}
-                                {user.privilege === UserPrivilege.muted ? (
+                                {actUser.privilege === UserPrivilege.muted ? (
                                   <>
                                     <TbMessageCircleOff className="room-menu-user-icon" />
                                   </>
                                 ) : (
                                   <></>
                                 )}
-                                {user.privilege === UserPrivilege.default ? (
+                                {actUser.privilege === UserPrivilege.default ? (
                                   <>
                                     <GiAstronautHelmet className="room-menu-user-icon" />
                                   </>
                                 ) : (
                                   <></>
                                 )}
-                                {user.nickname}
+                                {actUser.nickname}
                               </button>
                             </li>
                           );

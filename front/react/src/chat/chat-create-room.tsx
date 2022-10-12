@@ -34,36 +34,45 @@ function CreateRoomsContainer() {
   };
 
   return (
-    <>
-      <div className="create-room">
-        <div>
-          <p>Room Name:</p>
-          <input ref={newRoomRef} placeholder="Room name..." />
-          <p>Room Type:</p>
-          <select
-            onChange={handleChangeSelect}
-            value={type}
-            name="channel type"
-            id="channel-select"
-          >
-            <option value="public">public</option>
-            <option value="protected">protected</option>
-            <option value="private">private</option>
-          </select>
-          {type === "protected" ? (
-            <>
-              <p>Password:</p>
-              <input ref={newPassword} placeholder="Password optional..." />
-            </>
-          ) : (
-            <></>
-          )}
-        </div>
-        <button className="create-room-button" onClick={handleCreateRoom}>
-          CREATE ROOM
-        </button>
-      </div>
-    </>
+    <div className="create-join-menu-contaner">
+      <form className="create-join-menu-title">
+        Room Name:
+        <input
+          ref={newRoomRef}
+          placeholder="Room name..."
+          className="create-join-menu-input"
+        />
+        <p />
+        Room Type:
+        <select
+          onChange={handleChangeSelect}
+          value={type}
+          name="channel type"
+          id="channel-select"
+          className="create-join-menu-input"
+        >
+          <option value="public">public</option>
+          <option value="protected">protected</option>
+          <option value="private">private</option>
+        </select>
+        {type === "protected" ? (
+          <>
+            <p />
+            Password:
+            <input
+              ref={newPassword}
+              placeholder="Password optional..."
+              className="create-join-menu-input"
+            />
+          </>
+        ) : (
+          <></>
+        )}
+      </form>
+      <button className="create-join-menu-button" onClick={handleCreateRoom}>
+        CREATE ROOM
+      </button>
+    </div>
   );
 }
 

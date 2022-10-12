@@ -132,20 +132,16 @@ const SocketContextComponent: React.FunctionComponent<
         const newRooms = rooms.map((room) => {
           if (room.channel.id === roomId) {
             room.user = [...user];
-            return room;
           }
+          return room;
         });
 
-        setRooms(newRooms);
+        setRooms([...newRooms]);
 
         const room = newRooms.find((room) => {
           if (room.channel.id === roomId) return true;
           return false;
         });
-
-        console.log(room);
-        room.user = [...user];
-        console.log(room);
 
         if (actChannel === roomId) {
           setUserList(user);

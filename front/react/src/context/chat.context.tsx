@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Channel, Message, Room, User } from "../chat/type";
+import { Channel, Message, Room, User, UserPrivilege } from "../chat/type";
 
 export interface IoChatContextState {
   rooms: Room[];
@@ -18,6 +18,8 @@ export interface IoChatContextState {
   setShowCreateMenu: Function;
   selectUser: User | undefined;
   setSelectUser: Function;
+  showTimeSelector: UserPrivilege | undefined;
+  setShowTimeSelector: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
@@ -37,6 +39,8 @@ const ChatContext = createContext<IoChatContextState>({
   setShowCreateMenu: () => {},
   selectUser: undefined,
   setSelectUser: () => {},
+  showTimeSelector: undefined,
+  setShowTimeSelector: () => {},
 });
 
 function ChatProvider(props: any) {
@@ -48,6 +52,7 @@ function ChatProvider(props: any) {
   const [showRoomMenu, setShowRoomMenu] = useState<boolean>(false);
   const [showCreateMenu, setShowCreateMenu] = useState<boolean>(false);
   const [selectUser, setSelectUser] = useState<User>();
+  const [showTimeSelector, setShowTimeSelector] = useState<UserPrivilege>();
 
   return (
     <ChatContext.Provider
@@ -68,6 +73,8 @@ function ChatProvider(props: any) {
         setShowRoomMenu,
         showCreateMenu,
         setShowCreateMenu,
+        showTimeSelector,
+        setShowTimeSelector,
       }}
       {...props}
     />

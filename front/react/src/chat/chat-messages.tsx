@@ -16,6 +16,7 @@ function MessagesComponent() {
     userList,
     setSelectUser,
     selectUser,
+    user,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -78,7 +79,7 @@ function MessagesComponent() {
     <div className="room-chat-container">
       <div className="room-chat-message-container">
         {messages.map((message, index) => {
-          const user = userList.find((user) => {
+          const msgUser = userList.find((user) => {
             if (user.username === message.username) return true;
             return false;
           });
@@ -88,11 +89,12 @@ function MessagesComponent() {
                 className="room-chat-button-user"
                 onClick={() =>
                   handleShowUser({
-                    user: user,
+                    user: msgUser,
                   })
                 }
+                disabled={user !== null && user.username === msgUser.username}
               >
-                {user ? user.nickname : user.nickname} {" :"}
+                {msgUser ? msgUser.nickname : msgUser.nickname} {" :"}
               </button>
               {message.content}
             </nav>

@@ -9,6 +9,7 @@ import RoomsMenuContainer from "./chat-rooms-menu";
 import JoinNewRoomComponent from "./chat-join-new-room";
 import MessagesComponent from "./chat-messages";
 import UserMenu from "./chat-user-menu";
+import TimeSelector from "./chat-time-selector";
 
 export interface IChatIndexProps {}
 
@@ -22,6 +23,7 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
     setShowRoomMenu,
     actChannel,
     selectUser,
+    showTimeSelector,
   } = useChat();
 
   const goSignin = () => {
@@ -33,32 +35,31 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
     showRoomMenu ? setShowRoomMenu(false) : setShowRoomMenu(true);
   };
 
-  if (rooms) console.log("rooms at start:", rooms);
+  if (rooms) console.log("rooms at start:", rooms, "userselect: ", selectUser);
   return (
     <div className="container">
       <button id="logout" onClick={goSignin}>
         Signout
       </button>
       <div className="chat-container">
-        <div>
-          {selectUser ? <UserMenu /> : <></>}
-          {showRoomMenu ? (
-            <RoomsMenuContainer />
-          ) : (
-            <>
-              <button className="room-button" onClick={handleShowRoomMenu}>
-                <FaAngleLeft />
-              </button>
-            </>
-          )}
-          {actChannel ? (
-            <MessagesComponent />
-          ) : showCreateMenu ? (
-            <CreateRoomsContainer />
-          ) : (
-            <JoinNewRoomComponent />
-          )}
-        </div>
+        {selectUser ? <UserMenu /> : <></>}
+        {showRoomMenu ? (
+          <RoomsMenuContainer />
+        ) : (
+          <>
+            <button className="room-button" onClick={handleShowRoomMenu}>
+              <FaAngleLeft />
+            </button>
+          </>
+        )}
+        {actChannel ? (
+          <MessagesComponent />
+        ) : showCreateMenu ? (
+          <CreateRoomsContainer />
+        ) : (
+          <JoinNewRoomComponent />
+        )}
+        {showTimeSelector ? <TimeSelector /> : <></>}
       </div>
     </div>
   );
