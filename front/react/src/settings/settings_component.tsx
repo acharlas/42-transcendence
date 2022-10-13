@@ -76,6 +76,7 @@ export default function Profile() {
       const response = await mfaService.requestMfaDisable();
       if (response.status === 204) {
         console.log("disable successful");
+        setMfaEnabled(false);
       } else {
         console.log("disable failed");
       }
