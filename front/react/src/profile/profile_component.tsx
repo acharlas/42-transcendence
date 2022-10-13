@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from 'react-router-dom'
 // import { FaRocket } from "react-icons/fa";
 
-import { User, getUser } from "./getUser";
-import { addFriend, removeFriend, checkIfFriend } from "./friend-api"
-import { addBlock, removeBlock, checkIfBlocked } from "./block-api"
+import { getUser } from "../api/user-api";
+import { addFriend, removeFriend, checkIfFriend } from "../api/friend-api"
+import { addBlock, removeBlock, checkIfBlocked } from "../api/block-api"
+
 import defaultPicture from "../image/defaultPicture.png"
 import "../style.css";
 import "./profile.css";
+
+interface User {
+  nickname: string;
+  wins: number;
+  losses: number;
+  mmr: number;
+}
 
 //preliminary checks before using the display component
 export default function ProfilePage() {

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { getUserData } from "./getUserData"
-import { patchNickname } from "./patchUserData"
-import mfaService from "../mfa/mfa-service";
+import { getUsersMe, patchNickname } from "../api/user-api"
+import { requestMfaDisable } from "../api/mfa-api";
+
 import defaultPicture from "../image/defaultPicture.png"
-import "../profile/profile.css"
 import "../style.css"
+import "../profile/profile.css"
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      await getUserData()
+      await getUsersMe()
         .then((res) => {
           setNickname(res.nickname);
           setMfaEnabled(res.mfaEnabled);
@@ -73,7 +73,7 @@ export default function Profile() {
   const disableMfa = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     try {
-      const response = await mfaService.requestMfaDisable();
+      const response = await requestMfaDisable();
       if (response.status === 204) {
         console.log("disable successful");
         setMfaEnabled(false);

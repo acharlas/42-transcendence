@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { getUsers } from "./user-api"
+import { getUsers } from "../api/user-api"
 import "./leaderboard.css"
 import "../style.css"
 

@@ -45,7 +45,6 @@ const signin = async (credentials: loginDto) => {
     username: credentials.username,
     password: credentials.password,
   });
-  // console.log(response.data.access_token);
   await getMe({ token: response.data.access_token });
   return response.data.access_token;
 };
@@ -60,13 +59,11 @@ const signup = async (credentials: signupDto) => {
 };
 
 const fortyTwoSign = async (credentials: fortyTwoLoginDto) => {
-  // console.log({ credentials });
   try {
     const token = await axios.post("http://localhost:3333/auth/signinApi", {
       code: credentials.code,
       state: credentials.state,
     });
-    // console.log("Token", { token });
     window.sessionStorage.setItem("Token", token.data.access_token);
     await getMe({ token: token.data.access_token });
     return token;

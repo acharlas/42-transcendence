@@ -1,64 +1,62 @@
 import axios from "axios";
 
-export interface FriendDto {
+export interface BlockDto {
   id: string,
 }
-export interface CheckIfFriendDto {
+
+export interface CheckIfBlockDto {
   sourceId: string,
   targetId: string,
 }
 
-export const addFriend = async (params: FriendDto): Promise<any> => {
+export const addBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
     axios.post(
-      `http://localhost:3333/friend/add/`,
+      `http://localhost:3333/block/add/`,
       { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log(e);
         return reject(e);
       });
   });
 }
 
-export const removeFriend = async (params: FriendDto): Promise<any> => {
+export const removeBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
     axios.post(
-      `http://localhost:3333/friend/remove/`,
+      `http://localhost:3333/block/remove/`,
       { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log(e);
         return reject(e);
       });
   });
 }
 
-export const getFriend = async (params: FriendDto): Promise<any> => {
+export const getBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/friend/` + params.id,
+    axios.get(`http://localhost:3333/block/` + params.id,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log(e);
         return reject(e);
       });
   });
 }
 
-export const getFriendlist = async (params: FriendDto): Promise<any> => {
+export const getBlocklist = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    getFriend({ id: params.id })
+    getBlock({ id: params.id })
       .then((ret) => {
-        return (resolve(ret.data.myfriend));
+        return (resolve(ret.data.myblock));
       })
       .catch((e) => {
         return reject(e);
@@ -66,8 +64,8 @@ export const getFriendlist = async (params: FriendDto): Promise<any> => {
   });
 }
 
-export const checkIfFriend = async (params: CheckIfFriendDto): Promise<boolean> => {
-  const ret = await getFriendlist({ id: sessionStorage.getItem("userid") });
+export const checkIfBlocked = async (params: CheckIfBlockDto): Promise<boolean> => {
+  const ret = await getBlocklist({ id: sessionStorage.getItem(`userid`) });
   for (let i = 0; i < ret.length; i++) {
     if (ret[i].id === params.targetId) {
       return (true);

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSms } from "react-icons/fa";
-import "./mfa.css";
-import "../login/login_style.css";
+
+import { requestMfaSetupInit } from "../api/mfa-api";
+
 import "../style.css";
-import mfaService from "./mfa-service";
+import "../login/login_style.css";
+import "./mfa.css";
 
 export default function MfaSetupInit() {
   let navigate = useNavigate();
@@ -22,9 +24,8 @@ export default function MfaSetupInit() {
 
   const sendMfaInitRequest = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-
     try {
-      await mfaService.requestMfaSetupInit({ phoneNumber: phoneNumber });
+      await requestMfaSetupInit({ phoneNumber: phoneNumber });
       goValidate();
     }
     catch (e) {
