@@ -19,9 +19,6 @@ export function App() {
   const goLeaderboard = () => {
     navigate("/leaderboard");
   }
-  const goList = () => {
-    navigate("/userlist");
-  }
 
   return (
     <div>
@@ -43,10 +40,6 @@ export function App() {
       <br></br>
       <button onClick={goLeaderboard}>
         leaderboard
-      </button>
-      <br></br>
-      <button onClick={goList}>
-        userlist
       </button>
     </div>
   );
