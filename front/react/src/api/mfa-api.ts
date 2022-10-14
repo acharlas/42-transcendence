@@ -13,9 +13,10 @@ export const requestMfaDisable = async (): Promise<any> => {
     axios.delete(`http://localhost:3333/mfa/disable`,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
-        return resolve(ret.data);
+        return resolve(ret);
       })
       .catch((e) => {
+        console.log("Error in requestMfaDisable", e);
         return reject(e);
       });
   })
@@ -27,9 +28,10 @@ export const requestMfaSetupInit = async (params: activateMfaDto): Promise<any> 
       { phoneNumber: params.phoneNumber },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
-        return resolve(ret.data);
+        return resolve(ret);
       })
       .catch((e) => {
+        console.log("Error in requestMfaSetupInit", e);
         return reject(e);
       });
   })
@@ -41,9 +43,10 @@ export const requestMfaSetupFinish = async (params: checkMfaDto): Promise<any> =
       { codeToCheck: params.codeToCheck },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
-        return resolve(ret.data);
+        return resolve(ret);
       })
       .catch((e) => {
+        console.log("Error in requestMfaSetupFinish", e);
         return reject(e);
       });
   })
@@ -55,9 +58,10 @@ export const requestMfaSigninInit = async (): Promise<any> => {
       {},
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
-        return resolve(ret.data);
+        return resolve(ret);
       })
       .catch((e) => {
+        console.log("Error in requestMfaSigninInit", e);
         return reject(e);
       });
   })
@@ -69,9 +73,10 @@ export const requestMfaSigninFinish = async (params: checkMfaDto) => {
       { codeToCheck: params.codeToCheck },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
-        return resolve(ret.data);
+        return resolve(ret);
       })
       .catch((e) => {
+        console.log("Error in requestMfaSigninFinish", e);
         return reject(e);
       });
   })

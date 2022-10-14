@@ -19,6 +19,7 @@ export const addBlock = async (params: BlockDto): Promise<any> => {
         return resolve(ret);
       })
       .catch((e) => {
+        console.log("Error in addBlock", e);
         return reject(e);
       });
   });
@@ -34,6 +35,7 @@ export const removeBlock = async (params: BlockDto): Promise<any> => {
         return resolve(ret);
       })
       .catch((e) => {
+        console.log("Error in removeBlock", e);
         return reject(e);
       });
   });
@@ -47,6 +49,7 @@ export const getBlock = async (params: BlockDto): Promise<any> => {
         return resolve(ret);
       })
       .catch((e) => {
+        console.log("Error in getBlock", e);
         return reject(e);
       });
   });
@@ -59,6 +62,7 @@ export const getBlocklist = async (params: BlockDto): Promise<any> => {
         return (resolve(ret.data.myblock));
       })
       .catch((e) => {
+        console.log("Error in getBlocklist", e);
         return reject(e);
       });
   });

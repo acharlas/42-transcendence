@@ -20,7 +20,7 @@ export default function Userlist() {
     };
 
     fetchUserlist();
-  });
+  }, []);
 
   return (
     <div className="profile__container">
@@ -37,7 +37,8 @@ export default function Userlist() {
                 <td>player</td>
               </tr>
               {userlist.map((n, index) => (
-                <tr key={n.mmr}>
+                <tr key={n.id}>
+                  {/*can't sort by mmr because keys must be unique*/}
                   <td>{index + 1}</td>
                   <td>{n.mmr}</td>
                   <td>

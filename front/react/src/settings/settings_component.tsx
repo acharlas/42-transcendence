@@ -33,7 +33,7 @@ export default function Profile() {
           setMfaEnabled(res.mfaEnabled);
         })
         .catch((e) => {
-          console.log("Settings: Error while fetching user data", { e });
+          console.log("Settings: Error in fetchUserData", e);
           // redirect to auth page if auth failed
           if (e.response.status === 401) {
             goSignIn();
@@ -75,14 +75,13 @@ export default function Profile() {
     try {
       const response = await requestMfaDisable();
       if (response.status === 204) {
-        console.log("disable successful");
         setMfaEnabled(false);
       } else {
-        console.log("disable failed");
+        //TODO
       }
     }
     catch (e) {
-      console.log({ e });
+      console.log("Settings: error in disableMfa", e);
       //TODO
     }
   }

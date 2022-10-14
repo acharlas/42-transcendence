@@ -14,8 +14,12 @@ export default function Redirect() {
       .then(() => {
         navigate("/home");
       })
-      .catch((err) => {
-        console.log("error:", { err });
+      .catch((e) => {
+        if (e.response.data.message === "2FA required") {
+          navigate("/mfa-signin");
+          return;
+        }
+        console.log("error:", e);
         navigate("/");
       });
   return <div className="container"></div>;

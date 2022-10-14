@@ -19,6 +19,7 @@ export const addFriend = async (params: FriendDto): Promise<any> => {
         return resolve(ret);
       })
       .catch((e) => {
+        console.log("Error in addFriend", e);
         return reject(e);
       });
   });
@@ -34,6 +35,7 @@ export const removeFriend = async (params: FriendDto): Promise<any> => {
         return resolve(ret);
       })
       .catch((e) => {
+        console.log("Error in removeFriend", e);
         return reject(e);
       });
   });
@@ -47,6 +49,7 @@ export const getFriend = async (params: FriendDto): Promise<any> => {
         return resolve(ret);
       })
       .catch((e) => {
+        console.log("Error in getFriend", e);
         return reject(e);
       });
   });
@@ -59,6 +62,7 @@ export const getFriendlist = async (params: FriendDto): Promise<any> => {
         return (resolve(ret.data.myfriend));
       })
       .catch((e) => {
+        console.log("Error in getFriendlist", e);
         return reject(e);
       });
   });

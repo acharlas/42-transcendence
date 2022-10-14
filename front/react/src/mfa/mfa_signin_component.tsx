@@ -27,6 +27,7 @@ export default function MfaSignin() {
     try {
       setErrorMessage("");
       await signinWithMfa({ codeToCheck: smsCode });
+      //TODO stay on page
       goHome();
     } catch (e) {
       console.log({ e });

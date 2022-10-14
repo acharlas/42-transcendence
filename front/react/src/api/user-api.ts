@@ -16,6 +16,7 @@ export const getUser = async (params: GetUserDto): Promise<any> => {
         return resolve(ret.data);
       })
       .catch((e) => {
+        console.log("Error in getUser", e);
         return reject(e);
       });
   });
@@ -30,6 +31,7 @@ export const getUsers = async (): Promise<any> => {
         return resolve(ret.data);
       })
       .catch((e) => {
+        console.log("Error in getUsers", e);
         return reject(e);
       });
   });
@@ -44,6 +46,7 @@ export const getUsersMe = async (): Promise<any> => {
         return resolve(ret.data);
       })
       .catch((e) => {
+        console.log("Error in getUsersMe", e);
         return reject(e);
       });
   });
@@ -58,6 +61,7 @@ export const patchNickname = async (params: PatchNicknameDto): Promise<void> => 
         return resolve(ret.data);
       })
       .catch((e) => {
+        console.log("Error in patchNickname", e);
         return reject(e);
       });
   });
