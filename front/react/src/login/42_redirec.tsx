@@ -12,7 +12,7 @@ export default function Redirect() {
     loginService
       .fortyTwoSign({ code: code, state: state })
       .then(() => {
-        navigate("/chat");
+        navigate("/home");
       })
       .catch((err) => {
         console.log("error:", { err });
