@@ -87,10 +87,12 @@ export function SigninForm() {
   };
 
   function signinFortytwo(/*event: React.MouseEvent<HTMLButtonElement>*/): string {
-    console.log("signinfortytwo");
     let secretState = "";
-    let url =
-      "https://api.intra.42.fr/oauth/authorize?client_id=64540081a9e86e0f3021ae0a3106565238272a37243a4d46071d14a546fda80f&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2F42-redirect&response_type=code&state=";
+    let url = `https://api.intra.42.fr/oauth/authorize
+?client_id=${process.env.REACT_APP_42API_UID}
+&redirect_uri=${encodeURI(process.env.REACT_APP_42API_REDIRECT)}
+&response_type=code
+&state=`;
     //todo: get data from env
 
     const possible =
