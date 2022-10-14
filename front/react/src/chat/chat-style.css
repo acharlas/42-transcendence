@@ -57,7 +57,6 @@
   );
   width: 50%;
   height: 100%;
-  overflow-y: scroll;
   word-wrap: break-word;
 }
 
@@ -107,12 +106,12 @@
   height: inherit;
 }
 .create-join-menu-title {
-  margin-top: 33%;
+  padding-top: 33%;
   color: white;
   text-align: left;
   font-weight: 800;
   margin-left: 15%;
-  height: 50%;
+  height: 80%;
 }
 
 .create-join-menu-input {
@@ -215,7 +214,6 @@
   );
   width: 50%;
   height: 100%;
-  overflow-y: scroll;
   word-wrap: break-word;
 }
 
@@ -234,7 +232,6 @@
   background: #fff;
   border-radius: 2px;
   border: 1px solid #d4d3e8;
-  text-transform: uppercase;
   font-weight: 700;
   align-items: center;
   color: #2c385e;

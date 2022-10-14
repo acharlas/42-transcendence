@@ -35,7 +35,7 @@ CREATE TABLE "channelusers" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "privilege" "UserPrivilege" NOT NULL,
-    "time" TIMESTAMP(3) NOT NULL,
+    "time" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "status" "UserStatus" NOT NULL,
     "userId" TEXT NOT NULL,
     "channelId" TEXT NOT NULL,

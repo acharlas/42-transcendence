@@ -72,7 +72,7 @@ function UserMenu() {
           <ImUserMinus className="user-menu-button-icon" />
         </button>
         {user.privilege !== "admin" && user.privilege !== "owner" ? (
-          <>{user.privilege}</>
+          <></>
         ) : (
           <div>
             {selectUser.privilege === "admin" && user.privilege === "owner" ? (
