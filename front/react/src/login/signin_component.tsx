@@ -71,31 +71,23 @@ export function SigninForm() {
       setNewUsername("");
       setNewPass("");
       const tokenInfo: DecodedToken = jwt_decode(token); //can throw InvalidTokenError
-      console.log(tokenInfo);
-
       if (tokenInfo.fullyAuth) {
         goHome();
-        return;
       }
       else {
         goSigninMfa();
-        return;
       }
     } catch (e) {
-      if (e.response.data.message === "2FA required") {
-        goSigninMfa();
-        return;
-      }
       setErrorMessage("wrong username or password");
     }
   };
 
   function signinFortytwo(/*event: React.MouseEvent<HTMLButtonElement>*/): string {
     let url = `https://api.intra.42.fr/oauth/authorize
-    ?client_id=${process.env.REACT_APP_42API_UID}
-    &redirect_uri=${encodeURI(process.env.REACT_APP_42API_REDIRECT)}
-    &response_type=code
-    &state=`;
+?client_id=${process.env.REACT_APP_42API_UID}
+&redirect_uri=${encodeURI(process.env.REACT_APP_42API_REDIRECT)}
+&response_type=code
+&state=`;
     let secretState = "";
     const possible =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

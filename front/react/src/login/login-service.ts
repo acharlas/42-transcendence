@@ -1,4 +1,5 @@
 import axios from "axios";
+import { checkMfaDto, requestMfaSigninFinish } from "../api/mfa-api";
 
 export interface loginDto {
   username: string;
@@ -45,7 +46,6 @@ const signin = async (credentials: loginDto) => {
     username: credentials.username,
     password: credentials.password,
   });
-  await getMe({ token: response.data.access_token });
   return response.data.access_token;
 };
 
@@ -54,24 +54,34 @@ const signup = async (credentials: signupDto) => {
     password: credentials.password,
     username: credentials.username,
   });
-  await getMe({ token: response.data.access_token });
   return response.data.access_token;
 };
 
 const fortyTwoSign = async (credentials: fortyTwoLoginDto) => {
   try {
-    const token = await axios.post("http://localhost:3333/auth/signinApi", {
+    const response = await axios.post("http://localhost:3333/auth/signinApi", {
       code: credentials.code,
       state: credentials.state,
     });
-    window.sessionStorage.setItem("Token", token.data.access_token);
-    await getMe({ token: token.data.access_token });
-    return token;
+    window.sessionStorage.setItem("Token", response.data.access_token);
+    return response;
   } catch (e) {
     console.log("Oauth error", { e });
     return e;
   }
 };
 
+export const signinWithMfa = async (params: checkMfaDto) => {
+  try {
+    const response = await requestMfaSigninFinish(params);
+    window.sessionStorage.setItem(`Token`, response.data.access_token);
+    return response;
+  }
+  catch (e) {
+    console.log(`Mfa error`, { e });
+    return e;
+  }
+}
+
 // eslint-disable-next-line
-export default { signup, signin, fortyTwoSign, getMe };
+export default { getMe, signup, signin, fortyTwoSign, signinWithMfa };

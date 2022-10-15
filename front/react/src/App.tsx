@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+import loginService from "./login/login-service"
 
 export function App() {
   let navigate = useNavigate();
@@ -19,6 +22,10 @@ export function App() {
   const goLeaderboard = () => {
     navigate("/leaderboard");
   }
+
+  useEffect(() => {
+    loginService.getMe({ token: window.sessionStorage.getItem("Token") });
+  }, [])
 
   return (
     <div>

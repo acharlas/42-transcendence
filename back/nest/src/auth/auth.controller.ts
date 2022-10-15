@@ -13,8 +13,9 @@ import { AuthSigninDto, AuthSignupDto, getApiToken } from './dto';
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
+  @HttpCode(HttpStatus.OK)
   @Post('signup')
   async signup(@Body() dto: AuthSignupDto): Promise<{ access_token: string }> {
     return new Promise<{ access_token: string }>((resolve, reject) => {

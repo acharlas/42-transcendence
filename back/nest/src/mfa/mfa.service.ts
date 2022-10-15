@@ -30,7 +30,7 @@ export class MfaService {
       .create({ to: phoneNumber, channel: 'sms' },
         function (err, message) {
           if (err) {
-            console.error('Sending sms failed: ' + err.message);
+            console.log(err);
             return (true);
           } else {
             console.log('Sent 2fa request to ' + message.to);
@@ -51,7 +51,15 @@ export class MfaService {
 
     const ret = await client.verify.v2.services(serviceSid)
       .verificationChecks
-      .create({ to: phoneNumber, code: codeToCheck });
+      .create({ to: phoneNumber, code: codeToCheck },
+        function (err, message) {
+          if (err) {
+            console.log(err);
+            return (true);
+          } else {
+            return (false);
+          }
+        });
 
     console.log("Sent 2fa code checking request", ret);
 
