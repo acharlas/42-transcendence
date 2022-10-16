@@ -18,7 +18,7 @@ interface User {
 }
 
 //preliminary checks before using the display component
-export default function ProfilePage() {
+export default function Profile() {
   const { urlId } = useParams();
 
   const userId = sessionStorage.getItem("userid");

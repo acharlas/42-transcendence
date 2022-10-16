@@ -1,5 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  // FaUserLock,
+  // FaUserPlus,
+  // FaUserMinus,
+  // FaMinus,
+  // FaPlus,
+  FaPen,
+} from "react-icons/fa"
+import {
+  BsShieldFillMinus,
+  BsShieldFillPlus,
+  // BsShieldLockFill,
+  // BsShieldSlashFill,
+} from "react-icons/bs"
+import {
+  ImCheckmark,
+  ImCross,
+} from "react-icons/im"
 
 import { getUsersMe, patchNickname } from "../api/user-api"
 import { requestMfaDisable } from "../api/mfa-api";
@@ -7,6 +25,7 @@ import { requestMfaDisable } from "../api/mfa-api";
 import defaultPicture from "../image/defaultPicture.png"
 import "../style.css"
 import "../profile/profile.css"
+import "./settings.css"
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -87,125 +106,149 @@ export default function Profile() {
     }
   }
 
-  function whenMfaEnabled() {
+  function enableMfaButton() {
     return (
-      <div>
-        <div>
-          2FA is enabled
-        </div>
-        <button onClick={disableMfa}>
-          disable
-        </button>
-      </div>
-    );
+      <button className="settings__button__texticon" onClick={enableMfa}>
+        enable
+        <BsShieldFillPlus className="settings__icon" />
+      </button>
+    )
   }
-  function whenMfaDisabled() {
+  function disableMfaButton() {
+    return (
+      <button className="settings__button__texticon" onClick={disableMfa}>
+        disable
+        <BsShieldFillMinus className="settings__icon" />
+      </button>
+    )
+  }
+
+
+  function avatarSettings() {
     return (
       <div>
-        <div>
-          2FA is disabled
+
+        <div className="profile__panel__top">
+          <div className="profile__panel__title">
+            Avatar
+          </div>
         </div>
-        <button onClick={enableMfa}>
-          enable
-        </button>
+        <div className="profile__panel__bottom profile__panel__avatar">
+          <div className="settings__avatar__div">
+            <div className="settings__avatar__container">
+              <img className="settings__avatar"
+                src={defaultPicture}
+                alt="" />
+              {
+                //TODO: display profile pictures
+              }
+            </div>
+            <button className="settings__button__texticon">
+              Upload a new avatar
+              {/* <FaPlus className="settings__icon" /> */}
+            </button>
+            <button className="settings__button__texticon">
+              Delete current avatar
+              {/* <FaMinus className="settings__icon" /> */}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  function nicknameSettings() {
+    return (
+      <div>
+        <div className="profile__panel__top">
+          <div className="profile__panel__title">
+            Nickname
+          </div>
+        </div>
+        <div className="profile__panel__bottom">
+          {editingNickname
+            ?
+            <div className="settings__line">
+              <input className="settings__line__elem settings__nickname__input"
+                placeholder="new nickname"
+                value={newNickname}
+                onChange={handleNewNicknameChange}
+                type="text"
+              />
+              <div className="settings__line__elem settings__group__two__buttons">
+                <button className="settings__button__texticon" onClick={editNickname}>
+                  <ImCheckmark className="settings__icon" />
+                </button>
+                <button className="settings__button__texticon" onClick={stopEditingNickname}>
+                  <ImCross className="settings__icon" />
+                </button>
+              </div>
+            </div>
+            :
+            <div className="settings__line">
+              <div className="settings__line__elem">
+                {nickname}
+              </div>
+              <button className="settings__line__elem settings__button__texticon" onClick={startEditingNickname}>
+                <FaPen className="settings__icon" />
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    )
+  }
+
+  function mfaSettings() {
+    return (
+      <div>
+        <div className="profile__panel__top">
+          <div className="profile__panel__title">
+            Two-factor authentication
+          </div>
+        </div>
+        <div className="profile__panel__bottom">
+          <div className="settings__line">
+            {mfaEnabled
+              ?
+              <div className="settings__line__elem">
+                2FA is enabled
+              </div>
+              :
+              <div className="settings__line__elem">
+                2FA is disabled
+              </div>
+            }
+            {mfaEnabled ? disableMfaButton() : enableMfaButton()}
+          </div>
+        </div>
       </div>
     );
   }
 
+  function friendSettings() {
+    return ("");
+  }
+
+  function blockSettings() {
+    return ("");
+  }
 
   return (
     <div className="profile__container">
       <div className="profile__screen">
         <div className="profile__content">
-
-          <div>
-            <div className="profile__panel__top">
-              <div className="profile__panel__title">
-                Account information
-              </div>
-            </div>
-
-            <div className="profile__panel__bottom">
-              <div>
-                nickname:
-              </div>
-              <div>
-                <div>
-                  {editingNickname
-                    ?
-                    <div>
-                      <input
-                        placeholder="new nickname"
-                        value={newNickname}
-                        onChange={handleNewNicknameChange}
-                        type="text"
-                      />
-                      <div>
-                        <button onClick={editNickname}>
-                          edit
-                        </button>
-                        <button onClick={stopEditingNickname}>
-                          cancel
-                        </button>
-                      </div>
-                    </div>
-                    :
-                    <div>
-                      <div>
-                        {nickname}
-                      </div>
-                      <button
-                        onClick={startEditingNickname}>
-                        edit
-                      </button>
-                    </div>
-                  }
-                </div>
-              </div>
-            </div>
-          </div>
-
+          {avatarSettings()}
           <br></br>
-
-          <div>
-            <div className="profile__panel__top">
-              <div className="profile__panel__title">
-                Profile picture
-              </div>
-            </div>
-            <div className="profile__panel__bottom">
-              <div className="profile__avatar__container">
-                <img className="profile__avatar"
-                  src={defaultPicture}
-                  alt="" />
-                {
-                  //TODO: display profile pictures
-                }
-              </div>
-              <button>
-                update
-              </button>
-              <button>
-                delete
-              </button>
-            </div>
-          </div>
-
+          {nicknameSettings()}
           <br></br>
-
-          <div>
-            <div className="profile__panel__top">
-              <div className="profile__panel__title">
-                Two-factor authentication
-              </div>
-            </div>
-            <div className="profile__panel__bottom">
-              {mfaEnabled ? whenMfaEnabled() : whenMfaDisabled()}
-            </div>
-          </div>
-
+          {mfaSettings()}
+          <br></br>
+          {friendSettings()}
+          <br></br>
+          {blockSettings()}
         </div>
       </div>
-    </div >
+    </div>
   );
 }

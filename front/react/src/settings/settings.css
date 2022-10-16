@@ -1,0 +1,87 @@
+.settings__line {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-content: flex-start;
+  align-items: center;
+}
+
+.settings__group__two__buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.settings__line__elem {
+  display: inline-flexbox;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.settings__button__texticon {
+  display: flex;
+  cursor: pointer;
+  border-radius: 5%;
+  padding: 0.4em;
+
+  background-color: rgb(255, 255, 255);
+  color: #0a1330;
+
+  vertical-align: baseline;
+  text-align: center;
+}
+
+.settings__icon {
+  /* margin-left: 33%; */
+  /* top: 30px; */
+  color: #2c385e;
+}
+
+/* avatar */
+
+.profile__panel__avatar {
+  display: flex;
+  justify-content: center;
+}
+
+.settings__avatar__div {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  width: fit-content;
+  max-width: 60%;
+  align-self: center;
+}
+
+.settings__avatar {
+  max-width: 100%;
+  height: auto;
+
+  /* border-radius: 10px; */
+  border-radius: 5%;
+  border: 2px solid rgb(0, 0, 0);
+  margin: auto;
+}
+
+.settings__avatar__container {
+  display: flex;
+  /* align-items: center; */
+  flex-wrap: wrap;
+}
+
+/* nickname */
+
+.settings__nickname__div {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.settings__nickname__child {
+  display: inline-block;
+}
+
+.settings__nickname__input {
+  /* display: inline-flex;
+  width: max-content; */
+  flex-grow: 1;
+}
