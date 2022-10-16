@@ -29,8 +29,8 @@ export default function Profile() {
     const fetchUserData = async () => {
       await getUsersMe()
         .then((res) => {
-          setNickname(res.nickname);
-          setMfaEnabled(res.mfaEnabled);
+          setNickname(res.data.nickname);
+          setMfaEnabled(res.data.mfaEnabled);
         })
         .catch((e) => {
           console.log("Settings: Error in fetchUserData", e);
@@ -47,6 +47,7 @@ export default function Profile() {
   const editNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     await patchNickname({ nickname: newNickname });
+    //TODO: check status
     setEditingNickname(false);
     setNewNickname("");
   }

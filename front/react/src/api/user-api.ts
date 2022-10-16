@@ -13,7 +13,7 @@ export const getUser = async (params: GetUserDto): Promise<any> => {
     axios.get(`http://localhost:3333/users/` + params.id,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
-        return resolve(ret.data);
+        return resolve(ret);
       })
       .catch((e) => {
         console.log("Error in getUser", e);
@@ -28,7 +28,7 @@ export const getUsers = async (): Promise<any> => {
     axios.get(`http://localhost:3333/users/`,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
-        return resolve(ret.data);
+        return resolve(ret);
       })
       .catch((e) => {
         console.log("Error in getUsers", e);
@@ -43,7 +43,7 @@ export const getUsersMe = async (): Promise<any> => {
     axios.get(`http://localhost:3333/users/me`,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem("Token") } })
       .then((ret) => {
-        return resolve(ret.data);
+        return resolve(ret);
       })
       .catch((e) => {
         console.log("Error in getUsersMe", e);
@@ -52,13 +52,13 @@ export const getUsersMe = async (): Promise<any> => {
   });
 };
 
-export const patchNickname = async (params: PatchNicknameDto): Promise<void> => {
-  return new Promise<void>((resolve, reject) => {
+export const patchNickname = async (params: PatchNicknameDto): Promise<any> => {
+  return new Promise<any>((resolve, reject) => {
     axios.patch(`http://localhost:3333/users`,
       { nickname: params.nickname },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem("Token") } })
       .then((ret) => {
-        return resolve(ret.data);
+        return resolve(ret);
       })
       .catch((e) => {
         console.log("Error in patchNickname", e);

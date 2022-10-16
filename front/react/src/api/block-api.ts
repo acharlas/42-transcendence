@@ -55,23 +55,12 @@ export const getBlock = async (params: BlockDto): Promise<any> => {
   });
 }
 
-export const getBlocklist = async (params: BlockDto): Promise<any> => {
-  return new Promise<any>((resolve, reject) => {
-    getBlock({ id: params.id })
-      .then((ret) => {
-        return (resolve(ret.data.myblock));
-      })
-      .catch((e) => {
-        console.log("Error in getBlocklist", e);
-        return reject(e);
-      });
-  });
-}
+//utils
 
 export const checkIfBlocked = async (params: CheckIfBlockDto): Promise<boolean> => {
-  const ret = await getBlocklist({ id: sessionStorage.getItem(`userid`) });
-  for (let i = 0; i < ret.length; i++) {
-    if (ret[i].id === params.targetId) {
+  const blockList = (await getBlock({ id: sessionStorage.getItem(`userid`) })).data.myblock;
+  for (let i = 0; i < blockList.length; i++) {
+    if (blockList[i].id === params.targetId) {
       return (true);
     }
   }

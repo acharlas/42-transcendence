@@ -55,23 +55,12 @@ export const getFriend = async (params: FriendDto): Promise<any> => {
   });
 }
 
-export const getFriendlist = async (params: FriendDto): Promise<any> => {
-  return new Promise<any>((resolve, reject) => {
-    getFriend({ id: params.id })
-      .then((ret) => {
-        return (resolve(ret.data.myfriend));
-      })
-      .catch((e) => {
-        console.log("Error in getFriendlist", e);
-        return reject(e);
-      });
-  });
-}
+//utils
 
 export const checkIfFriend = async (params: CheckIfFriendDto): Promise<boolean> => {
-  const ret = await getFriendlist({ id: sessionStorage.getItem(`userid`) });
-  for (let i = 0; i < ret.length; i++) {
-    if (ret[i].id === params.targetId) {
+  const friendList = (await getFriend({ id: sessionStorage.getItem(`userid`) })).data.myfriend;
+  for (let i = 0; i < friendList.length; i++) {
+    if (friendList[i].id === params.targetId) {
       return (true);
     }
   }

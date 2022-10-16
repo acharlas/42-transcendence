@@ -12,7 +12,7 @@ export default function Userlist() {
     const fetchUserlist = async () => {
       await getUsers()
         .then((res) => {
-          setUserlist(res);
+          setUserlist(res.data);
         })
         .catch((e) => {
           console.log("Error while fetching userlist", e);
