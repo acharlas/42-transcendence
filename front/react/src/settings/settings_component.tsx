@@ -21,6 +21,8 @@ import {
 
 import { getUsersMe, patchNickname } from "../api/user-api"
 import { requestMfaDisable } from "../api/mfa-api";
+import { getBlock } from "../api/block-api";
+import { getFriend } from "../api/friend-api";
 
 import defaultPicture from "../image/defaultPicture.png"
 import "../style.css"
@@ -43,6 +45,8 @@ export default function Profile() {
   const [newNickname, setNewNickname] = useState("");
   const [editingNickname, setEditingNickname] = useState(false);
   const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [blocklist, setBlocklist] = useState([]);
+  const [friendlist, setFriendlist] = useState([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -59,8 +63,33 @@ export default function Profile() {
           }
         })
     };
+
+    const fetchBlocklist = async () => {
+      await getBlock({ id: window.sessionStorage.getItem("userid") })
+        .then((res) => {
+          setBlocklist(res.data.myblock);
+        })
+        .catch((e) => {
+          console.log("Error while fetching blocklist", e);
+        })
+    };
+    const fetchFriendlist = async () => {
+      await getFriend({ id: window.sessionStorage.getItem("userid") })
+        .then((res) => {
+          console.log(res.data)
+
+          setFriendlist(res.data.myfriend);
+        })
+        .catch((e) => {
+          console.log("Error while fetching friendlist", e);
+        })
+    };
+
     fetchUserData();
-  });
+    fetchBlocklist();
+    fetchFriendlist();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // NAMES
   const editNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -227,12 +256,65 @@ export default function Profile() {
   }
 
   function friendSettings() {
-    return ("");
+    return (
+      <div>
+        <div className="profile__panel__top">
+          <div className="profile__panel__title">
+            Friends
+          </div>
+        </div>
+        <div className="profile__panel__bottom">
+          <table>
+            <tbody>
+              {friendlist.map((n, index) => (
+                <tr key={n.nickname}>
+                  <td>
+                    <a href={"/profile/" + n.id}>
+                      {n.nickname}
+                    </a>
+                  </td>
+                  <td>
+                    unfriend
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
   }
 
   function blockSettings() {
-    return ("");
+    return (
+      <div>
+        <div className="profile__panel__top">
+          <div className="profile__panel__title">
+            Blocked users
+          </div>
+        </div>
+        <div className="profile__panel__bottom">
+          <table>
+            <tbody>
+              {blocklist.map((n, index) => (
+                <tr key={n.nickname}>
+                  <td>
+                    <a href={"/profile/" + n.id}>
+                      {n.nickname}
+                    </a>
+                  </td>
+                  <td>
+                    unblock
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
   }
+
 
   return (
     <div className="profile__container">
