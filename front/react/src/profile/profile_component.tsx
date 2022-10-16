@@ -47,7 +47,7 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
     const fetchUserData = async () => {
       await getUser({ id })
         .then((res) => {
-          setUserData(res);
+          setUserData(res.data);
         })
         .catch((e) => {
           if (e.response.status === 401) {
