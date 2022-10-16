@@ -3,11 +3,9 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Twilio } from 'twilio';
 import { JwtService } from '@nestjs/jwt';
 
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { MfaSetupDto } from './dto/mfa-setup.dto';
 import { MfaValidateDto } from './dto/mfa-validate.dto';
-import { AuthService } from 'src/auth/auth.service';
-import { AuthController } from 'src/auth/auth.controller';
 
 @Injectable()
 export class MfaService {

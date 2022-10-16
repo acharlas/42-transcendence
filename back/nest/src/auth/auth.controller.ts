@@ -15,7 +15,6 @@ import { AuthSigninDto, AuthSignupDto, getApiToken } from './dto';
 export class AuthController {
   constructor(private authService: AuthService) { }
 
-  @HttpCode(HttpStatus.OK)
   @Post('signup')
   async signup(@Body() dto: AuthSignupDto): Promise<{ access_token: string }> {
     return new Promise<{ access_token: string }>((resolve, reject) => {
@@ -31,7 +30,6 @@ export class AuthController {
     });
   }
 
-  @HttpCode(HttpStatus.OK)
   @Post('signin')
   async signin(@Body() dto: AuthSigninDto): Promise<{ access_token: string }> {
     return new Promise<{ access_token: string }>((resolve, reject) => {
