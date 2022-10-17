@@ -7,7 +7,6 @@ import {
   FaRocket,
   FaSpaceShuttle,
   FaLock,
-  FaSatelliteDish,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -33,6 +32,7 @@ export function SignupForm() {
 
   const goHome = () => {
     navigate("/home");
+  };
   const goGame = () => {
     navigate("/game");
   };

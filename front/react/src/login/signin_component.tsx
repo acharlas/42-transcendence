@@ -11,7 +11,7 @@ import {
   FaEye,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import jwt_decode from 'jwt-decode';
+import jwt_decode from "jwt-decode";
 
 /*<div className="api-signin">
                 <h3>Signin with</h3>
@@ -19,13 +19,15 @@ import jwt_decode from 'jwt-decode';
               </div>*/
 
 interface DecodedToken {
-  sub: string,
-  fullyAuth: boolean,
-  iat: string,
-  exp: string,
+  sub: string;
+  fullyAuth: boolean;
+  iat: string;
+  exp: string;
 }
 
-export function SigninForm() {
+export interface ISigninFormProps {}
+
+const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   const [newUsername, setNewUsername] = useState("");
   const [newPass, setNewPass] = useState("");
   const [ErrorMessage, setErrorMessage] = useState("");
@@ -45,7 +47,7 @@ export function SigninForm() {
   };
   const goHome = () => {
     navigate("/home");
-
+  };
   const goGame = () => {
     console.log("chat");
     navigate("/game");
@@ -86,8 +88,7 @@ export function SigninForm() {
 
       if (tokenInfo.fullyAuth) {
         goHome();
-      }
-      else {
+      } else {
         goSigninMfa();
       }
     } catch (e) {
@@ -174,4 +175,6 @@ export function SigninForm() {
       </div>
     </div>
   );
-}
+};
+
+export default SigninForm;
