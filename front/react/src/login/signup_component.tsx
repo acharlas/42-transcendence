@@ -33,6 +33,8 @@ export function SignupForm() {
 
   const goHome = () => {
     navigate("/home");
+  const goGame = () => {
+    navigate("/game");
   };
 
   const createUser = async (event: React.MouseEvent<HTMLButtonElement>) => {

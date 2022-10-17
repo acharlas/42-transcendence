@@ -8,6 +8,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { UserPrivilege } from '@prisma/client';
 import { Server, Socket, Namespace } from 'socket.io';
 import { CreateChannelDto } from 'src/channel/dto';
 import { ChannelService } from '../channel/channel.service';
@@ -31,11 +32,13 @@ export class MessageGateway
   handleConnection(client: SocketWithAuth): void {
     const socket = this.io.sockets;
     this.channelService
-      .getChannels(client.userID)
+      .getUserRoom(client.userID)
       .then((res) => {
-        console.log(res);
-        client.broadcast.emit('Rooms', { rooms: res });
-        client.emit('Rooms', { rooms: res });
+        console.log('room on connection:', { res });
+        client.emit('Rooms', res);
+        res.forEach((room) => {
+          client.join(room.channel.id);
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -54,9 +57,16 @@ export class MessageGateway
 
   /*==========================================*/
   /*USER CREATE A ROOM*/
+  @SubscribeMessage('handshake')
+  handshake(client: SocketWithAuth): Promise<void> {
+    console.log('sending back user id....');
+    client.emit('new_user', client.id);
+    return;
+  }
+  /*==========================================*/
+  /*USER CREATE A ROOM*/
   @SubscribeMessage('CreateRoom')
   CreateRoom(
-    @MessageBody('old') oldRoom: string,
     @MessageBody('CreateChannelDto') roomDto: CreateChannelDto,
     @ConnectedSocket()
     client: SocketWithAuth,
@@ -66,47 +76,18 @@ export class MessageGateway
       this.channelService
         .createChannel(client.userID, roomDto)
         .then((ret) => {
-          console.log({ ret });
-          client.leave(oldRoom);
-          client.join(ret.id);
-          return resolve(
-            new Promise<void>((resolve, reject) => {
-              this.channelService
-                .getChannels(client.userID)
-                .then((res) => {
-                  console.log('room return:', res);
-                  client.broadcast.emit('Rooms', { rooms: res });
-                  client.emit('Rooms', { rooms: res });
-                  return resolve(
-                    new Promise<void>((resolve, reject) => {
-                      this.channelService
-                        .getChannelMessage(ret.id, client.userID)
-                        .then((res) => {
-                          client.emit('JoinedRoom', {
-                            roomId: ret.id,
-                            message: res,
-                          });
-                          return resolve();
-                        })
-                        .catch((err) => {
-                          return reject(err);
-                        });
-                    }),
-                  );
-                })
-                .catch((err) => {
-                  return reject(err);
-                });
-            }),
-          );
+          console.log('NewRoom Create Send: ', { ret });
+          client.join(ret.channel.id);
+          client.emit('NewRoom', { room: ret });
+          return resolve();
         })
         .catch((err) => {
           return reject(err);
         });
     });
   }
-  /*==========================================*/
 
+  /*==========================================*/
   /*USER SEND A ROOM MESSAGE*/
   @SubscribeMessage('SendRoomMessage')
   sendRoomMessage(
@@ -114,64 +95,47 @@ export class MessageGateway
     @MessageBody('message') message: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
+    console.log('new message arrive:', message);
     return new Promise<void>((resolve, reject) => {
       console.log('SendRoom message', { message }, 'channelId:', roomId);
       this.channelService
         .addChannelMessage(client.userID, roomId, client.username, message)
         .then((ret) => {
-          return resolve(
-            new Promise<void>((resolve, reject) => {
-              this.channelService
-                .getChannelMessage(roomId, client.userID)
-                .then((res) => {
-                  client.broadcast.to(roomId).emit('newMessage', {
-                    message: res,
-                  });
-                  return resolve();
-                })
-                .catch((err) => {
-                  return reject(err);
-                });
-            }),
-          );
+          console.log('message resend:', ret, 'roomid: ', roomId);
+          client.broadcast
+            .to(roomId)
+            .emit('RoomMessage', { roomId: roomId, message: ret });
+          return resolve();
         })
         .catch((err) => {
           return reject(err);
         });
     });
   }
+
   /*=====================================*/
   /* USER JOIN A ROOM*/
   @SubscribeMessage('JoinRoom')
   joinRoom(
-    @MessageBody('old') oldRoom: string,
-    @MessageBody('key') roomId: string,
+    @MessageBody('name') name: string,
     @MessageBody('password') password: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    console.log('join room:', roomId, 'old room:', oldRoom, 'pass', password);
+    console.log('join room:', name, 'pass', password);
     return new Promise<void>((resolve, reject) => {
       this.channelService
-        .joinChannelById(client.userID, roomId, { password: password })
+        .JoinChannelByName(name, client.userID, { password: password })
         .then((ret) => {
-          console.log({ roomId });
-          client.leave(oldRoom);
-          client.join(roomId);
-          console.log(roomId);
-          return resolve(
-            new Promise<void>((resolve, reject) => {
-              this.channelService
-                .getChannelMessage(roomId, client.userID)
-                .then((res) => {
-                  console.log('join message', res);
-                  client.emit('JoinedRoom', { roomId: roomId, message: res });
-                  return resolve();
-                })
-                .catch((err) => {
-                  return reject(err);
-                });
+          client.join(ret.channel.id);
+          client.emit('NewRoom', { room: ret });
+          client.broadcast.to(ret.channel.id).emit('JoinRoom', {
+            id: ret.channel.id,
+            user: ret.user.find((user) => {
+              if (user.username === client.username) return true;
+              return false;
             }),
-          );
+          });
+          return resolve();
         })
         .catch((err) => {
           return reject(err);
@@ -197,5 +161,64 @@ export class MessageGateway
         });
     });
   }
+
+  /*============================================*/
+  /*User uppdate*/
+  @SubscribeMessage('UpdateUserPrivilege')
+  UpdateUserPrivilege(
+    @MessageBody('roomId') roomId: string,
+    @MessageBody('privilege') privilege: UserPrivilege,
+    @MessageBody('time') time: Date,
+    @MessageBody('toModifie') toModifie: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('date: ', time, 'Privilege: ', privilege);
+    return new Promise<void>((resolve, reject) => {
+      this.channelService
+        .channelUserUpdate(client.userID, toModifie, roomId, privilege, time)
+        .then((ret) => {
+          console.log('uwerqwuo');
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              this.channelService
+                .getChannelUser(roomId)
+                .then((user) => {
+                  console.log('send msg back');
+                  client
+                    .to(roomId)
+                    .emit('UpdateUserList', { roomId: roomId, user: user });
+                  client.emit('UpdateUserList', { roomId: roomId, user: user });
+                })
+                .catch((err) => {
+                  return reject(err);
+                });
+              return resolve();
+            }).catch((err) => {
+              console.log(err);
+              return reject(err);
+            }),
+          );
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  /*============================================*/
+  /*============================================*/
+  /*Ban User*/
+  @SubscribeMessage('UpdateUserPrivilege')
+  BanUser(
+    @MessageBody('user') user: string,
+    @MessageBody('Date') time: Date,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('date');
+    return new Promise<void>((resolve, reject) => {
+      return resolve();
+    });
+  }
+
   /*============================================*/
 }

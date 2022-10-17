@@ -1,37 +1,17 @@
 import { useNavigate } from "react-router-dom";
+import { Socket } from "socket.io-client";
+import ChatIndex from "./chat/chat-index";
+import SocketContextComponent from "./chat/socket-component";
+import ChatProvider from "./context/chat.context";
 
-export function App() {
-  let navigate = useNavigate();
-
-  const goSignin = () => {
-    window.sessionStorage.clear();
-    navigate("/");
-  };
-  const goSettings = () => {
-    navigate("/settings");
-  }
-  const goGame = () => {
-    navigate("/game");
-  }
-  const goChat = () => {
-    navigate("/chat");
-  }
-
+export interface IApplicationProps {}
+const Application: React.FunctionComponent<IApplicationProps> = (props) => {
   return (
-    <div>
-      <button id="logout button" onClick={goSignin}>
-        Signout
-      </button>
-      <button id="settings button" onClick={goSettings}>
-        settings
-      </button>
-      <button id="game button" onClick={goGame}>
-        game
-      </button>
-      <button id="chat button" onClick={goChat}>
-        chat
-      </button>
-    </div>
+    <ChatProvider>
+      <SocketContextComponent>
+        <ChatIndex />
+      </SocketContextComponent>
+    </ChatProvider>
   );
-}
-export default App;
+};
+export default Application;

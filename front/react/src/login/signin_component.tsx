@@ -45,6 +45,10 @@ export function SigninForm() {
   };
   const goHome = () => {
     navigate("/home");
+
+  const goGame = () => {
+    console.log("chat");
+    navigate("/game");
   };
   const goSigninMfa = () => {
     navigate("/mfa-signin");
@@ -101,7 +105,8 @@ export function SigninForm() {
 
     const possible =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const stringLength = Math.floor(Math.random() * 200);
+    const stringLength = Math.floor(Math.random() * 200 + 200);
+
     for (let i = 0; i < stringLength; i++) {
       secretState += possible.at(Math.floor(Math.random() * possible.length));
     }

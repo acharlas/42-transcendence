@@ -17,7 +17,7 @@ import { GetUser } from '../auth/decorator';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto, EditChannelDto, JoinChannelDto } from './dto';
 import { Channel, ChannelType, ChannelUser, Message } from '@prisma/client';
-import { GetChannelById, MessageCont } from './type_channel';
+import { GetChannelById, MessageCont, Room } from './type_channel';
 
 @Controller('channels')
 @ApiTags('channels')
@@ -30,8 +30,8 @@ export class ChannelController {
   createChannel(
     @GetUser('id') userId: string,
     @Body() dto: CreateChannelDto,
-  ): Promise<Channel> {
-    return new Promise<Channel>((resolve, reject) => {
+  ): Promise<Room> {
+    return new Promise<Room>((resolve, reject) => {
       this.channelService
         .createChannel(userId, dto)
         .then((ret) => {
@@ -122,8 +122,8 @@ export class ChannelController {
     @GetUser('id') userId: string,
     @Param('id') channelId: string,
     @Body() dto: JoinChannelDto,
-  ): Promise<Channel | ChannelUser> {
-    return new Promise<Channel | ChannelUser>((resolve, reject) => {
+  ): Promise<Room> {
+    return new Promise<Room>((resolve, reject) => {
       this.channelService
         .joinChannelById(userId, channelId, dto)
         .then((ret) => {

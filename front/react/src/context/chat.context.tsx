@@ -1,57 +1,80 @@
-import { createContext, useContext, useState } from "react";
-import io, { Socket } from "socket.io-client";
+import { createContext, useContext, useEffect, useState } from "react";
+import { Channel, Message, Room, User, UserPrivilege } from "../chat/type";
 
-interface Message {
-  content: string;
-  username: string;
-  nickname: string;
-}
-
-interface Room {
-  id: string;
-  name: string;
-  type: string;
-}
-
-interface Context {
-  username?: string;
-  setUsername: Function;
-  roomId?: string;
-  setRoomId: Function;
+export interface IoChatContextState {
   rooms: Room[];
   setRooms: Function;
-  messages?: Message[];
+  user: User | undefined;
+  setUser: Function;
+  messages: Message[];
   setMessages: Function;
+  userList: User[];
+  setUserList: Function;
+  actChannel: string | undefined;
+  setActChannel: Function;
+  showRoomMenu: boolean;
+  setShowRoomMenu: Function;
+  showCreateMenu: boolean;
+  setShowCreateMenu: Function;
+  selectUser: User | undefined;
+  setSelectUser: Function;
+  showTimeSelector: UserPrivilege | undefined;
+  setShowTimeSelector: Function;
 }
 
-const ChatContext = createContext<Context>({
-  setUsername: () => false,
-  setMessages: () => false,
-  setRoomId: () => false,
-  setRooms: () => false,
-  username: "",
-  roomId: "",
-  messages: [],
+const ChatContext = createContext<IoChatContextState>({
   rooms: [],
+  setRooms: () => {},
+  user: undefined,
+  setUser: () => {},
+  messages: [],
+  setMessages: () => {},
+  userList: [],
+  setUserList: () => {},
+  actChannel: "",
+  setActChannel: () => {},
+  showRoomMenu: false,
+  setShowRoomMenu: () => {},
+  showCreateMenu: false,
+  setShowCreateMenu: () => {},
+  selectUser: undefined,
+  setSelectUser: () => {},
+  showTimeSelector: undefined,
+  setShowTimeSelector: () => {},
 });
 
 function ChatProvider(props: any) {
-  const [username, setUsername] = useState("");
-  const [roomId, setRoomId] = useState("");
-  const [rooms, setRooms] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [user, setUser] = useState<User>();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [userList, setUserList] = useState<User[]>([]);
+  const [actChannel, setActChannel] = useState<string>("");
+  const [showRoomMenu, setShowRoomMenu] = useState<boolean>(false);
+  const [showCreateMenu, setShowCreateMenu] = useState<boolean>(false);
+  const [selectUser, setSelectUser] = useState<User>();
+  const [showTimeSelector, setShowTimeSelector] = useState<UserPrivilege>();
 
   return (
     <ChatContext.Provider
       value={{
-        username,
-        setUsername,
+        selectUser,
+        setSelectUser,
+        userList,
+        setUserList,
         rooms,
         setRooms,
-        roomId,
-        setRoomId,
+        actChannel,
+        setActChannel,
         messages,
         setMessages,
+        user,
+        setUser,
+        showRoomMenu,
+        setShowRoomMenu,
+        showCreateMenu,
+        setShowCreateMenu,
+        showTimeSelector,
+        setShowTimeSelector,
       }}
       {...props}
     />

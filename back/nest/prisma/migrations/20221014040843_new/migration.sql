@@ -8,6 +8,9 @@ CREATE TYPE "UserStatus" AS ENUM ('connected', 'disconnected');
 CREATE TYPE "UserPrivilege" AS ENUM ('owner', 'admin', 'default', 'muted', 'ban');
 
 -- CreateEnum
+CREATE TYPE "UserType" AS ENUM ('fortyTwo', 'normal');
+
+-- CreateEnum
 CREATE TYPE "ChannelType" AS ENUM ('public', 'private', 'protected', 'dm');
 
 -- CreateTable
@@ -15,13 +18,14 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "email" TEXT NOT NULL,
     "hash" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "nickname" TEXT NOT NULL,
     "wins" INTEGER NOT NULL DEFAULT 0,
     "losses" INTEGER NOT NULL DEFAULT 0,
     "mmr" INTEGER NOT NULL DEFAULT 1000,
+    "userType" "UserType" NOT NULL,
+    "fortyTwoId" INTEGER NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -31,6 +35,7 @@ CREATE TABLE "channelusers" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "privilege" "UserPrivilege" NOT NULL,
+    "time" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "status" "UserStatus" NOT NULL,
     "userId" TEXT NOT NULL,
     "channelId" TEXT NOT NULL,
@@ -78,6 +83,7 @@ CREATE TABLE "messages" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "content" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "channelId" TEXT NOT NULL,
 
@@ -95,9 +101,6 @@ CREATE TABLE "_blocks" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");

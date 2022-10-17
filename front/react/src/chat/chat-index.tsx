@@ -1,132 +1,68 @@
 import "./chat-style.css";
-import RoomsContainer from "./Rooms";
-import MessagesContainer from "./Messages";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
-import { Message, Room, User } from "./type";
+import { FunctionComponent, useContext } from "react";
+import SocketContext from "../context/socket.context";
 import { useChat } from "../context/chat.context";
+import CreateRoomsContainer from "./chat-create-room";
 import { FaAngleLeft } from "react-icons/fa";
-import CreateRoomsContainer from "./create-room";
-import LockScreen from "./lock-screen";
-import UserMenu from "./user-menu";
+import RoomsMenuContainer from "./chat-rooms-menu";
+import JoinNewRoomComponent from "./chat-join-new-room";
+import MessagesComponent from "./chat-messages";
+import UserMenu from "./chat-user-menu";
+import TimeSelector from "./chat-time-selector";
 
-export default function ChatIndex() {
-  const [socket, setSocket] = useState<Socket>(io());
-  const { setRooms, setRoomId, setMessages, messages, roomId } = useChat();
-  const [showRoom, setShowRoom] = useState(false);
-  const [nextRoom, setNextRoom] = useState<string>("");
-  const [showUser, setShowUser] = useState<User>();
+export interface IChatIndexProps {}
+
+const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
   let navigate = useNavigate();
+  const { socket } = useContext(SocketContext).SocketState;
+  const {
+    showCreateMenu,
+    rooms,
+    showRoomMenu,
+    setShowRoomMenu,
+    actChannel,
+    selectUser,
+    showTimeSelector,
+  } = useChat();
 
   const goSignin = () => {
     window.sessionStorage.clear();
     navigate("/");
   };
 
-  useEffect(() => {
-    console.log("bearer " + sessionStorage.getItem("Token"));
-    setSocket(
-      io("http://localhost:3333/chat", {
-        auth: {
-          token: sessionStorage.getItem("Token"),
-        },
-      })
-    );
-  }, []);
-
-  useEffect(() => {
-    socket.on("Rooms", ({ rooms }: { rooms: Room[] }) => {
-      console.log("Rooms: ", rooms);
-      setRooms(rooms);
-    });
-
-    socket.on(
-      "JoinedRoom",
-      ({ roomId, message }: { roomId: string; message: Message[] }) => {
-        console.log("joinedRoom");
-        console.log("joinedRoom: ", roomId, "message:", { messages });
-        setRoomId(roomId);
-        if (messages) {
-          setMessages(message);
-          console.log("set new message: ", messages);
-        } else setMessages([]);
-        console.log("roomID: ", roomId);
-      }
-    );
-
-    socket.on("RoomMessage", ({ message }: { message: Message[] }) => {
-      console.log("RoomMessage: ", { message });
-      setMessages(message);
-    });
-
-    socket.on("newMessage", ({ message }: { message: Message[] }) => {
-      console.log("newMessage arrive: ", message);
-      console.log("oldMessage: ", { messages });
-      setMessages(message);
-    });
-
-    console.log(socket);
-  }, [socket]);
-
-  const handleShowRoom = (event) => {
-    showRoom ? setShowRoom(false) : setShowRoom(true);
+  const handleShowRoomMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    showRoomMenu ? setShowRoomMenu(false) : setShowRoomMenu(true);
   };
 
+  if (rooms) console.log("rooms at start:", rooms, "userselect: ", selectUser);
   return (
     <div className="container">
       <button id="logout" onClick={goSignin}>
         Signout
       </button>
       <div className="chat-container">
-        <>
-          {showRoom ? (
-            <RoomsContainer
-              socket={socket}
-              setShowRoom={setShowRoom}
-              showRoom={showRoom}
-              setNextRoom={setNextRoom}
-              setShowUser={setShowUser}
-            />
-          ) : (
-            <>
-              <button className="room-button" onClick={handleShowRoom}>
-                <FaAngleLeft />
-              </button>
-            </>
-          )}
-          {roomId.length === 0 ? (
-            <>
-              {nextRoom ? (
-                <LockScreen
-                  socket={socket}
-                  nextRoom={nextRoom}
-                  setNextRoom={setNextRoom}
-                />
-              ) : (
-                <CreateRoomsContainer socket={socket} />
-              )}
-            </>
-          ) : (
-            <>
-              {showUser ? (
-                <UserMenu
-                  socket={socket}
-                  showUser={showUser}
-                  setShowUser={setShowUser}
-                />
-              ) : (
-                ""
-              )}
-              <MessagesContainer
-                socket={socket}
-                showUser={showUser}
-                setShowUser={setShowUser}
-              />
-            </>
-          )}
-        </>
+        {selectUser ? <UserMenu /> : <></>}
+        {showRoomMenu ? (
+          <RoomsMenuContainer />
+        ) : (
+          <>
+            <button className="room-button" onClick={handleShowRoomMenu}>
+              <FaAngleLeft />
+            </button>
+          </>
+        )}
+        {actChannel ? (
+          <MessagesComponent />
+        ) : showCreateMenu ? (
+          <CreateRoomsContainer />
+        ) : (
+          <JoinNewRoomComponent />
+        )}
+        {showTimeSelector ? <TimeSelector /> : <></>}
       </div>
     </div>
   );
-}
+};
+
+export default ChatIndex;
