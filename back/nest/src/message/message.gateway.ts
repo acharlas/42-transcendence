@@ -10,7 +10,7 @@ import {
 } from '@nestjs/websockets';
 import { UserPrivilege } from '@prisma/client';
 import { Server, Socket, Namespace } from 'socket.io';
-import { CreateChannelDto } from 'src/channel/dto';
+import { CreateChannelDto } from '../channel/dto';
 import { ChannelService } from '../channel/channel.service';
 import { SocketWithAuth } from './types_message';
 
@@ -18,9 +18,8 @@ import { SocketWithAuth } from './types_message';
   namespace: 'chat',
 })
 export class MessageGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
-  constructor(private channelService: ChannelService) {}
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  constructor(private channelService: ChannelService) { }
 
   @WebSocketServer() io: Namespace;
   server: Server;

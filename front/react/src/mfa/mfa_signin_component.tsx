@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaLock, FaRocket } from "react-icons/fa";
-import mfaService from "./mfa-service";
-import "./mfa.css";
-import "../login/login_style.css";
+
+import { signinWithMfa } from "../login/login-service";
+import { requestMfaSigninInit } from "../api/mfa-api";
+
 import "../style.css";
+import "../login/login_style.css";
+import "./mfa.css";
 
 export default function MfaSignin() {
   let navigate = useNavigate();
@@ -19,14 +22,18 @@ export default function MfaSignin() {
     setSmsCode(event.target.value);
   }
 
+  const sendSmsCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    //TODO: countdown/modularity
+    await requestMfaSigninInit();
+  }
+
   const checkSmsCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
     try {
       setErrorMessage("");
-      const token = await mfaService.signinWithMfa({ codeToCheck: smsCode });
-
-
+      await signinWithMfa({ codeToCheck: smsCode });
       goHome();
     } catch (e) {
       console.log({ e });
@@ -38,6 +45,10 @@ export default function MfaSignin() {
       <div className="screen">
         <div className="screen__content">
           <form className="login">
+            <button className="button__sms__check__submit" onClick={sendSmsCode}>
+              <span className="button__text">Send code</span>
+              <FaRocket className="sms__check__code__icon" />
+            </button>
             <div className="login__field">
               <FaLock className="sms__input__code__icon" />
               <input
@@ -74,6 +85,6 @@ export default function MfaSignin() {
           <span className="screen__background__shape screen__background__shape1"></span>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

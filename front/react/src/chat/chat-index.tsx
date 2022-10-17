@@ -11,7 +11,7 @@ import MessagesComponent from "./chat-messages";
 import UserMenu from "./chat-user-menu";
 import TimeSelector from "./chat-time-selector";
 
-export interface IChatIndexProps {}
+export interface IChatIndexProps { }
 
 const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
   let navigate = useNavigate();
@@ -30,6 +30,18 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
     window.sessionStorage.clear();
     navigate("/");
   };
+  const goSettings = () => {
+    navigate("/settings");
+  }
+  const goGame = () => {
+    navigate("/game");
+  }
+  const goChat = () => {
+    navigate("/chat");
+  }
+  const goLeaderboard = () => {
+    navigate("/leaderboard");
+  }
 
   const handleShowRoomMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     showRoomMenu ? setShowRoomMenu(false) : setShowRoomMenu(true);
@@ -40,6 +52,18 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
     <div className="container">
       <button id="logout" onClick={goSignin}>
         Signout
+      </button>
+      <button onClick={goSettings}>
+        settings
+      </button>
+      <button onClick={goGame}>
+        game
+      </button>
+      <button onClick={goChat}>
+        chat
+      </button>
+      <button onClick={goLeaderboard}>
+        leaderboard
       </button>
       <div className="chat-container">
         {selectUser ? <UserMenu /> : <></>}

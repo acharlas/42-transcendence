@@ -16,10 +16,26 @@ import { MfaValidateDto } from './dto/mfa-validate.dto';
 
 @Controller('mfa')
 @ApiBearerAuth()
-@UseGuards(JwtGuard)
 @ApiTags('Mfa')
+@UseGuards(JwtGuard)
 export class MfaController {
   constructor(private mfaService: MfaService) { }
+
+  @Post('signin/init')
+  @HttpCode(HttpStatus.OK)
+  async initSignIn(@GetUser('id') userId: string) {
+    console.log('mfa/signin/init');
+    return this.mfaService.initSignIn(userId);
+  }
+
+  @Post('signin/validate')
+  @HttpCode(HttpStatus.OK)
+  async validateSignIn(
+    @GetUser('id') userId: string,
+    @Body() dto: MfaValidateDto) {
+    console.log('mfa/signin/validate', userId, { dto });
+    return this.mfaService.validateSignIn(userId, dto);
+  }
 
   @Post('setup/init')
   @HttpCode(HttpStatus.CREATED)
@@ -44,19 +60,5 @@ export class MfaController {
   async disable(@GetUser('id') userId: string) {
     console.log('mfa/disable');
     return this.mfaService.disable(userId);
-  }
-
-  @Post('signin/init')
-  async initSignIn(@GetUser('id') userId: string) {
-    console.log('mfa/signin/init');
-    return this.mfaService.initSignIn(userId);
-  }
-
-  @Post('signin/validate')
-  async validateSignIn(
-    @GetUser('id') userId: string,
-    @Body() dto: MfaValidateDto) {
-    console.log('mfa/signin/validate', { dto });
-    return this.mfaService.validateSignIn(userId, dto);
   }
 }

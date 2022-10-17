@@ -13,11 +13,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 
-/*<div className="api-signin">
-                <h3>Signin with</h3>
-                <input className="fortytwo-button" type="image" alt="" />
-              </div>*/
-
 interface DecodedToken {
   sub: string;
   fullyAuth: boolean;
@@ -47,10 +42,6 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   };
   const goHome = () => {
     navigate("/home");
-  };
-  const goGame = () => {
-    console.log("chat");
-    navigate("/game");
   };
   const goSigninMfa = () => {
     navigate("/mfa-signin");
@@ -82,28 +73,23 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
       setNewUsername("");
       setNewPass("");
       const tokenInfo: DecodedToken = jwt_decode(token); //can throw InvalidTokenError
-      //const t:  = JSON.parse(tokenInfo);
-      console.log(tokenInfo);
-      console.log(tokenInfo.fullyAuth);
-
       if (tokenInfo.fullyAuth) {
         goHome();
       } else {
         goSigninMfa();
       }
     } catch (e) {
-      console.log({ e });
       setErrorMessage("wrong username or password");
     }
   };
 
   function signinFortytwo(/*event: React.MouseEvent<HTMLButtonElement>*/): string {
-    console.log("signinfortytwo");
+    let url = `https://api.intra.42.fr/oauth/authorize
+?client_id=${process.env.REACT_APP_42API_UID}
+&redirect_uri=${encodeURI(process.env.REACT_APP_42API_REDIRECT)}
+&response_type=code
+&state=`;
     let secretState = "";
-    let url =
-      "https://api.intra.42.fr/oauth/authorize?client_id=64540081a9e86e0f3021ae0a3106565238272a37243a4d46071d14a546fda80f&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2F42-redirect&response_type=code&state=";
-    //todo: get data from env
-
     const possible =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     const stringLength = Math.floor(Math.random() * 200 + 200);
@@ -111,7 +97,6 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
     for (let i = 0; i < stringLength; i++) {
       secretState += possible.at(Math.floor(Math.random() * possible.length));
     }
-
     return url + secretState;
   }
 

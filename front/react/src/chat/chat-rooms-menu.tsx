@@ -1,5 +1,11 @@
-import { useRef, useState } from "react";
-import { FaAngleRight, FaBan, FaLock, FaUserAstronaut } from "react-icons/fa";
+import { useState } from "react";
+import {
+  FaAngleRight,
+  FaBan,
+  FaLock,
+  // FaUserAstronaut,
+}
+from "react-icons/fa";
 import { GiAlienStare, GiAstronautHelmet } from "react-icons/gi";
 import { TbMessageCircleOff } from "react-icons/tb";
 import { useChat } from "../context/chat.context";

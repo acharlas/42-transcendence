@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaLock, FaRocket } from "react-icons/fa";
-import mfaService from "./mfa-service";
-import "./mfa.css";
-import "../login/login_style.css";
+
+import { requestMfaSetupFinish } from "../api/mfa-api";
+
 import "../style.css";
+import "../login/login_style.css";
+import "./mfa.css";
 
 export default function MfaSetupValidate() {
   let navigate = useNavigate();
@@ -24,7 +26,7 @@ export default function MfaSetupValidate() {
 
     try {
       setErrorMessage("");
-      await mfaService.requestMfaSetupFinish({ codeToCheck: smsCode });
+      await requestMfaSetupFinish({ codeToCheck: smsCode });
       goSettings();
     } catch (e) {
       console.log({ e });
