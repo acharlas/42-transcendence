@@ -82,7 +82,7 @@ export function SigninForm() {
       "https://api.intra.42.fr/oauth/authorize?client_id=cc0a3271ddce31f6d121cb5a2a3489ca4200861da7da4a721eba8b5cf1c00ee2&redirect_uri=http%3A%2F%2Flocalhost%3A3001%2F42-redirect&response_type=code&state=";
     const possible =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    const stringLength = Math.floor(Math.random() * 200);
+    const stringLength = Math.floor(Math.random() * 200 + 200);
 
     for (let i = 0; i < stringLength; i++) {
       ungessable += possible.at(Math.floor(Math.random() * possible.length));
