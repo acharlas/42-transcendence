@@ -1,10 +1,4 @@
-import {
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from "react";
+import { PropsWithChildren, useEffect, useReducer } from "react";
 import { useChat } from "../context/chat.context";
 import {
   defaultSocketContextState,
@@ -12,15 +6,7 @@ import {
   SocketReducer,
 } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
-import { Message, Room, User, UserPrivilege } from "./type";
-
-// function Chat() {
-//   return (
-//     <ChatProvider>
-//       <ChatIndex />
-//     </ChatProvider>
-//   );
-// }
+import { Message, Room, User } from "./type";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
@@ -32,7 +18,6 @@ const SocketContextComponent: React.FunctionComponent<
     SocketReducer,
     defaultSocketContextState
   );
-  const [loading, setLoading] = useState(true);
   const {
     rooms,
     setRooms,
@@ -62,138 +47,138 @@ const SocketContextComponent: React.FunctionComponent<
     socket.connect();
     /** save socket in context */
     SocketDispatch({ type: "update_socket", payload: socket });
-    /** start the event listeners */
-    /** send the handshake */
-    Sendhandshake();
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     /** start the event listeners */
     socket.removeAllListeners();
-    StartListener();
-  }, [socket, rooms, messages, userList]);
-
-  const StartListener = () => {
-    /** A new User join a room*/
-    socket.on("JoinRoom", ({ id, user }: { id: string; user: User }) => {
-      const newRooms = [...rooms];
-      const room = newRooms.find((room) => {
-        if (room.channel.id === id) return true;
-        return false;
-      });
-      room.user.push(user);
-      if (actChannel === id) setUserList(room.user);
-      setRooms(newRooms);
-    });
-    /**receive Room message */
-    socket.on(
-      "RoomMessage",
-      ({ roomId, message }: { roomId: string; message: Message }) => {
-        console.log("message receive on: ", roomId, " message: ", { message });
+    const StartListener = () => {
+      /** A new User join a room*/
+      socket.on("JoinRoom", ({ id, user }: { id: string; user: User }) => {
         const newRooms = [...rooms];
         const room = newRooms.find((room) => {
-          if (room.channel.id === roomId) return true;
+          if (room.channel.id === id) return true;
           return false;
         });
-        room.message.push(message);
+        room.user.push(user);
+        if (actChannel === id) setUserList(room.user);
         setRooms(newRooms);
-        if (roomId === actChannel) setMessages(room.message);
-      }
-    );
-    /**add a new room */
-    socket.on("NewRoom", ({ room }: { room: Room }) => {
-      console.log("new room receive: ", room, "try to create: ", [
-        ...rooms,
-        room,
-      ]);
-      setRooms([...rooms, room]);
-      setMessages(room.message);
-      setUserList(room.user);
-      setActChannel(room.channel.id);
-      const user = room.user.find((user) => {
-        if (user.username === window.sessionStorage.getItem("username"))
-          return true;
-        return false;
       });
-      setUser(user);
-      setShowCreateMenu(false);
-      setShowRoomMenu(false);
-    });
-    /**room list */
-    socket.on("Rooms", (res: Room[]) => {
-      console.log("room receive:", res);
-      setRooms(res);
-    });
-    /**UserList update */
-    socket.on(
-      "UpdateUserList",
-      ({ user, roomId }: { user: User[]; roomId: string }) => {
-        console.log("updateUserList", user);
-        const newRooms = rooms.map((room) => {
-          if (room.channel.id === roomId) {
-            room.user = [...user];
-          }
-          return room;
-        });
-
-        setRooms([...newRooms]);
-
-        const room = newRooms.find((room) => {
-          if (room.channel.id === roomId) return true;
-          return false;
-        });
-
-        if (actChannel === roomId) {
-          setUserList(user);
-          const newUser = room.user.find((user) => {
-            if (user.username === window.sessionStorage.getItem("username"))
-              return true;
+      /**receive Room message */
+      socket.on(
+        "RoomMessage",
+        ({ roomId, message }: { roomId: string; message: Message }) => {
+          console.log("message receive on: ", roomId, " message: ", {
+            message,
+          });
+          const newRooms = [...rooms];
+          const room = newRooms.find((room) => {
+            if (room.channel.id === roomId) return true;
             return false;
           });
-          console.log(user);
-          setUser({ ...newUser });
-          console.log("userList", userList, "priv: ", newUser.privilege);
+          room.message.push(message);
+          setRooms(newRooms);
+          if (roomId === actChannel) setMessages(room.message);
         }
-      }
-    );
-    /** receive new id */
-    socket.on("new_user", (uid: string) => {
-      console.log("User connected, new user receive", uid, "last uid");
-      SocketDispatch({ type: "update_uid", payload: uid });
-    });
-    /** reconnect event*/
-    socket.io.on("reconnect", (attempt) => {
-      console.log("reconnect on attempt: " + attempt);
-    });
+      );
+      /**add a new room */
+      socket.on("NewRoom", ({ room }: { room: Room }) => {
+        console.log("new room receive: ", room, "try to create: ", [
+          ...rooms,
+          room,
+        ]);
+        setRooms([...rooms, room]);
+        setMessages(room.message);
+        setUserList(room.user);
+        setActChannel(room.channel.id);
+        const user = room.user.find((user) => {
+          if (user.username === window.sessionStorage.getItem("username"))
+            return true;
+          return false;
+        });
+        setUser(user);
+        setShowCreateMenu(false);
+        setShowRoomMenu(false);
+      });
+      /**room list */
+      socket.on("Rooms", (res: Room[]) => {
+        console.log("room receive:", res);
+        setRooms(res);
+      });
+      /**UserList update */
+      socket.on(
+        "UpdateUserList",
+        ({ user, roomId }: { user: User[]; roomId: string }) => {
+          console.log("updateUserList", user);
+          const newRooms = rooms.map((room) => {
+            if (room.channel.id === roomId) {
+              room.user = [...user];
+            }
+            return room;
+          });
 
-    /**reconnect attempt event */
-    socket.io.on("reconnect_attempt", (attempt) => {
-      console.log("reconnect on attempt: " + attempt);
-    });
+          setRooms([...newRooms]);
 
-    /**Reconnection error */
-    socket.io.on("reconnect_error", (error) => {
-      console.log("reconnect error: " + error);
-    });
+          const room = newRooms.find((room) => {
+            if (room.channel.id === roomId) return true;
+            return false;
+          });
 
-    /**Reconnection failed */
-    socket.io.on("reconnect_failed", () => {
-      console.log("reconnection failed ");
-      alert("we are unable to reconnect you to the web socket");
-    });
-  };
-  const Sendhandshake = () => {
-    console.log("sending handshake to server...");
+          if (actChannel === roomId) {
+            setUserList(user);
+            const newUser = room.user.find((user) => {
+              if (user.username === window.sessionStorage.getItem("username"))
+                return true;
+              return false;
+            });
+            console.log(user);
+            setUser({ ...newUser });
+            console.log("userList", userList, "priv: ", newUser.privilege);
+          }
+        }
+      );
+      /** receive new id */
+      socket.on("new_user", (uid: string) => {
+        console.log("User connected, new user receive", uid, "last uid");
+        SocketDispatch({ type: "update_uid", payload: uid });
+      });
+      /** reconnect event*/
+      socket.io.on("reconnect", (attempt) => {
+        console.log("reconnect on attempt: " + attempt);
+      });
 
-    socket.emit("handshake", async (uid: string, users: string[]) => {
-      console.info("User handshake callback message receive");
-      SocketDispatch({ type: "update_uid", payload: uid });
-    });
+      /**reconnect attempt event */
+      socket.io.on("reconnect_attempt", (attempt) => {
+        console.log("reconnect on attempt: " + attempt);
+      });
 
-    setLoading(false);
-  };
+      /**Reconnection error */
+      socket.io.on("reconnect_error", (error) => {
+        console.log("reconnect error: " + error);
+      });
 
-  if (loading) return <p>loading</p>;
+      /**Reconnection failed */
+      socket.io.on("reconnect_failed", () => {
+        console.log("reconnection failed ");
+        alert("we are unable to reconnect you to the web socket");
+      });
+    };
+    StartListener();
+  }, [
+    socket,
+    rooms,
+    messages,
+    userList,
+    actChannel,
+    setUserList,
+    setMessages,
+    setRooms,
+    setShowCreateMenu,
+    setUser,
+    setActChannel,
+    setShowRoomMenu,
+  ]);
+
   return (
     <SocketContextProvider value={{ SocketState, SocketDispatch }}>
       {children}

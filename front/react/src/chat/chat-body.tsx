@@ -23,13 +23,7 @@ function ChatBodyComponent({
       />
     );
   } else if (JoinNewRoom) {
-    return (
-      <JoinNewRoomComponent
-        socket={socket}
-        nextRoom={nextRoom}
-        setNextRoom={setNextRoom}
-      />
-    );
+    return <JoinNewRoomComponent />;
   } else {
     return <CreateRoomsContainer />;
   }

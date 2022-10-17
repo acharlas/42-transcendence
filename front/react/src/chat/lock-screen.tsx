@@ -13,12 +13,12 @@ function LockScreen({
   setNextRoom: Function;
 }) {
   const newPassword = useRef(null);
-  const { roomId } = useChat();
+  const { actChannel } = useChat();
 
   const handleConnectButton = (event) => {
     const pass = newPassword.current.value;
-    console.log("next room:", nextRoom, roomId);
-    socket.emit("JoinRoom", { key: nextRoom, old: roomId, password: pass });
+    console.log("next room:", nextRoom, actChannel);
+    socket.emit("JoinRoom", { key: nextRoom, old: actChannel, password: pass });
     setNextRoom("");
   };
 

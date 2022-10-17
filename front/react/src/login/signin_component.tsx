@@ -48,10 +48,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   const goHome = () => {
     navigate("/home");
   };
-  const goGame = () => {
-    console.log("chat");
-    navigate("/game");
-  };
+
   const goSigninMfa = () => {
     navigate("/mfa-signin");
   };

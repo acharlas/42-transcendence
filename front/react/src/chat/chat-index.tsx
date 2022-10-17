@@ -1,7 +1,6 @@
 import "./chat-style.css";
 import { useNavigate } from "react-router-dom";
-import { FunctionComponent, useContext } from "react";
-import SocketContext from "../context/socket.context";
+import { FunctionComponent } from "react";
 import { useChat } from "../context/chat.context";
 import CreateRoomsContainer from "./chat-create-room";
 import { FaAngleLeft } from "react-icons/fa";
@@ -15,7 +14,6 @@ export interface IChatIndexProps {}
 
 const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
   let navigate = useNavigate();
-  const { socket } = useContext(SocketContext).SocketState;
   const {
     showCreateMenu,
     rooms,

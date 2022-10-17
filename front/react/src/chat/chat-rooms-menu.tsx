@@ -1,13 +1,12 @@
-import { useRef, useState } from "react";
-import { FaAngleRight, FaBan, FaLock, FaUserAstronaut } from "react-icons/fa";
+import { useState } from "react";
+import { FaAngleRight, FaBan, FaLock } from "react-icons/fa";
 import { GiAlienStare, GiAstronautHelmet } from "react-icons/gi";
 import { TbMessageCircleOff } from "react-icons/tb";
 import { useChat } from "../context/chat.context";
 import { ChannelType, User, UserPrivilege } from "./type";
 import { SiStarship } from "react-icons/si";
 
-function RoomsMenuContainer({}) {
-  const {} = useChat();
+function RoomsMenuContainer() {
   const [searchFriend, setSearchFriend] = useState<string>("");
   const [searchChannel, setSearchChannel] = useState<string>("");
   const {
@@ -31,9 +30,6 @@ function RoomsMenuContainer({}) {
     setSelectUser(undefined);
     if (key === actChannel) return;
     setActChannel(key);
-    rooms.map((room) => {
-      console.log("channel id:", room.channel.id);
-    });
     const curRoom = rooms.find((room) => {
       if (room.channel.id === key) return true;
       return false;
@@ -171,6 +167,7 @@ function RoomsMenuContainer({}) {
                               </button>
                             </li>
                           );
+                        return <></>;
                       })}
                     </ul>
                   </>
@@ -179,6 +176,7 @@ function RoomsMenuContainer({}) {
                 )}
               </div>
             );
+          return <></>;
         })}
       </div>
       <div className="room-menu-join-create-container">

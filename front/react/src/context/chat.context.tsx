@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { Channel, Message, Room, User, UserPrivilege } from "../chat/type";
+import { createContext, useContext, useState } from "react";
+import { Message, Room, User, UserPrivilege } from "../chat/type";
 
 export interface IoChatContextState {
   rooms: Room[];

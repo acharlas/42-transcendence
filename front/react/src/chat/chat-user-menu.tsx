@@ -6,7 +6,7 @@ import { GiPrisoner } from "react-icons/gi";
 import { TbMessage, TbMessageOff } from "react-icons/tb";
 import { ImUserMinus } from "react-icons/im";
 import { useChat } from "../context/chat.context";
-import { useContext, useRef } from "react";
+import { useContext } from "react";
 import SocketContext from "../context/socket.context";
 import { UserPrivilege } from "./type";
 

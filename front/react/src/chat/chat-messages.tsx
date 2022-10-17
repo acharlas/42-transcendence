@@ -33,7 +33,7 @@ function MessagesComponent() {
       return;
     }
     if (message[0] != null) {
-      const user = userList.find((user) => {
+      userList.find((user) => {
         if (user.username === window.sessionStorage.getItem("username"))
           return true;
         return false;

@@ -1,5 +1,4 @@
-import { useContext, useReducer, useRef, useState } from "react";
-import ChatContext from "../context/chat.context";
+import { useContext, useRef, useState } from "react";
 import SocketContext from "../context/socket.context";
 
 function CreateRoomsContainer() {

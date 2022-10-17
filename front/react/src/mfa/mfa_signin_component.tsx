@@ -12,27 +12,26 @@ export default function MfaSignin() {
     navigate("/home");
   };
 
-  const [smsCode, setSmsCode] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [smsCode, setSmsCode] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const HandleSmsCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSmsCode(event.target.value);
-  }
+  };
 
   const checkSmsCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
 
     try {
       setErrorMessage("");
-      const token = await mfaService.signinWithMfa({ codeToCheck: smsCode });
-
+      await mfaService.signinWithMfa({ codeToCheck: smsCode });
 
       goHome();
     } catch (e) {
       console.log({ e });
       setErrorMessage("Incorrect code."); //TODO: improve error msg
     }
-  }
+  };
   return (
     <div className="container">
       <div className="screen">
@@ -61,7 +60,10 @@ export default function MfaSignin() {
                 <p className="error-msg">{errorMessage}</p>
               )}
             </div>
-            <button className="button__sms__check__submit" onClick={checkSmsCode}>
+            <button
+              className="button__sms__check__submit"
+              onClick={checkSmsCode}
+            >
               <span className="button__text">Check code</span>
               <FaRocket className="sms__check__code__icon" />
             </button>

@@ -1,6 +1,6 @@
 import React, { createContext } from "react";
 import { Socket } from "socket.io-client";
-import { Room, User } from "../chat/type";
+import { Room } from "../chat/type";
 
 export interface IoSocketContextState {
   socket: Socket | undefined;

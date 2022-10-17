@@ -76,4 +76,6 @@ const fortyTwoSign = async (credentials: fortyTwoLoginDto) => {
   }
 };
 
-export default { signup, signin, fortyTwoSign, getMe };
+const loginService = { signup, signin, fortyTwoSign, getMe };
+
+export default loginService;
