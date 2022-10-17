@@ -30,6 +30,8 @@ const SocketContextComponent: React.FunctionComponent<
     setShowCreateMenu,
     actChannel,
     setUser,
+    setFriendList,
+    setBloquedList,
   } = useChat();
 
   const socket = useSocket("http://localhost:3333/chat", {
@@ -53,6 +55,16 @@ const SocketContextComponent: React.FunctionComponent<
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
+      /**receive a friend list */
+      socket.on("FriendList", (friendList: User[]) => {
+        setFriendList(friendList);
+        console.log("receive friendlist:", { friendList });
+      });
+      /**receive the bloqued user list */
+      socket.on("BloquedList", (bloquedList: User[]) => {
+        setBloquedList(bloquedList);
+        console.log("receive bloquelist: ", { bloquedList });
+      });
       /** A new User join a room*/
       socket.on("JoinRoom", ({ id, user }: { id: string; user: User }) => {
         const newRooms = [...rooms];

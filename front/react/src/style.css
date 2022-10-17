@@ -30,3 +30,13 @@ body {
 #logout {
   margin-left: 200px;
 }
+
+.container {
+  background-image: url("./image/background-login.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}

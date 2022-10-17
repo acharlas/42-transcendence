@@ -10,7 +10,9 @@ import {
 } from '@nestjs/websockets';
 import { UserPrivilege } from '@prisma/client';
 import { Server, Socket, Namespace } from 'socket.io';
+import { BlockService } from 'src/block/block.service';
 import { CreateChannelDto } from 'src/channel/dto';
+import { FriendService } from 'src/friend/friend.service';
 import { ChannelService } from '../channel/channel.service';
 import { SocketWithAuth } from './types_message';
 
@@ -20,7 +22,11 @@ import { SocketWithAuth } from './types_message';
 export class MessageGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(private channelService: ChannelService) {}
+  constructor(
+    private channelService: ChannelService,
+    private friendService: FriendService,
+    private blockService: BlockService,
+  ) {}
 
   @WebSocketServer() io: Namespace;
   server: Server;
@@ -39,6 +45,23 @@ export class MessageGateway
         res.forEach((room) => {
           client.join(room.channel.id);
         });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    this.friendService
+      .getFriendList(client.userID)
+      .then((friendList) => {
+        console.log('send friend list: ', friendList);
+        client.emit('FriendList', friendList);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    this.blockService
+      .getBlockList(client.userID)
+      .then((bloquedList) => {
+        client.emit('BloquedList', bloquedList);
       })
       .catch((err) => {
         console.log(err);

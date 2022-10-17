@@ -20,6 +20,16 @@ export interface IoChatContextState {
   setSelectUser: Function;
   showTimeSelector: UserPrivilege | undefined;
   setShowTimeSelector: Function;
+  showChannel: boolean | undefined;
+  setShowChannel: Function;
+  showFriend: boolean | undefined;
+  setShowFriend: Function;
+  showBloqued: boolean;
+  setShowBloqued: Function;
+  friendList: User[] | undefined;
+  setFriendList: Function;
+  bloquedList: User[] | undefined;
+  setBloquedList: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
@@ -41,6 +51,16 @@ const ChatContext = createContext<IoChatContextState>({
   setSelectUser: () => {},
   showTimeSelector: undefined,
   setShowTimeSelector: () => {},
+  showChannel: false,
+  setShowChannel: () => {},
+  showFriend: false,
+  setShowFriend: () => {},
+  showBloqued: false,
+  setShowBloqued: () => {},
+  friendList: undefined,
+  setFriendList: () => {},
+  bloquedList: undefined,
+  setBloquedList: () => {},
 });
 
 function ChatProvider(props: any) {
@@ -53,6 +73,11 @@ function ChatProvider(props: any) {
   const [showCreateMenu, setShowCreateMenu] = useState<boolean>(false);
   const [selectUser, setSelectUser] = useState<User>();
   const [showTimeSelector, setShowTimeSelector] = useState<UserPrivilege>();
+  const [showChannel, setShowChannel] = useState<boolean>(false);
+  const [showFriend, setShowFriend] = useState<boolean>(false);
+  const [showBloqued, setShowBloqued] = useState<boolean>(false);
+  const [friendList, setFriendList] = useState<User[]>([]);
+  const [bloquedList, setBloquedList] = useState<User[]>([]);
 
   return (
     <ChatContext.Provider
@@ -75,6 +100,16 @@ function ChatProvider(props: any) {
         setShowCreateMenu,
         showTimeSelector,
         setShowTimeSelector,
+        showBloqued,
+        setShowBloqued,
+        showChannel,
+        setShowChannel,
+        showFriend,
+        setShowFriend,
+        friendList,
+        setFriendList,
+        bloquedList,
+        setBloquedList,
       }}
       {...props}
     />

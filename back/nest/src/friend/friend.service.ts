@@ -4,7 +4,7 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { User, UserPrivilege } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { FriendDto } from './dto';
 
@@ -174,6 +174,7 @@ export class FriendService {
   }
 
   async getFriend(userId: string, id: string): Promise<{ myfriend: User[] }> {
+    console.log('getFriend');
     return new Promise<{ myfriend: User[] }>((resolve, reject) => {
       if (userId !== id) {
         return reject(
@@ -198,6 +199,32 @@ export class FriendService {
         })
         .then((ret) => {
           return resolve(ret);
+        });
+    });
+  }
+
+  async getFriendList(
+    userId: string,
+  ): Promise<
+    { username: string; nickname: string; privilege: UserPrivilege }[]
+  > {
+    return new Promise<
+      { username: string; nickname: string; privilege: UserPrivilege }[]
+    >((resolve, reject) => {
+      this.getFriend(userId, userId)
+        .then((ret) => {
+          return resolve(
+            ret.myfriend.map((friend) => {
+              return {
+                username: friend.username,
+                nickname: friend.nickname,
+                privilege: UserPrivilege.default,
+              };
+            }),
+          );
+        })
+        .catch((err) => {
+          return reject(err);
         });
     });
   }

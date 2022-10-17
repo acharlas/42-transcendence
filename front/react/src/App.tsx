@@ -1,3 +1,4 @@
+import "./style.css";
 import ChatIndex from "./chat/chat-index";
 import SocketContextComponent from "./chat/socket-component";
 import ChatProvider from "./context/chat.context";
@@ -5,11 +6,13 @@ import ChatProvider from "./context/chat.context";
 export interface IAppProps {}
 const App: React.FunctionComponent<IAppProps> = (props) => {
   return (
-    <ChatProvider>
-      <SocketContextComponent>
-        <ChatIndex />
-      </SocketContextComponent>
-    </ChatProvider>
+    <div className="container">
+      <ChatProvider>
+        <SocketContextComponent>
+          <ChatIndex />
+        </SocketContextComponent>
+      </ChatProvider>
+    </div>
   );
 };
 export default App;

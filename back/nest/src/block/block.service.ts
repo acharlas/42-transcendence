@@ -4,7 +4,7 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { User, UserPrivilege } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { BlockDto } from './dto';
 
@@ -202,6 +202,32 @@ export class BlockService {
         })
         .then((ret) => {
           return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  async getBlockList(
+    userId: string,
+  ): Promise<
+    { username: string; nickname: string; privilege: UserPrivilege }[]
+  > {
+    return new Promise<
+      { username: string; nickname: string; privilege: UserPrivilege }[]
+    >((resolve, reject) => {
+      this.getBlock(userId, userId)
+        .then((ret) => {
+          return resolve(
+            ret.myblock.map((block) => {
+              return {
+                username: block.username,
+                nickname: block.nickname,
+                privilege: UserPrivilege.default,
+              };
+            }),
+          );
         })
         .catch((err) => {
           return reject(err);

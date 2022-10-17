@@ -35,30 +35,25 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
 
   if (rooms) console.log("rooms at start:", rooms, "userselect: ", selectUser);
   return (
-    <div className="container">
-      <button id="logout" onClick={goSignin}>
-        Signout
-      </button>
-      <div className="chat-container">
-        {selectUser ? <UserMenu /> : <></>}
-        {showRoomMenu ? (
-          <RoomsMenuContainer />
-        ) : (
-          <>
-            <button className="room-button" onClick={handleShowRoomMenu}>
-              <FaAngleLeft />
-            </button>
-          </>
-        )}
-        {actChannel ? (
-          <MessagesComponent />
-        ) : showCreateMenu ? (
-          <CreateRoomsContainer />
-        ) : (
-          <JoinNewRoomComponent />
-        )}
-        {showTimeSelector ? <TimeSelector /> : <></>}
-      </div>
+    <div className="chat-container">
+      {selectUser ? <UserMenu /> : <></>}
+      {showRoomMenu ? (
+        <RoomsMenuContainer />
+      ) : (
+        <>
+          <button className="room-button" onClick={handleShowRoomMenu}>
+            <FaAngleLeft />
+          </button>
+        </>
+      )}
+      {actChannel ? (
+        <MessagesComponent />
+      ) : showCreateMenu ? (
+        <CreateRoomsContainer />
+      ) : (
+        <JoinNewRoomComponent />
+      )}
+      {showTimeSelector ? <TimeSelector /> : <></>}
     </div>
   );
 };
