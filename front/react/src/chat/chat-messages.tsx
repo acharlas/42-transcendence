@@ -1,8 +1,13 @@
 import { useContext, useEffect, useRef } from "react";
 import { useChat } from "../context/chat.context";
 import SocketContext from "../context/socket.context";
+import { HiXCircle } from "react-icons/hi";
+
+import { GiCat } from "react-icons/gi";
 import "./chat-style.css";
 import { User } from "./type";
+import UserMenu from "./chat-user-menu";
+import TimeSelector from "./chat-time-selector";
 
 function MessagesComponent() {
   const newMessageRef = useRef(null);
@@ -17,13 +22,20 @@ function MessagesComponent() {
     setSelectUser,
     selectUser,
     user,
+    setActChannel,
+    showTimeSelector,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
   useEffect(() => {
-    // 👇️ scroll to bottom every time messages change
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, []);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  });
+
+  // bottomRef.current?.scrollIntoView({ behavior: "smooth" });
 
   function handleSendMessage() {
     const message = newMessageRef.current.value;
@@ -74,9 +86,19 @@ function MessagesComponent() {
     }
   };
 
+  const handleCloseChat = (event) => {
+    setActChannel(null);
+  };
+
   if (!actChannel) return <></>;
   return (
-    <div className="room-chat-container">
+    <div className="chat-box-container">
+      <div className="room-chat-option">
+        <button onClick={handleCloseChat} className="chat-box-button">
+          <HiXCircle className="chat-box-button-icon" />
+        </button>
+        {selectUser ? <UserMenu /> : <></>}
+      </div>
       <div className="room-chat-message-container">
         {messages.map((message, index) => {
           const msgUser = userList.find((user) => {
@@ -84,7 +106,7 @@ function MessagesComponent() {
             return false;
           });
           return (
-            <nav key={index} className="room-chat-message-text">
+            <div key={index} className="room-chat-message-text">
               <button
                 className="room-chat-button-user"
                 onClick={() =>
@@ -97,19 +119,19 @@ function MessagesComponent() {
                 {msgUser ? msgUser.nickname : msgUser.nickname} {" :"}
               </button>
               {message.content}
-            </nav>
+            </div>
           );
         })}
-        <div ref={bottomRef}></div>
+        <p ref={bottomRef}></p>
       </div>
-      <div className="room-chat-textbox-container">
-        <textarea
-          className="room-chat-textbox"
-          placeholder="time to talk"
-          ref={newMessageRef}
-          onKeyDown={handleEnter}
-        />
-      </div>
+
+      <textarea
+        className="room-chat-textbox"
+        placeholder="time to talk"
+        ref={newMessageRef}
+        onKeyDown={handleEnter}
+      />
+      {showTimeSelector ? <TimeSelector /> : <></>}
     </div>
   );
 }

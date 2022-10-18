@@ -13,6 +13,7 @@ import { Server, Socket, Namespace } from 'socket.io';
 import { BlockService } from 'src/block/block.service';
 import { CreateChannelDto } from 'src/channel/dto';
 import { FriendService } from 'src/friend/friend.service';
+import { UserService } from 'src/user/user.service';
 import { ChannelService } from '../channel/channel.service';
 import { SocketWithAuth } from './types_message';
 
@@ -26,6 +27,7 @@ export class MessageGateway
     private channelService: ChannelService,
     private friendService: FriendService,
     private blockService: BlockService,
+    private userService: UserService,
   ) {}
 
   @WebSocketServer() io: Namespace;
@@ -240,6 +242,195 @@ export class MessageGateway
     console.log('date');
     return new Promise<void>((resolve, reject) => {
       return resolve();
+    });
+  }
+
+  /*============================================*/
+  /*============================================*/
+  /*addFriend*/
+  @SubscribeMessage('AddFriend')
+  addFriend(
+    @MessageBody('newFriend') friend: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('newFriend', friend);
+    return new Promise<void>((resolve, reject) => {
+      this.userService
+        .getUser(friend)
+        .then((user) => {
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              this.friendService
+                .addFriend(client.userID, { userId: user.id })
+                .then((ret) => {
+                  return resolve(
+                    new Promise<void>((resolve, reject) => {
+                      this.friendService
+                        .getFriendList(client.userID)
+                        .then((friendList) => {
+                          client.emit('FriendList', friendList);
+                          return resolve();
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                          return reject();
+                        });
+                    }),
+                  );
+                })
+                .catch((err) => {
+                  console.log(err);
+                  return reject(err);
+                });
+            }),
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
+  /*============================================*/
+  /*============================================*/
+  /*============================================*/
+  /*addFriend*/
+  @SubscribeMessage('AddBlock')
+  addBlock(
+    @MessageBody('newBlock') Block: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('newBlock', Block);
+    return new Promise<void>((resolve, reject) => {
+      this.userService
+        .getUser(Block)
+        .then((user) => {
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              this.blockService
+                .addBlock(client.userID, { userId: user.id })
+                .then((ret) => {
+                  return resolve(
+                    new Promise<void>((resolve, reject) => {
+                      this.blockService
+                        .getBlockList(client.userID)
+                        .then((bloquedList) => {
+                          client.emit('BloquedList', bloquedList);
+                          return resolve();
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                          return reject();
+                        });
+                    }),
+                  );
+                })
+                .catch((err) => {
+                  console.log(err);
+                  return reject(err);
+                });
+            }),
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
+  /*============================================*/
+  /*============================================*/
+  /*remove Friend*/
+  @SubscribeMessage('RemoveFriend')
+  RemoveFriend(
+    @MessageBody('username') remove: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('remove friend: ', remove);
+    return new Promise<void>((resolve, reject) => {
+      this.userService
+        .getUser(remove)
+        .then((user) => {
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              this.friendService
+                .removeFriend(client.userID, { userId: user.id })
+                .then((ret) => {
+                  return resolve(
+                    new Promise<void>((resolve, reject) => {
+                      this.friendService
+                        .getFriendList(client.userID)
+                        .then((friendList) => {
+                          client.emit('FriendList', friendList);
+                          return resolve();
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                          return reject(err);
+                        });
+                    }),
+                  );
+                })
+                .catch((err) => {
+                  console.log(err);
+                  return reject();
+                });
+            }),
+          );
+        })
+        .then((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
+  /*============================================*/
+  /*============================================*/
+  /*remove block*/
+  @SubscribeMessage('RemoveBlock')
+  RemoveBlock(
+    @MessageBody('username') remove: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('remove block: ', remove);
+    return new Promise<void>((resolve, reject) => {
+      this.userService
+        .getUser(remove)
+        .then((user) => {
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              this.blockService
+                .removeBlock(client.userID, { userId: user.id })
+                .then((ret) => {
+                  return resolve(
+                    new Promise<void>((resolve, reject) => {
+                      this.blockService
+                        .getBlockList(client.userID)
+                        .then((bloquedList) => {
+                          client.emit('BloquedList', bloquedList);
+                          return resolve();
+                        })
+                        .catch((err) => {
+                          console.log(err);
+                          return reject(err);
+                        });
+                    }),
+                  );
+                })
+                .catch((err) => {
+                  console.log(err);
+                  return reject();
+                });
+            }),
+          );
+        })
+        .then((err) => {
+          console.log(err);
+          return reject();
+        });
     });
   }
 

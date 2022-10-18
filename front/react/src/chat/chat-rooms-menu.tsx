@@ -1,14 +1,20 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FaAngleRight, FaBan, FaLock } from "react-icons/fa";
 import { GiAlienStare, GiAstronautHelmet } from "react-icons/gi";
 import { TbMessageCircleOff } from "react-icons/tb";
 import { RiArrowDropDownFill, RiArrowDropUpFill } from "react-icons/ri";
 import { useChat } from "../context/chat.context";
+import { IoIosAddCircle } from "react-icons/io";
+import { MdPersonRemove } from "react-icons/md";
 import { ChannelType, User, UserPrivilege } from "./type";
 import { SiStarship } from "react-icons/si";
+import SocketContext from "../context/socket.context";
 
 function RoomsMenuContainer() {
   const [searchFriend, setSearchFriend] = useState<string>("");
+  const [newFriend, setNewFriend] = useState<string>("");
+  const [newBlock, setNewBlock] = useState<string>("");
+  const { socket } = useContext(SocketContext).SocketState;
   const [searchChannel, setSearchChannel] = useState<string>("");
   const {
     rooms,
@@ -55,7 +61,6 @@ function RoomsMenuContainer() {
     });
     setUser(user);
     console.log("user set to: ", user);
-    setShowRoomMenu(false);
   }
 
   const handleShowRoomMenu = (event) => {
@@ -106,19 +111,42 @@ function RoomsMenuContainer() {
     showBloqued ? setShowBloqued(false) : setShowBloqued(true);
   };
 
+  const handleAddFriend = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    console.log(newFriend);
+    socket.emit("AddFriend", { newFriend });
+  };
+
+  const handleAddBlock = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    console.log(newBlock);
+    socket.emit("AddBlock", { newBlock });
+  };
+
+  const handleChangeNewFriend = (event) => {
+    setNewFriend(event.target.value);
+  };
+
+  const handleChangeNewBlock = (event) => {
+    setNewBlock(event.target.value);
+  };
+
+  const handleRemoveFriend = (username) => {
+    socket.emit("RemoveFriend", { username });
+  };
+
+  const handleRemoveBlock = (username) => {
+    socket.emit("RemoveBlock", { username });
+  };
+
   return (
     <nav className="room-menu">
       <div className="room-menu-search-channel-container">
-        <input
-          value={searchChannel}
-          onChange={handleSearchChannel}
-          placeholder="looking for Channel?"
-          className="room-menu-input-channel"
-        />
         <button className="room-menu-close-button" onClick={handleShowRoomMenu}>
           <FaAngleRight />
         </button>
       </div>
+
       <div>
         <button
           onClick={handleShowFriend}
@@ -133,18 +161,48 @@ function RoomsMenuContainer() {
         </button>
         {showFriend ? (
           <>
-            {friendList.map((friend, id) => {
-              return (
-                <div key={id}>
-                  <button>{friend.nickname}</button>
-                </div>
-              );
-            })}
+            <form>
+              <input
+                value={newFriend}
+                onChange={handleChangeNewFriend}
+                placeholder="add new friend"
+                className="room-menu-input-search-block-friend"
+              />
+              <button
+                onClick={handleAddFriend}
+                className="room-menu-button-add-friend-block"
+              >
+                <IoIosAddCircle />
+              </button>
+            </form>
+            <ul>
+              {friendList.map((friend, id) => {
+                if (!friend.nickname.search(newFriend)) {
+                  return (
+                    <li key={id}>
+                      <button className="room-menu-button-user-block-friend">
+                        {friend.nickname}
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleRemoveFriend(friend.username);
+                        }}
+                        className="room-menu-button-remove-user"
+                      >
+                        <MdPersonRemove />
+                      </button>
+                    </li>
+                  );
+                }
+                return;
+              })}
+            </ul>
           </>
         ) : (
           <></>
         )}
       </div>
+
       <div>
         <button
           onClick={handleShowChannel}
@@ -159,6 +217,12 @@ function RoomsMenuContainer() {
         </button>
         {showChannel ? (
           <div className="room-menu-room-list-container">
+            <input
+              value={searchChannel}
+              onChange={handleSearchChannel}
+              placeholder="looking for channel?"
+              className="room-menu-input-channel"
+            />
             <button
               className="room-menu-button-create-join"
               onClick={handleShowCreateRoom}
@@ -278,13 +342,42 @@ function RoomsMenuContainer() {
         </button>
         {showBloqued ? (
           <>
-            {bloquedList.map((block, id) => {
-              return (
-                <div key={id}>
-                  <button>{block.nickname}</button>
-                </div>
-              );
-            })}
+            <form>
+              <input
+                value={newBlock}
+                onChange={handleChangeNewBlock}
+                placeholder="ignore someone"
+                className="room-menu-input-search-block-friend"
+              />
+              <button
+                onClick={handleAddBlock}
+                className="room-menu-button-add-friend-block"
+              >
+                <IoIosAddCircle />
+              </button>
+            </form>
+            <ul>
+              {bloquedList.map((block, id) => {
+                if (!block.nickname.search(newBlock)) {
+                  return (
+                    <li key={id}>
+                      <button className="room-menu-button-user-block-friend">
+                        {block.nickname}
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleRemoveBlock(block.username);
+                        }}
+                        className="room-menu-button-remove-user"
+                      >
+                        <MdPersonRemove />
+                      </button>
+                    </li>
+                  );
+                }
+                return;
+              })}
+            </ul>
           </>
         ) : (
           <></>

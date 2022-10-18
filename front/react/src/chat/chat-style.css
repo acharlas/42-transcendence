@@ -1,3 +1,4 @@
+/* chat box */
 .chat-container {
   position: absolute;
   right: 0;
@@ -14,27 +15,83 @@
 }
 
 .room-chat-container {
-  height: 500px;
+  height: 100%;
   width: 100%;
 }
 
 .room-chat-message-container {
-  height: 85%;
+  height: 72%;
   overflow-y: scroll;
   word-wrap: break-word;
 }
 
+.room-chat-option {
+  height: 8%;
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
 .room-chat-textbox-container {
+  position: absolute;
+  top: 78%;
   height: 15%;
   width: 100%;
 }
 
 .room-chat-textbox {
-  height: 100%;
+  height: 20%;
   width: 100%;
+  position: absolute;
+  top: 80%;
   resize: none;
+  outline: none;
 }
 
+.chat-box-container {
+  position: absolute;
+  bottom: 0;
+  right: 20%;
+  width: 25%;
+  height: 40%;
+  background: #262d4e;
+}
+
+.chat-message {
+  word-wrap: break-word;
+}
+
+.phrase {
+  color: black;
+}
+
+.chat-box-button {
+  background: #262d4e;
+  color: #fff;
+  height: 100%;
+  border-radius: 50%;
+  border: none;
+  font-weight: 700;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.chat-box-button:active,
+.chat-box-button:focus,
+.chat-box-button:hover {
+  color: #eda33d;
+}
+
+.chat-box-button-icon {
+  height: 90%;
+  width: 90%;
+}
+
+.chat-box-idden-cat {
+  color: #fff;
+}
+/* end chat box */
 /* user menu */
 .user-menu {
   position: absolute;
@@ -204,13 +261,13 @@
     rgba(44, 55, 95, 1) 3%,
     rgba(31, 35, 60, 1) 100%
   );
-  width: 50%;
+  width: 100%;
   height: 100%;
   word-wrap: break-word;
 }
 
 .room-menu-input-channel {
-  width: 90%;
+  width: 100%;
 }
 
 .room-menu-input-friend {
@@ -303,12 +360,13 @@
   font-weight: 700;
   cursor: pointer;
   color: white;
+  text-overflow: ellipsis;
 }
 
 .room-menu-button-user:active,
 .room-menu-button-user:focus,
 .room-menu-button-user:hover {
-  color: #3e455e;
+  color: #eda33d;
 }
 .room-menu-button-user:disabled {
   padding: 0;
@@ -330,6 +388,7 @@
   font-weight: 700;
   align-items: center;
   color: #2c385e;
+  text-overflow: ellipsis;
   box-shadow: 0px 2px 2px #2c385e;
   cursor: pointer;
   transition: 0.2s;
@@ -415,6 +474,7 @@
   font-weight: 700;
   color: #2c385e;
   box-shadow: 0px 2px 2px #2c385e;
+  text-overflow: ellipsis;
   cursor: pointer;
   transition: 0.2s;
 }
@@ -431,12 +491,78 @@
   right: 2%;
 }
 
+.room-menu-input-search-block-friend {
+  width: 80%;
+}
+
+.room-menu-button-add-friend-block {
+  width: 20%;
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid #d4d3e8;
+  text-transform: uppercase;
+  font-weight: 700;
+  align-items: center;
+  color: #2c385e;
+  box-shadow: 0px 2px 2px #2c385e;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.room-menu-button-add-friend-block:active,
+.room-menu-button-add-friend-block:focus,
+.room-menu-button-add-friend-block:hover {
+  border-color: #2c385e;
+  outline: none;
+}
+
+.room-menu-button-user-block-friend {
+  padding: 0;
+  text-align: left;
+  width: 80%;
+  border: 0px;
+  background: transparent;
+  font-weight: 700;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  color: white;
+}
+
+.room-menu-button-user-block-friend:active,
+.room-menu-button-user-block-friend:focus,
+.room-menu-button-user-block-friend:hover {
+  color: #eda33d;
+}
+.room-menu-button-user-block-friend:disabled {
+  padding: 0;
+  text-align: left;
+  width: 100%;
+  border: 0px;
+  background: transparent;
+  font-weight: 700;
+  cursor: pointer;
+  color: #eda33d;
+}
+
+.room-menu-button-remove-user {
+  width: 20%;
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid #d4d3e8;
+  text-transform: uppercase;
+  font-weight: 700;
+  align-items: center;
+  color: #2c385e;
+  box-shadow: 0px 2px 2px #2c385e;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.room-menu-button-remove-user:active,
+.room-menu-button-remove-user:focus,
+.room-menu-button-remove-user:hover {
+  border-color: #2c385e;
+  outline: none;
+}
+
 /* end room-menu */
-
-.chat-message {
-  word-wrap: break-word;
-}
-
-.phrase {
-  color: black;
-}

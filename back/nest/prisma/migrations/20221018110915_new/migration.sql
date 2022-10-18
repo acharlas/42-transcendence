@@ -26,6 +26,8 @@ CREATE TABLE "users" (
     "mmr" INTEGER NOT NULL DEFAULT 1000,
     "userType" "UserType" NOT NULL,
     "fortyTwoId" INTEGER NOT NULL,
+    "mfaEnabled" BOOLEAN NOT NULL DEFAULT false,
+    "mfaPhoneNumber" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );

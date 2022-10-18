@@ -53,67 +53,61 @@ function UserMenu() {
 
   if (user.username === selectUser.username) return <></>;
   return (
-    <nav className="user-menu">
-      <div>
-        <p className="user-menu-username">{selectUser.nickname}</p>
-        <button onClick={handleClose} className="user-menu-button">
-          <HiXCircle className="user-menu-button-icon" />
-        </button>
-        <button className="user-menu-button">
-          <FaUserAstronaut className="user-menu-button-icon" />
-        </button>
-        <button className="user-menu-button">
-          <HiMail className="user-menu-button-icon" />
-        </button>
-        <button className="user-menu-button">
-          <AiFillHeart className="user-menu-button-icon" />
-        </button>
-        <button className="user-menu-button">
-          <ImUserMinus className="user-menu-button-icon" />
-        </button>
-        {user.privilege !== "admin" && user.privilege !== "owner" ? (
-          <></>
-        ) : (
-          <div>
-            {selectUser.privilege === "admin" && user.privilege === "owner" ? (
-              <button onClick={setToDefault} className="user-menu-button">
-                <MdRemoveModerator className="user-menu-button-icon" />
+    <>
+      <button className="chat-box-button">
+        <FaUserAstronaut className="chat-box-button-icon" />
+      </button>
+      <button className="chat-box-button">
+        <HiMail className="chat-box-button-icon" />
+      </button>
+      <button className="chat-box-button">
+        <AiFillHeart className="chat-box-button-icon" />
+      </button>
+      <button className="chat-box-button">
+        <ImUserMinus className="chat-box-button-icon" />
+      </button>
+      {user.privilege !== "admin" && user.privilege !== "owner" ? (
+        <></>
+      ) : (
+        <>
+          {selectUser.privilege === "admin" && user.privilege === "owner" ? (
+            <button onClick={setToDefault} className="chat-box-button">
+              <MdRemoveModerator className="chat-box-button-icon" />
+            </button>
+          ) : (
+            <></>
+          )}
+          {selectUser.privilege !== "owner" &&
+          selectUser.privilege !== "admin" ? (
+            <>
+              <button onClick={AdminUser} className="chat-box-button">
+                <MdAddModerator className="chat-box-button-icon" />
               </button>
-            ) : (
-              <></>
-            )}
-            {selectUser.privilege !== "owner" &&
-            selectUser.privilege !== "admin" ? (
-              <div>
-                <button onClick={AdminUser} className="user-menu-button">
-                  <MdAddModerator className="user-menu-button-icon" />
+              {selectUser.privilege === UserPrivilege.muted ? (
+                <button onClick={setToDefault} className="chat-box-button">
+                  <TbMessage className="chat-box-button-icon" />
                 </button>
-                {selectUser.privilege === UserPrivilege.muted ? (
-                  <button onClick={setToDefault} className="user-menu-button">
-                    <TbMessage className="user-menu-button-icon" />
-                  </button>
-                ) : (
-                  <button onClick={MuteUser} className="user-menu-button">
-                    <TbMessageOff className="user-menu-button-icon" />
-                  </button>
-                )}
-                {selectUser.privilege === UserPrivilege.ban ? (
-                  <button onClick={setToDefault} className="user-menu-button">
-                    <AiFillUnlock className="user-menu-button-icon" />
-                  </button>
-                ) : (
-                  <button onClick={banUser} className="user-menu-button">
-                    <GiPrisoner className="user-menu-button-icon" />
-                  </button>
-                )}
-              </div>
-            ) : (
-              <></>
-            )}
-          </div>
-        )}
-      </div>
-    </nav>
+              ) : (
+                <button onClick={MuteUser} className="chat-box-button">
+                  <TbMessageOff className="chat-box-button-icon" />
+                </button>
+              )}
+              {selectUser.privilege === UserPrivilege.ban ? (
+                <button onClick={setToDefault} className="chat-box-button">
+                  <AiFillUnlock className="chat-box-button-icon" />
+                </button>
+              ) : (
+                <button onClick={banUser} className="chat-box-button">
+                  <GiPrisoner className="chat-box-button-icon" />
+                </button>
+              )}
+            </>
+          ) : (
+            <></>
+          )}
+        </>
+      )}
+    </>
   );
 }
 

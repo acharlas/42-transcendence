@@ -16,6 +16,7 @@ export class FriendService {
     userId: string,
     dto: FriendDto,
   ): Promise<{ myfriend: User[] }> {
+    console.log('add friend', dto.userId);
     return new Promise<{ myfriend: User[] }>((resolve, reject) => {
       if (userId === dto.userId) {
         return reject(

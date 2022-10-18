@@ -6,6 +6,7 @@ import { ChannelService } from '../channel/channel.service';
 import { JwtModule } from '@nestjs/jwt';
 import { FriendService } from 'src/friend/friend.service';
 import { BlockService } from 'src/block/block.service';
+import { UserService } from 'src/user/user.service';
 
 @Module({
   controllers: [MessageController],
@@ -16,6 +17,7 @@ import { BlockService } from 'src/block/block.service';
     ChannelService,
     FriendService,
     BlockService,
+    UserService,
   ],
 })
 export class MessageModule {}
