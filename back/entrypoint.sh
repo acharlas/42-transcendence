@@ -5,5 +5,5 @@ while ! nc -z db 5432; do
 done
 echo "Posgres ready"
 
-exec npm run start:dev:deploy
-# exec $@
+# exec npm run start:dev:deploy
+exec $@
