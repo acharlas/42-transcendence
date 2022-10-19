@@ -7,6 +7,7 @@ import {
   // FaMinus,
   // FaPlus,
   FaPen,
+  FaSms,
 } from "react-icons/fa"
 import {
   BsShieldFillMinus,

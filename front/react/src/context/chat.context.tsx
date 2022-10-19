@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { Channel, Message, Room, User, UserPrivilege } from "../chat/type";
+import { createContext, useContext, useState } from "react";
+import { Message, Room, User, UserPrivilege } from "../chat/type";
 
 export interface IoChatContextState {
   rooms: Room[];
@@ -24,23 +24,23 @@ export interface IoChatContextState {
 
 const ChatContext = createContext<IoChatContextState>({
   rooms: [],
-  setRooms: () => {},
+  setRooms: () => { },
   user: undefined,
-  setUser: () => {},
+  setUser: () => { },
   messages: [],
-  setMessages: () => {},
+  setMessages: () => { },
   userList: [],
-  setUserList: () => {},
+  setUserList: () => { },
   actChannel: "",
-  setActChannel: () => {},
+  setActChannel: () => { },
   showRoomMenu: false,
-  setShowRoomMenu: () => {},
+  setShowRoomMenu: () => { },
   showCreateMenu: false,
-  setShowCreateMenu: () => {},
+  setShowCreateMenu: () => { },
   selectUser: undefined,
-  setSelectUser: () => {},
+  setSelectUser: () => { },
   showTimeSelector: undefined,
-  setShowTimeSelector: () => {},
+  setShowTimeSelector: () => { },
 });
 
 function ChatProvider(props: any) {
