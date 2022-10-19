@@ -23,7 +23,7 @@ import { getUsersMe, patchNickname } from "../api/user-api"
 import { requestMfaDisable } from "../api/mfa-api";
 import { getBlock } from "../api/block-api";
 import { getFriend } from "../api/friend-api";
-
+import { MfaStatus } from "./constants/mfa-status";
 import defaultPicture from "../image/defaultPicture.png"
 import "../style.css"
 import "../profile/profile.css"
@@ -40,20 +40,29 @@ export default function Profile() {
     navigate("/");
   }
 
+  const goValidate = () => {
+    navigate("/settings/mfa-finish-setup");
+  };
+
   // State variables
   const [nickname, setNickname] = useState("");
   const [newNickname, setNewNickname] = useState("");
   const [editingNickname, setEditingNickname] = useState(false);
-  const [mfaEnabled, setMfaEnabled] = useState(false);
   const [blocklist, setBlocklist] = useState([]);
   const [friendlist, setFriendlist] = useState([]);
+  const [mfaStatus, setMfaStatus] = React.useState<MfaStatus>(MfaStatus.Disabled);
+  // Error msgs
+  const [errMsgMfaDisable, setErrMsgMfaDisable] = useState("");
+  const [errMsgMfaInit, setErrMsgMfaInit] = useState("");
+  const [errMsgMfaValidate, setErrMsgMfaValidate] = useState("");
+  const [errMsgMfaEnabled, setErrMsgMfaEnabled] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
       await getUsersMe()
         .then((res) => {
           setNickname(res.data.nickname);
-          setMfaEnabled(res.data.mfaEnabled);
+          setMfaStatus(res.data.mfaEnabled ? MfaStatus.Enabled : MfaStatus.Disabled);
         })
         .catch((e) => {
           console.log("Settings: Error in fetchUserData", e);
@@ -73,6 +82,7 @@ export default function Profile() {
           console.log("Error while fetching blocklist", e);
         })
     };
+
     const fetchFriendlist = async () => {
       await getFriend({ id: window.sessionStorage.getItem("userid") })
         .then((res) => {
@@ -91,68 +101,15 @@ export default function Profile() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // NAMES
-  const editNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    await patchNickname({ nickname: newNickname });
-    //TODO: check status
-    setEditingNickname(false);
-    setNickname(newNickname);
-    setNewNickname("");
-  }
 
-  const startEditingNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    setEditingNickname(true);
-  }
-
-  const stopEditingNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    setEditingNickname(false);
-    setNewNickname("");
-  }
-
-  const handleNewNicknameChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewNickname(event.target.value);
-  }
-
-  // MFA
-  const enableMfa = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    goSetupMfa();
-  }
-
-  const disableMfa = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    try {
-      const response = await requestMfaDisable();
-      if (response.status === 204) {
-        setMfaEnabled(false);
-      } else {
-        //TODO
-      }
-    }
-    catch (e) {
-      console.log("Settings: error in disableMfa", e);
-      //TODO
-    }
-  }
-
-  function enableMfaButton() {
+  function displayError(msg: string) {
     return (
-      <button className="settings__button__texticon" onClick={enableMfa}>
-        enable
-        <BsShieldFillPlus className="settings__icon" />
-      </button>
-    )
-  }
-  function disableMfaButton() {
-    return (
-      <button className="settings__button__texticon" onClick={disableMfa}>
-        disable
-        <BsShieldFillMinus className="settings__icon" />
-      </button>
-    )
+      <p className="error-msg">{msg}</p>
+    );
   }
 
+
+  //AVATAR
 
   function avatarSettings() {
     return (
@@ -185,6 +142,32 @@ export default function Profile() {
         </div>
       </div>
     )
+  }
+
+
+
+  // NICKNAME
+
+  const editNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    await patchNickname({ nickname: newNickname });
+    //TODO: check status
+    setEditingNickname(false);
+    setNickname(newNickname);
+    setNewNickname("");
+  }
+
+  const startEditingNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    setEditingNickname(true);
+  }
+
+  const stopEditingNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    setEditingNickname(false);
+    setNewNickname("");
+  }
+
+  const handleNewNicknameChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewNickname(event.target.value);
   }
 
   function nicknameSettings() {
@@ -229,6 +212,93 @@ export default function Profile() {
     )
   }
 
+
+
+  // MFA
+
+  const enableMfa = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    goSetupMfa();
+  }
+
+  const disableMfa = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    try {
+      const response = await requestMfaDisable();
+      if (response.status === 204) {
+        setMfaStatus(MfaStatus.Disabled);
+      } else {
+        console.log("Settings: error in disableMfa", response);
+        setErrMsgMfaDisable("Disabling mfa failed.")
+        //TODO
+      }
+    }
+    catch (e) {
+      console.log("Settings: error in disableMfa", e);
+      setErrMsgMfaDisable("Disabling mfa failed.")
+      //TODO
+    }
+  }
+
+  function enableMfaButton() {
+    return (
+      <button className="settings__button__texticon" onClick={enableMfa}>
+        enable
+        <BsShieldFillPlus className="settings__icon" />
+      </button>
+    )
+  }
+  function disableMfaButton() {
+    return (
+      <button className="settings__button__texticon" onClick={disableMfa}>
+        disable
+        <BsShieldFillMinus className="settings__icon" />
+      </button>
+    )
+  }
+
+
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const HandlePhoneNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPhoneNumber(event.target.value);
+  };
+
+  const sendMfaInitRequest = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    try {
+      await requestMfaSetupInit({ phoneNumber: phoneNumber });
+      goValidate();
+    }
+    catch (e) {
+      console.log({ e });
+      setErrorMessage("Request failed."); //TODO: improve error msg
+    }
+  }
+
+  function mfaSettingsInit() {
+    return (
+      <div className="login">
+        <div className="login__field">
+          <input
+            className="login__input"
+            placeholder="Phone number (international format)"
+            value={phoneNumber}
+            onChange={HandlePhoneNumberChange}
+          />
+          <button
+            className="button login__submit"
+            onClick={sendMfaInitRequest}
+          >
+            <span className="button__text">Send SMS</span>
+            <FaSms className="login__icon" />
+          </button>
+        </div>
+        {displayError(errMsgMfaInit)}
+      </div >);
+  }
+
   function mfaSettings() {
     return (
       <div>
@@ -239,7 +309,7 @@ export default function Profile() {
         </div>
         <div className="profile__panel__bottom">
           <div className="settings__line">
-            {mfaEnabled
+            {mfaStatus === MfaStatus.Enabled
               ?
               <div className="settings__line__elem">
                 2FA is enabled
@@ -249,12 +319,16 @@ export default function Profile() {
                 2FA is disabled
               </div>
             }
-            {mfaEnabled ? disableMfaButton() : enableMfaButton()}
+            {mfaStatus === MfaStatus.Enabled ? disableMfaButton() : enableMfaButton()}
           </div>
         </div>
       </div>
     );
   }
+
+
+
+  // FRIENDS
 
   function friendSettings() {
     return (
