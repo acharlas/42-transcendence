@@ -155,12 +155,13 @@
   height: inherit;
 }
 .create-join-menu-title {
-  padding-top: 33%;
+  padding-top: 23%;
   color: white;
   text-align: left;
   font-weight: 800;
   margin-left: 15%;
-  height: 80%;
+  height: 72%;
+  overflow-y: scroll;
 }
 
 .create-join-menu-input {
@@ -380,7 +381,7 @@
 }
 
 .room-menu-button-join-room {
-  width: 100%;
+  width: 90%;
   background: #fff;
   border-radius: 2px;
   border: 1px solid #d4d3e8;

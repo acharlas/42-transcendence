@@ -5,10 +5,12 @@ import { TbMessageCircleOff } from "react-icons/tb";
 import { RiArrowDropDownFill, RiArrowDropUpFill } from "react-icons/ri";
 import { useChat } from "../context/chat.context";
 import { IoIosAddCircle } from "react-icons/io";
+import { CiSettings } from "react-icons/ci";
 import { MdPersonRemove } from "react-icons/md";
-import { ChannelType, User, UserPrivilege } from "./type";
+import { ChannelType, Room, User, UserPrivilege } from "./type";
 import { SiStarship } from "react-icons/si";
 import SocketContext from "../context/socket.context";
+import { HiXCircle } from "react-icons/hi";
 
 function RoomsMenuContainer() {
   const [searchFriend, setSearchFriend] = useState<string>("");
@@ -38,11 +40,16 @@ function RoomsMenuContainer() {
     setShowFriend,
     friendList,
     bloquedList,
+    setShowJoinMenu,
+    showJoinMenu,
+    setShowRoomSetting,
   } = useChat();
 
   function handleJoinRoom(key: string) {
     console.log("try to join:", key);
     setSelectUser(undefined);
+    setShowJoinMenu(false);
+    setShowRoomSetting(null);
     if (key === actChannel) return;
     setActChannel(key);
     const curRoom = rooms.find((room) => {
@@ -70,6 +77,8 @@ function RoomsMenuContainer() {
   const handleShowCreateRoom = (event) => {
     setActChannel(null);
     setShowRoomMenu(false);
+    setShowRoomSetting(null);
+    setShowJoinMenu(false);
     setShowCreateMenu(true);
     setSelectUser(undefined);
     setMessages([]);
@@ -81,6 +90,8 @@ function RoomsMenuContainer() {
     setShowRoomMenu(false);
     setShowCreateMenu(false);
     setSelectUser(undefined);
+    setShowRoomSetting(null);
+    setShowJoinMenu(true);
     setMessages([]);
     setUserList([]);
   };
@@ -101,6 +112,17 @@ function RoomsMenuContainer() {
 
   const handleShowChannel = (event) => {
     showChannel ? setShowChannel(false) : setShowChannel(true);
+  };
+
+  const handleShowRoomSetting = (room: Room) => {
+    setActChannel(null);
+    setShowRoomMenu(false);
+    setShowCreateMenu(false);
+    setSelectUser(undefined);
+    setShowJoinMenu(false);
+    setShowRoomSetting(room);
+    setMessages([]);
+    setUserList([]);
   };
 
   const handleShowFriend = (event) => {
@@ -138,6 +160,8 @@ function RoomsMenuContainer() {
   const handleRemoveBlock = (username) => {
     socket.emit("RemoveBlock", { username });
   };
+
+  const handleLeaveChannel = (event) => {};
 
   return (
     <nav className="room-menu">
@@ -233,12 +257,16 @@ function RoomsMenuContainer() {
             <button
               className="room-menu-button-create-join"
               onClick={handleJoinNewRoom}
-              disabled={actChannel === null && showCreateMenu === false}
+              disabled={actChannel === null && showJoinMenu === true}
             >
               join
             </button>
             {rooms.map((room, id) => {
               const channel = room.channel;
+              const chanUser = room.user.find((chanUser) => {
+                if (chanUser.username === user.username) return true;
+                return false;
+              });
               if (!room.channel.name.search(searchChannel))
                 return (
                   <div key={id}>
@@ -251,6 +279,20 @@ function RoomsMenuContainer() {
                       {channel.type === ChannelType.protected ? <FaLock /> : ""}
                       {channel.name}
                     </button>
+                    {chanUser.privilege === UserPrivilege.owner ? (
+                      <button
+                        onClick={() => {
+                          handleShowRoomSetting(room);
+                        }}
+                      >
+                        <CiSettings />
+                      </button>
+                    ) : (
+                      <button onClick={handleLeaveChannel}>
+                        <HiXCircle />
+                      </button>
+                    )}
+
                     {room.channel.id === actChannel ? (
                       <>
                         <input

@@ -30,6 +30,10 @@ export interface IoChatContextState {
   setFriendList: Function;
   bloquedList: User[] | undefined;
   setBloquedList: Function;
+  showJoinMenu: boolean;
+  setShowJoinMenu: Function;
+  ShowRoomSetting: Room | undefined;
+  setShowRoomSetting: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
@@ -61,23 +65,29 @@ const ChatContext = createContext<IoChatContextState>({
   setFriendList: () => {},
   bloquedList: undefined,
   setBloquedList: () => {},
+  showJoinMenu: false,
+  setShowJoinMenu: () => {},
+  ShowRoomSetting: undefined,
+  setShowRoomSetting: () => {},
 });
 
 function ChatProvider(props: any) {
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [userList, setUserList] = useState<User[]>([]);
   const [actChannel, setActChannel] = useState<string>("");
   const [showRoomMenu, setShowRoomMenu] = useState<boolean>(false);
   const [showCreateMenu, setShowCreateMenu] = useState<boolean>(false);
   const [selectUser, setSelectUser] = useState<User>();
-  const [showTimeSelector, setShowTimeSelector] = useState<UserPrivilege>();
+  const [showTimeSelector, setShowTimeSelector] = useState<UserPrivilege>(null);
   const [showChannel, setShowChannel] = useState<boolean>(false);
   const [showFriend, setShowFriend] = useState<boolean>(false);
   const [showBloqued, setShowBloqued] = useState<boolean>(false);
   const [friendList, setFriendList] = useState<User[]>([]);
   const [bloquedList, setBloquedList] = useState<User[]>([]);
+  const [showJoinMenu, setShowJoinMenu] = useState<boolean>(false);
+  const [ShowRoomSetting, setShowRoomSetting] = useState<Room>(null);
 
   return (
     <ChatContext.Provider
@@ -110,6 +120,10 @@ function ChatProvider(props: any) {
         setFriendList,
         bloquedList,
         setBloquedList,
+        showJoinMenu,
+        setShowJoinMenu,
+        ShowRoomSetting,
+        setShowRoomSetting,
       }}
       {...props}
     />

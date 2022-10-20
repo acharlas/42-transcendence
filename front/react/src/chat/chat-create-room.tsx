@@ -1,4 +1,6 @@
 import { useContext, useRef, useState } from "react";
+import { HiXCircle } from "react-icons/hi";
+import { useChat } from "../context/chat.context";
 import SocketContext from "../context/socket.context";
 
 function CreateRoomsContainer() {
@@ -6,6 +8,7 @@ function CreateRoomsContainer() {
   const newPassword = useRef(null);
   const [type, setType] = useState<string>("public");
   const { socket } = useContext(SocketContext).SocketState;
+  const { setShowCreateMenu } = useChat();
 
   function handleCreateRoom() {
     console.log("socket", socket);
@@ -29,11 +32,21 @@ function CreateRoomsContainer() {
   const handleChangeSelect = (event) => {
     console.log(event.target.value);
     setType(event.target.value);
-    if (event.target.value !== "protected") newPassword.current.value = "";
+    if (event.target.value !== "protected" && newPassword.current)
+      newPassword.current.value = "";
+  };
+
+  const handleCloseMenu = (event) => {
+    setShowCreateMenu(false);
   };
 
   return (
-    <div className="create-join-menu-contaner">
+    <div className="chat-box-container">
+      <div className="room-chat-option">
+        <button onClick={handleCloseMenu} className="chat-box-button">
+          <HiXCircle className="chat-box-button-icon" />
+        </button>
+      </div>
       <form className="create-join-menu-title">
         Room Name:
         <input

@@ -1,10 +1,13 @@
 import { useContext, useRef } from "react";
+import { HiXCircle } from "react-icons/hi";
+import { useChat } from "../context/chat.context";
 import SocketContext from "../context/socket.context";
 
 function JoinNewRoomComponent() {
   const newRoomRef = useRef(null);
   const newPassRef = useRef(null);
   const { socket } = useContext(SocketContext).SocketState;
+  const { setShowJoinMenu } = useChat();
 
   const handleJoinRoom = (event) => {
     const name = newRoomRef.current.value || "";
@@ -18,8 +21,17 @@ function JoinNewRoomComponent() {
     if (newRoomRef.current) newRoomRef.current.value = "";
   };
 
+  const handleCloseMenu = (event) => {
+    setShowJoinMenu(false);
+  };
+
   return (
-    <div className="create-join-menu-contaner">
+    <div className="chat-box-container">
+      <div className="room-chat-option">
+        <button onClick={handleCloseMenu} className="chat-box-button">
+          <HiXCircle className="chat-box-button-icon" />
+        </button>
+      </div>
       <form className="create-join-menu-title">
         Join Name:
         <input

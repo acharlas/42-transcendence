@@ -199,7 +199,11 @@ export class ChannelService {
     });
   }
 
-  async editChannel(userId: string, channelId: string, dto: EditChannelDto) {
+  async editChannel(
+    userId: string,
+    channelId: string,
+    dto: EditChannelDto,
+  ): Promise<Channel> {
     let hash = null;
     if (dto.type === ChannelType.protected) {
       if (dto.password === undefined || dto.password === null) {
@@ -856,6 +860,24 @@ export class ChannelService {
               }),
             );
           }
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  async RemoveUser(userId: string, channelId: string): Promise<Channel> {
+    return new Promise<Channel>((resolve, reject) => {
+      this.prisma.channelUser
+        .delete({
+          where: { userId_channelId: { userId, channelId } },
+          select: {
+            channel: true,
+          },
+        })
+        .then((chan) => {
+          return resolve(chan.channel);
         })
         .catch((err) => {
           return reject(err);

@@ -6,7 +6,7 @@ import {
   SocketReducer,
 } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
-import { Message, Room, User } from "./type";
+import { Channel, Message, Room, User } from "./type";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
@@ -55,6 +55,20 @@ const SocketContextComponent: React.FunctionComponent<
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
+      /**update an existing channel */
+      socket.on("UpdateRoom", (updateChan: Channel) => {
+        console.log("update channel: ", { updateChan });
+        const newRoom = rooms.map((room) => {
+          if (room.channel.id === updateChan.id)
+            return {
+              channel: updateChan,
+              user: room.user,
+              messages: room.message,
+            };
+          return room;
+        });
+        setRooms(newRoom);
+      });
       /**receive a friend list */
       socket.on("FriendList", (friendList: User[]) => {
         setFriendList(friendList);
@@ -149,6 +163,8 @@ const SocketContextComponent: React.FunctionComponent<
           }
         }
       );
+      /**remove a user */
+      //socket.on("RemoveUser", { userId: string, roomId: string });
       /** receive new id */
       socket.on("new_user", (uid: string) => {
         console.log("User connected, new user receive", uid, "last uid");

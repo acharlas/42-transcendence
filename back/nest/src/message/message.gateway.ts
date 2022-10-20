@@ -8,10 +8,10 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { UserPrivilege } from '@prisma/client';
+import { ChannelType, UserPrivilege } from '@prisma/client';
 import { Server, Socket, Namespace } from 'socket.io';
 import { BlockService } from 'src/block/block.service';
-import { CreateChannelDto } from 'src/channel/dto';
+import { CreateChannelDto, EditChannelDto } from 'src/channel/dto';
 import { FriendService } from 'src/friend/friend.service';
 import { UserService } from 'src/user/user.service';
 import { ChannelService } from '../channel/channel.service';
@@ -431,6 +431,57 @@ export class MessageGateway
           console.log(err);
           return reject();
         });
+    });
+  }
+
+  /*============================================*/
+  /*============================================*/
+  /*remove block*/
+  @SubscribeMessage('UpdateRoom')
+  UpdateRoom(
+    @MessageBody('roomId') roomId: string,
+    @MessageBody('updateChannelDto') dto: EditChannelDto,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('update channel: ', roomId, 'with: ', { dto });
+    return new Promise<void>((resolve, reject) => {
+      this.channelService
+        .editChannel(client.userID, roomId, dto)
+        .then((channel) => {
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              const updateChan = {
+                id: channel.id,
+                name: channel.name,
+                type: channel.type,
+              };
+              console.log('sending update room');
+              client.broadcast.emit('UpdateRoom', updateChan);
+              client.emit('UpdateRoom', updateChan);
+              return resolve();
+            }),
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
+  /*============================================*/
+  /*============================================*/
+  /*remove block*/
+  @SubscribeMessage('RemoveUser')
+  RemoveUser(
+    @MessageBody('roomId') roomId: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('remove user from: ', roomId);
+    return new Promise<void>((resolve, reject) => {
+      this.channelService.RemoveUser(client.userID, roomId).then((chan) => {
+        //client.broadcast()
+      });
     });
   }
 

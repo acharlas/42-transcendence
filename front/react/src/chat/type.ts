@@ -4,10 +4,10 @@ export interface Message {
 }
 
 export enum ChannelType {
-  public,
-  private,
-  protected,
-  dm,
+  public = "public",
+  private = "private",
+  protected = "protected",
+  dm = "dm",
 }
 
 export enum UserPrivilege {

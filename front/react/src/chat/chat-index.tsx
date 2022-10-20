@@ -5,22 +5,21 @@ import { useChat } from "../context/chat.context";
 
 import RoomsMenuContainer from "./chat-rooms-menu";
 import MessagesComponent from "./chat-messages";
+import CreateRoomsContainer from "./chat-create-room";
+import JoinNewRoomComponent from "./chat-join-new-room";
+import ChatOptionComponent from "./chat-option";
 
 export interface IChatIndexProps {}
 
 const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
-  let navigate = useNavigate();
-  const { rooms, showRoomMenu, setShowRoomMenu, selectUser, actChannel } =
-    useChat();
-
-  const goSignin = () => {
-    window.sessionStorage.clear();
-    navigate("/");
-  };
-
-  const handleShowRoomMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    showRoomMenu ? setShowRoomMenu(false) : setShowRoomMenu(true);
-  };
+  const {
+    rooms,
+    selectUser,
+    actChannel,
+    showCreateMenu,
+    showJoinMenu,
+    ShowRoomSetting,
+  } = useChat();
 
   if (rooms) console.log("rooms at start:", rooms, "userselect: ", selectUser);
   return (
@@ -36,29 +35,12 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
         ) : (
           <></>
         )}
+        {showCreateMenu ? <CreateRoomsContainer /> : <></>}
+        {showJoinMenu ? <JoinNewRoomComponent /> : <></>}
+        {ShowRoomSetting ? <ChatOptionComponent /> : <></>}
       </div>
     </>
   );
 };
-/**
- *       {selectUser ? <UserMenu /> : <></>}
-      {showRoomMenu ? (
-        <RoomsMenuContainer />
-      ) : (
-        <>
-          <button className="room-button" onClick={handleShowRoomMenu}>
-            <FaAngleLeft />
-          </button>
-        </>
-      )}
-      {actChannel ? (
-        <MessagesComponent />
-      ) : showCreateMenu ? (
-        <CreateRoomsContainer />
-      ) : (
-        <JoinNewRoomComponent />
-      )}
-      {showTimeSelector ? <TimeSelector /> : <></>}
- */
 
 export default ChatIndex;
