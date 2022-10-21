@@ -1,8 +1,6 @@
-import React from "react";
-import { useState } from "react";
-import loginService from "./login-service";
-import "./login_style.css";
-import "../style.css";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 import {
   FaUserAstronaut,
   FaRocket,
@@ -10,8 +8,10 @@ import {
   FaLock,
   FaEye,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import jwt_decode from "jwt-decode";
+
+import loginService from "./login-service";
+import "./login_style.css";
+import "../style.css";
 
 interface DecodedToken {
   sub: string;
@@ -20,7 +20,7 @@ interface DecodedToken {
   exp: string;
 }
 
-export interface ISigninFormProps {}
+export interface ISigninFormProps { }
 
 const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   const [newUsername, setNewUsername] = useState("");

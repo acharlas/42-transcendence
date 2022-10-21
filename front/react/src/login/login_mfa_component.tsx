@@ -2,12 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaLock, FaRocket } from "react-icons/fa";
 
-import { signinWithMfa } from "../login/login-service";
+import { signinWithMfa } from "./login-service";
 import { requestMfaSigninInit } from "../api/mfa-api";
-
+import "./login_style.css";
 import "../style.css";
-import "../login/login_style.css";
-import "./mfa.css";
 
 export default function MfaSignin() {
   let navigate = useNavigate();
@@ -45,7 +43,7 @@ export default function MfaSignin() {
       <div className="screen">
         <div className="screen__content">
           <form className="login">
-            <button className="button__sms__check__submit" onClick={sendSmsCode}>
+            <button className="login__submit" onClick={sendSmsCode}>
               <span className="button__text">Send code</span>
               <FaRocket className="sms__check__code__icon" />
             </button>
