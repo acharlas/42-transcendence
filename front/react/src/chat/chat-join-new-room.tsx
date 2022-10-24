@@ -13,6 +13,7 @@ function JoinNewRoomComponent() {
     const name = newRoomRef.current.value || "";
     const pass = newPassRef.current.value || "";
 
+    console.log("joining room: ", name);
     socket.emit("JoinRoom", {
       name: name,
       password: pass,

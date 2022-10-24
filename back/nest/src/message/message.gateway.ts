@@ -175,10 +175,17 @@ export class MessageGateway
     @MessageBody('roomId') roomId: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
+    console.log('leave room: ', roomId);
     return new Promise<void>((resolve, reject) => {
       this.channelService
         .leaveChannel(client.userID, roomId)
         .then((ret) => {
+          client.emit('RemoveRoom', ret.channelId);
+          client.broadcast.to(roomId).emit('RemoveUser', {
+            username: ret.user.username,
+            roomId: ret.channelId,
+          });
+          client.leave(roomId);
           return resolve();
         })
         .catch((err) => {
@@ -199,6 +206,7 @@ export class MessageGateway
   ): Promise<void> {
     console.log('date: ', time, 'Privilege: ', privilege);
     return new Promise<void>((resolve, reject) => {
+      console.log('update user: ', toModifie, 'with pricilege: ', privilege);
       this.channelService
         .channelUserUpdate(client.userID, toModifie, roomId, privilege, time)
         .then((ret) => {
@@ -468,22 +476,4 @@ export class MessageGateway
         });
     });
   }
-
-  /*============================================*/
-  /*============================================*/
-  /*remove block*/
-  @SubscribeMessage('RemoveUser')
-  RemoveUser(
-    @MessageBody('roomId') roomId: string,
-    @ConnectedSocket() client: SocketWithAuth,
-  ): Promise<void> {
-    console.log('remove user from: ', roomId);
-    return new Promise<void>((resolve, reject) => {
-      this.channelService.RemoveUser(client.userID, roomId).then((chan) => {
-        //client.broadcast()
-      });
-    });
-  }
-
-  /*============================================*/
 }

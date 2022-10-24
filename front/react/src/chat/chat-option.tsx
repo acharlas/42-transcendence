@@ -2,7 +2,8 @@ import { FunctionComponent, useContext, useRef, useState } from "react";
 import { HiXCircle } from "react-icons/hi";
 import { useChat } from "../context/chat.context";
 import SocketContext from "../context/socket.context";
-import { Channel, ChannelType, Room } from "./type";
+import ChatOwnerPopupComponent from "./chat-owner-leaving";
+import { Channel, ChannelType, Room, UserStatus } from "./type";
 
 export interface IChatOptionProps {}
 
@@ -19,6 +20,7 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
   const { setShowRoomSetting, ShowRoomSetting } = useChat();
   const [errMsg, seterrMsg] = useState<string>("");
   const newRoomRef = useRef(null);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
 
   function handleUpdateRoom() {
     const roomName = newRoomRef.current.value || "";
@@ -76,9 +78,28 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
     setShowRoomSetting(false);
   };
 
+  const handleLeaveRoom = (event) => {
+    const u = ShowRoomSetting.user.filter((user) => {
+      if (user.status === UserStatus.disconnected) return false;
+      return true;
+    });
+    console.log(u);
+    if (u.length === 1) {
+      socket.emit("LeaveRoom", { roomId: ShowRoomSetting.channel.id });
+      setShowRoomSetting(null);
+      return;
+    }
+    setShowPopup(true);
+  };
+
   return (
     <>
       <div className="chat-box-container">
+        {showPopup ? (
+          <ChatOwnerPopupComponent setShowPopup={setShowPopup} />
+        ) : (
+          <></>
+        )}
         <div className="room-chat-option">
           <button onClick={handleCloseMenu} className="chat-box-button">
             <HiXCircle className="chat-box-button-icon" />
@@ -118,8 +139,11 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
             <></>
           )}
         </form>
-        <button className="create-join-menu-button" onClick={handleUpdateRoom}>
-          updateRoom
+        <button className="option-menu-button" onClick={handleUpdateRoom}>
+          {"update Room"}
+        </button>
+        <button className="option-menu-button" onClick={handleLeaveRoom}>
+          {"Leave Room"}
         </button>
       </div>
     </>

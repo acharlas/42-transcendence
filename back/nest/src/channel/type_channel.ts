@@ -1,4 +1,9 @@
-import { Channel, ChannelType, UserPrivilege } from '@prisma/client';
+import {
+  Channel,
+  ChannelType,
+  UserPrivilege,
+  UserStatus,
+} from '@prisma/client';
 
 type UserNickname = {
   users: {
@@ -24,6 +29,7 @@ export type User = {
   username: string;
   nickname: string;
   privilege: UserPrivilege;
+  status: UserStatus;
 };
 
 export type Room = {

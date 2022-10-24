@@ -3,6 +3,11 @@ export interface Message {
   username: string;
 }
 
+export enum UserStatus {
+  connected = "connected",
+  disconnected = "disconnected",
+}
+
 export enum ChannelType {
   public = "public",
   private = "private",
@@ -34,4 +39,5 @@ export interface User {
   username: string;
   nickname: string;
   privilege: UserPrivilege;
+  status: UserStatus;
 }

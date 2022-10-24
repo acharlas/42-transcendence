@@ -6,7 +6,14 @@ import {
   SocketReducer,
 } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
-import { Channel, Message, Room, User } from "./type";
+import {
+  Channel,
+  Message,
+  Room,
+  User,
+  UserPrivilege,
+  UserStatus,
+} from "./type";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
@@ -32,6 +39,9 @@ const SocketContextComponent: React.FunctionComponent<
     setUser,
     setFriendList,
     setBloquedList,
+    setShowJoinMenu,
+    setSelectUser,
+    setShowRoomSetting,
   } = useChat();
 
   const socket = useSocket("http://localhost:3333/chat", {
@@ -55,6 +65,19 @@ const SocketContextComponent: React.FunctionComponent<
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
+      /**remove a room */
+      socket.on("RemoveRoom", (channelId) => {
+        console.log("remove room: ", channelId);
+        const newRooms = rooms.filter((room) => {
+          if (room.channel.id === channelId) return false;
+          return true;
+        });
+        setRooms(newRooms);
+        if (actChannel === channelId) {
+          setActChannel(null);
+          setUserList(null);
+        }
+      });
       /**update an existing channel */
       socket.on("UpdateRoom", (updateChan: Channel) => {
         console.log("update channel: ", { updateChan });
@@ -125,6 +148,9 @@ const SocketContextComponent: React.FunctionComponent<
         setUser(user);
         setShowCreateMenu(false);
         setShowRoomMenu(false);
+        setSelectUser(null);
+        setShowJoinMenu(false);
+        setShowRoomSetting(null);
       });
       /**room list */
       socket.on("Rooms", (res: Room[]) => {
@@ -163,8 +189,32 @@ const SocketContextComponent: React.FunctionComponent<
           }
         }
       );
-      /**remove a user */
-      //socket.on("RemoveUser", { userId: string, roomId: string });
+      /**set a user disconected */
+      socket.on(
+        "RemoveUser",
+        ({ username, roomId }: { username: string; roomId: string }) => {
+          console.log("user: ", username, "disconnect from: ", roomId);
+          const newRooms = rooms.map((room) => {
+            if (room.channel.id === roomId)
+              return {
+                channel: room.channel,
+                message: room.message,
+                user: room.user.map((user) => {
+                  if (user.username === username)
+                    return {
+                      username: user.username,
+                      nickname: user.nickname,
+                      privilege: user.privilege,
+                      status: UserStatus.disconnected,
+                    };
+                  return user;
+                }),
+              };
+            return room;
+          });
+          setRooms(newRooms);
+        }
+      );
       /** receive new id */
       socket.on("new_user", (uid: string) => {
         console.log("User connected, new user receive", uid, "last uid");

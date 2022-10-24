@@ -41,8 +41,8 @@ const TimeSelector: FunctionComponent<ItimeSelectorProps> = (props) => {
   };
 
   return (
-    <div className="time-selector-container">
-      <div className="time-selector-popup">
+    <div className="popup-container">
+      <div className="popup-popup">
         <p className="time-selector-popup-title">ban until:</p>
         {errorMsg.length !== 0 ? (
           <p className="time-selector-popup-error">{errorMsg}</p>

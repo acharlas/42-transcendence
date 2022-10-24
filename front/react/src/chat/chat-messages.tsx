@@ -24,6 +24,7 @@ function MessagesComponent() {
     user,
     setActChannel,
     showTimeSelector,
+    bloquedList,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -105,22 +106,29 @@ function MessagesComponent() {
             if (user.username === message.username) return true;
             return false;
           });
-          return (
-            <div key={index} className="room-chat-message-text">
-              <button
-                className="room-chat-button-user"
-                onClick={() =>
-                  handleShowUser({
-                    user: msgUser,
-                  })
-                }
-                disabled={user !== null && user.username === msgUser.username}
-              >
-                {msgUser ? msgUser.nickname : msgUser.nickname} {" :"}
-              </button>
-              {message.content}
-            </div>
-          );
+          if (
+            !bloquedList.find((bloque) => {
+              if (bloque.username === message.username) return true;
+              return false;
+            })
+          )
+            return (
+              <div key={index} className="room-chat-message-text">
+                <button
+                  className="room-chat-button-user"
+                  onClick={() =>
+                    handleShowUser({
+                      user: msgUser,
+                    })
+                  }
+                  disabled={user !== null && user.username === msgUser.username}
+                >
+                  {msgUser ? msgUser.nickname : msgUser.nickname} {" :"}
+                </button>
+                {message.content}
+              </div>
+            );
+          return;
         })}
         <p ref={bottomRef}></p>
       </div>

@@ -7,7 +7,7 @@ import { useChat } from "../context/chat.context";
 import { IoIosAddCircle } from "react-icons/io";
 import { CiSettings } from "react-icons/ci";
 import { MdPersonRemove } from "react-icons/md";
-import { ChannelType, Room, User, UserPrivilege } from "./type";
+import { ChannelType, Room, User, UserPrivilege, UserStatus } from "./type";
 import { SiStarship } from "react-icons/si";
 import SocketContext from "../context/socket.context";
 import { HiXCircle } from "react-icons/hi";
@@ -50,6 +50,7 @@ function RoomsMenuContainer() {
     setSelectUser(undefined);
     setShowJoinMenu(false);
     setShowRoomSetting(null);
+    setShowCreateMenu(false);
     if (key === actChannel) return;
     setActChannel(key);
     const curRoom = rooms.find((room) => {
@@ -153,15 +154,18 @@ function RoomsMenuContainer() {
     setNewBlock(event.target.value);
   };
 
-  const handleRemoveFriend = (username) => {
+  const handleRemoveFriend = (username: string) => {
     socket.emit("RemoveFriend", { username });
   };
 
-  const handleRemoveBlock = (username) => {
+  const handleRemoveBlock = (username: string) => {
     socket.emit("RemoveBlock", { username });
   };
 
-  const handleLeaveChannel = (event) => {};
+  const handleLeaveChannel = (roomId: string) => {
+    console.log("leqve room: ", roomId);
+    socket.emit("LeaveRoom", { roomId });
+  };
 
   return (
     <nav className="room-menu">
@@ -261,109 +265,132 @@ function RoomsMenuContainer() {
             >
               join
             </button>
-            {rooms.map((room, id) => {
-              const channel = room.channel;
-              const chanUser = room.user.find((chanUser) => {
-                if (chanUser.username === user.username) return true;
-                return false;
-              });
-              if (!room.channel.name.search(searchChannel))
-                return (
-                  <div key={id}>
-                    <button
-                      className="room-menu-button-join-room"
-                      disabled={channel.id === actChannel}
-                      title={`Join ${channel.name}`}
-                      onClick={() => handleJoinRoom(channel.id)}
-                    >
-                      {channel.type === ChannelType.protected ? <FaLock /> : ""}
-                      {channel.name}
-                    </button>
-                    {chanUser.privilege === UserPrivilege.owner ? (
+            {rooms ? (
+              rooms.map((room, id) => {
+                const channel = room.channel;
+                const chanUser = room.user.find((chanUser) => {
+                  if (
+                    chanUser.username ===
+                    window.sessionStorage.getItem("username")
+                  )
+                    return true;
+                  return false;
+                });
+                if (!room.channel.name.search(searchChannel))
+                  return (
+                    <div key={id}>
                       <button
-                        onClick={() => {
-                          handleShowRoomSetting(room);
-                        }}
+                        className="room-menu-button-join-room"
+                        disabled={
+                          channel.id === actChannel ||
+                          (user && user.privilege === UserPrivilege.ban)
+                        }
+                        title={`Join ${channel.name}`}
+                        onClick={() => handleJoinRoom(channel.id)}
                       >
-                        <CiSettings />
+                        {channel.type === ChannelType.protected ? (
+                          <FaLock />
+                        ) : (
+                          ""
+                        )}
+                        {channel.name}
                       </button>
-                    ) : (
-                      <button onClick={handleLeaveChannel}>
-                        <HiXCircle />
-                      </button>
-                    )}
+                      {chanUser.privilege === UserPrivilege.owner ? (
+                        <button
+                          onClick={() => {
+                            handleShowRoomSetting(room);
+                          }}
+                        >
+                          <CiSettings />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            handleLeaveChannel(room.channel.id);
+                          }}
+                        >
+                          <HiXCircle />
+                        </button>
+                      )}
 
-                    {room.channel.id === actChannel ? (
-                      <>
-                        <input
-                          value={searchFriend}
-                          onChange={handleSearchFriend}
-                          placeholder="looking for friend?"
-                          className="room-menu-input-friend"
-                        />
-                        <ul>
-                          {room.user.map((actUser, id) => {
-                            //searchFriend.current.value = "";
-                            if (!actUser.nickname.search(searchFriend))
-                              return (
-                                <li key={id}>
-                                  <button
-                                    className="room-menu-button-user"
-                                    onClick={() => {
-                                      handleShowUser(actUser);
-                                    }}
-                                    disabled={
-                                      user.username === actUser.username
-                                    }
-                                  >
-                                    {actUser.privilege ===
-                                    UserPrivilege.admin ? (
-                                      <GiAlienStare className="room-menu-user-icon" />
-                                    ) : (
-                                      <></>
-                                    )}
-                                    {actUser.privilege ===
-                                    UserPrivilege.owner ? (
-                                      <SiStarship className="room-menu-user-icon" />
-                                    ) : (
-                                      <></>
-                                    )}
-                                    {actUser.privilege === UserPrivilege.ban ? (
-                                      <FaBan className="room-menu-user-icon" />
-                                    ) : (
-                                      <></>
-                                    )}
-                                    {actUser.privilege ===
-                                    UserPrivilege.muted ? (
-                                      <>
-                                        <TbMessageCircleOff className="room-menu-user-icon" />
-                                      </>
-                                    ) : (
-                                      <></>
-                                    )}
-                                    {actUser.privilege ===
-                                    UserPrivilege.default ? (
-                                      <>
-                                        <GiAstronautHelmet className="room-menu-user-icon" />
-                                      </>
-                                    ) : (
-                                      <></>
-                                    )}
-                                    {actUser.nickname}
-                                  </button>
-                                </li>
-                              );
-                            return <></>;
-                          })}
-                        </ul>
-                      </>
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-                );
-              return <></>;
-            })}
+                      {room.channel.id === actChannel ? (
+                        <>
+                          <input
+                            value={searchFriend}
+                            onChange={handleSearchFriend}
+                            placeholder="looking for friend?"
+                            className="room-menu-input-friend"
+                          />
+                          <ul>
+                            {room.user.map((actUser, id) => {
+                              //searchFriend.current.value = "";
+                              if (
+                                !actUser.nickname.search(searchFriend) &&
+                                actUser.status !== UserStatus.disconnected
+                              )
+                                return (
+                                  <li key={id}>
+                                    <button
+                                      className="room-menu-button-user"
+                                      onClick={() => {
+                                        handleShowUser(actUser);
+                                      }}
+                                      disabled={
+                                        user.username === actUser.username
+                                      }
+                                    >
+                                      {actUser.privilege ===
+                                      UserPrivilege.admin ? (
+                                        <GiAlienStare className="room-menu-user-icon" />
+                                      ) : (
+                                        <></>
+                                      )}
+                                      {actUser.privilege ===
+                                      UserPrivilege.owner ? (
+                                        <SiStarship className="room-menu-user-icon" />
+                                      ) : (
+                                        <></>
+                                      )}
+                                      {actUser.privilege ===
+                                      UserPrivilege.ban ? (
+                                        <FaBan className="room-menu-user-icon" />
+                                      ) : (
+                                        <></>
+                                      )}
+                                      {actUser.privilege ===
+                                      UserPrivilege.muted ? (
+                                        <>
+                                          <TbMessageCircleOff className="room-menu-user-icon" />
+                                        </>
+                                      ) : (
+                                        <></>
+                                      )}
+                                      {actUser.privilege ===
+                                      UserPrivilege.default ? (
+                                        <>
+                                          <GiAstronautHelmet className="room-menu-user-icon" />
+                                        </>
+                                      ) : (
+                                        <></>
+                                      )}
+                                      {actUser.nickname}
+                                    </button>
+                                  </li>
+                                );
+                              return;
+                            })}
+                          </ul>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  );
+                return <></>;
+              })
+            ) : (
+              <></>
+            )}
           </div>
         ) : (
           <></>
