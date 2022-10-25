@@ -55,21 +55,6 @@ function MessagesComponent() {
         roomId: actChannel,
         message: message,
       });
-
-      const newRooms = [...rooms];
-
-      const room = newRooms.find((room) => {
-        if (room.channel.id === actChannel) return true;
-        return false;
-      });
-
-      room.message.push({
-        username: window.sessionStorage.getItem("username"),
-        content: message,
-      });
-
-      setRooms(newRooms);
-      setMessages(room.message);
     }
   }
 

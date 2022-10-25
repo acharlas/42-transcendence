@@ -11,12 +11,19 @@ import SocketContext from "../context/socket.context";
 import { UserPrivilege } from "./type";
 
 function UserMenu() {
-  const { setSelectUser, selectUser, actChannel, user, setShowTimeSelector } =
-    useChat();
+  const {
+    setSelectUser,
+    selectUser,
+    actChannel,
+    user,
+    setShowTimeSelector,
+    friendList,
+    bloquedList,
+  } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
   const handleClose = () => {
-    setSelectUser(undefined);
+    setSelectUser(null);
   };
 
   const banUser = () => {
@@ -25,6 +32,14 @@ function UserMenu() {
 
   const MuteUser = () => {
     setShowTimeSelector(UserPrivilege.muted);
+  };
+
+  const handleAddFriend = () => {
+    socket.emit("AddFriend", { newFriend: selectUser.username });
+  };
+
+  const handleBlockUser = () => {
+    socket.emit("AddBlock", { newBlock: selectUser.username });
   };
 
   const AdminUser = () => {
@@ -60,12 +75,26 @@ function UserMenu() {
       <button className="chat-box-button">
         <HiMail className="chat-box-button-icon" />
       </button>
-      <button className="chat-box-button">
-        <AiFillHeart className="chat-box-button-icon" />
-      </button>
-      <button className="chat-box-button">
-        <ImUserMinus className="chat-box-button-icon" />
-      </button>
+      {!friendList.find((user) => {
+        if (selectUser.username === user.username) return true;
+        return false;
+      }) ? (
+        <button onClick={handleAddFriend} className="chat-box-button">
+          <AiFillHeart className="chat-box-button-icon" />
+        </button>
+      ) : (
+        <></>
+      )}
+      {!bloquedList.find((user) => {
+        if (selectUser.username === user.username) return true;
+        return false;
+      }) ? (
+        <button onClick={handleBlockUser} className="chat-box-button">
+          <ImUserMinus className="chat-box-button-icon" />
+        </button>
+      ) : (
+        <></>
+      )}
       {user.privilege !== "admin" && user.privilege !== "owner" ? (
         <></>
       ) : (

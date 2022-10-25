@@ -65,6 +65,10 @@ const SocketContextComponent: React.FunctionComponent<
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
+      /**user is ban from chan */
+      socket.on("UserBan", (roomId) => {
+        console.log("you have been ban from: ", roomId);
+      });
       /**remove a room */
       socket.on("RemoveRoom", (channelId) => {
         console.log("remove room: ", channelId);
@@ -104,12 +108,26 @@ const SocketContextComponent: React.FunctionComponent<
       });
       /** A new User join a room*/
       socket.on("JoinRoom", ({ id, user }: { id: string; user: User }) => {
+        console.log("user: ", user, "join room: ", id);
         const newRooms = [...rooms];
         const room = newRooms.find((room) => {
           if (room.channel.id === id) return true;
           return false;
         });
-        room.user.push(user);
+        const usr = room.user.find((usr) => {
+          if (usr.username === user.username) return true;
+          return false;
+        });
+        if (usr) {
+          room.user = room.user.map((usr) => {
+            if (usr.username === user.username) {
+              return user;
+            }
+            return usr;
+          });
+        } else {
+          room.user.push(user);
+        }
         if (actChannel === id) setUserList(room.user);
         setRooms(newRooms);
       });

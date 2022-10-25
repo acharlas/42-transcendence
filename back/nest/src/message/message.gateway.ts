@@ -15,7 +15,7 @@ import { CreateChannelDto, EditChannelDto } from 'src/channel/dto';
 import { FriendService } from 'src/friend/friend.service';
 import { UserService } from 'src/user/user.service';
 import { ChannelService } from '../channel/channel.service';
-import { SocketWithAuth } from './types_message';
+import { socketTab, SocketWithAuth } from './types_message';
 
 @WebSocketGateway({
   namespace: 'chat',
@@ -30,6 +30,8 @@ export class MessageGateway
     private userService: UserService,
   ) {}
 
+  SocketList: socketTab[] = [];
+
   @WebSocketServer() io: Namespace;
   server: Server;
 
@@ -39,6 +41,7 @@ export class MessageGateway
 
   handleConnection(client: SocketWithAuth): void {
     const socket = this.io.sockets;
+    this.SocketList.push({ userId: client.userID, socket: client });
     this.channelService
       .getUserRoom(client.userID)
       .then((res) => {
@@ -76,6 +79,10 @@ export class MessageGateway
 
   handleDisconnect(client: SocketWithAuth): void {
     const socket = this.io.sockets;
+    this.SocketList = this.SocketList.filter((sock) => {
+      if (sock.userId === client.userID) return false;
+      return true;
+    });
     console.log(`Client disconnected: ${client.id} | name: ${client.username}`);
     console.log(`number of soket connected: ${socket.size}`);
   }
@@ -130,6 +137,7 @@ export class MessageGateway
           client.broadcast
             .to(roomId)
             .emit('RoomMessage', { roomId: roomId, message: ret });
+          client.emit('RoomMessage', { roomId: roomId, message: ret });
           return resolve();
         })
         .catch((err) => {
@@ -221,6 +229,14 @@ export class MessageGateway
                     .to(roomId)
                     .emit('UpdateUserList', { roomId: roomId, user: user });
                   client.emit('UpdateUserList', { roomId: roomId, user: user });
+                  if (privilege === UserPrivilege.ban) {
+                    const sock = this.SocketList.find((sock) => {
+                      if (sock.socket.username === toModifie) return true;
+                      return false;
+                    });
+                    sock.socket.emit('RemoveRoom', roomId);
+                    sock.socket.leave(roomId);
+                  }
                 })
                 .catch((err) => {
                   return reject(err);

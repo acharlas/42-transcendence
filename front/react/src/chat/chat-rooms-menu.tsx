@@ -326,7 +326,8 @@ function RoomsMenuContainer() {
                               //searchFriend.current.value = "";
                               if (
                                 !actUser.nickname.search(searchFriend) &&
-                                actUser.status !== UserStatus.disconnected
+                                (actUser.status !== UserStatus.disconnected ||
+                                  actUser.privilege === UserPrivilege.ban)
                               )
                                 return (
                                   <li key={id}>

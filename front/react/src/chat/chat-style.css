@@ -215,11 +215,13 @@
   text-align: center;
   font-weight: 600;
   margin-bottom: 5%;
+  cursor: pointer;
 }
 
 .time-selector-popup-input {
   width: 80%;
   margin-left: 10%;
+  cursor: pointer;
 }
 
 .time-selector-popup-title {
@@ -227,6 +229,7 @@
   text-align: center;
   font-weight: 800;
   margin-bottom: 5%;
+  cursor: pointer;
 }
 
 .time-selector-popup-button {
@@ -243,6 +246,7 @@
   box-shadow: 0px 2px 2px #2c385e;
   cursor: pointer;
   transition: 0.2s;
+  cursor: pointer;
 }
 .time-selector-popup-button:active,
 .time-selector-popup-button:focus,

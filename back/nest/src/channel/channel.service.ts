@@ -370,7 +370,14 @@ export class ChannelService {
         })
         .then((userChan) => {
           console.log('userChan find:', { userChan });
-          if (userChan)
+          if (userChan) {
+            if (userChan.privilege === UserPrivilege.ban) {
+              const date = new Date();
+              console.log(date.getTime());
+              console.log(userChan.time.getTime());
+              if (date.getTime() < userChan.time.getTime())
+                return reject(new ForbiddenException('you are ban'));
+            }
             return resolve(
               new Promise<Room>((resolve, reject) => {
                 this.prisma.channelUser
@@ -432,7 +439,7 @@ export class ChannelService {
                   });
               }),
             );
-          else
+          } else
             return resolve(
               new Promise<Room>((resolve, reject) => {
                 this.prisma.channel
@@ -614,6 +621,13 @@ export class ChannelService {
           },
         })
         .then((res) => {
+          if (res.privilege === UserPrivilege.muted) {
+            const date = new Date();
+            console.log(date.getTime());
+            console.log(res.time.getTime());
+            if (date.getTime() < res.time.getTime())
+              return reject(new ForbiddenException('you are muted'));
+          }
           return resolve(
             new Promise<MessageCont>((resolve, reject) => {
               if (res.privilege === 'muted' || res.privilege === 'ban')
@@ -872,6 +886,7 @@ export class ChannelService {
       privilege: string;
       username: string;
       nickname: string;
+      status: UserStatus;
     }[]
   > {
     return new Promise<
@@ -879,6 +894,7 @@ export class ChannelService {
         privilege: string;
         username: string;
         nickname: string;
+        status: UserStatus;
       }[]
     >((resolve, reject) => {
       this.prisma.channelUser
@@ -889,6 +905,7 @@ export class ChannelService {
           select: {
             user: true,
             privilege: true,
+            status: true,
           },
         })
         .then((ret) => {
@@ -898,6 +915,7 @@ export class ChannelService {
                 privilege: elem.privilege,
                 username: elem.user.username,
                 nickname: elem.user.nickname,
+                status: elem.status,
               };
             }),
           );

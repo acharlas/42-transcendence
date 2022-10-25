@@ -6,5 +6,11 @@ type AuthPayload = {
   username: string;
 };
 
+type SocketTab = {
+  userId: string;
+  socket: SocketWithAuth;
+};
+
 export type RequestWithAuth = Request & AuthPayload;
 export type SocketWithAuth = Socket & AuthPayload;
+export type socketTab = SocketTab;
