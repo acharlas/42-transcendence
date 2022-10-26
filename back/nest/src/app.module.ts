@@ -11,6 +11,7 @@ import { MessageModule } from './message/message.module';
 import { LeaderboardModule } from './leaderboard/leaderboard.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MfaModule } from './mfa/mfa.module';
+import { AvatarModule } from './avatar/avatar.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { MfaModule } from './mfa/mfa.module';
     MessageModule,
     LeaderboardModule,
     JwtModule,
-    MfaModule
+    MfaModule,
+    AvatarModule,
   ],
 })
 export class AppModule { }
