@@ -149,26 +149,30 @@ const SocketContextComponent: React.FunctionComponent<
         }
       );
       /**add a new room */
-      socket.on("NewRoom", ({ room }: { room: Room }) => {
+      socket.on("NewRoom", ({ room, itch }: { room: Room; itch: Boolean }) => {
         console.log("new room receive: ", room, "try to create: ", [
           ...rooms,
           room,
         ]);
         setRooms([...rooms, room]);
-        setMessages(room.message);
-        setUserList(room.user);
-        setActChannel(room.channel.id);
+        if (itch) {
+          setMessages(room.message);
+          setUserList(room.user);
+          setActChannel(room.channel.id);
+        }
         const user = room.user.find((user) => {
           if (user.username === window.sessionStorage.getItem("username"))
             return true;
           return false;
         });
-        setUser(user);
-        setShowCreateMenu(false);
-        setShowRoomMenu(false);
-        setSelectUser(null);
-        setShowJoinMenu(false);
-        setShowRoomSetting(null);
+        if (itch) {
+          setUser(user);
+          setShowCreateMenu(false);
+          setShowRoomMenu(false);
+          setSelectUser(null);
+          setShowJoinMenu(false);
+          setShowRoomSetting(null);
+        }
       });
       /**room list */
       socket.on("Rooms", (res: Room[]) => {

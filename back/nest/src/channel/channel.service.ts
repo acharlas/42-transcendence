@@ -13,6 +13,7 @@ import {
 } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import * as argon from 'argon2';
+import { connect } from 'http2';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateChannelDto, EditChannelDto, JoinChannelDto } from './dto';
 import { GetChannelById, MessageCont, Room } from './type_channel';
@@ -1024,6 +1025,61 @@ export class ChannelService {
         })
         .then((chan) => {
           return resolve(chan.channel);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
+  async CreateDm(userId: string, to: string): Promise<Room> {
+    console.log('create dm with: ', userId, 'to: ', to);
+    return new Promise<Room>((resolve, reject) => {
+      this.prisma.channel
+        .create({
+          data: {
+            id: userId + '__' + to,
+            type: ChannelType.dm,
+            name: null,
+            users: {
+              create: [
+                {
+                  privilege: UserPrivilege.default,
+                  status: UserStatus.connected,
+                  user: { connect: { id: userId } },
+                },
+                {
+                  privilege: UserPrivilege.default,
+                  status: UserStatus.connected,
+                  user: { connect: { id: to } },
+                },
+              ],
+            },
+          },
+          select: {
+            type: true,
+            id: true,
+            messages: true,
+            users: {
+              include: { user: true },
+            },
+          },
+        })
+        .then((chan) => {
+          return resolve({
+            channel: { name: null, type: chan.type, id: chan.id },
+            message: chan.messages.map((msg) => {
+              return { content: msg.content, username: msg.username };
+            }),
+            user: chan.users.map((user) => {
+              return {
+                username: user.user.username,
+                nickname: user.user.nickname,
+                privilege: UserPrivilege.default,
+                status: user.status,
+              };
+            }),
+          });
         })
         .catch((err) => {
           return reject(err);

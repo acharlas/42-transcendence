@@ -160,7 +160,7 @@ export class MessageGateway
         .JoinChannelByName(name, client.userID, { password: password })
         .then((ret) => {
           client.join(ret.channel.id);
-          client.emit('NewRoom', { room: ret });
+          client.emit('NewRoom', { room: ret, itch: true });
           client.broadcast.to(ret.channel.id).emit('JoinRoom', {
             id: ret.channel.id,
             user: ret.user.find((user) => {
@@ -485,6 +485,43 @@ export class MessageGateway
               return resolve();
             }),
           );
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+  /*============================================*/
+  /*============================================*/
+  /*remove block*/
+  @SubscribeMessage('Dm')
+  Dm(
+    @MessageBody('sendTo') sendTo: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('create dm room: ', sendTo);
+    return new Promise<void>((resolve, reject) => {
+      this.userService
+        .getUser(sendTo)
+        .then((to) => {
+          this.channelService
+            .CreateDm(client.userID, to.id)
+            .then((room) => {
+              client.emit('NewRoom', { room, itch: true });
+              client.join(room.channel.id);
+              const sock = this.SocketList.find((sock) => {
+                if (sock.userId === to.id) return true;
+                return false;
+              });
+              sock.socket.join(room.channel.id);
+              sock.socket.emit('NewRoom', { room, itch: false });
+              return resolve();
+            })
+            .catch((err) => {
+              console.log(err);
+              return reject;
+            });
         })
         .catch((err) => {
           console.log(err);

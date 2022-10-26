@@ -8,7 +8,7 @@ import { ImUserMinus } from "react-icons/im";
 import { useChat } from "../context/chat.context";
 import { useContext } from "react";
 import SocketContext from "../context/socket.context";
-import { UserPrivilege } from "./type";
+import { ChannelType, UserPrivilege } from "./type";
 
 function UserMenu() {
   const {
@@ -19,6 +19,11 @@ function UserMenu() {
     setShowTimeSelector,
     friendList,
     bloquedList,
+    rooms,
+    setActChannel,
+    setUserList,
+    setMessages,
+    setUser,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -66,13 +71,45 @@ function UserMenu() {
     setSelectUser(undefined);
   };
 
+  const handleSendDm = () => {
+    const chan = rooms.find((room) => {
+      const u = room.user.find((usr) => {
+        if (usr.username === window.sessionStorage.getItem("username"))
+          return true;
+        return false;
+      });
+      const u2 = room.user.find((usr) => {
+        if (usr.username === window.sessionStorage.getItem("username"))
+          return true;
+        return false;
+      });
+      if (room.channel.type === ChannelType.dm && u && u2) return true;
+      return false;
+    });
+    if (!chan) {
+      socket.emit("Dm", { sendTo: selectUser.username });
+      return;
+    }
+    setActChannel(chan);
+    setUser(
+      chan.user.find((usr) => {
+        if (usr.username === window.sessionStorage.getItem("username"))
+          return true;
+        return false;
+      })
+    );
+    setMessages(chan.message);
+    setUserList(chan.user);
+    setSelectUser(null);
+  };
+
   if (user.username === selectUser.username) return <></>;
   return (
     <>
       <button className="chat-box-button">
         <FaUserAstronaut className="chat-box-button-icon" />
       </button>
-      <button className="chat-box-button">
+      <button onClick={handleSendDm} className="chat-box-button">
         <HiMail className="chat-box-button-icon" />
       </button>
       {!friendList.find((user) => {

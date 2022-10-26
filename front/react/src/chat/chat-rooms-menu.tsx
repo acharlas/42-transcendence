@@ -43,6 +43,8 @@ function RoomsMenuContainer() {
     setShowJoinMenu,
     showJoinMenu,
     setShowRoomSetting,
+    showDm,
+    setShowDm,
   } = useChat();
 
   function handleJoinRoom(key: string) {
@@ -167,6 +169,41 @@ function RoomsMenuContainer() {
     socket.emit("LeaveRoom", { roomId });
   };
 
+  const handleShowDm = () => {
+    showDm ? setShowDm(false) : setShowDm(true);
+  };
+
+  const handleSendDm = (username: string) => {
+    const chan = rooms.find((room) => {
+      const u = room.user.find((usr) => {
+        if (usr.username === window.sessionStorage.getItem("username"))
+          return true;
+        return false;
+      });
+      const u2 = room.user.find((usr) => {
+        if (usr.username === username) return true;
+        return false;
+      });
+      if (room.channel.type === ChannelType.dm && u && u2) return true;
+      return false;
+    });
+    if (!chan) {
+      socket.emit("Dm", { sendTo: username });
+      return;
+    }
+    setActChannel(chan);
+    setUser(
+      chan.user.find((usr) => {
+        if (usr.username === window.sessionStorage.getItem("username"))
+          return true;
+        return false;
+      })
+    );
+    setMessages(chan.message);
+    setUserList(chan.user);
+    setSelectUser(null);
+  };
+
   return (
     <nav className="room-menu">
       <div className="room-menu-search-channel-container">
@@ -208,7 +245,12 @@ function RoomsMenuContainer() {
                 if (!friend.nickname.search(newFriend)) {
                   return (
                     <li key={id}>
-                      <button className="room-menu-button-user-block-friend">
+                      <button
+                        onClick={() => {
+                          handleSendDm(friend.username);
+                        }}
+                        className="room-menu-button-user-block-friend"
+                      >
                         {friend.nickname}
                       </button>
                       <button
@@ -267,6 +309,7 @@ function RoomsMenuContainer() {
             </button>
             {rooms ? (
               rooms.map((room, id) => {
+                if (room.channel.type === ChannelType.dm) return;
                 const channel = room.channel;
                 const chanUser = room.user.find((chanUser) => {
                   if (
@@ -312,7 +355,6 @@ function RoomsMenuContainer() {
                           <HiXCircle />
                         </button>
                       )}
-
                       {room.channel.id === actChannel ? (
                         <>
                           <input
@@ -448,6 +490,62 @@ function RoomsMenuContainer() {
                 return;
               })}
             </ul>
+          </>
+        ) : (
+          <></>
+        )}
+        <button onClick={handleShowDm} className="room-menu-button-scroll-menu">
+          PrivateMessage{" "}
+          {showDm ? (
+            <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
+          ) : (
+            <RiArrowDropDownFill className="room-menu-button-scroll-menu-icon" />
+          )}
+        </button>
+        {showDm ? (
+          <>
+            {rooms.map((room) => {
+              const usr = room.user.find((usr) => {
+                if (usr.username !== window.sessionStorage.getItem("username"))
+                  return true;
+                return false;
+              });
+              if (
+                room.channel.type !== ChannelType.dm ||
+                bloquedList.find((block) => {
+                  if (block.username === usr.username) return true;
+                  return false;
+                })
+              )
+                return;
+              return (
+                <>
+                  <button
+                    title={`Join ${room.channel.name}`}
+                    onClick={() => handleJoinRoom(room.channel.id)}
+                    className="room-menu-button-join-room"
+                  >
+                    {
+                      room.user.find((usr) => {
+                        if (
+                          usr.username !==
+                          window.sessionStorage.getItem("username")
+                        )
+                          return true;
+                        return false;
+                      }).username
+                    }
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleLeaveChannel(room.channel.id);
+                    }}
+                  >
+                    <HiXCircle />
+                  </button>
+                </>
+              );
+            })}
           </>
         ) : (
           <></>

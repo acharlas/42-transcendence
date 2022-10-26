@@ -34,6 +34,8 @@ export interface IoChatContextState {
   setShowJoinMenu: Function;
   ShowRoomSetting: Room | undefined;
   setShowRoomSetting: Function;
+  showDm: Boolean;
+  setShowDm: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
@@ -69,6 +71,8 @@ const ChatContext = createContext<IoChatContextState>({
   setShowJoinMenu: () => {},
   ShowRoomSetting: undefined,
   setShowRoomSetting: () => {},
+  showDm: false,
+  setShowDm: () => {},
 });
 
 function ChatProvider(props: any) {
@@ -88,6 +92,7 @@ function ChatProvider(props: any) {
   const [bloquedList, setBloquedList] = useState<User[]>([]);
   const [showJoinMenu, setShowJoinMenu] = useState<boolean>(false);
   const [ShowRoomSetting, setShowRoomSetting] = useState<Room>(null);
+  const [showDm, setShowDm] = useState<boolean>(false);
 
   return (
     <ChatContext.Provider
@@ -124,6 +129,8 @@ function ChatProvider(props: any) {
         setShowJoinMenu,
         ShowRoomSetting,
         setShowRoomSetting,
+        showDm,
+        setShowDm,
       }}
       {...props}
     />
