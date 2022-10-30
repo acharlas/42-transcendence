@@ -41,7 +41,7 @@ model User {
   mfaEnabled      Boolean   @default(false)
   mfaPhoneNumber  String?
 
-  avatar String?
+  avatarPath String?
 
   @@map("users")
 }

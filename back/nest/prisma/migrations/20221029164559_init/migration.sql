@@ -28,6 +28,7 @@ CREATE TABLE "users" (
     "fortyTwoId" INTEGER NOT NULL,
     "mfaEnabled" BOOLEAN NOT NULL DEFAULT false,
     "mfaPhoneNumber" TEXT,
+    "avatarPath" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
