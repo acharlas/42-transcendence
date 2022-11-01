@@ -8,8 +8,13 @@ import {
   Post,
   UseGuards,
   UploadedFile,
+  StreamableFile,
+  Header,
+  NotFoundException,
+  Res,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 
 import { GetUser } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
@@ -17,12 +22,12 @@ import { ApiFileAvatar } from './api-avatar.decorator';
 import { AvatarService } from './avatar.service';
 
 @ApiTags('Avatar')
-@ApiBearerAuth()
-@UseGuards(JwtGuard)
 @Controller('avatar')
 export class AvatarController {
   constructor(private avatarService: AvatarService) { }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @Post('')
   @HttpCode(HttpStatus.CREATED)
   @ApiFileAvatar()
@@ -35,6 +40,8 @@ export class AvatarController {
     this.avatarService.saveAvatar(userId, { path: avatar.path });
   }
 
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
   @Delete('')
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteAvatar(@GetUser('id') userId: string) {
@@ -44,8 +51,20 @@ export class AvatarController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  getAvatar(@Param('id') targetId: string) {
+  getAvatar(
+    @Param('id') targetId: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<StreamableFile> {
     console.log("getAvatar");
-    this.avatarService.getAvatar(targetId);
+    return new Promise<StreamableFile>((resolve, reject) => {
+      return this.avatarService.getAvatar(targetId)
+        .then((ret) => {
+          res.set('Content-Type', 'image');
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        })
+    })
   }
 }

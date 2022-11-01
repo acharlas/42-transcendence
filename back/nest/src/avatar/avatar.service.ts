@@ -1,10 +1,10 @@
 import {
-  ForbiddenException,
-  HttpException,
-  HttpStatus,
   Injectable,
+  NotFoundException,
+  StreamableFile,
 } from '@nestjs/common';
-import { unlinkSync } from 'fs';
+import { readFileSync, unlinkSync } from 'fs';
+import { join } from 'path';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { AvatarPathDto } from './dto/avatar.dto';
@@ -52,15 +52,11 @@ export class AvatarService {
         id: targetId,
       }
     });
-    console.log(user.avatarPath);
-    //TODO
-    if (user.avatarPath) {
-      console.log("return avatar");
+    if (user && user.avatarPath) {
+      const file = readFileSync(join(process.cwd(), user.avatarPath));
+      console.log(file);
+      return new StreamableFile(file);
     }
-    else {
-      console.log("default avatar");
-    }
-    return (true);
+    throw new NotFoundException();
   }
-
 }
