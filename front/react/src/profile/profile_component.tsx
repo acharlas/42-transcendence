@@ -5,8 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { getUser } from "../api/user-api";
 import { addFriend, removeFriend, checkIfFriend } from "../api/friend-api"
 import { addBlock, removeBlock, checkIfBlocked } from "../api/block-api"
-
-import defaultPicture from "../image/defaultPicture.png"
+import Avatar from "../avatar/avatar_component";
 import "../style.css";
 import "./profile.css";
 
@@ -134,6 +133,16 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
     }
   }
 
+  // const getAvatar = () => {
+  //   `http://localhost:3333/avatar/` + id`
+  //   return ()
+  // }
+
+  // eslint-disable-next-line no-restricted-globals
+  onerror = (event: Event) => {
+    event.target.src = "../image/defaultPicture.png";
+  };
+
   return (
     <div className="profile__container">
       <div className="profile__screen">
@@ -149,9 +158,7 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
 
             <div className="profile__panel__bottom">
               <div className="profile__avatar__container">
-                <img className="profile__avatar"
-                  src={defaultPicture}
-                  alt="" />
+                {Avatar(id)}
                 {/*TODO: display profile pictures */}
 
                 {isSelfProfile ||

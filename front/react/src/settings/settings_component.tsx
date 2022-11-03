@@ -25,7 +25,7 @@ import { getBlock } from "../api/block-api";
 import { getFriend } from "../api/friend-api";
 import { MfaStatus } from "./constants/mfa-status";
 import { AvatarStatus } from "./constants/avatar-status";
-import defaultPicture from "../image/defaultPicture.png"
+import Avatar from "../avatar/avatar_component";
 import "../style.css"
 import "../profile/profile.css"
 import "./settings.css"
@@ -125,9 +125,7 @@ export default function Profile() {
       <div className="profile__panel__bottom profile__panel__avatar">
         <div className="settings__avatar__div">
           <div className="settings__avatar__container">
-            <img className="settings__avatar"
-              src={(avatarStatus === AvatarStatus.CUSTOM) ? (defaultPicture) : (defaultPicture)}
-              alt="" />
+            {Avatar(window.sessionStorage.getItem("userid"))}
           </div>
           <button className="settings__button__texticon" onClick={uploadAvatar}>
             Upload a new avatar
