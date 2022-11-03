@@ -79,17 +79,18 @@ function UserMenu() {
         return false;
       });
       const u2 = room.user.find((usr) => {
-        if (usr.username === window.sessionStorage.getItem("username"))
-          return true;
+        if (usr.username === selectUser.username) return true;
         return false;
       });
       if (room.channel.type === ChannelType.dm && u && u2) return true;
       return false;
     });
     if (!chan) {
+      console.log("send dm creation: ", selectUser.username);
       socket.emit("Dm", { sendTo: selectUser.username });
       return;
     }
+    console.log("chan found: ", chan);
     setActChannel(chan);
     setUser(
       chan.user.find((usr) => {

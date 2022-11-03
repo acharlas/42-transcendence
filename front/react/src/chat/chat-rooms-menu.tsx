@@ -5,7 +5,7 @@ import { TbMessageCircleOff } from "react-icons/tb";
 import { RiArrowDropDownFill, RiArrowDropUpFill } from "react-icons/ri";
 import { useChat } from "../context/chat.context";
 import { IoIosAddCircle } from "react-icons/io";
-import { CiSettings } from "react-icons/ci";
+import { AiFillSetting } from "react-icons/ai";
 import { MdPersonRemove } from "react-icons/md";
 import { ChannelType, Room, User, UserPrivilege, UserStatus } from "./type";
 import { SiStarship } from "react-icons/si";
@@ -344,7 +344,7 @@ function RoomsMenuContainer() {
                             handleShowRoomSetting(room);
                           }}
                         >
-                          <CiSettings />
+                          <AiFillSetting />
                         </button>
                       ) : (
                         <button

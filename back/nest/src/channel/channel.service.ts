@@ -1040,7 +1040,7 @@ export class ChannelService {
           data: {
             id: userId + '__' + to,
             type: ChannelType.dm,
-            name: null,
+            name: undefined,
             users: {
               create: [
                 {
