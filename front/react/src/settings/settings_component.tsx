@@ -29,6 +29,7 @@ import Avatar from "../avatar/avatar_component";
 import "../style.css"
 import "../profile/profile.css"
 import "./settings.css"
+import { deleteAvatar, postAvatar } from "../api/avatar-api";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -42,8 +43,9 @@ export default function Profile() {
   const [editingNickname, setEditingNickname] = useState(false);
   const [blocklist, setBlocklist] = useState([]);
   const [friendlist, setFriendlist] = useState([]);
-  const [mfaStatus, setMfaStatus] = React.useState<MfaStatus>(MfaStatus.LOADING);
-  const [avatarStatus, setAvatarStatus] = React.useState<AvatarStatus>(AvatarStatus.LOADING);
+  const [mfaStatus, setMfaStatus] = useState<MfaStatus>(MfaStatus.LOADING);
+  const [avatarStatus, setAvatarStatus] = useState<AvatarStatus>(AvatarStatus.LOADING);
+  const [avatarToUpload, setAvatarToUpload] = useState<File>(null);
   const [smsCode, setSmsCode] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [avatarError, setAvatarError] = useState("");
@@ -105,14 +107,32 @@ export default function Profile() {
   const uploadAvatar = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setAvatarError("");
-    setAvatarStatus(AvatarStatus.CUSTOM)
-    throw new Error("Function not implemented.");
+    try {
+      postAvatar(avatarToUpload);
+      setAvatarStatus(AvatarStatus.CUSTOM);
+    }
+    catch (e) {
+      setAvatarError("failed to upload avatar");
+      console.log("failed to upload avatar");
+    }
+    setAvatarStatus(AvatarStatus.DEFAULT);
   }
-  const deleteAvatar = async (event: React.MouseEvent<HTMLButtonElement>) => {
+
+  const removeAvatar = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setAvatarError("");
-    setAvatarStatus(AvatarStatus.DEFAULT)
-    throw new Error("Function not implemented.");
+    try {
+      deleteAvatar();
+      setAvatarStatus(AvatarStatus.DEFAULT);
+    }
+    catch (e) {
+      setAvatarError("failed to delete avatar");
+      console.log("failed to delete avatar");
+    }
+  }
+
+  function selectFile(event) {
+    setAvatarToUpload(event.target.files);
   }
 
   function avatarSettings() {
@@ -130,7 +150,11 @@ export default function Profile() {
           <button className="settings__button__texticon" onClick={uploadAvatar}>
             Upload a new avatar
           </button>
-          <button className="settings__button__texticon" onClick={deleteAvatar}>
+
+          <label className="btn btn-default">
+            <input type="file" onChange={selectFile} />
+          </label>
+          <button className="settings__button__texticon" onClick={removeAvatar}>
             Delete current avatar
           </button>
         </div>
