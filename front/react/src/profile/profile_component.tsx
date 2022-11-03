@@ -133,16 +133,6 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
     }
   }
 
-  // const getAvatar = () => {
-  //   `http://localhost:3333/avatar/` + id`
-  //   return ()
-  // }
-
-  // eslint-disable-next-line no-restricted-globals
-  onerror = (event: Event) => {
-    event.target.src = "../image/defaultPicture.png";
-  };
-
   return (
     <div className="profile__container">
       <div className="profile__screen">
