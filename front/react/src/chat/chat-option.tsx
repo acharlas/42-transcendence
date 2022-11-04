@@ -17,7 +17,7 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
   const newPassword = useRef(null);
   const [type, setType] = useState<ChannelType>(ChannelType.public);
   const { socket } = useContext(SocketContext).SocketState;
-  const { setShowRoomSetting, ShowRoomSetting } = useChat();
+  const { setShowRoomSetting, ShowRoomSetting, closeChatBox } = useChat();
   const [errMsg, seterrMsg] = useState<string>("");
   const newRoomRef = useRef(null);
   const [showPopup, setShowPopup] = useState<boolean>(false);
@@ -75,7 +75,7 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
   };
 
   const handleCloseMenu = (event) => {
-    setShowRoomSetting(false);
+    closeChatBox();
   };
 
   const handleLeaveRoom = (event) => {

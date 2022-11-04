@@ -24,6 +24,8 @@ function UserMenu() {
     setUserList,
     setMessages,
     setUser,
+    closeChatBox,
+    setNewRoom,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -91,17 +93,8 @@ function UserMenu() {
       return;
     }
     console.log("chan found: ", chan);
-    setActChannel(chan);
-    setUser(
-      chan.user.find((usr) => {
-        if (usr.username === window.sessionStorage.getItem("username"))
-          return true;
-        return false;
-      })
-    );
-    setMessages(chan.message);
-    setUserList(chan.user);
-    setSelectUser(null);
+    closeChatBox();
+    setNewRoom(chan);
   };
 
   if (user.username === selectUser.username) return <></>;

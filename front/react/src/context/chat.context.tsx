@@ -36,6 +36,8 @@ export interface IoChatContextState {
   setShowRoomSetting: Function;
   showDm: Boolean;
   setShowDm: Function;
+  closeChatBox: Function;
+  setNewRoom: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
@@ -73,6 +75,8 @@ const ChatContext = createContext<IoChatContextState>({
   setShowRoomSetting: () => {},
   showDm: false,
   setShowDm: () => {},
+  closeChatBox: () => {},
+  setNewRoom: () => {},
 });
 
 function ChatProvider(props: any) {
@@ -93,6 +97,31 @@ function ChatProvider(props: any) {
   const [showJoinMenu, setShowJoinMenu] = useState<boolean>(false);
   const [ShowRoomSetting, setShowRoomSetting] = useState<Room>(null);
   const [showDm, setShowDm] = useState<boolean>(false);
+
+  const closeChatBox = () => {
+    setMessages([]);
+    setActChannel(null);
+    setShowRoomSetting(null);
+    setShowJoinMenu(false);
+    setShowTimeSelector(null);
+    setSelectUser(null);
+    setShowCreateMenu(null);
+    setUserList([]);
+  };
+
+  const setNewRoom = (room: Room) => {
+    setSelectUser(null);
+    setActChannel(room.channel.id);
+    setMessages(room.message);
+    setUserList(room.user);
+    setUser(
+      room.user.find((user) => {
+        if (user.username === window.sessionStorage.getItem("username"))
+          return true;
+        return false;
+      })
+    );
+  };
 
   return (
     <ChatContext.Provider
@@ -131,6 +160,8 @@ function ChatProvider(props: any) {
         setShowRoomSetting,
         showDm,
         setShowDm,
+        closeChatBox,
+        setNewRoom,
       }}
       {...props}
     />

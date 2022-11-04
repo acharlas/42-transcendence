@@ -127,7 +127,7 @@ export class MessageGateway
     @MessageBody('message') message: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    console.log('new message arrive:', message);
+    console.log('new message arrive:', message, 'on room: ', roomId);
     return new Promise<void>((resolve, reject) => {
       console.log('SendRoom message', { message }, 'channelId:', roomId);
       this.channelService

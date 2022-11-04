@@ -25,6 +25,7 @@ function MessagesComponent() {
     setActChannel,
     showTimeSelector,
     bloquedList,
+    closeChatBox,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -41,6 +42,8 @@ function MessagesComponent() {
   function handleSendMessage() {
     const message = newMessageRef.current.value;
     newMessageRef.current.value = "";
+
+    console.log("actual channel send message: ", actChannel);
 
     if (!String(message).trim()) {
       return;
@@ -73,7 +76,7 @@ function MessagesComponent() {
   };
 
   const handleCloseChat = (event) => {
-    setActChannel(null);
+    closeChatBox();
   };
 
   if (!actChannel) return <></>;

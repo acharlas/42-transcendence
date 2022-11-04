@@ -556,7 +556,6 @@ export class ChannelService {
                   });
               }
             })
-
             .catch((err) => {
               return reject(err);
             });
@@ -610,7 +609,7 @@ export class ChannelService {
     username: string,
     content: string,
   ): Promise<MessageCont> {
-    console.log('chanelid:', channelId, 'userid:', userId);
+    console.log('add message on chanelid:', channelId, ' by userid:', userId);
     return new Promise<MessageCont>((resolve, reject) => {
       this.prisma.channelUser
         .findUnique({
@@ -1040,7 +1039,7 @@ export class ChannelService {
           data: {
             id: userId + '__' + to,
             type: ChannelType.dm,
-            name: undefined,
+            name: null,
             users: {
               create: [
                 {

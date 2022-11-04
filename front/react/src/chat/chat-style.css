@@ -28,7 +28,6 @@
 .room-chat-option {
   height: 8%;
   width: 100%;
-  overflow-x: scroll;
   overflow-y: hidden;
 }
 
@@ -427,6 +426,40 @@
   outline: none;
 }
 .room-menu-button-join-room:disabled {
+  background: #54a5d9;
+  border-radius: 2px;
+  border: 1px solid #d4d3e8;
+  text-transform: uppercase;
+  font-weight: 700;
+  align-items: center;
+  color: #2c385e;
+  box-shadow: 0px 2px 2px #2c385e;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.room-menu-button-dm {
+  width: 100%;
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid #d4d3e8;
+  text-transform: uppercase;
+  font-weight: 700;
+  align-items: center;
+  color: #2c385e;
+  text-overflow: ellipsis;
+  box-shadow: 0px 2px 2px #2c385e;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.room-menu-button-dm:active,
+.room-menu-button-dm:focus,
+.room-menu-button-dm:hover {
+  border-color: #2c385e;
+  outline: none;
+}
+.room-menu-button-dm:disabled {
   background: #54a5d9;
   border-radius: 2px;
   border: 1px solid #d4d3e8;

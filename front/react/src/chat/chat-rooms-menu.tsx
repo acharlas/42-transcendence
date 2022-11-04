@@ -45,31 +45,19 @@ function RoomsMenuContainer() {
     setShowRoomSetting,
     showDm,
     setShowDm,
+    closeChatBox,
+    setNewRoom,
   } = useChat();
 
   function handleJoinRoom(key: string) {
     console.log("try to join:", key);
-    setSelectUser(undefined);
-    setShowJoinMenu(false);
-    setShowRoomSetting(null);
-    setShowCreateMenu(false);
     if (key === actChannel) return;
-    setActChannel(key);
+    closeChatBox();
     const curRoom = rooms.find((room) => {
       if (room.channel.id === key) return true;
       return false;
     });
-    console.log(curRoom, curRoom.message, curRoom.user);
-    setMessages(curRoom.message);
-    console.log(curRoom, curRoom.message, curRoom.user);
-    setMessages(curRoom.message);
-    setUserList(curRoom.user);
-    const user = curRoom.user.find((user) => {
-      if (user.username === window.sessionStorage.getItem("username"))
-        return true;
-      return false;
-    });
-    setUser(user);
+    setNewRoom(curRoom);
     console.log("user set to: ", user);
   }
 
@@ -78,25 +66,13 @@ function RoomsMenuContainer() {
   };
 
   const handleShowCreateRoom = (event) => {
-    setActChannel(null);
-    setShowRoomMenu(false);
-    setShowRoomSetting(null);
-    setShowJoinMenu(false);
+    closeChatBox();
     setShowCreateMenu(true);
-    setSelectUser(undefined);
-    setMessages([]);
-    setUserList([]);
   };
 
   const handleJoinNewRoom = (event) => {
-    setActChannel(null);
-    setShowRoomMenu(false);
-    setShowCreateMenu(false);
-    setSelectUser(undefined);
-    setShowRoomSetting(null);
+    closeChatBox();
     setShowJoinMenu(true);
-    setMessages([]);
-    setUserList([]);
   };
 
   const handleShowUser = (user: User) => {
@@ -118,14 +94,8 @@ function RoomsMenuContainer() {
   };
 
   const handleShowRoomSetting = (room: Room) => {
-    setActChannel(null);
-    setShowRoomMenu(false);
-    setShowCreateMenu(false);
-    setSelectUser(undefined);
-    setShowJoinMenu(false);
+    closeChatBox();
     setShowRoomSetting(room);
-    setMessages([]);
-    setUserList([]);
   };
 
   const handleShowFriend = (event) => {
@@ -191,17 +161,8 @@ function RoomsMenuContainer() {
       socket.emit("Dm", { sendTo: username });
       return;
     }
-    setActChannel(chan);
-    setUser(
-      chan.user.find((usr) => {
-        if (usr.username === window.sessionStorage.getItem("username"))
-          return true;
-        return false;
-      })
-    );
-    setMessages(chan.message);
-    setUserList(chan.user);
-    setSelectUser(null);
+    closeChatBox();
+    setNewRoom(chan);
   };
 
   return (
@@ -523,7 +484,7 @@ function RoomsMenuContainer() {
                   <button
                     title={`Join ${room.channel.name}`}
                     onClick={() => handleJoinRoom(room.channel.id)}
-                    className="room-menu-button-join-room"
+                    className="room-menu-button-dm"
                   >
                     {
                       room.user.find((usr) => {
@@ -535,13 +496,6 @@ function RoomsMenuContainer() {
                         return false;
                       }).username
                     }
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleLeaveChannel(room.channel.id);
-                    }}
-                  >
-                    <HiXCircle />
                   </button>
                 </>
               );
