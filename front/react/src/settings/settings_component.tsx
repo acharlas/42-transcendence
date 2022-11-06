@@ -132,7 +132,7 @@ export default function Profile() {
   }
 
   function selectFile(event) {
-    setAvatarToUpload(event.target.files);
+    setAvatarToUpload(event.target.files[0]);
   }
 
   function avatarSettings() {
@@ -157,9 +157,9 @@ export default function Profile() {
           <button className="settings__button__texticon" onClick={removeAvatar}>
             Delete current avatar
           </button>
+          {displayError(avatarError)}
         </div>
       </div>
-      {displayError(avatarError)}
     </>)
   }
 

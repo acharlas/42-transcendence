@@ -3,7 +3,6 @@ import axios from "axios";
 export const postAvatar = async (newAvatar: File): Promise<any> => {
   let formdata = new FormData();
   formdata.append("avatar", newAvatar);
-
   return new Promise<any>((resolve, reject) => {
     axios.post(
       `http://localhost:3333/avatar/`,
