@@ -106,16 +106,20 @@ export default function Profile() {
 
   const uploadAvatar = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setAvatarError("");
-    try {
-      await postAvatar(avatarToUpload);
-      setAvatarStatus(AvatarStatus.UPLOADED);
-      setAvatarReload(avatarReload + 1);
-      console.log("ok");
+    if (avatarToUpload) {
+      setAvatarError("");
+      try {
+        await postAvatar(avatarToUpload);
+        setAvatarStatus(AvatarStatus.UPLOADED);
+        setAvatarReload(avatarReload + 1);
+      }
+      catch (e) {
+        setAvatarError("failed to upload avatar");
+        console.log("failed to upload avatar");
+      }
     }
-    catch (e) {
-      setAvatarError("failed to upload avatar");
-      console.log("failed to upload avatar");
+    else {
+      setAvatarError("please select a file to upload");
     }
   }
 
