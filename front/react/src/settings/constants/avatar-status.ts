@@ -1,5 +1,5 @@
 export enum AvatarStatus {
   LOADING = "loading",
-  CUSTOM = "custom",
-  DEFAULT = "default",
+  UPLOADED = "uploaded",
+  DELETED = "deleted",
 }

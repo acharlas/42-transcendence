@@ -23,13 +23,14 @@ import { getUsersMe, patchNickname } from "../api/user-api"
 import { requestMfaDisable, requestMfaSetupFinish, requestMfaSetupInit } from "../api/mfa-api";
 import { getBlock } from "../api/block-api";
 import { getFriend } from "../api/friend-api";
+import { deleteAvatar, postAvatar } from "../api/avatar-api";
 import { MfaStatus } from "./constants/mfa-status";
 import { AvatarStatus } from "./constants/avatar-status";
-import Avatar from "../avatar/avatar_component";
+import DefaultAvatar from "../avatar/default_avatar_component";
+import ReloadAvatar from "../avatar/reload_avatar_component";
 import "../style.css"
 import "../profile/profile.css"
 import "./settings.css"
-import { deleteAvatar, postAvatar } from "../api/avatar-api";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ export default function Profile() {
   const [mfaStatus, setMfaStatus] = useState<MfaStatus>(MfaStatus.LOADING);
   const [avatarStatus, setAvatarStatus] = useState<AvatarStatus>(AvatarStatus.LOADING);
   const [avatarToUpload, setAvatarToUpload] = useState<File>(null);
+  const [avatarReload, setAvatarReload] = useState<number>(0);
   const [smsCode, setSmsCode] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [avatarError, setAvatarError] = useState("");
@@ -81,8 +83,6 @@ export default function Profile() {
     const fetchFriendlist = async () => {
       await getFriend({ id: window.sessionStorage.getItem("userid") })
         .then((res) => {
-          console.log(res.data)
-
           setFriendlist(res.data.myfriend);
         })
         .catch((e) => {
@@ -108,22 +108,23 @@ export default function Profile() {
     event.preventDefault();
     setAvatarError("");
     try {
-      postAvatar(avatarToUpload);
-      setAvatarStatus(AvatarStatus.CUSTOM);
+      await postAvatar(avatarToUpload);
+      setAvatarStatus(AvatarStatus.UPLOADED);
+      setAvatarReload(avatarReload + 1);
+      console.log("ok");
     }
     catch (e) {
       setAvatarError("failed to upload avatar");
       console.log("failed to upload avatar");
     }
-    setAvatarStatus(AvatarStatus.DEFAULT);
   }
 
   const removeAvatar = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setAvatarError("");
     try {
-      deleteAvatar();
-      setAvatarStatus(AvatarStatus.DEFAULT);
+      await deleteAvatar();
+      setAvatarStatus(AvatarStatus.DELETED);
     }
     catch (e) {
       setAvatarError("failed to delete avatar");
@@ -145,15 +146,18 @@ export default function Profile() {
       <div className="profile__panel__bottom profile__panel__avatar">
         <div className="settings__avatar__div">
           <div className="settings__avatar__container">
-            {Avatar(window.sessionStorage.getItem("userid"))}
+            {(
+              avatarStatus === AvatarStatus.DELETED
+            ) ? (
+              DefaultAvatar("settings__avatar")
+            ) : (
+              ReloadAvatar(window.sessionStorage.getItem("userid"), avatarReload, "settings__avatar")
+            )}
           </div>
+          <input type="file" onChange={selectFile} />
           <button className="settings__button__texticon" onClick={uploadAvatar}>
             Upload a new avatar
           </button>
-
-          <label className="btn btn-default">
-            <input type="file" onChange={selectFile} />
-          </label>
           <button className="settings__button__texticon" onClick={removeAvatar}>
             Delete current avatar
           </button>
