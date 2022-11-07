@@ -1,8 +1,7 @@
 import "./chat-style.css";
-import { useNavigate } from "react-router-dom";
-import { FunctionComponent } from "react";
+import { BsFillChatRightTextFill } from "react-icons/bs";
+import { FunctionComponent, useState } from "react";
 import { useChat } from "../context/chat.context";
-
 import RoomsMenuContainer from "./chat-rooms-menu";
 import MessagesComponent from "./chat-messages";
 import CreateRoomsContainer from "./chat-create-room";
@@ -12,6 +11,7 @@ import ChatOptionComponent from "./chat-option";
 export interface IChatIndexProps {}
 
 const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
+  const [show, setShow] = useState<boolean>(false);
   const {
     rooms,
     selectUser,
@@ -21,24 +21,38 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
     ShowRoomSetting,
   } = useChat();
 
+  const handleShow = () => {
+    setShow(true);
+  };
+
   if (rooms) console.log("rooms at start:", rooms, "userselect: ", selectUser);
   return (
     <>
-      <div className="chat-container">
-        <RoomsMenuContainer />
-      </div>
-      <div>
-        {actChannel ? (
-          <div>
-            <MessagesComponent />
+      {show ? (
+        <>
+          <div className="chat-container">
+            <RoomsMenuContainer setShow={setShow} />
           </div>
-        ) : (
-          <></>
-        )}
-        {showCreateMenu ? <CreateRoomsContainer /> : <></>}
-        {showJoinMenu ? <JoinNewRoomComponent /> : <></>}
-        {ShowRoomSetting ? <ChatOptionComponent /> : <></>}
-      </div>
+          <div>
+            {actChannel ? (
+              <div>
+                <MessagesComponent />
+              </div>
+            ) : (
+              <></>
+            )}
+            {showCreateMenu ? <CreateRoomsContainer /> : <></>}
+            {showJoinMenu ? <JoinNewRoomComponent /> : <></>}
+            {ShowRoomSetting ? <ChatOptionComponent /> : <></>}
+          </div>
+        </>
+      ) : (
+        <>
+          <button onClick={handleShow} className="menu-user-button">
+            <BsFillChatRightTextFill className="menu-user-icon" />
+          </button>
+        </>
+      )}
     </>
   );
 };

@@ -1,5 +1,6 @@
 import "./style.css";
 import ChatIndex from "./chat/chat-index";
+import BandeauIndex from "./bandeau/bandeau";
 import SocketContextComponent from "./chat/socket-component";
 import ChatProvider from "./context/chat.context";
 
@@ -9,6 +10,7 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
     <div className="container">
       <ChatProvider>
         <SocketContextComponent>
+          <BandeauIndex />
           <ChatIndex />
         </SocketContextComponent>
       </ChatProvider>

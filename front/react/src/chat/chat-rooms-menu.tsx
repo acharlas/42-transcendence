@@ -12,7 +12,7 @@ import { SiStarship } from "react-icons/si";
 import SocketContext from "../context/socket.context";
 import { HiXCircle } from "react-icons/hi";
 
-function RoomsMenuContainer() {
+function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   const [searchFriend, setSearchFriend] = useState<string>("");
   const [newFriend, setNewFriend] = useState<string>("");
   const [newBlock, setNewBlock] = useState<string>("");
@@ -62,7 +62,7 @@ function RoomsMenuContainer() {
   }
 
   const handleShowRoomMenu = (event) => {
-    showRoomMenu ? setShowRoomMenu(false) : setShowRoomMenu(true);
+    setShow(false);
   };
 
   const handleShowCreateRoom = (event) => {
@@ -169,7 +169,7 @@ function RoomsMenuContainer() {
     <nav className="room-menu">
       <div className="room-menu-search-channel-container">
         <button className="room-menu-close-button" onClick={handleShowRoomMenu}>
-          <FaAngleRight />
+          <HiXCircle />
         </button>
       </div>
 

@@ -1,3 +1,28 @@
+/*menu user*/
+.menu-user-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 5%;
+  height: 5%;
+  border-radius: 10px;
+  border: 0px;
+  font-weight: 700;
+  cursor: pointer;
+  background-color: rgb(44, 55, 95);
+  color: rgb(255, 255, 255);
+}
+
+.menu-user-button:active,
+.menu-user-button:focus,
+.menu-user-button:hover {
+  color: #eda33d;
+}
+
+.menu-user-icon {
+  width: 70%;
+  height: 70%;
+}
 /* chat box */
 .chat-container {
   position: absolute;
@@ -9,7 +34,7 @@
     rgba(44, 55, 95, 1) 3%,
     rgba(31, 35, 60, 1) 100%
   );
-  height: 100%;
+  height: 40%;
   width: 20%;
   box-shadow: 0px 0px 15px #2c375f;
 }
@@ -473,6 +498,8 @@
 }
 
 .room-menu-close-button {
+  position: absolute;
+  right: 0;
   width: 10%;
   background: #fff;
   border-radius: 2px;
@@ -480,7 +507,7 @@
   font-weight: 700;
   align-items: center;
   color: #2c385e;
-  box-shadow: 0px 2px 2px #2c385e;
+
   cursor: pointer;
   transition: 0.2s;
 }

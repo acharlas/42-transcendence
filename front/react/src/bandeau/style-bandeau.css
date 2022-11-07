@@ -1,0 +1,9 @@
+/*home bandeau*/
+.bandeau-container {
+  position: absolute;
+  top: 0;
+  height: 5%;
+  width: 100%;
+  background-color: rgb(44, 55, 95);
+}
+/*end home bandeau*/
