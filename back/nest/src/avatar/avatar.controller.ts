@@ -9,9 +9,8 @@ import {
   UseGuards,
   UploadedFile,
   StreamableFile,
-  Header,
-  NotFoundException,
   Res,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
@@ -36,6 +35,9 @@ export class AvatarController {
     @UploadedFile() avatar: Express.Multer.File,
   ) {
     console.log("postAvatar");
+    if (!avatar) {
+      throw new BadRequestException("no avatar");
+    }
     console.log(avatar);
     this.avatarService.saveAvatar(userId, { path: avatar.path });
   }
