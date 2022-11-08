@@ -4,11 +4,6 @@ export interface FriendDto {
   id: string,
 }
 
-export interface CheckIfFriendDto {
-  sourceId: string,
-  targetId: string,
-}
-
 export const addFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
     axios.post(
@@ -57,10 +52,10 @@ export const getFriend = async (params: FriendDto): Promise<any> => {
 
 //utils
 
-export const checkIfFriend = async (params: CheckIfFriendDto): Promise<boolean> => {
+export const checkIfFriend = async (params: FriendDto): Promise<boolean> => {
   const friendList = (await getFriend({ id: sessionStorage.getItem(`userid`) })).data.myfriend;
   for (let i = 0; i < friendList.length; i++) {
-    if (friendList[i].id === params.targetId) {
+    if (friendList[i].id === params.id) {
       return (true);
     }
   }

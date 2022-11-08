@@ -4,11 +4,6 @@ export interface BlockDto {
   id: string,
 }
 
-export interface CheckIfBlockDto {
-  sourceId: string,
-  targetId: string,
-}
-
 export const addBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
     axios.post(
@@ -57,10 +52,10 @@ export const getBlock = async (params: BlockDto): Promise<any> => {
 
 //utils
 
-export const checkIfBlocked = async (params: CheckIfBlockDto): Promise<boolean> => {
+export const checkIfBlocked = async (params: BlockDto): Promise<boolean> => {
   const blockList = (await getBlock({ id: sessionStorage.getItem(`userid`) })).data.myblock;
   for (let i = 0; i < blockList.length; i++) {
-    if (blockList[i].id === params.targetId) {
+    if (blockList[i].id === params.id) {
       return (true);
     }
   }
