@@ -8,7 +8,7 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
   let navigate = useNavigate();
 
   const GoToProfil = () => {
-    navigate("/profile/:" + window.sessionStorage.getItem("userid"));
+    navigate("/profile/me");
   };
 
   const HandleDisconect = () => {
