@@ -146,10 +146,10 @@ export class AuthService {
   async getApiToken(dto: getApiToken): Promise<string> {
     const payload = {
       grant_type: 'authorization_code',
-      client_id: this.config.get<string>('UID'),
-      client_secret: this.config.get<string>('API_SECRET'),
+      client_id: this.config.get<string>('42API_UID'),
+      client_secret: this.config.get<string>('42API_SECRET'),
       code: dto.code,
-      redirect_uri: this.config.get<string>('API_REDIRECT'),
+      redirect_uri: this.config.get<string>('42API_REDIRECT'),
       state: dto.state,
     };
     return new Promise<string>((resolve, reject) => {

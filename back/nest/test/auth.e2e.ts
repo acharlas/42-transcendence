@@ -62,7 +62,7 @@ describe('Auth Suite', () => {
         .expectStatus(403);
     });
     it('should signin', () => {
-      return pactum.spec().post('/auth/signin').withBody(dto).expectStatus(200);
+      return pactum.spec().post('/auth/signin').withBody(dto).expectStatus(201);
     });
   });
 });

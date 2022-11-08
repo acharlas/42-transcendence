@@ -1,14 +1,15 @@
 import { useState } from "react";
-import loginService from "./login-service";
-import "./login_style.css";
-import "../style.css";
+import { useNavigate } from "react-router-dom";
 import {
   FaUserAstronaut,
   FaRocket,
   FaSpaceShuttle,
   FaLock,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+
+import loginService from "./login-service";
+import "./login_style.css";
+import "../style.css";
 
 export function SignupForm() {
   const [newPass, setNewPass] = useState("");

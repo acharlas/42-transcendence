@@ -1,13 +1,14 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+import App from "./App";
 import SigninForm from "./login/signin_component";
 import { SignupForm } from "./login/signup_component";
 import Redirect from "./login/42_redirec";
-import MfaSetupInit from "./mfa/mfa_setup_init_component";
-import MfaSetupValidate from "./mfa/mfa_setup_validate_component";
-import MfaSignin from "./mfa/mfa_signin_component";
+import MfaSignin from "./login/login_mfa_component";
 import Settings from "./settings/settings_component";
-import App from "./App";
+import Profile from "./profile/profile_component";
+import Leaderboard from "./leaderboard/leaderboard_component";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");
@@ -22,10 +23,8 @@ root.render(
       <Route path="/home" element={<App />} />
       <Route path="/game" element={<App />} />
       <Route path="/settings" element={<Settings />} />
-      <Route path="/settings/mfa-init-setup" element={<MfaSetupInit />} />
-      <Route path="/settings/mfa-finish-setup" element={<MfaSetupValidate />} />
-      <Route path="/game" element={<App />} />
-      <Route path="/42-redirect" element={<Redirect />} />
+      <Route path="/profile/:urlId" element={<Profile />} />
+      <Route path="/leaderboard" element={<Leaderboard />} />
     </Routes>
   </BrowserRouter>
 );

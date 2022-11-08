@@ -1,84 +1,87 @@
-.settings__title {
-  color: antiquewhite;
-  font-size: large;
+.settings__line {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-content: flex-start;
+  align-items: center;
 }
 
-.settings__subtitle {
-  color: bisque;
-  font-size: large;
+.settings__group__two__buttons {
+  display: flex;
+  flex-direction: row;
 }
 
-/* profile picture */
+.settings__line__elem {
+  display: inline-flexbox;
+  text-align: center;
+  vertical-align: middle;
+}
 
-.settings__profile__picture {
-  width: 100px;
+.settings__button__texticon {
+  display: flex;
+  cursor: pointer;
+  border-radius: 5%;
+  padding: 0.4em;
+
+  background-color: rgb(255, 255, 255);
+  color: #0a1330;
+
+  vertical-align: baseline;
+  text-align: center;
+}
+
+.settings__icon {
+  /* margin-left: 33%; */
+  /* top: 30px; */
+  color: #2c385e;
+}
+
+/* avatar */
+
+.profile__panel__avatar {
+  display: flex;
+  justify-content: center;
+}
+
+.settings__avatar__div {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  width: fit-content;
+  max-width: 60%;
+  align-self: center;
+}
+
+.settings__avatar {
   max-width: 100%;
   height: auto;
 
-  border-radius: 50%;
+  /* border-radius: 10px; */
+  border-radius: 5%;
   border: 2px solid rgb(0, 0, 0);
+  margin: auto;
 }
 
-.settings__profile__picture__container {
+.settings__avatar__container {
+  display: flex;
+  /* align-items: center; */
+  flex-wrap: wrap;
+}
+
+/* nickname */
+
+.settings__nickname__div {
   display: flex;
   flex-wrap: nowrap;
-  /* align-items: center; */
-  /* margin: auto; */
-  /* width: 50%; */
 }
 
-/* names */
-
-.settings__namewrap {
-
-  color: #f0ddff;
+.settings__nickname__child {
+  display: inline-block;
 }
 
-.settings__name__title {
-  color: #f0ddff;
-}
-
-.settings__name__noedit {
-  color: #f0ddff;
-}
-
-.settings__name__edit {
-  color: #000000;
-  background: rgb(255, 203, 203);
-}
-
-.settings__name__edit__button {
-  color: #000000;
-}
-
-/* mfa */
-
-.settings__mfa__status {
-  color: #f0ddff;
-}
-
-/* background */
-
-.settings__block {
-  background: #28122b;
-  position: relative;
-  width: 360px;
-}
-
-.settings_screen {
-  background: #46234b;
-  position: relative;
-  height: 600px;
-  width: 360px;
-  box-shadow: 0px 0px 24px #3c4977;
-}
-
-.container {
-  background-image: url("../image/background-login.svg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
+.settings__nickname__input {
+  /* display: inline-flex;
+  width: max-content; */
+  flex-grow: 1;
 }

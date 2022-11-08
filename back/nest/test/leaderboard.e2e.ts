@@ -10,7 +10,6 @@ describe('Leaderboard Suite', () => {
       .spec()
       .post('/auth/signup')
       .withBody({
-        email: 'us32fasdasdasdf4asdaassa@a.com',
         password: 'pass',
         username: 'acharasdasdlas2aasdfs',
       })
@@ -27,7 +26,7 @@ describe('Leaderboard Suite', () => {
           Authorization: 'Bearer $S{U1AT}',
         })
         .expectStatus(200)
-        .expectBodyContains('us32fasdasdasdf4asdaassa@a.com');
+        .expectBodyContains('acharasdasdlas2aasdfs');
     });
   });
 });

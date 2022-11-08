@@ -41,6 +41,8 @@ model User {
   mfaEnabled      Boolean   @default(false)
   mfaPhoneNumber  String?
 
+  avatarPath String?
+
   @@map("users")
 }
 
@@ -117,7 +119,6 @@ model Message {
 
   @@map("messages")
   @@id([channelId, id])
-
 }
 
 enum GameMode {

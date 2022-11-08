@@ -14,6 +14,7 @@ import { BlockService } from 'src/block/block.service';
 import { CreateChannelDto, EditChannelDto } from 'src/channel/dto';
 import { FriendService } from 'src/friend/friend.service';
 import { UserService } from 'src/user/user.service';
+import { CreateChannelDto } from '../channel/dto';
 import { ChannelService } from '../channel/channel.service';
 import { socketTab, SocketWithAuth } from './types_message';
 

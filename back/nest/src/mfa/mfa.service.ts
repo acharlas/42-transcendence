@@ -3,7 +3,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Twilio } from 'twilio';
 import { JwtService } from '@nestjs/jwt';
 
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { MfaSetupDto } from './dto/mfa-setup.dto';
 import { MfaValidateDto } from './dto/mfa-validate.dto';
 import { AuthService } from 'src/auth/auth.service';
@@ -30,7 +30,7 @@ export class MfaService {
       .create({ to: phoneNumber, channel: 'sms' },
         function (err, message) {
           if (err) {
-            console.error('Sending sms failed: ' + err.message);
+            console.log(err);
             return (true);
           } else {
             console.log('Sent 2fa request to ' + message.to);
@@ -51,7 +51,15 @@ export class MfaService {
 
     const ret = await client.verify.v2.services(serviceSid)
       .verificationChecks
-      .create({ to: phoneNumber, code: codeToCheck });
+      .create({ to: phoneNumber, code: codeToCheck },
+        function (err, message) {
+          if (err) {
+            console.log(err);
+            return (true);
+          } else {
+            return (false);
+          }
+        });
 
     console.log("Sent 2fa code checking request", ret);
 
