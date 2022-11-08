@@ -48,4 +48,21 @@ export class UserService {
     });
     return playerHistory;
   }
+
+  async getUser(username: string): Promise<User> {
+    return new Promise<User>((resolve, reject) => {
+      this.prisma.user
+        .findUnique({
+          where: {
+            username: username,
+          },
+        })
+        .then((user) => {
+          return resolve(user);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
 }

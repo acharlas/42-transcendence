@@ -10,7 +10,6 @@ describe('User Suite', () => {
       .spec()
       .post('/auth/signup')
       .withBody({
-        email: 'usedsa@a.com',
         password: 'pass',
         username: 'asfsdfgdfgdsf',
       })
@@ -32,7 +31,6 @@ describe('User Suite', () => {
     it('shoult edit current user', () => {
       const dto: EditUserDto = {
         username: 'dasdadasd',
-        email: 'b@b.com',
       };
       return pactum
         .spec()
@@ -42,8 +40,7 @@ describe('User Suite', () => {
         })
         .withBody(dto)
         .expectStatus(200)
-        .expectBodyContains(dto.username)
-        .expectBodyContains(dto.email);
+        .expectBodyContains(dto.username);
     });
   });
   describe('Get user', () => {
@@ -56,10 +53,10 @@ describe('User Suite', () => {
         })
         .expectStatus(200)
         .expectJsonLike({
-          email: 'b@b.com',
+          username: 'dasdadasd',
         })
         .stores('userId', 'id')
-        .stores('userEmail', 'email');
+        .stores('username', 'username');
     });
     it('should get User with id', () => {
       return pactum
@@ -70,7 +67,7 @@ describe('User Suite', () => {
         })
         .expectStatus(200)
         .expectJsonLike({
-          email: '$S{userEmail}',
+          username: '$S{username}',
         });
     });
     it('should throw error invalid id', () => {

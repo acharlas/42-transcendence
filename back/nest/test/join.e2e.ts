@@ -23,7 +23,6 @@ describe('Join/Leave Suite', () => {
       .spec()
       .post('/auth/signup')
       .withBody({
-        email: 'useds3242dfsa@a.com',
         password: 'pass',
         username: 'tcosse2asd',
       })

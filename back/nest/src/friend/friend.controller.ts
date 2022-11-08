@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
+import e from 'express';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { FriendDto } from './dto';
@@ -20,7 +21,7 @@ import { FriendService } from './friend.service';
 @UseGuards(JwtGuard)
 @Controller('friend')
 export class FriendController {
-  constructor(private friendService: FriendService) {}
+  constructor(private friendService: FriendService) { }
 
   @HttpCode(HttpStatus.OK)
   @Post('add')
@@ -28,7 +29,16 @@ export class FriendController {
     @GetUser('id') userId: string,
     @Body() dto: FriendDto,
   ): Promise<{ myfriend: User[] }> {
-    return this.friendService.addFriend(userId, dto);
+    return new Promise<{ myfriend: User[] }>((resolve, reject) => {
+      this.friendService
+        .addFriend(userId, dto)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @HttpCode(HttpStatus.OK)
@@ -37,7 +47,16 @@ export class FriendController {
     @GetUser('id') userId: string,
     @Body() dto: FriendDto,
   ): Promise<{ myfriend: User[] }> {
-    return this.friendService.removeFriend(userId, dto);
+    return new Promise<{ myfriend: User[] }>((resolve, reject) => {
+      this.friendService
+        .removeFriend(userId, dto)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @Get(':id')
@@ -45,6 +64,15 @@ export class FriendController {
     @GetUser('id') userId: string,
     @Param('id') id: string,
   ): Promise<{ myfriend: User[] }> {
-    return this.friendService.getFriend(userId, id);
+    return new Promise<{ myfriend: User[] }>((resolve, reject) => {
+      this.friendService
+        .getFriend(userId, id)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 }

@@ -7,7 +7,6 @@ describe('Auth Suite', () => {
   });
 
   const dto: AuthSignupDto = {
-    email: 'a@a.com',
     password: 'pass',
     username: 'acharlas',
   };
@@ -27,14 +26,7 @@ describe('Auth Suite', () => {
       return pactum
         .spec()
         .post('/auth/signup')
-        .withBody({ email: dto.email })
-        .expectStatus(400);
-    });
-    it('should throw if email bad formated', () => {
-      return pactum
-        .spec()
-        .post('/auth/signup')
-        .withBody({ email: 'bad-email' })
+        .withBody({ email: dto.username })
         .expectStatus(400);
     });
     it('should signup', () => {
@@ -56,32 +48,21 @@ describe('Auth Suite', () => {
       return pactum
         .spec()
         .post('/auth/signin')
-        .withBody({ email: dto.email })
+        .withBody({ email: dto.username })
         .expectStatus(400);
-    });
-    it('should throw if email incorrect', () => {
-      return pactum
-        .spec()
-        .post('/auth/signin')
-        .withBody({
-          email: 'bademail@fsdf.com',
-          password: dto.password,
-        })
-        .expectStatus(403);
     });
     it('should throw if password incorrect', () => {
       return pactum
         .spec()
         .post('/auth/signin')
         .withBody({
-          email: dto.email,
           password: 'bad-password',
           username: 'dasdad',
         })
         .expectStatus(403);
     });
     it('should signin', () => {
-      return pactum.spec().post('/auth/signin').withBody(dto).expectStatus(200);
+      return pactum.spec().post('/auth/signin').withBody(dto).expectStatus(201);
     });
   });
 });

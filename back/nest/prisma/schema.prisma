@@ -15,7 +15,6 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  email String @unique
   hash  String
 
   username String @unique
@@ -35,6 +34,15 @@ model User {
   history UserHistory[]
   messages Message[]
   
+  userType UserType
+
+  fortyTwoId Int
+
+  mfaEnabled      Boolean   @default(false)
+  mfaPhoneNumber  String?
+
+  avatarPath String?
+
   @@map("users")
 }
 
@@ -43,6 +51,7 @@ model ChannelUser {
   updatedAt DateTime @updatedAt
 
   privilege UserPrivilege
+  time  DateTime @default(now())
   status UserStatus
 
   userId String
@@ -60,7 +69,7 @@ model Channel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name String @unique
+  name String? @unique
   type ChannelType @default(public)
   hash String?
 
@@ -101,7 +110,8 @@ model Message {
   updatedAt DateTime @updatedAt
 
   content String
-
+  username String
+  
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   channelId String
@@ -109,13 +119,12 @@ model Message {
 
   @@map("messages")
   @@id([channelId, id])
-
 }
 
 enum GameMode {
   BATTLEROYAL
   CLASSIC
- }
+}
 
 enum UserStatus {
   connected
@@ -129,6 +138,11 @@ enum UserPrivilege {
   default
   muted
   ban
+}
+
+enum UserType {
+  fortyTwo
+  normal
 }
 
 enum ChannelType {

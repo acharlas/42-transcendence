@@ -1,13 +1,16 @@
 FROM node:alpine
 
-WORKDIR /nest
-
 ENV PATH /nest/node_modules/.bin:$PATH
+
+WORKDIR /nest
 
 COPY ./nest ./
 
 RUN npm install
 RUN nest build
-#RUN npm run prisma:dev:deploy
 
-CMD ["npm", "run", "start:dev"]
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["npm", "run", "start:dev:deploy"]

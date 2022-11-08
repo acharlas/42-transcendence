@@ -1,7 +1,42 @@
-Canvas {
-    height: 1000px;
+p {
+  color: rgb(0, 0, 0);
 }
 
 body {
-    background-color: black;
+  background-color: rgb(255, 255, 255);
+}
+
+#game {
+  height: 100%;
+  width: 100%;
+}
+
+#chat {
+  height: 100%;
+  width: 100%;
+}
+
+#login {
+  color: aliceblue;
+  margin-left: 100px;
+  height: 100%;
+  width: 100%;
+}
+
+#error-msg {
+  color: red;
+}
+
+#logout {
+  margin-left: 200px;
+}
+
+.container {
+  background-image: url("./image/background-login.svg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }

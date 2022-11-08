@@ -24,19 +24,46 @@ export class UserController {
     @GetUser('id') userId: string,
     @Param('id') id: string,
   ): Promise<User> {
-    return this.userService.getUserId(userId, id);
+    return new Promise<User>((resolve, reject) => {
+      this.userService
+        .getUserId(userId, id)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @Get()
   getUsers(): Promise<User[]> {
-    return this.userService.getUsers();
+    return new Promise<User[]>((resolve, reject) => {
+      this.userService
+        .getUsers()
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @Get('history/:id')
   getUserHistory(
     @Param('id') userId: string,
   ): Promise<{ history: UserHistory[] }> {
-    return this.userService.getHistory(userId);
+    return new Promise<{ history: UserHistory[] }>((resolve, reject) => {
+      this.userService
+        .getHistory(userId)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 
   @Patch()

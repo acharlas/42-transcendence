@@ -13,7 +13,6 @@ describe('Friend Block Suite', () => {
   //mockres
   it('create amis1', () => {
     const authDto: AuthSignupDto = {
-      email: 'amis1@a.toto',
       password: 'string',
       username: 'amis1.toto',
     };
@@ -32,11 +31,10 @@ describe('Friend Block Suite', () => {
         Authorization: 'Bearer $S{userToken1}',
       })
       .stores('userId1', 'id')
-      .stores('userEmail1', 'email');
+      .stores('username1', 'username');
   });
   it('create amis2', () => {
     const authDto: AuthSignupDto = {
-      email: 'amis2@a.toto',
       password: 'string',
       username: 'amis2.toto',
     };
@@ -55,7 +53,7 @@ describe('Friend Block Suite', () => {
         Authorization: 'Bearer $S{userToken2}',
       })
       .stores('userId2', 'id')
-      .stores('userEmail2', 'email');
+      .stores('username2', 'username');
   });
 
   describe('Friend', () => {
@@ -75,7 +73,7 @@ describe('Friend Block Suite', () => {
             myfriend: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.toto',
+                username: 'amis1.toto',
               },
             ],
           })
@@ -94,7 +92,7 @@ describe('Friend Block Suite', () => {
           })
           .expectStatus(403)
           .expectJsonLike({
-            message: 'Must add an existing user',
+            error: 'Must add an existing user',
           });
       });
       it('should throw already friend', () => {
@@ -110,7 +108,7 @@ describe('Friend Block Suite', () => {
           })
           .expectStatus(403)
           .expectJsonLike({
-            message: 'already friend',
+            error: 'already friend',
           });
       });
       it('should get friend', () => {
@@ -125,7 +123,7 @@ describe('Friend Block Suite', () => {
             myfriend: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.toto',
+                username: 'amis1.toto',
               },
             ],
           });
@@ -139,7 +137,7 @@ describe('Friend Block Suite', () => {
           })
           .expectStatus(403)
           .expectJsonLike({
-            message: "can't access friend from a other user",
+            error: "can't access friend from a other user",
           });
       });
       it('should remove friend', () => {
@@ -170,7 +168,7 @@ describe('Friend Block Suite', () => {
             Authorization: 'Bearer $S{userToken2}',
           })
           .expectJsonLike({
-            message: 'no matching friend',
+            error: 'no matching friend',
           })
           .expectStatus(403);
       });
@@ -205,7 +203,7 @@ describe('Friend Block Suite', () => {
             myblock: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.toto',
+                username: 'amis1.toto',
               },
             ],
           })
@@ -224,7 +222,7 @@ describe('Friend Block Suite', () => {
           })
           .expectStatus(403)
           .expectJsonLike({
-            message: 'Must add an existing user',
+            error: 'Must add an existing user',
           });
       });
       it('should throw already block', () => {
@@ -240,7 +238,7 @@ describe('Friend Block Suite', () => {
           })
           .expectStatus(403)
           .expectJsonLike({
-            message: 'already block',
+            error: 'already block',
           });
       });
       it('should get block', () => {
@@ -255,7 +253,7 @@ describe('Friend Block Suite', () => {
             myblock: [
               {
                 id: '$S{userId1}',
-                email: 'amis1@a.toto',
+                username: 'amis1.toto',
               },
             ],
           });
@@ -269,7 +267,7 @@ describe('Friend Block Suite', () => {
           })
           .expectStatus(403)
           .expectJsonLike({
-            message: "can't access block from a other user",
+            error: "can't access block from a other user",
           });
       });
       it('should remove block', () => {
@@ -300,7 +298,7 @@ describe('Friend Block Suite', () => {
             Authorization: 'Bearer $S{userToken2}',
           })
           .expectJsonLike({
-            message: 'no matching block',
+            error: 'no matching block',
           })
           .expectStatus(403);
       });
