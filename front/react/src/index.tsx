@@ -9,6 +9,9 @@ import MfaSignin from "./login/login_mfa_component";
 import Settings from "./settings/settings_component";
 import Profile from "./profile/profile_component";
 import Leaderboard from "./leaderboard/leaderboard_component";
+import ChatProvider from "./context/chat.context";
+import SocketContextComponent from "./chat/socket-component";
+import ChatIndex from "./chat/chat-index";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Failed to find the root element");

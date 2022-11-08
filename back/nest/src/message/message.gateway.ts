@@ -42,6 +42,7 @@ export class MessageGateway
   handleConnection(client: SocketWithAuth): void {
     const socket = this.io.sockets;
 
+    console.log('socket list: ', this.SocketList);
     const find = this.SocketList.find((socket) => {
       if (socket.userId === client.userID) return true;
       return false;
@@ -50,7 +51,11 @@ export class MessageGateway
       console.log('find:', find);
       if (find.socket.id !== client.id) {
         find.socket.emit('Disconnect');
-        //find.socket.disconnect();
+        this.SocketList = this.SocketList.filter((socket) => {
+          if (socket.socket.id === find.socket.id) return false;
+          return true;
+        });
+        find.socket.disconnect();
       }
     }
     this.SocketList.push({ userId: client.userID, socket: client });

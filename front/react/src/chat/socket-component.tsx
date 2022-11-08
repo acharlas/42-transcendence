@@ -7,14 +7,7 @@ import {
   SocketReducer,
 } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
-import {
-  Channel,
-  Message,
-  Room,
-  User,
-  UserPrivilege,
-  UserStatus,
-} from "./type";
+import { Channel, Message, Room, User, UserStatus } from "./type";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
