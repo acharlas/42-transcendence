@@ -32,4 +32,4 @@ import { AvatarModule } from './avatar/avatar.module';
     AvatarModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

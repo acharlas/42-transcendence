@@ -28,10 +28,7 @@ CREATE TABLE "users" (
     "fortyTwoId" INTEGER NOT NULL,
     "mfaEnabled" BOOLEAN NOT NULL DEFAULT false,
     "mfaPhoneNumber" TEXT,
-<<<<<<<< HEAD:back/nest/prisma/migrations/20221103163546_optional/migration.sql
-========
     "avatarPath" TEXT,
->>>>>>>> origin/avatars:back/nest/prisma/migrations/20221029164559_init/migration.sql
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );

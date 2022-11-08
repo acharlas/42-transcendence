@@ -6,4 +6,77 @@
   width: 100%;
   background-color: rgb(44, 55, 95);
 }
+
+.bandeau-button {
+  width: 20%;
+  height: 100%;
+  border: 0px;
+  font-weight: 700;
+  cursor: pointer;
+  background: rgb(44, 55, 95);
+  background: linear-gradient(
+    180deg,
+    rgba(44, 55, 95, 1) 1%,
+    rgba(48, 63, 120, 1) 100%
+  );
+  color: rgb(255, 255, 255);
+}
+
+.bandeau-button:active {
+  background: rgb(44, 55, 95);
+  background: linear-gradient(
+    180deg,
+    rgba(44, 55, 95, 1) 1%,
+    rgba(15, 20, 38, 1) 100%
+  );
+}
+.bandeau-button:focus,
+.bandeau-button:hover {
+  box-shadow: 0 0 10px #eda33d;
+  color: #eda33d;
+}
+
+.bandeau-button-disconect {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  width: 5%;
+  border: 3px;
+  font-weight: 700;
+  cursor: pointer;
+  background: rgb(44, 55, 95);
+  background: linear-gradient(
+    180deg,
+    rgba(44, 55, 95, 1) 1%,
+    rgba(48, 63, 120, 1) 100%
+  );
+  color: rgb(255, 255, 255);
+}
+
+.bandeau-button-disconect:active {
+  background: rgb(44, 55, 95);
+
+  background: linear-gradient(
+    180deg,
+    rgba(44, 55, 95, 1) 1%,
+    rgba(15, 20, 38, 1) 100%
+  );
+
+  text-shadow: 0 0 10px #eda33d;
+}
+.bandeau-button-disconect:focus,
+.bandeau-button-disconect:hover {
+  color: #eda33d;
+  box-shadow: 0 0 10px #eda33d;
+}
+
+.bandeau-disconnect-icon {
+  color: inherit;
+  height: 100%;
+  width: 100%;
+  font-weight: 700;
+}
+.bandeau-disconnect-icon:hover {
+  text-shadow: 0 0 10px #eda33d;
+}
 /*end home bandeau*/

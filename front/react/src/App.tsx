@@ -4,6 +4,7 @@ import BandeauIndex from "./bandeau/bandeau";
 import SocketContextComponent from "./chat/socket-component";
 import ChatProvider from "./context/chat.context";
 import loginService from "./login/login-service";
+import { useEffect } from "react";
 
 export interface IAppProps {}
 const App: React.FunctionComponent<IAppProps> = (props) => {

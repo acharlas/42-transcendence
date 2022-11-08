@@ -8,13 +8,12 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { ChannelType, UserPrivilege } from '@prisma/client';
+import { UserPrivilege } from '@prisma/client';
 import { Server, Socket, Namespace } from 'socket.io';
 import { BlockService } from 'src/block/block.service';
 import { CreateChannelDto, EditChannelDto } from 'src/channel/dto';
 import { FriendService } from 'src/friend/friend.service';
 import { UserService } from 'src/user/user.service';
-import { CreateChannelDto } from '../channel/dto';
 import { ChannelService } from '../channel/channel.service';
 import { socketTab, SocketWithAuth } from './types_message';
 
@@ -42,6 +41,18 @@ export class MessageGateway
 
   handleConnection(client: SocketWithAuth): void {
     const socket = this.io.sockets;
+
+    const find = this.SocketList.find((socket) => {
+      if (socket.userId === client.userID) return true;
+      return false;
+    });
+    if (find) {
+      console.log('find:', find);
+      if (find.socket.id !== client.id) {
+        find.socket.emit('Disconnect');
+        //find.socket.disconnect();
+      }
+    }
     this.SocketList.push({ userId: client.userID, socket: client });
     this.channelService
       .getUserRoom(client.userID)

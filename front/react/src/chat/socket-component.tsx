@@ -1,4 +1,5 @@
 import { PropsWithChildren, useEffect, useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 import { useChat } from "../context/chat.context";
 import {
   defaultSocketContextState,
@@ -52,6 +53,7 @@ const SocketContextComponent: React.FunctionComponent<
       token: sessionStorage.getItem("Token"),
     },
   });
+  let navigate = useNavigate();
 
   useEffect(() => {
     /** connect to the web socket */
@@ -65,6 +67,13 @@ const SocketContextComponent: React.FunctionComponent<
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
+      /**disconnect */
+      socket.on("Disconnect", () => {
+        console.log("disconnect");
+        window.sessionStorage.clear();
+        socket.disconnect();
+        navigate("/");
+      });
       /**user is ban from chan */
       socket.on("UserBan", (roomId) => {
         console.log("you have been ban from: ", roomId);
