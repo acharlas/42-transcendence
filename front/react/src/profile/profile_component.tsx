@@ -61,7 +61,7 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
     }
 
     const fetchFriendBlockStates = async () => {
-      await checkIfFriend({ sourceId: "6b8d5dd7-58e5-4e9d-b8b6-cc985266235c", targetId: id })
+      await checkIfFriend({ id: id })
         .then((res) => {
           setIsFriend(res);
         })
@@ -75,7 +75,7 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
           }
         });
 
-      await checkIfBlocked({ sourceId: "6b8d5dd7-58e5-4e9d-b8b6-cc985266235c", targetId: id })
+      await checkIfBlocked({ id: id })
         .then((res) => {
           setIsBlocked(res);
         })
