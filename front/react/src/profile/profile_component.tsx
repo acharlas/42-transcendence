@@ -149,7 +149,6 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
             <div className="profile__panel__bottom">
               <div className="profile__avatar__container">
                 {Avatar(id)}
-                {/*TODO: display profile pictures */}
 
                 {isSelfProfile ||
                   <div className="profile__button__container">
