@@ -7,8 +7,16 @@ export interface IBandeauIndexProps {}
 const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
   let navigate = useNavigate();
 
-  const GoToProfil = () => {
+  const goProfile = () => {
     navigate("/profile/me");
+  };
+
+  const goSettings = () => {
+    navigate("/settings");
+  };
+
+  const goHome = () => {
+    navigate("/home");
   };
 
   const HandleDisconect = () => {
@@ -17,8 +25,14 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
 
   return (
     <div className="bandeau-container">
-      <button onClick={GoToProfil} className="bandeau-button">
-        profil
+      <button onClick={goHome} className="bandeau-button">
+        home
+      </button>
+      <button onClick={goProfile} className="bandeau-button">
+        profile
+      </button>
+      <button onClick={goSettings} className="bandeau-button">
+        settings
       </button>
       <button onClick={HandleDisconect} className="bandeau-button-disconect">
         <RiShutDownLine className="bandeau-disconnect-icon" />
