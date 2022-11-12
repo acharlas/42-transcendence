@@ -76,10 +76,10 @@ export function SignupForm() {
   };
 
   return (
-    <div className="container">
-      <div className="screen">
-        <div className="screen__content">
-          <form className="login-signup">
+    <div className="login__container">
+      <div className="login__screen">
+        <div className="login__screen__content">
+          <form className="login__signup">
             {ErrorMessage === null ? (
               ""
             ) : (

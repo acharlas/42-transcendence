@@ -22,5 +22,5 @@ export default function Redirect() {
         console.log("error:", e);
         navigate("/");
       });
-  return <div className="container"></div>;
+  return <div className="login__container"></div>;
 }

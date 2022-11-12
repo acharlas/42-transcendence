@@ -39,9 +39,9 @@ export default function MfaSignin() {
     }
   };
   return (
-    <div className="container">
-      <div className="screen">
-        <div className="screen__content">
+    <div className="login__container">
+      <div className="login__screen">
+        <div className="login__screen__content">
           <form className="login">
             <button className="login__submit" onClick={sendSmsCode}>
               <span className="button__text">Send code</span>

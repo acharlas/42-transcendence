@@ -20,7 +20,7 @@ interface DecodedToken {
   exp: string;
 }
 
-export interface ISigninFormProps {}
+export interface ISigninFormProps { }
 
 const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   const [newUsername, setNewUsername] = useState("");
@@ -101,9 +101,9 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   }
 
   return (
-    <div className="container">
-      <div className="screen">
-        <div className="screen__content">
+    <div className="login__container">
+      <div className="login__screen">
+        <div className="login__screen__content">
           <form className="login">
             <div className="login__field">
               <FaUserAstronaut />
