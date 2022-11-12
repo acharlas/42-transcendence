@@ -2,16 +2,21 @@ ul {
   list-style-type: none;
 }
 
-/*menu user*/
+/* menu user */
 .menu-user-button {
+  z-index: 99;
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 5%;
-  height: 5%;
-  border-radius: 10px;
+
+  width: min(10vw, 10vh);
+  height: min(10vw, 10vh);
+  border-radius: 10% 0 0 0;
   border: 0px;
-  font-weight: 700;
+
+  display: flex;
+  justify-content: center;
+
   cursor: pointer;
   background-color: rgb(44, 55, 95);
   color: rgb(255, 255, 255);
@@ -24,6 +29,8 @@ ul {
 }
 
 .menu-user-icon {
+  display: block;
+  margin: auto;
   width: 70%;
   height: 70%;
 }

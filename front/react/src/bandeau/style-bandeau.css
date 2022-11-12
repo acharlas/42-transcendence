@@ -1,10 +1,14 @@
 /*home bandeau*/
 .bandeau-container {
+  z-index: 99;
   position: absolute;
   top: 0;
-  height: 5%;
+  height: 7%;
   width: 100%;
   background-color: rgb(44, 55, 95);
+  display: flex;
+  justify-content: right;
+  align-items: space-between;
 }
 
 .bandeau-button {
@@ -14,29 +18,25 @@
   font-weight: 700;
   cursor: pointer;
   background: rgb(44, 55, 95);
-  background: linear-gradient(
-    180deg,
-    rgba(44, 55, 95, 1) 1%,
-    rgba(48, 63, 120, 1) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(44, 55, 95, 1) 1%,
+      rgba(48, 63, 120, 1) 100%);
   color: rgb(255, 255, 255);
 }
 
 .bandeau-button:active {
-  background: rgb(44, 55, 95);
-  background: linear-gradient(
-    180deg,
-    rgba(44, 55, 95, 1) 1%,
-    rgba(15, 20, 38, 1) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(44, 55, 95, 1) 1%,
+      rgba(15, 20, 38, 1) 100%);
 }
+
 .bandeau-button:focus,
 .bandeau-button:hover {
   box-shadow: 0 0 10px #eda33d;
   color: #eda33d;
 }
 
-.bandeau-button-disconect {
+.bandeau-button-disconnect {
   position: absolute;
   right: 0;
   height: 100%;
@@ -45,38 +45,34 @@
   font-weight: 700;
   cursor: pointer;
   background: rgb(44, 55, 95);
-  background: linear-gradient(
-    180deg,
-    rgba(44, 55, 95, 1) 1%,
-    rgba(48, 63, 120, 1) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(44, 55, 95, 1) 1%,
+      rgba(48, 63, 120, 1) 100%);
   color: rgb(255, 255, 255);
 }
 
-.bandeau-button-disconect:active {
-  background: rgb(44, 55, 95);
-
-  background: linear-gradient(
-    180deg,
-    rgba(44, 55, 95, 1) 1%,
-    rgba(15, 20, 38, 1) 100%
-  );
-
+.bandeau-button-disconnect:active {
+  background: linear-gradient(180deg,
+      rgba(44, 55, 95, 1) 1%,
+      rgba(15, 20, 38, 1) 100%);
   text-shadow: 0 0 10px #eda33d;
 }
-.bandeau-button-disconect:focus,
-.bandeau-button-disconect:hover {
+
+.bandeau-button-disconnect:focus,
+.bandeau-button-disconnect:hover {
   color: #eda33d;
   box-shadow: 0 0 10px #eda33d;
 }
 
 .bandeau-disconnect-icon {
   color: inherit;
-  height: 100%;
-  width: 100%;
+  /* height: 100%;
+  width: 100%; */
   font-weight: 700;
 }
+
 .bandeau-disconnect-icon:hover {
   text-shadow: 0 0 10px #eda33d;
 }
+
 /*end home bandeau*/

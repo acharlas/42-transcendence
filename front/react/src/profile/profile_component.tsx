@@ -136,7 +136,6 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
   return (
     <ChatProvider>
       <SocketContextComponent>
-        <BandeauIndex />
         <ChatIndex />
         <div className="container">
           <BandeauIndex />
