@@ -30,6 +30,7 @@ ul {
 
 /* chat box */
 .chat-container {
+  z-index: 99;
   position: absolute;
   right: 0;
   bottom: 0;
@@ -76,6 +77,7 @@ ul {
 }
 
 .chat-box-container {
+  z-index: 99;
   position: absolute;
   bottom: 0;
   right: 20%;
