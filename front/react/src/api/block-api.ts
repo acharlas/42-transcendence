@@ -1,4 +1,4 @@
-import axios from "axios";
+import customAxios from "./customAxios";
 
 export interface BlockDto {
   id: string,
@@ -6,7 +6,7 @@ export interface BlockDto {
 
 export const addBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(
+    customAxios.post(
       `http://localhost:3333/block/add/`,
       { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
@@ -22,7 +22,7 @@ export const addBlock = async (params: BlockDto): Promise<any> => {
 
 export const removeBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(
+    customAxios.post(
       `http://localhost:3333/block/remove/`,
       { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
@@ -38,7 +38,7 @@ export const removeBlock = async (params: BlockDto): Promise<any> => {
 
 export const getBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/block/` + params.id,
+    customAxios.get(`http://localhost:3333/block/` + params.id,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);

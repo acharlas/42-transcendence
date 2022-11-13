@@ -1,4 +1,4 @@
-import axios from "axios";
+import customAxios from "./customAxios";
 
 export interface FriendDto {
   id: string,
@@ -6,7 +6,7 @@ export interface FriendDto {
 
 export const addFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(
+    customAxios.post(
       `http://localhost:3333/friend/add/`,
       { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
@@ -22,7 +22,7 @@ export const addFriend = async (params: FriendDto): Promise<any> => {
 
 export const removeFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(
+    customAxios.post(
       `http://localhost:3333/friend/remove/`,
       { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
@@ -38,7 +38,7 @@ export const removeFriend = async (params: FriendDto): Promise<any> => {
 
 export const getFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/friend/` + params.id,
+    customAxios.get(`http://localhost:3333/friend/` + params.id,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);

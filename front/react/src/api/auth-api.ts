@@ -1,4 +1,4 @@
-import axios from "axios";
+import customAxios from "./customAxios";
 
 export interface loginDto {
   username: string;
@@ -18,10 +18,9 @@ export interface fortyTwoLoginDto {
 export interface getMeDto {
   token: string;
 }
-
 export const getMe = async (dto: getMeDto): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
-    axios
+    customAxios
       .get("http://localhost:3333/users/me", {
         headers: {
           Authorization: "Bearer " + dto.token,
@@ -41,7 +40,7 @@ export const getMe = async (dto: getMeDto): Promise<void> => {
 };
 
 export const signin = async (credentials: loginDto) => {
-  const response = await axios.post("http://localhost:3333/auth/signin", {
+  const response = await customAxios.post("http://localhost:3333/auth/signin", {
     username: credentials.username,
     password: credentials.password,
   });
@@ -49,7 +48,7 @@ export const signin = async (credentials: loginDto) => {
 }
 
 export const signup = async (credentials: signupDto) => {
-  const response = await axios.post("http://localhost:3333/auth/signup", {
+  const response = await customAxios.post("http://localhost:3333/auth/signup", {
     password: credentials.password,
     username: credentials.username,
   });
@@ -58,7 +57,7 @@ export const signup = async (credentials: signupDto) => {
 
 export const fortyTwoSign = async (dto: fortyTwoLoginDto) => {
   try {
-    const response = await axios.post("http://localhost:3333/auth/signinApi", {
+    const response = await customAxios.post("http://localhost:3333/auth/signinApi", {
       code: dto.code,
       state: dto.state,
     });
