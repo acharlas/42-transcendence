@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRocket } from "react-icons/fa";
 
-import { signinWithMfa } from "./login-service";
-import { requestMfaSigninInit } from "../api/mfa-api";
 import "./login_style.css";
 import "../style.css";
 import displayErrorMsgs from "../utils/displayErrMsgs";
+import { checkMfaDto, requestMfaSigninFinish, requestMfaSigninInit } from "../api/mfa-api";
 
 export default function MfaSignin() {
   let navigate = useNavigate();
@@ -19,6 +18,17 @@ export default function MfaSignin() {
 
   const HandleSmsCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSmsCode(event.target.value);
+  };
+
+  const signinWithMfa = async (params: checkMfaDto) => {
+    try {
+      const response = await requestMfaSigninFinish(params);
+      window.sessionStorage.setItem(`Token`, response.data.access_token);
+      return response;
+    } catch (e) {
+      console.log(`Mfa error`, { e });
+      return e;
+    }
   };
 
   const sendSmsCode = async (event: React.MouseEvent<HTMLButtonElement>) => {

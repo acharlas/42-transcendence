@@ -11,10 +11,10 @@ import {
   FaFighterJet,
 } from "react-icons/fa";
 
-import loginService from "./login-service";
 import "./login_style.css";
 import "../style.css";
 import displayErrorMsgs from "../utils/displayErrMsgs";
+import { signin } from "../api/auth-api";
 
 interface DecodedToken {
   sub: string;
@@ -58,10 +58,9 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
 
   const signinClassic = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-
     try {
       setErrorMessage("");
-      const token = await loginService.signin({
+      const token = await signin({
         username: newUsername,
         password: newPass,
       });

@@ -9,10 +9,10 @@ import {
   FaEyeSlash,
 } from "react-icons/fa";
 
-import loginService from "./login-service";
 import "./login_style.css";
 import "../style.css";
 import displayErrorMsgs from "../utils/displayErrMsgs";
+import { signup } from "../api/auth-api";
 
 export function SignupForm() {
   const [newPass, setNewPass] = useState("");
@@ -48,7 +48,7 @@ export function SignupForm() {
     event.preventDefault();
     try {
       setErrorMessage("");
-      const token = await loginService.signup({
+      const token = await signup({
         password: newPass,
         username: newUsername,
       });

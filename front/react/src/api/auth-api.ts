@@ -1,5 +1,4 @@
 import axios from "axios";
-import { checkMfaDto, requestMfaSigninFinish } from "../api/mfa-api";
 
 export interface loginDto {
   username: string;
@@ -20,12 +19,12 @@ export interface getMeDto {
   token: string;
 }
 
-const getMe = async (Credential: getMeDto): Promise<void> => {
+export const getMe = async (dto: getMeDto): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     axios
       .get("http://localhost:3333/users/me", {
         headers: {
-          Authorization: "Bearer " + Credential.token,
+          Authorization: "Bearer " + dto.token,
         },
       })
       .then((ret) => {
@@ -41,27 +40,27 @@ const getMe = async (Credential: getMeDto): Promise<void> => {
   });
 };
 
-const signin = async (credentials: loginDto) => {
+export const signin = async (credentials: loginDto) => {
   const response = await axios.post("http://localhost:3333/auth/signin", {
     username: credentials.username,
     password: credentials.password,
   });
   return response.data.access_token;
-};
+}
 
-const signup = async (credentials: signupDto) => {
+export const signup = async (credentials: signupDto) => {
   const response = await axios.post("http://localhost:3333/auth/signup", {
     password: credentials.password,
     username: credentials.username,
   });
   return response.data.access_token;
-};
+}
 
-const fortyTwoSign = async (credentials: fortyTwoLoginDto) => {
+export const fortyTwoSign = async (dto: fortyTwoLoginDto) => {
   try {
     const response = await axios.post("http://localhost:3333/auth/signinApi", {
-      code: credentials.code,
-      state: credentials.state,
+      code: dto.code,
+      state: dto.state,
     });
     window.sessionStorage.setItem("Token", response.data.access_token);
     return response;
@@ -69,18 +68,4 @@ const fortyTwoSign = async (credentials: fortyTwoLoginDto) => {
     console.log("Oauth error", { e });
     return e;
   }
-};
-
-export const signinWithMfa = async (params: checkMfaDto) => {
-  try {
-    const response = await requestMfaSigninFinish(params);
-    window.sessionStorage.setItem(`Token`, response.data.access_token);
-    return response;
-  } catch (e) {
-    console.log(`Mfa error`, { e });
-    return e;
-  }
-};
-
-// eslint-disable-next-line
-export default { getMe, signup, signin, fortyTwoSign, signinWithMfa };
+}

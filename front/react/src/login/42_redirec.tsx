@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import loginService from "./login-service";
+import { fortyTwoSign } from "../api/auth-api";
 
 export default function Redirect() {
   const [searchParams] = useSearchParams();
@@ -9,8 +9,7 @@ export default function Redirect() {
   const state = searchParams.get("state");
 
   if (code && state)
-    loginService
-      .fortyTwoSign({ code: code, state: state })
+    fortyTwoSign({ code: code, state: state })
       .then(() => {
         navigate("/home");
       })
