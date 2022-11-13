@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   AuthSigninDto,
@@ -50,11 +45,29 @@ export class AuthService {
               return resolve(ret);
             })
             .catch((err) => {
-              return reject(err);
+              console.log('signup: signToken error', err);
+              return reject(
+                new HttpException(
+                  {
+                    status: HttpStatus.BAD_REQUEST,
+                    message: 'signup failed',
+                  },
+                  HttpStatus.BAD_REQUEST,
+                ),
+              );
             });
         })
         .catch((err) => {
-          return reject(err);
+          console.log('signup: prisma.user.create error', err);
+          return reject(
+            new HttpException(
+              {
+                status: HttpStatus.UNAUTHORIZED,
+                message: 'username taken',
+              },
+              HttpStatus.UNAUTHORIZED,
+            ),
+          );
         });
     });
   }
@@ -106,7 +119,10 @@ export class AuthService {
     });
   }
 
-  async signToken(userId: string, mfaEnabled: boolean): Promise<{ access_token: string }> {
+  async signToken(
+    userId: string,
+    mfaEnabled: boolean,
+  ): Promise<{ access_token: string }> {
     //if mfa is disabled, the user is fully authenticated
     //if mfa is enabled, the user still needs to pass mfa
     const payload = {
