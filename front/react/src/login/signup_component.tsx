@@ -92,13 +92,13 @@ export function SignupForm() {
             </div>
             {displayErrorMsgs(errorMessage)}
             <div>
-              <button className="button login__submit" onClick={createUser}>
+              <button className="button login__buttons" onClick={createUser}>
                 <span className="button__text">Create account</span>
-                <FaRocket className="signup__icon" />
+                <FaRocket className="login__icon" />
               </button>
-              <button className="button login__submit" onClick={goSignin}>
-                <span className="button__text">Already a account?</span>
-                <FaSpaceShuttle className="signin__icon" />
+              <button className="button login__buttons" onClick={goSignin}>
+                <span className="button__text">Login instead?</span>
+                <FaSpaceShuttle className="login__icon" />
               </button>
             </div>
           </form>

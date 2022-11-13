@@ -8,6 +8,7 @@ import {
   FaLock,
   FaEye,
   FaEyeSlash,
+  FaFighterJet,
 } from "react-icons/fa";
 
 import loginService from "./login-service";
@@ -124,16 +125,17 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
             </div>
             {displayErrorMsgs(errorMessage)}
             <div>
-              <button className="button login__submit" onClick={signinClassic}>
+              <button className="button login__buttons" onClick={signinClassic}>
                 <span className="button__text">Log In Now</span>
                 <FaRocket className="login__icon" />
               </button>
-              <button className="button login__submit" onClick={goSignup}>
+              <button className="button login__buttons" onClick={goSignup}>
                 <span className="button__text">Signup Now</span>
                 <FaSpaceShuttle className="login__icon" />
               </button>
-              <a className="button login__submit" href={signinFortytwo()}>
-                <span className="button__text">Signin with</span>
+              <a className="button login__buttons" href={signinFortytwo()}>
+                <span className="button__text">Oauth 42</span>
+                <FaFighterJet className="login__icon" />
               </a>
             </div>
           </form>

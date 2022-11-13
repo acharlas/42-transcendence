@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaLock, FaRocket } from "react-icons/fa";
+import { FaRocket } from "react-icons/fa";
 
 import { signinWithMfa } from "./login-service";
 import { requestMfaSigninInit } from "../api/mfa-api";
 import "./login_style.css";
 import "../style.css";
+import displayErrorMsgs from "../utils/displayErrMsgs";
 
 export default function MfaSignin() {
   let navigate = useNavigate();
@@ -43,12 +44,11 @@ export default function MfaSignin() {
       <div className="login__screen">
         <div className="login__screen__content">
           <form className="login">
-            <button className="login__submit" onClick={sendSmsCode}>
-              <span className="button__text">Send code</span>
-              <FaRocket className="sms__check__code__icon" />
+            <button className="login__buttons" onClick={sendSmsCode}>
+              <span className="button__text">Send me a code</span>
+              <FaRocket className="login__icon" />
             </button>
-            <div className="login__field">
-              <FaLock className="sms__input__code__icon" />
+            <div className="authcode__field">
               <input
                 className="login__input"
                 placeholder="XXXXXX"
@@ -63,19 +63,13 @@ export default function MfaSignin() {
                 onChange={HandleSmsCodeChange}
               />
             </div>
-            <div>
-              {errorMessage === null ? (
-                ""
-              ) : (
-                <p className="error-msg">{errorMessage}</p>
-              )}
-            </div>
+            {displayErrorMsgs(errorMessage)}
             <button
-              className="button__sms__check__submit"
+              className="login__buttons"
               onClick={checkSmsCode}
             >
               <span className="button__text">Check code</span>
-              <FaRocket className="sms__check__code__icon" />
+              <FaRocket className="login__icon" />
             </button>
           </form>
         </div>
