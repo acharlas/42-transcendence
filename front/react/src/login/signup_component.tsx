@@ -5,6 +5,8 @@ import {
   FaRocket,
   FaSpaceShuttle,
   FaLock,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 
 import loginService from "./login-service";
@@ -16,6 +18,7 @@ export function SignupForm() {
   const [newPass, setNewPass] = useState("");
   const [newUsername, setNewUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
   let navigate = useNavigate();
 
   sessionStorage.clear();
@@ -31,9 +34,14 @@ export function SignupForm() {
   const goSignin = () => {
     navigate("/");
   };
-  
+
   const goHome = () => {
     navigate("/home");
+  };
+
+  const ftShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setHidePassword(!hidePassword);
   };
 
   const createUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -52,17 +60,6 @@ export function SignupForm() {
     } catch (e) {
       console.log({ e });
       setErrorMessage(e.response?.data?.message);
-    }
-  };
-
-  const ftShowPassword = () => {
-    var x = document.getElementById("inputSignupPassword");
-    if (!(x instanceof HTMLScriptElement))
-      throw new Error("can't get password element");
-    if (x.type === "password") {
-      x.type = "text";
-    } else {
-      x.type = "password";
     }
   };
 
@@ -86,14 +83,12 @@ export function SignupForm() {
                 className="login__input"
                 placeholder="Password"
                 value={newPass}
-                type="password"
+                type={hidePassword ? "password" : "text"}
                 onChange={HandlePassChange}
-                id="inputSignupPassword"
               />
-            </div>
-            <div>
-              <input type="checkbox" onClick={ftShowPassword} />
-              show password
+              <button className="login__input___show-button" onClick={ftShowPassword}>
+                {hidePassword ? <FaEye /> : <FaEyeSlash />}
+              </button>
             </div>
             {displayErrorMsgs(errorMessage)}
             <div>

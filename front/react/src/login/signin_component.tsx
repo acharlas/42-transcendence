@@ -7,6 +7,7 @@ import {
   FaSpaceShuttle,
   FaLock,
   FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 
 import loginService from "./login-service";
@@ -27,6 +28,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   const [newUsername, setNewUsername] = useState("");
   const [newPass, setNewPass] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
   let navigate = useNavigate();
 
   sessionStorage.clear();
@@ -50,15 +52,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
 
   const ftShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-
-    var x = document.getElementById("inputPassword");
-    if (!(x instanceof HTMLScriptElement))
-      throw new Error("can't get password element");
-    if (x.type === "password") {
-      x.type = "text";
-    } else {
-      x.type = "password";
-    }
+    setHidePassword(!hidePassword);
   };
 
   const signinClassic = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -121,15 +115,11 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
                 className="login__input"
                 placeholder="Password"
                 value={newPass}
-                type="password"
+                type={hidePassword ? "password" : "text"}
                 onChange={HandlePassChange}
-                id="inputPassword"
               />
-              <button
-                className="login__input___show-button"
-                onClick={ftShowPassword}
-              >
-                <FaEye />
+              <button className="login__input___show-button" onClick={ftShowPassword}>
+                {hidePassword ? <FaEye /> : <FaEyeSlash />}
               </button>
             </div>
             {displayErrorMsgs(errorMessage)}

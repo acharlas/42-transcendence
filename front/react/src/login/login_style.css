@@ -221,7 +221,6 @@
 }
 
 .login__input___show-button:active,
-.login__input___show-button:focus,
 .login__input___show-button:hover {
   background-color: #2c385e;
   outline: none;
