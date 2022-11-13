@@ -21,14 +21,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   async validate(
     request: Request,
-    payload: { sub: string, fullyAuth: boolean }
+    payload: { sub: string; fullyAuth: boolean },
   ) {
-    if (!payload.fullyAuth
-      && request.url !== `/mfa/signin/init`
-      && request.url !== `/mfa/signin/validate`
+    if (
+      !payload.fullyAuth &&
+      request.url !== '/mfa/signin/init' &&
+      request.url !== '/mfa/signin/validate'
     ) {
-      console.log("not full auth");
-      throw new UnauthorizedException("2FA required");
+      console.log('not full auth');
+      throw new UnauthorizedException('2FA required');
     }
     const user = await this.prisma.user.findUnique({
       where: {
