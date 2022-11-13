@@ -10,11 +10,12 @@ import {
 import loginService from "./login-service";
 import "./login_style.css";
 import "../style.css";
+import displayErrorMsgs from "../utils/displayErrMsgs";
 
 export function SignupForm() {
   const [newPass, setNewPass] = useState("");
   const [newUsername, setNewUsername] = useState("");
-  const [ErrorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   let navigate = useNavigate();
 
   sessionStorage.clear();
@@ -30,16 +31,14 @@ export function SignupForm() {
   const goSignin = () => {
     navigate("/");
   };
-
+  
   const goHome = () => {
     navigate("/home");
   };
 
   const createUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-
     try {
-      console.log("click");
       setErrorMessage("");
       const token = await loginService.signup({
         password: newPass,
@@ -52,7 +51,7 @@ export function SignupForm() {
       goHome();
     } catch (e) {
       console.log({ e });
-      return e;
+      setErrorMessage(e.response?.data?.message);
     }
   };
 
@@ -67,26 +66,11 @@ export function SignupForm() {
     }
   };
 
-  const ErrorMessageComp = () => {
-    return (
-      <div>
-        <p className="error-msg">{ErrorMessage}</p>
-      </div>
-    );
-  };
-
   return (
     <div className="login__container">
       <div className="login__screen">
         <div className="login__screen__content">
           <form className="login__signup">
-            {ErrorMessage === null ? (
-              ""
-            ) : (
-              <div>
-                <ErrorMessageComp />
-              </div>
-            )}
             <div className="login__field">
               <FaUserAstronaut />
               <input
@@ -111,7 +95,7 @@ export function SignupForm() {
               <input type="checkbox" onClick={ftShowPassword} />
               show password
             </div>
-
+            {displayErrorMsgs(errorMessage)}
             <div>
               <button className="button login__submit" onClick={createUser}>
                 <span className="button__text">Create account</span>

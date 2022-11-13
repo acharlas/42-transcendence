@@ -12,6 +12,7 @@ import {
 import loginService from "./login-service";
 import "./login_style.css";
 import "../style.css";
+import displayErrorMsgs from "../utils/displayErrMsgs";
 
 interface DecodedToken {
   sub: string;
@@ -25,7 +26,7 @@ export interface ISigninFormProps { }
 const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   const [newUsername, setNewUsername] = useState("");
   const [newPass, setNewPass] = useState("");
-  const [ErrorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   let navigate = useNavigate();
 
   sessionStorage.clear();
@@ -131,11 +132,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
                 <FaEye />
               </button>
             </div>
-            {ErrorMessage === null ? (
-              ""
-            ) : (
-              <p className="error-msg">{ErrorMessage}</p>
-            )}
+            {displayErrorMsgs(errorMessage)}
             <div>
               <button className="button login__submit" onClick={signinClassic}>
                 <span className="button__text">Log In Now</span>
