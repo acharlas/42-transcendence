@@ -123,7 +123,6 @@ export default function Profile() {
         setTimeout(() => {
           setAvatarReload(avatarReload + 1);
         }, 100);
-
       }
       catch (e) {
         setAvatarError(e?.response?.data?.message);
