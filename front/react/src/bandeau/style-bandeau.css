@@ -8,7 +8,6 @@
   background-color: rgb(44, 55, 95);
   display: flex;
   justify-content: right;
-  align-items: space-between;
 }
 
 .bandeau-button {
