@@ -120,7 +120,10 @@ export default function Profile() {
       try {
         await postAvatar(avatarToUpload);
         setAvatarStatus(AvatarStatus.UPLOADED);
-        setAvatarReload(avatarReload + 1);
+        setTimeout(() => {
+          setAvatarReload(avatarReload + 1);
+        }, 100);
+
       }
       catch (e) {
         setAvatarError(e?.response?.data?.message);
@@ -224,49 +227,49 @@ export default function Profile() {
 
   function nicknameSettings() {
     return (<>
-        <div className="profile__panel__top">
-          <div className="profile__panel__title">Nickname</div>
-        </div>
-        <div className="profile__panel__bottom">
-          {editingNickname ?
-            (
-              <div className="settings__line">
-                <input
-                  className="settings__line__elem settings__nickname__input"
-                  placeholder="new nickname"
-                  value={newNickname}
-                  onChange={handleNewNicknameChange}
-                  type="text"
-                />
-                <div className="settings__line__elem settings__group__two__buttons">
-                  <button
-                    className="settings__button__texticon"
-                    onClick={editNickname}
-                  >
-                    <ImCheckmark className="settings__icon" />
-                  </button>
-                  <button
-                    className="settings__button__texticon"
-                    onClick={stopEditingNickname}
-                  >
-                    <ImCross className="settings__icon" />
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="settings__line">
-                <div className="settings__line__elem">
-                  {nickname}
-                </div>
-                <button className="settings__line__elem settings__button__texticon" onClick={startEditingNickname}>
-                  <FaPen className="settings__icon" />
+      <div className="profile__panel__top">
+        <div className="profile__panel__title">Nickname</div>
+      </div>
+      <div className="profile__panel__bottom">
+        {editingNickname ?
+          (
+            <div className="settings__line">
+              <input
+                className="settings__line__elem settings__nickname__input"
+                placeholder="new nickname"
+                value={newNickname}
+                onChange={handleNewNicknameChange}
+                type="text"
+              />
+              <div className="settings__line__elem settings__group__two__buttons">
+                <button
+                  className="settings__button__texticon"
+                  onClick={editNickname}
+                >
+                  <ImCheckmark className="settings__icon" />
+                </button>
+                <button
+                  className="settings__button__texticon"
+                  onClick={stopEditingNickname}
+                >
+                  <ImCross className="settings__icon" />
                 </button>
               </div>
-            )
-          }
-          {displayError(nicknameError)}
-        </div>
-      </>)
+            </div>
+          ) : (
+            <div className="settings__line">
+              <div className="settings__line__elem">
+                {nickname}
+              </div>
+              <button className="settings__line__elem settings__button__texticon" onClick={startEditingNickname}>
+                <FaPen className="settings__icon" />
+              </button>
+            </div>
+          )
+        }
+        {displayError(nicknameError)}
+      </div>
+    </>)
   }
 
   // MFA
