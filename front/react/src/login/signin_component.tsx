@@ -79,7 +79,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
     }
   };
 
-  function signinFortytwo(/*event: React.MouseEvent<HTMLButtonElement>*/): string {
+  function fortyTwoOauthUrl(): string {
     let url = `https://api.intra.42.fr/oauth/authorize
 ?client_id=${process.env.REACT_APP_42API_UID}
 &redirect_uri=${encodeURI(process.env.REACT_APP_42API_REDIRECT)}
@@ -133,7 +133,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
                 <span className="button__text">Signup Now</span>
                 <FaSpaceShuttle className="login__icon" />
               </button>
-              <a className="button login__buttons" href={signinFortytwo()}>
+              <a className="button login__buttons" href={fortyTwoOauthUrl()}>
                 <span className="button__text">Oauth 42</span>
                 <FaFighterJet className="login__icon" />
               </a>
