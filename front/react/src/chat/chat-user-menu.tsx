@@ -78,7 +78,7 @@ function UserMenu() {
   };
 
   const handleShowUserProfile = () => {
-    navigate('/profile/' + selectUser.id);
+    navigate('/app/profile/' + selectUser.id);
   }
 
   const handleSendDm = () => {

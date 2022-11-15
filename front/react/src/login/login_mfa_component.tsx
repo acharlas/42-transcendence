@@ -10,7 +10,7 @@ import { checkMfaDto, requestMfaSigninFinish, requestMfaSigninInit } from "../ap
 export default function MfaSignin() {
   let navigate = useNavigate();
   const goHome = () => {
-    navigate("/home");
+    navigate("/app");
   };
 
   const [smsCode, setSmsCode] = useState("");
