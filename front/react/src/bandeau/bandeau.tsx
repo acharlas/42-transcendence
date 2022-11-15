@@ -23,7 +23,7 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
     navigate("/app");
   };
 
-  const HandleDisconect = () => {
+  const HandleDisconnect = () => {
     navigate("/");
   };
 
@@ -41,7 +41,7 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
       <button onClick={goSettings} className="bandeau-button">
         settings
       </button>
-      <button onClick={HandleDisconect} className="bandeau-button">
+      <button onClick={HandleDisconnect} className="bandeau-button">
         <RiShutDownLine className="bandeau-disconnect-icon" />
       </button>
     </nav>
