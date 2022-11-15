@@ -76,9 +76,10 @@ export class ChannelService {
                     channel: { id: resp.id, name: resp.name, type: resp.type },
                     user: resp.users.map((user) => {
                       return {
-                        nickname: user.user.nickname,
-                        privilege: user.privilege,
                         username: user.user.username,
+                        nickname: user.user.nickname,
+                        id: user.user.id,
+                        privilege: user.privilege,
                         status: user.status,
                       };
                     }),
@@ -422,6 +423,7 @@ export class ChannelService {
                         return {
                           username: user.user.username,
                           nickname: user.user.nickname,
+                          id: user.user.id,
                           privilege: user.privilege,
                           status: user.status,
                         };
@@ -488,6 +490,7 @@ export class ChannelService {
                         return {
                           username: user.user.username,
                           nickname: user.user.nickname,
+                          id: user.user.id,
                           privilege: user.privilege,
                           status: user.status,
                         };
@@ -961,6 +964,7 @@ export class ChannelService {
                     privilege: user.privilege,
                     username: user.user.username,
                     nickname: user.user.nickname,
+                    id: user.user.id,
                     status: user.status,
                   };
                 }),
@@ -1074,6 +1078,7 @@ export class ChannelService {
               return {
                 username: user.user.username,
                 nickname: user.user.nickname,
+                id: user.user.id,
                 privilege: UserPrivilege.default,
                 status: user.status,
               };

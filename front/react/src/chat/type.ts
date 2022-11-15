@@ -38,6 +38,7 @@ export interface Room {
 export interface User {
   username: string;
   nickname: string;
+  id: string;
   privilege: UserPrivilege;
   status: UserStatus;
 }
