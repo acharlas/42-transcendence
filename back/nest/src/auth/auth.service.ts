@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   AuthSigninDto,
@@ -50,11 +45,13 @@ export class AuthService {
               return resolve(ret);
             })
             .catch((err) => {
-              return reject(err);
+              console.log('signup: signToken error', err);
+              return reject(new UnauthorizedException('signup failed'));
             });
         })
         .catch((err) => {
-          return reject(err);
+          console.log('signup: prisma.user.create error', err);
+          return reject(new UnauthorizedException('username taken'));
         });
     });
   }
@@ -69,31 +66,13 @@ export class AuthService {
         })
         .then((ret) => {
           if (!ret) {
-            return reject(
-              new HttpException(
-                {
-                  status: HttpStatus.FORBIDDEN,
-                  error: 'wrong username',
-                  code: 103,
-                },
-                HttpStatus.FORBIDDEN,
-              ),
-            );
+            return reject(new ForbiddenException('wrong username'));
           }
           return resolve(
             new Promise<{ access_token: string }>((resolve, reject) => {
               argon.verify(ret.hash, dto.password).then((res) => {
                 if (!res) {
-                  return reject(
-                    new HttpException(
-                      {
-                        status: HttpStatus.FORBIDDEN,
-                        error: 'wrong password',
-                        code: 104,
-                      },
-                      HttpStatus.FORBIDDEN,
-                    ),
-                  );
+                  return reject(new ForbiddenException('wrong password'));
                 }
                 return resolve(this.signToken(ret.id, ret.mfaEnabled));
               });
@@ -101,12 +80,16 @@ export class AuthService {
           );
         })
         .catch((err) => {
-          return reject(err);
+          console.log(err);
+          return reject(new ForbiddenException('wrong password'));
         });
     });
   }
 
-  async signToken(userId: string, mfaEnabled: boolean): Promise<{ access_token: string }> {
+  async signToken(
+    userId: string,
+    mfaEnabled: boolean,
+  ): Promise<{ access_token: string }> {
     //if mfa is disabled, the user is fully authenticated
     //if mfa is enabled, the user still needs to pass mfa
     const payload = {
@@ -114,15 +97,11 @@ export class AuthService {
       fullyAuth: !mfaEnabled,
     };
     const secret = this.config.get('JWT_SECRET');
-
     const token = await this.jwt.signAsync(payload, {
       expiresIn: '60m',
       secret: secret,
     });
-
-    return {
-      access_token: token,
-    };
+    return { access_token: token };
   }
 
   async getFortyTwoMe(Token: string): Promise<AuthSigninWithApiDto> {
@@ -167,7 +146,9 @@ export class AuthService {
         })
         .catch((err) => {
           console.log('axios error:', err);
-          return reject(err);
+          return reject(
+            new ForbiddenException('Failed authenticating with oauth'),
+          );
         });
     });
   }
@@ -188,7 +169,10 @@ export class AuthService {
             return resolve(ret);
           })
           .catch((err) => {
-            return reject(err);
+            console.log(err);
+            return reject(
+              new ForbiddenException('Failed authenticating with oauth'),
+            );
           });
       } else {
         this.prisma.user
@@ -205,7 +189,10 @@ export class AuthService {
             return resolve(this.signToken(ret.id, ret.mfaEnabled));
           })
           .catch((err) => {
-            return reject(err);
+            console.log(err);
+            return reject(
+              new ForbiddenException('Failed to signup with oauth'),
+            );
           });
       }
     });

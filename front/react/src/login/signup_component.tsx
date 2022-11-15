@@ -5,16 +5,20 @@ import {
   FaRocket,
   FaSpaceShuttle,
   FaLock,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 
-import loginService from "./login-service";
 import "./login_style.css";
 import "../style.css";
+import displayErrorMsgs from "../utils/displayErrMsgs";
+import { signup } from "../api/auth-api";
 
 export function SignupForm() {
   const [newPass, setNewPass] = useState("");
   const [newUsername, setNewUsername] = useState("");
-  const [ErrorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
   let navigate = useNavigate();
 
   sessionStorage.clear();
@@ -35,13 +39,16 @@ export function SignupForm() {
     navigate("/game");
   };
 
+  const ftShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setHidePassword(!hidePassword);
+  };
+
   const createUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-
     try {
-      console.log("click");
       setErrorMessage("");
-      const token = await loginService.signup({
+      const token = await signup({
         password: newPass,
         username: newUsername,
       });
@@ -52,41 +59,15 @@ export function SignupForm() {
       goHome();
     } catch (e) {
       console.log({ e });
-      return e;
+      setErrorMessage(e.response?.data?.message);
     }
-  };
-
-  const ftShowPassword = () => {
-    var x = document.getElementById("inputSignupPassword");
-    if (!(x instanceof HTMLScriptElement))
-      throw new Error("can't get password element");
-    if (x.type === "password") {
-      x.type = "text";
-    } else {
-      x.type = "password";
-    }
-  };
-
-  const ErrorMessageComp = () => {
-    return (
-      <div>
-        <p className="error-msg">{ErrorMessage}</p>
-      </div>
-    );
   };
 
   return (
-    <div className="container">
-      <div className="screen">
-        <div className="screen__content">
-          <form className="login-signup">
-            {ErrorMessage === null ? (
-              ""
-            ) : (
-              <div>
-                <ErrorMessageComp />
-              </div>
-            )}
+    <div className="login__container">
+      <div className="login__screen">
+        <div className="login__screen__content">
+          <form className="login__signup">
             <div className="login__field">
               <FaUserAstronaut />
               <input
@@ -102,24 +83,22 @@ export function SignupForm() {
                 className="login__input"
                 placeholder="Password"
                 value={newPass}
-                type="password"
+                type={hidePassword ? "password" : "text"}
                 onChange={HandlePassChange}
-                id="inputSignupPassword"
               />
-            </div>
-            <div>
-              <input type="checkbox" onClick={ftShowPassword} />
-              show password
-            </div>
-
-            <div>
-              <button className="button login__submit" onClick={createUser}>
-                <span className="button__text">Create account</span>
-                <FaRocket className="signup__icon" />
+              <button className="login__input___show-button" onClick={ftShowPassword}>
+                {hidePassword ? <FaEye /> : <FaEyeSlash />}
               </button>
-              <button className="button login__submit" onClick={goSignin}>
-                <span className="button__text">Already a account?</span>
-                <FaSpaceShuttle className="signin__icon" />
+            </div>
+            {displayErrorMsgs(errorMessage)}
+            <div>
+              <button className="button login__buttons" onClick={createUser}>
+                <span className="button__text">Create account</span>
+                <FaRocket className="login__icon" />
+              </button>
+              <button className="button login__buttons" onClick={goSignin}>
+                <span className="button__text">Login instead?</span>
+                <FaSpaceShuttle className="login__icon" />
               </button>
             </div>
           </form>

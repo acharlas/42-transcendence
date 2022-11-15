@@ -1,26 +1,33 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import loginService from "./login-service";
+import jwt_decode from "jwt-decode";
+
+import { fortyTwoSign } from "../api/auth-api";
+
+interface DecodedToken {
+  sub: string;
+  fullyAuth: boolean;
+  iat: string;
+  exp: string;
+}
+
 
 export default function Redirect() {
-  const [searchParams] = useSearchParams();
   let navigate = useNavigate();
 
+  const [searchParams] = useSearchParams();
   const code = searchParams.get("code");
   const state = searchParams.get("state");
 
-  if (code && state)
-    loginService
-      .fortyTwoSign({ code: code, state: state })
-      .then(() => {
-        navigate("/home");
-      })
-      .catch((e) => {
-        if (e.response.data.message === "2FA required") {
-          navigate("/mfa-signin");
-          return;
-        }
-        console.log("error:", e);
-        navigate("/");
-      });
-  return <div className="container"></div>;
+  fortyTwoSign({ code: code, state: state })
+    .then((res) => {
+      const token = res.data.access_token;
+      const tokenInfo: DecodedToken = jwt_decode(token); //can throw InvalidTokenError
+      if (tokenInfo.fullyAuth) { navigate("/home"); }
+      else { navigate("/mfa-signin"); }
+    })
+    .catch((e) => {
+      console.log("error in Redirect():", e);
+      navigate("/");
+    });
+  return <div className="login__container"></div>;
 }

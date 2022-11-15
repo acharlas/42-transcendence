@@ -13,7 +13,6 @@
 }
 
 .settings__line__elem {
-  display: inline-flexbox;
   text-align: center;
   vertical-align: middle;
 }

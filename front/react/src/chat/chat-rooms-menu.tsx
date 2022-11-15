@@ -135,7 +135,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   };
 
   const handleLeaveChannel = (roomId: string) => {
-    console.log("leqve room: ", roomId);
+    console.log("leave room: ", roomId);
     socket.emit("LeaveRoom", { roomId });
   };
 
@@ -165,20 +165,14 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
     setNewRoom(chan);
   };
 
-  return (
-    <nav className="room-menu">
-      <div className="room-menu-search-channel-container">
-        <button className="room-menu-close-button" onClick={handleShowRoomMenu}>
-          <HiXCircle />
-        </button>
-      </div>
-
+  function menuElemFriendlist() {
+    return (
       <div>
         <button
           onClick={handleShowFriend}
           className="room-menu-button-scroll-menu"
         >
-          Friend{" "}
+          Friendlist{" "}
           {showFriend ? (
             <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
           ) : (
@@ -233,13 +227,77 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
           <></>
         )}
       </div>
+    );
+  }
 
+  function menuElemBlocklist() {
+    return (
+      <div>
+        <button
+          onClick={handleShowBloqued}
+          className="room-menu-button-scroll-menu"
+        >
+          Blocklist{" "}
+          {showBloqued ? (
+            <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
+          ) : (
+            <RiArrowDropDownFill className="room-menu-button-scroll-menu-icon" />
+          )}
+        </button>
+        {showBloqued ? (
+          <>
+            <form>
+              <input
+                value={newBlock}
+                onChange={handleChangeNewBlock}
+                placeholder="ignore someone"
+                className="room-menu-input-search-block-friend"
+              />
+              <button
+                onClick={handleAddBlock}
+                className="room-menu-button-add-friend-block"
+              >
+                <IoIosAddCircle />
+              </button>
+            </form>
+            <ul>
+              {bloquedList.map((block, id) => {
+                if (!block.nickname.search(newBlock)) {
+                  return (
+                    <li key={id}>
+                      <button className="room-menu-button-user-block-friend">
+                        {block.nickname}
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleRemoveBlock(block.username);
+                        }}
+                        className="room-menu-button-remove-user"
+                      >
+                        <MdPersonRemove />
+                      </button>
+                    </li>
+                  );
+                }
+                return;
+              })}
+            </ul>
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
+    );
+  }
+
+  function menuElemChannels() {
+    return (
       <div>
         <button
           onClick={handleShowChannel}
           className="room-menu-button-scroll-menu"
         >
-          Channel{" "}
+          Channels{" "}
           {showChannel ? (
             <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
           ) : (
@@ -343,40 +401,11 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                                         user.username === actUser.username
                                       }
                                     >
-                                      {actUser.privilege ===
-                                      UserPrivilege.admin ? (
-                                        <GiAlienStare className="room-menu-user-icon" />
-                                      ) : (
-                                        <></>
-                                      )}
-                                      {actUser.privilege ===
-                                      UserPrivilege.owner ? (
-                                        <SiStarship className="room-menu-user-icon" />
-                                      ) : (
-                                        <></>
-                                      )}
-                                      {actUser.privilege ===
-                                      UserPrivilege.ban ? (
-                                        <FaBan className="room-menu-user-icon" />
-                                      ) : (
-                                        <></>
-                                      )}
-                                      {actUser.privilege ===
-                                      UserPrivilege.muted ? (
-                                        <>
-                                          <TbMessageCircleOff className="room-menu-user-icon" />
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )}
-                                      {actUser.privilege ===
-                                      UserPrivilege.default ? (
-                                        <>
-                                          <GiAstronautHelmet className="room-menu-user-icon" />
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )}
+                                      {actUser.privilege === UserPrivilege.admin && <GiAlienStare className="room-menu-user-icon" />}
+                                      {actUser.privilege === UserPrivilege.owner && <SiStarship className="room-menu-user-icon" />}
+                                      {actUser.privilege === UserPrivilege.ban && <FaBan className="room-menu-user-icon" />}
+                                      {actUser.privilege === UserPrivilege.muted && <TbMessageCircleOff className="room-menu-user-icon" />}
+                                      {actUser.privilege === UserPrivilege.default && <GiAstronautHelmet className="room-menu-user-icon" />}
                                       {actUser.nickname}
                                     </button>
                                   </li>
@@ -400,111 +429,78 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
           <></>
         )}
       </div>
+    );
+  }
 
+  function menuElemMessages() {
+    return (
       <div>
-        <button
-          onClick={handleShowBloqued}
-          className="room-menu-button-scroll-menu"
-        >
-          Bloqued{" "}
-          {showBloqued ? (
-            <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
-          ) : (
-            <RiArrowDropDownFill className="room-menu-button-scroll-menu-icon" />
-          )}
-        </button>
-        {showBloqued ? (
-          <>
-            <form>
-              <input
-                value={newBlock}
-                onChange={handleChangeNewBlock}
-                placeholder="ignore someone"
-                className="room-menu-input-search-block-friend"
-              />
-              <button
-                onClick={handleAddBlock}
-                className="room-menu-button-add-friend-block"
-              >
-                <IoIosAddCircle />
-              </button>
-            </form>
-            <ul>
-              {bloquedList.map((block, id) => {
-                if (!block.nickname.search(newBlock)) {
-                  return (
-                    <li key={id}>
-                      <button className="room-menu-button-user-block-friend">
-                        {block.nickname}
-                      </button>
-                      <button
-                        onClick={() => {
-                          handleRemoveBlock(block.username);
-                        }}
-                        className="room-menu-button-remove-user"
-                      >
-                        <MdPersonRemove />
-                      </button>
-                    </li>
-                  );
-                }
-                return;
-              })}
-            </ul>
-          </>
-        ) : (
-          <></>
-        )}
         <button onClick={handleShowDm} className="room-menu-button-scroll-menu">
-          PrivateMessage{" "}
+          Private Messages{" "}
           {showDm ? (
             <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
           ) : (
             <RiArrowDropDownFill className="room-menu-button-scroll-menu-icon" />
           )}
         </button>
-        {showDm ? (
-          <>
-            {rooms.map((room) => {
-              const usr = room.user.find((usr) => {
-                if (usr.username !== window.sessionStorage.getItem("username"))
-                  return true;
-                return false;
-              });
-              if (
-                room.channel.type !== ChannelType.dm ||
-                bloquedList.find((block) => {
-                  if (block.username === usr.username) return true;
+        {
+          showDm ? (
+            <>
+              {rooms.map((room) => {
+                const usr = room.user.find((usr) => {
+                  if (usr.username !== window.sessionStorage.getItem("username"))
+                    return true;
                   return false;
-                })
-              )
-                return;
-              return (
-                <>
-                  <button
-                    title={`Join ${room.channel.name}`}
-                    onClick={() => handleJoinRoom(room.channel.id)}
-                    className="room-menu-button-dm"
-                  >
-                    {
-                      room.user.find((usr) => {
-                        if (
-                          usr.username !==
-                          window.sessionStorage.getItem("username")
-                        )
-                          return true;
-                        return false;
-                      }).username
-                    }
-                  </button>
-                </>
-              );
-            })}
-          </>
-        ) : (
-          <></>
-        )}
+                });
+                if (
+                  room.channel.type !== ChannelType.dm ||
+                  bloquedList.find((block) => {
+                    if (block.username === usr.username) return true;
+                    return false;
+                  })
+                )
+                  return; //dead code
+                return (
+                  <>
+                    <button
+                      title={`Join ${room.channel.name}`}
+                      onClick={() => handleJoinRoom(room.channel.id)}
+                      className="room-menu-button-dm"
+                    >
+                      {
+                        room.user.find((usr) => {
+                          if (
+                            usr.username !==
+                            window.sessionStorage.getItem("username")
+                          )
+                            return true;
+                          return false;
+                        }).username
+                      }
+                    </button>
+                  </>
+                );
+              })}
+            </>
+          ) : (
+            <></>
+          )
+        }
+      </div >
+    );
+  }
+
+  return (
+    <nav className="room-menu">
+      <div className="room-menu-search-channel-container">
+        <button className="room-menu-close-button" onClick={handleShowRoomMenu}>
+          <HiXCircle />
+        </button>
       </div>
+      {menuElemFriendlist()}
+      {menuElemBlocklist()}
+      {menuElemChannels()}
+      {menuElemMessages()}
     </nav>
   );
 }

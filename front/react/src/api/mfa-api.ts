@@ -1,4 +1,4 @@
-import axios from "axios";
+import customAxios from "./customAxios";
 
 export interface checkMfaDto {
   codeToCheck: string,
@@ -10,7 +10,7 @@ export interface activateMfaDto {
 
 export const requestMfaDisable = async (): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.delete(`http://localhost:3333/mfa/disable`,
+    customAxios.delete(`http://localhost:3333/mfa/disable`,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);
@@ -24,7 +24,7 @@ export const requestMfaDisable = async (): Promise<any> => {
 
 export const requestMfaSetupInit = async (params: activateMfaDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(`http://localhost:3333/mfa/setup/init`,
+    customAxios.post(`http://localhost:3333/mfa/setup/init`,
       { phoneNumber: params.phoneNumber },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
@@ -39,7 +39,7 @@ export const requestMfaSetupInit = async (params: activateMfaDto): Promise<any> 
 
 export const requestMfaSetupFinish = async (params: checkMfaDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(`http://localhost:3333/mfa/setup/validate`,
+    customAxios.post(`http://localhost:3333/mfa/setup/validate`,
       { codeToCheck: params.codeToCheck },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
@@ -54,7 +54,7 @@ export const requestMfaSetupFinish = async (params: checkMfaDto): Promise<any> =
 
 export const requestMfaSigninInit = async (): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(`http://localhost:3333/mfa/signin/init`,
+    customAxios.post(`http://localhost:3333/mfa/signin/init`,
       {},
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
@@ -69,7 +69,7 @@ export const requestMfaSigninInit = async (): Promise<any> => {
 
 export const requestMfaSigninFinish = async (params: checkMfaDto) => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(`http://localhost:3333/mfa/signin/validate`,
+    customAxios.post(`http://localhost:3333/mfa/signin/validate`,
       { codeToCheck: params.codeToCheck },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {

@@ -1,10 +1,10 @@
-import axios from "axios";
+import customAxios from "./customAxios";
 
 export const postAvatar = async (newAvatar: File): Promise<any> => {
   let formdata = new FormData();
   formdata.append("avatar", newAvatar);
   return new Promise<any>((resolve, reject) => {
-    axios.post(
+    customAxios.post(
       `http://localhost:3333/avatar/`,
       formdata,
       {
@@ -25,7 +25,7 @@ export const postAvatar = async (newAvatar: File): Promise<any> => {
 
 export const deleteAvatar = async (): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.delete(
+    customAxios.delete(
       `http://localhost:3333/avatar/`,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {

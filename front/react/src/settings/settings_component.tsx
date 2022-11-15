@@ -38,10 +38,15 @@ import SocketContextComponent from "../chat/socket-component";
 import ChatIndex from "../chat/chat-index";
 
 export default function Profile() {
+  //utils
   const navigate = useNavigate();
   const goSignIn = () => {
     navigate("/");
   };
+
+  function displayError(msg: string) {
+    return (<p className="error-msg">{msg}</p>);
+  }
 
   // State variables
   const [nickname, setNickname] = useState("");
@@ -105,9 +110,6 @@ export default function Profile() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function displayError(msg: string) {
-    return <p className="error-msg">{msg}</p>;
-  }
 
   //AVATAR
 
@@ -118,9 +120,12 @@ export default function Profile() {
       try {
         await postAvatar(avatarToUpload);
         setAvatarStatus(AvatarStatus.UPLOADED);
-        setAvatarReload(avatarReload + 1);
-      } catch (e) {
-        setAvatarError("failed to upload avatar");
+        setTimeout(() => {
+          setAvatarReload(avatarReload + 1);
+        }, 100);
+      }
+      catch (e) {
+        setAvatarError(e?.response?.data?.message);
         console.log("failed to upload avatar");
       }
     } else {
@@ -134,9 +139,9 @@ export default function Profile() {
     try {
       await deleteAvatar();
       setAvatarStatus(AvatarStatus.DELETED);
-    } catch (e) {
-      setAvatarError("failed to delete avatar");
-      console.log("failed to delete avatar");
+    }
+    catch (e) {
+      setAvatarError(e?.response?.data?.message);
     }
   };
 
@@ -156,10 +161,10 @@ export default function Profile() {
               {avatarStatus === AvatarStatus.DELETED
                 ? DefaultAvatar("settings__avatar")
                 : ReloadAvatar(
-                    window.sessionStorage.getItem("userid"),
-                    avatarReload,
-                    "settings__avatar"
-                  )}
+                  window.sessionStorage.getItem("userid"),
+                  avatarReload,
+                  "settings__avatar"
+                )}
             </div>
             <input type="file" onChange={selectFile} />
             <button
@@ -185,13 +190,17 @@ export default function Profile() {
 
   const editNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    await patchNickname({ nickname: newNickname });
-    //TODO: check status
-    setNicknameError("TODO");
-    setEditingNickname(false);
-    setNickname(newNickname);
-    setNewNickname("");
-  };
+    setNicknameError("");
+    try {
+      await patchNickname({ nickname: newNickname });
+      setEditingNickname(false);
+      setNickname(newNickname);
+      setNewNickname("");
+    }
+    catch (e) {
+      setNicknameError(e?.response?.data?.message);
+    }
+  }
 
   const startEditingNickname = async (
     event: React.MouseEvent<HTMLButtonElement>
@@ -216,13 +225,13 @@ export default function Profile() {
   };
 
   function nicknameSettings() {
-    return (
-      <>
-        <div className="profile__panel__top">
-          <div className="profile__panel__title">Nickname</div>
-        </div>
-        <div className="profile__panel__bottom">
-          {editingNickname ? (
+    return (<>
+      <div className="profile__panel__top">
+        <div className="profile__panel__title">Nickname</div>
+      </div>
+      <div className="profile__panel__bottom">
+        {editingNickname ?
+          (
             <div className="settings__line">
               <input
                 className="settings__line__elem settings__nickname__input"
@@ -248,24 +257,21 @@ export default function Profile() {
             </div>
           ) : (
             <div className="settings__line">
-              <div className="settings__line__elem">{nickname}</div>
-              <button
-                className="settings__line__elem settings__button__texticon"
-                onClick={startEditingNickname}
-              >
+              <div className="settings__line__elem">
+                {nickname}
+              </div>
+              <button className="settings__line__elem settings__button__texticon" onClick={startEditingNickname}>
                 <FaPen className="settings__icon" />
               </button>
             </div>
-          )}
-        </div>
+          )
+        }
         {displayError(nicknameError)}
-      </>
-    );
+      </div>
+    </>)
   }
 
   // MFA
-
-  // click events
 
   const beginFlow = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -275,55 +281,53 @@ export default function Profile() {
 
   const sendCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    setMfaError("");
     try {
       await requestMfaSetupInit({ phoneNumber: phoneNumber });
-      setMfaError("");
       setMfaStatus(MfaStatus.VALIDATE);
-    } catch (e) {
-      console.log("Settings: error in sendCode", e);
-      setMfaError("Bad number.");
-      //TODO: improve error msg
+    }
+    catch (e) {
+      setMfaError(e?.response?.data?.message);
     }
   };
 
   const validateCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    setMfaError("");
     try {
       await requestMfaSetupFinish({ codeToCheck: smsCode });
-      setMfaError("");
       setSmsCode("");
       setMfaStatus(MfaStatus.ENABLED);
-    } catch (e) {
+    }
+    catch (e) {
       console.log("Settings: error in validateCode", e);
-      setMfaError("Wrong code.");
-      //TODO: improve error msg
+      setMfaError(e?.response?.data?.message);
     }
   };
 
   const disable = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    setMfaError("");
     try {
       const response = await requestMfaDisable();
       if (response.status === 204) {
-        setMfaError("");
         setMfaStatus(MfaStatus.DISABLED);
       } else {
-        console.log("Settings: error in disableMfa", response);
         setMfaError("Disabling mfa failed.");
-        //TODO: improve error msg
       }
-    } catch (e) {
-      console.log("Settings: error in disableMfa", e);
-      setMfaError("Disabling mfa failed.");
-      //TODO
     }
-  };
+    catch (e) {
+      setMfaError(e?.response?.data?.message);
+    }
+  }
+
   const cancelInit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setMfaError("");
     setPhoneNumber("");
     setMfaStatus(MfaStatus.DISABLED);
-  };
+  }
+
   const cancelValidate = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setMfaError("");
@@ -331,9 +335,7 @@ export default function Profile() {
     setMfaStatus(MfaStatus.INIT);
   };
 
-  const HandlePhoneNumberChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const HandlePhoneNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPhoneNumber(event.target.value);
   };
 

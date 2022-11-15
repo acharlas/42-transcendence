@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaUserAstronaut } from "react-icons/fa";
 import { MdAddModerator, MdRemoveModerator } from "react-icons/md";
 import { AiFillHeart, AiFillUnlock } from "react-icons/ai";
@@ -5,8 +7,8 @@ import { HiMail, HiXCircle } from "react-icons/hi";
 import { GiPrisoner } from "react-icons/gi";
 import { TbMessage, TbMessageOff } from "react-icons/tb";
 import { ImUserMinus } from "react-icons/im";
+
 import { useChat } from "../context/chat.context";
-import { useContext } from "react";
 import SocketContext from "../context/socket.context";
 import { ChannelType, UserPrivilege } from "./type";
 
@@ -28,6 +30,8 @@ function UserMenu() {
     setNewRoom,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
+
+  let navigate = useNavigate();
 
   const handleClose = () => {
     setSelectUser(null);
@@ -73,6 +77,10 @@ function UserMenu() {
     setSelectUser(undefined);
   };
 
+  const handleShowUserProfile = () => {
+    navigate('/profile/' + selectUser.id);
+  }
+
   const handleSendDm = () => {
     const chan = rooms.find((room) => {
       const u = room.user.find((usr) => {
@@ -100,7 +108,7 @@ function UserMenu() {
   if (user.username === selectUser.username) return <></>;
   return (
     <>
-      <button className="chat-box-button">
+      <button onClick={handleShowUserProfile} className="chat-box-button">
         <FaUserAstronaut className="chat-box-button-icon" />
       </button>
       <button onClick={handleSendDm} className="chat-box-button">
@@ -138,7 +146,7 @@ function UserMenu() {
             <></>
           )}
           {selectUser.privilege !== "owner" &&
-          selectUser.privilege !== "admin" ? (
+            selectUser.privilege !== "admin" ? (
             <>
               <button onClick={AdminUser} className="chat-box-button">
                 <MdAddModerator className="chat-box-button-icon" />

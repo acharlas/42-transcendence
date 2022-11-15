@@ -56,11 +56,8 @@ export function ApiFile(
 
 // apply decorators to avatar uploads
 export function ApiFileAvatar() {
-  return ApiFile(
-    "avatar",
-    true, {
+  return ApiFile('avatar', true, {
     fileFilter: fileMimetypeFilter('image'),
-    dest: './avatar_files'
-  }
-  );
+    dest: './avatar_files',
+  });
 }

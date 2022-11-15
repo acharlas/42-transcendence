@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaLock, FaRocket } from "react-icons/fa";
+import { FaRocket } from "react-icons/fa";
 
-import { signinWithMfa } from "./login-service";
-import { requestMfaSigninInit } from "../api/mfa-api";
 import "./login_style.css";
 import "../style.css";
+import displayErrorMsgs from "../utils/displayErrMsgs";
+import { checkMfaDto, requestMfaSigninFinish, requestMfaSigninInit } from "../api/mfa-api";
 
 export default function MfaSignin() {
   let navigate = useNavigate();
@@ -18,6 +18,17 @@ export default function MfaSignin() {
 
   const HandleSmsCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSmsCode(event.target.value);
+  };
+
+  const signinWithMfa = async (params: checkMfaDto) => {
+    try {
+      const response = await requestMfaSigninFinish(params);
+      window.sessionStorage.setItem(`Token`, response.data.access_token);
+      return response;
+    } catch (e) {
+      console.log(`Mfa error`, { e });
+      return e;
+    }
   };
 
   const sendSmsCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -39,16 +50,15 @@ export default function MfaSignin() {
     }
   };
   return (
-    <div className="container">
-      <div className="screen">
-        <div className="screen__content">
+    <div className="login__container">
+      <div className="login__screen">
+        <div className="login__screen__content">
           <form className="login">
-            <button className="login__submit" onClick={sendSmsCode}>
-              <span className="button__text">Send code</span>
-              <FaRocket className="sms__check__code__icon" />
+            <button className="login__buttons" onClick={sendSmsCode}>
+              <span className="button__text">Send me a code</span>
+              <FaRocket className="login__icon" />
             </button>
-            <div className="login__field">
-              <FaLock className="sms__input__code__icon" />
+            <div className="authcode__field">
               <input
                 className="login__input"
                 placeholder="XXXXXX"
@@ -63,19 +73,13 @@ export default function MfaSignin() {
                 onChange={HandleSmsCodeChange}
               />
             </div>
-            <div>
-              {errorMessage === null ? (
-                ""
-              ) : (
-                <p className="error-msg">{errorMessage}</p>
-              )}
-            </div>
+            {displayErrorMsgs(errorMessage)}
             <button
-              className="button__sms__check__submit"
+              className="login__buttons"
               onClick={checkSmsCode}
             >
               <span className="button__text">Check code</span>
-              <FaRocket className="sms__check__code__icon" />
+              <FaRocket className="login__icon" />
             </button>
           </form>
         </div>

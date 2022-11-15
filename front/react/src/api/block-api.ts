@@ -1,17 +1,12 @@
-import axios from "axios";
+import customAxios from "./customAxios";
 
 export interface BlockDto {
   id: string,
 }
 
-export interface CheckIfBlockDto {
-  sourceId: string,
-  targetId: string,
-}
-
 export const addBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(
+    customAxios.post(
       `http://localhost:3333/block/add/`,
       { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
@@ -27,7 +22,7 @@ export const addBlock = async (params: BlockDto): Promise<any> => {
 
 export const removeBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(
+    customAxios.post(
       `http://localhost:3333/block/remove/`,
       { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
@@ -43,7 +38,7 @@ export const removeBlock = async (params: BlockDto): Promise<any> => {
 
 export const getBlock = async (params: BlockDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/block/` + params.id,
+    customAxios.get(`http://localhost:3333/block/` + params.id,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);
@@ -57,10 +52,10 @@ export const getBlock = async (params: BlockDto): Promise<any> => {
 
 //utils
 
-export const checkIfBlocked = async (params: CheckIfBlockDto): Promise<boolean> => {
+export const checkIfBlocked = async (params: BlockDto): Promise<boolean> => {
   const blockList = (await getBlock({ id: sessionStorage.getItem(`userid`) })).data.myblock;
   for (let i = 0; i < blockList.length; i++) {
-    if (blockList[i].id === params.targetId) {
+    if (blockList[i].id === params.id) {
       return (true);
     }
   }

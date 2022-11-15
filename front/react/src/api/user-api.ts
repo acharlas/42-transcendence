@@ -1,4 +1,4 @@
-import axios from "axios";
+import customAxios from "./customAxios";
 
 export interface GetUserDto {
   id: string,
@@ -10,7 +10,7 @@ export interface PatchNicknameDto {
 //Get data for a specific user.
 export const getUser = async (params: GetUserDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/users/` + params.id,
+    customAxios.get(`http://localhost:3333/users/` + params.id,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);
@@ -25,7 +25,7 @@ export const getUser = async (params: GetUserDto): Promise<any> => {
 //Get data of all users.
 export const getUsers = async (): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/users/`,
+    customAxios.get(`http://localhost:3333/users/`,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);
@@ -40,7 +40,7 @@ export const getUsers = async (): Promise<any> => {
 //Get data of logged-in user.
 export const getUsersMe = async (): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/users/me`,
+    customAxios.get(`http://localhost:3333/users/me`,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem("Token") } })
       .then((ret) => {
         return resolve(ret);
@@ -54,7 +54,7 @@ export const getUsersMe = async (): Promise<any> => {
 
 export const patchNickname = async (params: PatchNicknameDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.patch(`http://localhost:3333/users`,
+    customAxios.patch(`http://localhost:3333/users`,
       { nickname: params.nickname },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem("Token") } })
       .then((ret) => {

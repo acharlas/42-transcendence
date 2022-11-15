@@ -7,16 +7,12 @@ import {
   FaSpaceShuttle,
   FaLock,
   FaEye,
+  FaEyeSlash,
+  FaFighterJet,
 } from "react-icons/fa";
 
-import loginService from "./login-service";
 import "./login_style.css";
 import "../style.css";
-import { io } from "socket.io-client";
-import {
-  defaultSocketContextState,
-  SocketReducer,
-} from "../context/socket.context";
 
 interface DecodedToken {
   sub: string;
@@ -30,7 +26,8 @@ export interface ISigninFormProps {}
 const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   const [newUsername, setNewUsername] = useState("");
   const [newPass, setNewPass] = useState("");
-  const [ErrorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
   let navigate = useNavigate();
 
   sessionStorage.clear();
@@ -54,23 +51,14 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
 
   const ftShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-
-    var x = document.getElementById("inputPassword");
-    if (!(x instanceof HTMLScriptElement))
-      throw new Error("can't get password element");
-    if (x.type === "password") {
-      x.type = "text";
-    } else {
-      x.type = "password";
-    }
+    setHidePassword(!hidePassword);
   };
 
   const signinClassic = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-
     try {
       setErrorMessage("");
-      const token = await loginService.signin({
+      const token = await signin({
         username: newUsername,
         password: newPass,
       });
@@ -88,7 +76,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
     }
   };
 
-  function signinFortytwo(/*event: React.MouseEvent<HTMLButtonElement>*/): string {
+  function fortyTwoOauthUrl(): string {
     let url = `https://api.intra.42.fr/oauth/authorize
 ?client_id=${process.env.REACT_APP_42API_UID}
 &redirect_uri=${encodeURI(process.env.REACT_APP_42API_REDIRECT)}
@@ -106,9 +94,9 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   }
 
   return (
-    <div className="container">
-      <div className="screen">
-        <div className="screen__content">
+    <div className="login__container">
+      <div className="login__screen">
+        <div className="login__screen__content">
           <form className="login">
             <div className="login__field">
               <FaUserAstronaut />
@@ -125,33 +113,29 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
                 className="login__input"
                 placeholder="Password"
                 value={newPass}
-                type="password"
+                type={hidePassword ? "password" : "text"}
                 onChange={HandlePassChange}
-                id="inputPassword"
               />
               <button
                 className="login__input___show-button"
                 onClick={ftShowPassword}
               >
-                <FaEye />
+                {hidePassword ? <FaEye /> : <FaEyeSlash />}
               </button>
             </div>
-            {ErrorMessage === null ? (
-              ""
-            ) : (
-              <p className="error-msg">{ErrorMessage}</p>
-            )}
+            {displayErrorMsgs(errorMessage)}
             <div>
-              <button className="button login__submit" onClick={signinClassic}>
+              <button className="button login__buttons" onClick={signinClassic}>
                 <span className="button__text">Log In Now</span>
                 <FaRocket className="login__icon" />
               </button>
-              <button className="button login__submit" onClick={goSignup}>
+              <button className="button login__buttons" onClick={goSignup}>
                 <span className="button__text">Signup Now</span>
                 <FaSpaceShuttle className="login__icon" />
               </button>
-              <a className="button login__submit" href={signinFortytwo()}>
-                <span className="button__text">Signin with</span>
+              <a className="button login__buttons" href={fortyTwoOauthUrl()}>
+                <span className="button__text">Oauth 42</span>
+                <FaFighterJet className="login__icon" />
               </a>
             </div>
           </form>

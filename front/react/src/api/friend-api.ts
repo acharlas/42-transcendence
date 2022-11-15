@@ -1,17 +1,12 @@
-import axios from "axios";
+import customAxios from "./customAxios";
 
 export interface FriendDto {
   id: string,
 }
 
-export interface CheckIfFriendDto {
-  sourceId: string,
-  targetId: string,
-}
-
 export const addFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(
+    customAxios.post(
       `http://localhost:3333/friend/add/`,
       { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
@@ -27,7 +22,7 @@ export const addFriend = async (params: FriendDto): Promise<any> => {
 
 export const removeFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.post(
+    customAxios.post(
       `http://localhost:3333/friend/remove/`,
       { userId: params.id },
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
@@ -43,7 +38,7 @@ export const removeFriend = async (params: FriendDto): Promise<any> => {
 
 export const getFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    axios.get(`http://localhost:3333/friend/` + params.id,
+    customAxios.get(`http://localhost:3333/friend/` + params.id,
       { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
       .then((ret) => {
         return resolve(ret);
@@ -57,10 +52,10 @@ export const getFriend = async (params: FriendDto): Promise<any> => {
 
 //utils
 
-export const checkIfFriend = async (params: CheckIfFriendDto): Promise<boolean> => {
+export const checkIfFriend = async (params: FriendDto): Promise<boolean> => {
   const friendList = (await getFriend({ id: sessionStorage.getItem(`userid`) })).data.myfriend;
   for (let i = 0; i < friendList.length; i++) {
-    if (friendList[i].id === params.targetId) {
+    if (friendList[i].id === params.id) {
       return (true);
     }
   }
