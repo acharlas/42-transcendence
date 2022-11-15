@@ -8,15 +8,15 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
   let navigate = useNavigate();
 
   const goProfile = () => {
-    navigate("/profile/me");
+    navigate("/game/profile/me");
   };
 
   const goSettings = () => {
-    navigate("/settings");
+    navigate("/game/settings");
   };
 
   const goHome = () => {
-    navigate("/home");
+    navigate("/game");
   };
 
   const HandleDisconect = () => {

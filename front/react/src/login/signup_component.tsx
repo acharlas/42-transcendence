@@ -32,7 +32,7 @@ export function SignupForm() {
   };
 
   const goHome = () => {
-    navigate("/home");
+    navigate("/game");
   };
 
   const createUser = async (event: React.MouseEvent<HTMLButtonElement>) => {

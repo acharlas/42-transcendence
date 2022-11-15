@@ -11,7 +11,6 @@ import ChatOptionComponent from "./chat-option";
 export interface IChatIndexProps {}
 
 const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
-  const [show, setShow] = useState<boolean>(false);
   const {
     rooms,
     selectUser,
@@ -19,19 +18,21 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
     showCreateMenu,
     showJoinMenu,
     ShowRoomSetting,
+    setShowChat,
+    showChat,
   } = useChat();
 
   const handleShow = () => {
-    setShow(true);
+    setShowChat(true);
   };
 
   if (rooms) console.log("rooms at start:", rooms, "userselect: ", selectUser);
   return (
     <>
-      {show ? (
+      {showChat ? (
         <>
           <div className="chat-container">
-            <RoomsMenuContainer setShow={setShow} />
+            <RoomsMenuContainer setShow={setShowChat} />
           </div>
           <div>
             {actChannel ? (

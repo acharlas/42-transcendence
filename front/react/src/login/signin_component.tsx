@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import {
@@ -12,6 +12,11 @@ import {
 import loginService from "./login-service";
 import "./login_style.css";
 import "../style.css";
+import { io } from "socket.io-client";
+import {
+  defaultSocketContextState,
+  SocketReducer,
+} from "../context/socket.context";
 
 interface DecodedToken {
   sub: string;
@@ -41,7 +46,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
     navigate("/signup");
   };
   const goHome = () => {
-    navigate("/home");
+    navigate("/game");
   };
   const goSigninMfa = () => {
     navigate("/mfa-signin");

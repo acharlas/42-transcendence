@@ -38,6 +38,8 @@ export interface IoChatContextState {
   setShowDm: Function;
   closeChatBox: Function;
   setNewRoom: Function;
+  showChat: boolean;
+  setShowChat: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
@@ -77,6 +79,8 @@ const ChatContext = createContext<IoChatContextState>({
   setShowDm: () => {},
   closeChatBox: () => {},
   setNewRoom: () => {},
+  showChat: false,
+  setShowChat: () => {},
 });
 
 function ChatProvider(props: any) {
@@ -97,6 +101,7 @@ function ChatProvider(props: any) {
   const [showJoinMenu, setShowJoinMenu] = useState<boolean>(false);
   const [ShowRoomSetting, setShowRoomSetting] = useState<Room>(null);
   const [showDm, setShowDm] = useState<boolean>(false);
+  const [showChat, setShowChat] = useState<boolean>(false);
 
   const closeChatBox = () => {
     setMessages([]);
@@ -162,6 +167,8 @@ function ChatProvider(props: any) {
         setShowDm,
         closeChatBox,
         setNewRoom,
+        showChat,
+        setShowChat,
       }}
       {...props}
     />

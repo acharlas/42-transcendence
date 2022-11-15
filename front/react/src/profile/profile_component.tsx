@@ -9,8 +9,6 @@ import Avatar from "../avatar/avatar_component";
 import "../style.css";
 import "./profile.css";
 import BandeauIndex from "../bandeau/bandeau";
-import ChatProvider from "../context/chat.context";
-import SocketContextComponent from "../chat/socket-component";
 import ChatIndex from "../chat/chat-index";
 
 interface User {
@@ -140,140 +138,126 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
   };
 
   return (
-    <ChatProvider>
-      <SocketContextComponent>
+    <>
+      <div className="container">
         <BandeauIndex />
-        <ChatIndex />
-        <div className="container">
-          <BandeauIndex />
-          <div className="profile__screen">
-            <div className="profile__content ">
-              <div>
-                <div className="profile__panel__top">
-                  <div className="profile__nickname">{userData.nickname}</div>
-                </div>
-
-                <div className="profile__panel__bottom">
-                  <div className="profile__avatar__container">
-                    {Avatar(id)}
-                    {/*TODO: display profile pictures */}
-
-                    {isSelfProfile || (
-                      <div className="profile__button__container">
-                        <button
-                          className="profile__button"
-                          onClick={friendClick}
-                        >
-                          {isFriend ? "UNFRIEND" : "FRIEND"}
-                        </button>
-                        <button
-                          className="profile__button"
-                          onClick={blockClick}
-                        >
-                          {isBlocked ? "UNBLOCK" : "BLOCK"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <br></br>
-
-              <div className="profile__stats__container">
-                <div className="profile__stats__unit">
-                  <div className="profile__panel__top">WINS</div>
-                  <div className="profile__panel__bottom">{userData.wins}</div>
-                </div>
-
-                <div className="profile__stats__unit">
-                  <div className="profile__panel__top">LOSSES</div>
-                  <div className="profile__panel__bottom">
-                    {userData.losses}
-                  </div>
-                </div>
-
-                <div className="profile__stats__unit">
-                  <div className="profile__panel__top">MMR</div>
-                  <div className="profile__panel__bottom">{userData.mmr}</div>
-                </div>
-              </div>
-
-              <br></br>
-
+        <div className="profile__screen">
+          <div className="profile__content ">
+            <div>
               <div className="profile__panel__top">
-                <div className="profile__panel__title">MATCH HISTORY</div>
+                <div className="profile__nickname">{userData.nickname}</div>
               </div>
-              <table className="profile__panel__bottom profile__hist__table">
-                {/*TODO: match history*/}
-                <tbody>
-                  <tr className="profile__hist__head">
-                    <th>W/L</th>
-                    <th>SCORE</th>
-                    <th>MODE</th>
-                  </tr>
-                  <tr className="profile__hist__w">
-                    <th>W</th>
-                    <th>10-8</th>
-                    <th>classic</th>
-                  </tr>
-                  <tr className="profile__hist__l">
-                    <th>L</th>
-                    <th>3-10</th>
-                    <th>classic</th>
-                  </tr>
-                  <tr className="profile__hist__l">
-                    <th>L</th>
-                    <th>6-10</th>
-                    <th>classic</th>
-                  </tr>
-                  <tr className="profile__hist__w">
-                    <th>W</th>
-                    <th>10-9</th>
-                    <th>classic</th>
-                  </tr>
-                  <tr className="profile__hist__l">
-                    <th>L</th>
-                    <th>3-10</th>
-                    <th>classic</th>
-                  </tr>
-                  <tr className="profile__hist__w">
-                    <th>W</th>
-                    <th>10-9</th>
-                    <th>classic</th>
-                  </tr>
-                  <tr className="profile__hist__w">
-                    <th>W</th>
-                    <th>10-8</th>
-                    <th>classic</th>
-                  </tr>
-                  <tr className="profile__hist__l">
-                    <th>L</th>
-                    <th>6-10</th>
-                    <th>classic</th>
-                  </tr>
-                </tbody>
-              </table>
 
-              <br></br>
+              <div className="profile__panel__bottom">
+                <div className="profile__avatar__container">
+                  {Avatar(id)}
+                  {/*TODO: display profile pictures */}
 
-              <div className="profile__panel__top">
-                <div className="profile__panel__title">ACHIEVEMENTS</div>
+                  {isSelfProfile || (
+                    <div className="profile__button__container">
+                      <button className="profile__button" onClick={friendClick}>
+                        {isFriend ? "UNFRIEND" : "FRIEND"}
+                      </button>
+                      <button className="profile__button" onClick={blockClick}>
+                        {isBlocked ? "UNBLOCK" : "BLOCK"}
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="profile__panel__bottom profile__achiev__list">
-                {/*TODO: achievements */}
-                <div className="profile__achiev profile__bubble">on a roll</div>
-                <div className="profile__achiev profile__bubble">
-                  close call
-                </div>
-                <div className="profile__achiev profile__bubble">
-                  reverse sweep
-                </div>
+            </div>
+
+            <br></br>
+
+            <div className="profile__stats__container">
+              <div className="profile__stats__unit">
+                <div className="profile__panel__top">WINS</div>
+                <div className="profile__panel__bottom">{userData.wins}</div>
+              </div>
+
+              <div className="profile__stats__unit">
+                <div className="profile__panel__top">LOSSES</div>
+                <div className="profile__panel__bottom">{userData.losses}</div>
+              </div>
+
+              <div className="profile__stats__unit">
+                <div className="profile__panel__top">MMR</div>
+                <div className="profile__panel__bottom">{userData.mmr}</div>
+              </div>
+            </div>
+
+            <br></br>
+
+            <div className="profile__panel__top">
+              <div className="profile__panel__title">MATCH HISTORY</div>
+            </div>
+            <table className="profile__panel__bottom profile__hist__table">
+              {/*TODO: match history*/}
+              <tbody>
+                <tr className="profile__hist__head">
+                  <th>W/L</th>
+                  <th>SCORE</th>
+                  <th>MODE</th>
+                </tr>
+                <tr className="profile__hist__w">
+                  <th>W</th>
+                  <th>10-8</th>
+                  <th>classic</th>
+                </tr>
+                <tr className="profile__hist__l">
+                  <th>L</th>
+                  <th>3-10</th>
+                  <th>classic</th>
+                </tr>
+                <tr className="profile__hist__l">
+                  <th>L</th>
+                  <th>6-10</th>
+                  <th>classic</th>
+                </tr>
+                <tr className="profile__hist__w">
+                  <th>W</th>
+                  <th>10-9</th>
+                  <th>classic</th>
+                </tr>
+                <tr className="profile__hist__l">
+                  <th>L</th>
+                  <th>3-10</th>
+                  <th>classic</th>
+                </tr>
+                <tr className="profile__hist__w">
+                  <th>W</th>
+                  <th>10-9</th>
+                  <th>classic</th>
+                </tr>
+                <tr className="profile__hist__w">
+                  <th>W</th>
+                  <th>10-8</th>
+                  <th>classic</th>
+                </tr>
+                <tr className="profile__hist__l">
+                  <th>L</th>
+                  <th>6-10</th>
+                  <th>classic</th>
+                </tr>
+              </tbody>
+            </table>
+
+            <br></br>
+
+            <div className="profile__panel__top">
+              <div className="profile__panel__title">ACHIEVEMENTS</div>
+            </div>
+            <div className="profile__panel__bottom profile__achiev__list">
+              {/*TODO: achievements */}
+              <div className="profile__achiev profile__bubble">on a roll</div>
+              <div className="profile__achiev profile__bubble">close call</div>
+              <div className="profile__achiev profile__bubble">
+                reverse sweep
               </div>
             </div>
           </div>
         </div>
-      </SocketContextComponent>
-    </ChatProvider>
+      </div>
+    </>
   );
 }

@@ -486,26 +486,22 @@ export default function Profile() {
   }
 
   return (
-    <ChatProvider>
-      <SocketContextComponent>
-        <ChatIndex />
-        <div className="container">
-          <BandeauIndex />
-          <div className="profile__screen">
-            <div className="profile__content">
-              {avatarSettings()}
-              <br></br>
-              {nicknameSettings()}
-              <br></br>
-              {mfaSettings()}
-              <br></br>
-              {friendSettings()}
-              <br></br>
-              {blockSettings()}
-            </div>
+    <>
+      <div className="container">
+        <div className="profile__screen">
+          <div className="profile__content">
+            {avatarSettings()}
+            <br></br>
+            {nicknameSettings()}
+            <br></br>
+            {mfaSettings()}
+            <br></br>
+            {friendSettings()}
+            <br></br>
+            {blockSettings()}
           </div>
         </div>
-      </SocketContextComponent>
-    </ChatProvider>
+      </div>
+    </>
   );
 }
