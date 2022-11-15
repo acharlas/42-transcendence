@@ -23,7 +23,7 @@ interface DecodedToken {
   exp: string;
 }
 
-export interface ISigninFormProps {}
+export interface ISigninFormProps { }
 
 const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   const [newUsername, setNewUsername] = useState("");
@@ -45,7 +45,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
     navigate("/signup");
   };
   const goHome = () => {
-    navigate("/game");
+    navigate("/app");
   };
   const goSigninMfa = () => {
     navigate("/mfa-signin");

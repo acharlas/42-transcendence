@@ -22,7 +22,7 @@ root.render(
           <Route path="/42-redirect" element={<Redirect />} />
           <Route path="/mfa-signin/" element={<MfaSignin />} />
           <Route path="/leaderboard" element={<Userlist />} />
-          <Route path="/game/*" element={<App />} />
+          <Route path="/app/*" element={<App />} />
         </Routes>
       </SocketContextComponent>
     </ChatProvider>

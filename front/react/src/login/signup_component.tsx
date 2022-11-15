@@ -36,7 +36,7 @@ export function SignupForm() {
   };
 
   const goHome = () => {
-    navigate("/game");
+    navigate("/app");
   };
 
   const ftShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {

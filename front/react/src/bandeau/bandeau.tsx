@@ -2,25 +2,25 @@ import { useNavigate } from "react-router-dom";
 import "./style-bandeau.css";
 import { RiShutDownLine } from "react-icons/ri";
 
-export interface IBandeauIndexProps {}
+export interface IBandeauIndexProps { }
 
 const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
   let navigate = useNavigate();
 
   const goProfile = () => {
-    navigate("/game/profile/me");
+    navigate("/app/profile/me");
   };
 
   const goLeaderboard = () => {
-    navigate("/game/leaderboard");
+    navigate("/app/leaderboard");
   };
 
   const goSettings = () => {
-    navigate("/game/settings");
+    navigate("/app/settings");
   };
 
   const goHome = () => {
-    navigate("/game");
+    navigate("/app");
   };
 
   const HandleDisconect = () => {
