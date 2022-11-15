@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
-import { MdLeaderboard } from "react-icons/md";
+// import { MdLeaderboard } from "react-icons/md";
 
 import "./style.css";
 import { getMe } from "./api/auth-api";
@@ -11,6 +11,7 @@ import ChatProvider from "./context/chat.context";
 import HomeComponent from "./home/home_index";
 import Profile from "./profile/profile_component";
 import Settings from "./settings/settings_component";
+import Leaderboard from "./leaderboard/leaderboard_component";
 
 export interface IAppProps { }
 const App: React.FunctionComponent<IAppProps> = (props) => {
@@ -28,7 +29,7 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
             <Route path="/" element={<HomeComponent />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile/:urlId" element={<Profile />} />
-            <Route path="/leaderboard" element={<MdLeaderboard />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </SocketContextComponent>
       </ChatProvider>
