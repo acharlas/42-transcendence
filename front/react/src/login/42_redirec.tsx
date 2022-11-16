@@ -22,7 +22,7 @@ export default function Redirect() {
     .then((res) => {
       const token = res.data.access_token;
       const tokenInfo: DecodedToken = jwt_decode(token); //can throw InvalidTokenError
-      if (tokenInfo.fullyAuth) { navigate("/home"); }
+      if (tokenInfo.fullyAuth) { navigate("/app"); }
       else { navigate("/mfa-signin"); }
     })
     .catch((e) => {
