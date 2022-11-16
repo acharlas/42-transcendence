@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { getUsers } from "../api/user-api";
 import "./leaderboard.css";
 import "../style.css";
@@ -20,6 +22,13 @@ export default function Userlist() {
     fetchUserlist();
   }, []);
 
+  const navigate = useNavigate();
+
+  const handleProfileClick = async (event: React.MouseEvent<HTMLTableRowElement>, id: string) => {
+    event.preventDefault();
+    navigate('/app/profile/' + id);
+  }
+
   return (
     <>
       <div className="container">
@@ -31,18 +40,19 @@ export default function Userlist() {
               <table>
                 <tbody>
                   <tr>
-                    <td>rank</td>
-                    <td>MMR</td>
-                    <td>player</td>
+                    <th>rank</th>
+                    <th>MMR</th>
+                    <th>player</th>
                   </tr>
                   {userlist.map((n, index) => (
-                    <tr key={n.id}>
-                      {/*can't sort by mmr because keys must be unique*/}
+                    <tr
+                      className="lb__clickable__line"
+                      key={n.id}
+                      onClick={event => handleProfileClick(event, n.id)}
+                    >
                       <td>{index + 1}</td>
                       <td>{n.mmr}</td>
-                      <td>
-                        <a href={"/app/profile/" + n.id}>{n.nickname}</a>
-                      </td>
+                      <td>{n.nickname}</td>
                     </tr>
                   ))}
                 </tbody>
