@@ -74,7 +74,7 @@ export default function Profile() {
   // Navigation
   const navigate = useNavigate();
   const goHome = () => {
-    navigate('/home');
+    navigate('/app');
   }
 
   // Utils
