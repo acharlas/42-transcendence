@@ -41,7 +41,7 @@ export default function Userlist() {
                       <td>{index + 1}</td>
                       <td>{n.mmr}</td>
                       <td>
-                        <a href={"/profile/" + n.id}>{n.nickname}</a>
+                        <a href={"/app/profile/" + n.id}>{n.nickname}</a>
                       </td>
                     </tr>
                   ))}
