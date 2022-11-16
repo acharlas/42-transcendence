@@ -28,7 +28,7 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
           <Routes>
             <Route path="/" element={<HomeComponent />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/profile/:urlId" element={<Profile />} />
+            <Route path="/profile/:id" element={<Profile />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
           </Routes>
         </SocketContextComponent>

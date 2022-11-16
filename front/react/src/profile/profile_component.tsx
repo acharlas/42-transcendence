@@ -20,31 +20,17 @@ interface User {
 
 //preliminary checks before using the display component
 export default function Profile() {
-  const { urlId } = useParams();
+  // State
+  var { id } = useParams();
 
-  const userId = sessionStorage.getItem("userid");
-
-  const realId = urlId === "me" ? userId : urlId;
-  const isSelfProfile = realId === userId;
-  return DisplayProfilePage(realId, isSelfProfile);
-}
-
-function DisplayProfilePage(id: string, isSelfProfile: boolean) {
-  // Navigation
-  const navigate = useNavigate();
-  const goSignIn = () => {
-    navigate("/");
-  };
-
-  // State variables
   const [userData, setUserData] = useState<User>({
     nickname: "",
     wins: 0,
     losses: 0,
     mmr: 0,
   });
-  const [isFriend, setIsFriend] = useState(false);
-  const [isBlocked, setIsBlocked] = useState(false);
+  const [isFriend, setIsFriend] = useState<boolean>(false);
+  const [isBlocked, setIsBlocked] = useState<boolean>(false);
 
   //useEffect once to get user data and friend/block initial status
   useEffect(() => {
@@ -54,12 +40,10 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
           setUserData(res.data);
         })
         .catch((e) => {
-          if (e.response.status === 401) {
-            console.log("Not identified: redirecting", e);
-            goSignIn();
-          } else {
-            console.log(e);
-            //todo: no such user
+          if (e.response.data.message === "no such user") {
+            console.log("no such user");
+            goHome();
+            return;
           }
         });
     };
@@ -70,12 +54,7 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
           setIsFriend(res);
         })
         .catch((e) => {
-          if (e.response.status === 401) {
-            console.log("Not identified: redirecting", e);
-            goSignIn();
-          } else {
-            console.log("checkIfFriend err: " + e);
-          }
+          console.log("checkIfFriend err: " + e);
         });
 
       await checkIfBlocked({ id: id })
@@ -83,21 +62,27 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
           setIsBlocked(res);
         })
         .catch((e) => {
-          if (e.response.status === 401) {
-            console.log("Not identified: redirecting", e);
-            goSignIn();
-          } else {
-            console.log("checkIfBlocked err: " + e);
-          }
+          console.log("checkIfBlocked err: " + e);
         });
     };
 
     fetchUserData();
     fetchFriendBlockStates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [id]);
 
-  // FRIEND
+  // Navigation
+  const navigate = useNavigate();
+  const goHome = () => {
+    navigate('/home');
+  }
+
+  // Utils
+  const isSelfProfile = () => {
+    return (id === sessionStorage.getItem("userid"));
+  }
+
+  // Events
   const friendClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     try {
@@ -114,7 +99,6 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
     }
   };
 
-  // BLOCK
   const blockClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     try {
@@ -147,7 +131,7 @@ function DisplayProfilePage(id: string, isSelfProfile: boolean) {
                   {Avatar(id)}
                   {/*TODO: display profile pictures */}
 
-                  {isSelfProfile || (
+                  {isSelfProfile() || (
                     <div className="profile__button__container">
                       <button className="profile__button" onClick={friendClick}>
                         {isFriend ? "UNFRIEND" : "FRIEND"}
