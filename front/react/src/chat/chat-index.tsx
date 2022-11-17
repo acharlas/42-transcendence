@@ -7,6 +7,8 @@ import MessagesComponent from "./chat-messages";
 import CreateRoomsContainer from "./chat-create-room";
 import JoinNewRoomComponent from "./chat-join-new-room";
 import ChatOptionComponent from "./chat-option";
+import { BiMessageAltAdd } from "react-icons/bi";
+import { MdMarkChatRead, MdMarkChatUnread } from "react-icons/md";
 
 export interface IChatIndexProps {}
 
@@ -50,7 +52,14 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
       ) : (
         <>
           <button onClick={handleShow} className="menu-user-button">
-            <BsFillChatRightTextFill className="menu-user-icon" />
+            {rooms.find((room) => {
+              if (room.newMessage) return true;
+              return false;
+            }) ? (
+              <MdMarkChatUnread className="menu-user-icon" />
+            ) : (
+              <MdMarkChatRead className="menu-user-icon" />
+            )}
           </button>
         </>
       )}
