@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUserAstronaut } from "react-icons/fa";
 import { MdAddModerator, MdRemoveModerator } from "react-icons/md";
 import { AiFillHeart, AiFillUnlock } from "react-icons/ai";
-import { HiMail, HiXCircle } from "react-icons/hi";
+import { HiMail } from "react-icons/hi";
 import { GiPrisoner } from "react-icons/gi";
 import { TbMessage, TbMessageOff } from "react-icons/tb";
 import { ImUserMinus } from "react-icons/im";
@@ -22,20 +22,12 @@ function UserMenu() {
     friendList,
     bloquedList,
     rooms,
-    setActChannel,
-    setUserList,
-    setMessages,
-    setUser,
     closeChatBox,
     setNewRoom,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
   let navigate = useNavigate();
-
-  const handleClose = () => {
-    setSelectUser(null);
-  };
 
   const banUser = () => {
     setShowTimeSelector(UserPrivilege.ban);
@@ -78,8 +70,8 @@ function UserMenu() {
   };
 
   const handleShowUserProfile = () => {
-    navigate('/app/profile/' + selectUser.id);
-  }
+    navigate("/app/profile/" + selectUser.id);
+  };
 
   const handleSendDm = () => {
     const chan = rooms.find((room) => {
@@ -146,7 +138,7 @@ function UserMenu() {
             <></>
           )}
           {selectUser.privilege !== "owner" &&
-            selectUser.privilege !== "admin" ? (
+          selectUser.privilege !== "admin" ? (
             <>
               <button onClick={AdminUser} className="chat-box-button">
                 <MdAddModerator className="chat-box-button-icon" />

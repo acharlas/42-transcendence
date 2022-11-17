@@ -146,6 +146,7 @@ const SocketContextComponent: React.FunctionComponent<
             return false;
           });
           room.message.push(message);
+          if (room.channel.id !== actChannel) room.newMessage = true;
           setRooms(newRooms);
           if (roomId === actChannel) setMessages(room.message);
         }
@@ -179,6 +180,9 @@ const SocketContextComponent: React.FunctionComponent<
       /**room list */
       socket.on("Rooms", (res: Room[]) => {
         console.log("room receive:", res);
+        res.map((room) => {
+          room.newMessage = false;
+        });
         setRooms(res);
       });
       /**UserList update */

@@ -11,6 +11,7 @@ import { ChannelType, Room, User, UserPrivilege, UserStatus } from "./type";
 import { SiStarship } from "react-icons/si";
 import SocketContext from "../context/socket.context";
 import { HiXCircle } from "react-icons/hi";
+import { BiMessageAltAdd } from "react-icons/bi";
 
 function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   const [searchFriend, setSearchFriend] = useState<string>("");
@@ -57,6 +58,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
       if (room.channel.id === key) return true;
       return false;
     });
+    curRoom.newMessage = false;
     setNewRoom(curRoom);
     console.log("user set to: ", user);
   }
@@ -298,6 +300,11 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
           className="room-menu-button-scroll-menu"
         >
           Channels{" "}
+          {rooms.find((room) => {
+            if (room.channel.type !== ChannelType.dm && room.newMessage)
+              return true;
+            return false;
+          }) && <BiMessageAltAdd />}
           {showChannel ? (
             <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
           ) : (
@@ -356,6 +363,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                           ""
                         )}
                         {channel.name}
+                        {room.newMessage && <BiMessageAltAdd />}
                       </button>
                       {chanUser.privilege === UserPrivilege.owner ? (
                         <button
@@ -401,11 +409,26 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                                         user.username === actUser.username
                                       }
                                     >
-                                      {actUser.privilege === UserPrivilege.admin && <GiAlienStare className="room-menu-user-icon" />}
-                                      {actUser.privilege === UserPrivilege.owner && <SiStarship className="room-menu-user-icon" />}
-                                      {actUser.privilege === UserPrivilege.ban && <FaBan className="room-menu-user-icon" />}
-                                      {actUser.privilege === UserPrivilege.muted && <TbMessageCircleOff className="room-menu-user-icon" />}
-                                      {actUser.privilege === UserPrivilege.default && <GiAstronautHelmet className="room-menu-user-icon" />}
+                                      {actUser.privilege ===
+                                        UserPrivilege.admin && (
+                                        <GiAlienStare className="room-menu-user-icon" />
+                                      )}
+                                      {actUser.privilege ===
+                                        UserPrivilege.owner && (
+                                        <SiStarship className="room-menu-user-icon" />
+                                      )}
+                                      {actUser.privilege ===
+                                        UserPrivilege.ban && (
+                                        <FaBan className="room-menu-user-icon" />
+                                      )}
+                                      {actUser.privilege ===
+                                        UserPrivilege.muted && (
+                                        <TbMessageCircleOff className="room-menu-user-icon" />
+                                      )}
+                                      {actUser.privilege ===
+                                        UserPrivilege.default && (
+                                        <GiAstronautHelmet className="room-menu-user-icon" />
+                                      )}
                                       {actUser.nickname}
                                     </button>
                                   </li>
@@ -437,56 +460,60 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
       <div>
         <button onClick={handleShowDm} className="room-menu-button-scroll-menu">
           Private Messages{" "}
+          {rooms.find((room) => {
+            if (room.channel.type === ChannelType.dm && room.newMessage)
+              return true;
+            return false;
+          }) && <BiMessageAltAdd />}
           {showDm ? (
             <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
           ) : (
             <RiArrowDropDownFill className="room-menu-button-scroll-menu-icon" />
           )}
         </button>
-        {
-          showDm ? (
-            <>
-              {rooms.map((room) => {
-                const usr = room.user.find((usr) => {
-                  if (usr.username !== window.sessionStorage.getItem("username"))
-                    return true;
+        {showDm ? (
+          <>
+            {rooms.map((room) => {
+              const usr = room.user.find((usr) => {
+                if (usr.username !== window.sessionStorage.getItem("username"))
+                  return true;
+                return false;
+              });
+              if (
+                room.channel.type !== ChannelType.dm ||
+                bloquedList.find((block) => {
+                  if (block.username === usr.username) return true;
                   return false;
-                });
-                if (
-                  room.channel.type !== ChannelType.dm ||
-                  bloquedList.find((block) => {
-                    if (block.username === usr.username) return true;
-                    return false;
-                  })
-                )
-                  return; //dead code
-                return (
-                  <>
-                    <button
-                      title={`Join ${room.channel.name}`}
-                      onClick={() => handleJoinRoom(room.channel.id)}
-                      className="room-menu-button-dm"
-                    >
-                      {
-                        room.user.find((usr) => {
-                          if (
-                            usr.username !==
-                            window.sessionStorage.getItem("username")
-                          )
-                            return true;
-                          return false;
-                        }).username
-                      }
-                    </button>
-                  </>
-                );
-              })}
-            </>
-          ) : (
-            <></>
-          )
-        }
-      </div >
+                })
+              )
+                return; //dead code
+              return (
+                <>
+                  <button
+                    title={`Join ${room.channel.name}`}
+                    onClick={() => handleJoinRoom(room.channel.id)}
+                    className="room-menu-button-dm"
+                  >
+                    {
+                      room.user.find((usr) => {
+                        if (
+                          usr.username !==
+                          window.sessionStorage.getItem("username")
+                        )
+                          return true;
+                        return false;
+                      }).username
+                    }
+                    {room.newMessage && <BiMessageAltAdd />}
+                  </button>
+                </>
+              );
+            })}
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
     );
   }
 

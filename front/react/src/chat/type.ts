@@ -33,6 +33,7 @@ export interface Room {
   channel: Channel;
   user: User[];
   message: Message[];
+  newMessage: boolean;
 }
 
 export interface User {
