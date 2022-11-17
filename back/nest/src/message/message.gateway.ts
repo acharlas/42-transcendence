@@ -131,6 +131,7 @@ export class MessageGateway
           return resolve();
         })
         .catch((err) => {
+          client.emit('ErrMessage', { code: 'err31' });
           return reject(err);
         });
     });
@@ -299,6 +300,11 @@ export class MessageGateway
       this.userService
         .getUser(friend)
         .then((user) => {
+          if (!user) {
+            console.log('friend not found: ', friend);
+            client.emit('ErrMessage', { code: 'err12' });
+            return;
+          }
           return resolve(
             new Promise<void>((resolve, reject) => {
               this.friendService
@@ -314,7 +320,7 @@ export class MessageGateway
                         })
                         .catch((err) => {
                           console.log(err);
-                          return reject();
+                          return reject(err);
                         });
                     }),
                   );
@@ -328,7 +334,8 @@ export class MessageGateway
         })
         .catch((err) => {
           console.log(err);
-          return reject();
+          client.emit('ErrMessage', { code: 'err11' });
+          return reject(err);
         });
     });
   }
@@ -347,6 +354,10 @@ export class MessageGateway
       this.userService
         .getUser(Block)
         .then((user) => {
+          if (!user) {
+            client.emit('ErrMessage', { code: 'err22' });
+            return;
+          }
           return resolve(
             new Promise<void>((resolve, reject) => {
               this.blockService
@@ -369,6 +380,7 @@ export class MessageGateway
                 })
                 .catch((err) => {
                   console.log(err);
+                  client.emit('ErrMessage', { code: 'err21' });
                   return reject(err);
                 });
             }),

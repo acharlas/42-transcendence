@@ -93,7 +93,7 @@ export class ChannelService {
                   });
                 })
                 .catch((err) => {
-                  return reject(new ForbiddenException(403));
+                  throw new ForbiddenException('channel already exist');
                 });
             }),
           );
@@ -306,8 +306,19 @@ export class ChannelService {
                           });
                       }),
                     );
-
-                  if (channel.type === ChannelType.protected)
+                  else if (channel.type === ChannelType.protected)
+                    return resolve(
+                      new Promise<Room>((resolve, reject) => {
+                        this.joinProtectedChannel(user, channel, dto)
+                          .then((room) => {
+                            return resolve(room);
+                          })
+                          .catch((err) => {
+                            return reject(err);
+                          });
+                      }),
+                    );
+                  else if (channel.type === ChannelType.private)
                     return resolve(
                       new Promise<Room>((resolve, reject) => {
                         this.joinProtectedChannel(user, channel, dto)
@@ -327,8 +338,8 @@ export class ChannelService {
           );
         })
         .catch((err) => {
+          console.log(err);
           throw new ForbiddenException('Access to resource denied');
-          return reject(err);
         });
     });
   }
@@ -378,7 +389,10 @@ export class ChannelService {
               console.log(date.getTime());
               console.log(userChan.time.getTime());
               if (date.getTime() < userChan.time.getTime())
-                return reject(new ForbiddenException('you are ban'));
+                return reject(new ForbiddenException('err44'));
+            }
+            if (userChan.status === UserStatus.connected) {
+              throw new ForbiddenException('err45');
             }
             return resolve(
               new Promise<Room>((resolve, reject) => {

@@ -129,7 +129,6 @@ enum GameMode {
 enum UserStatus {
   connected
   disconnected
-
 }
 
 enum UserPrivilege {

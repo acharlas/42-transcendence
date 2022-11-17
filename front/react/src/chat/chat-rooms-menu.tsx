@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { FaAngleRight, FaBan, FaLock } from "react-icons/fa";
+import { FaBan, FaLock } from "react-icons/fa";
 import { GiAlienStare, GiAstronautHelmet } from "react-icons/gi";
 import { TbMessageCircleOff } from "react-icons/tb";
 import { RiArrowDropDownFill, RiArrowDropUpFill } from "react-icons/ri";
@@ -473,7 +473,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
         </button>
         {showDm ? (
           <>
-            {rooms.map((room) => {
+            {rooms.map((room, id) => {
               const usr = room.user.find((usr) => {
                 if (usr.username !== window.sessionStorage.getItem("username"))
                   return true;
@@ -488,7 +488,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
               )
                 return; //dead code
               return (
-                <>
+                <div key={id}>
                   <button
                     title={`Join ${room.channel.name}`}
                     onClick={() => handleJoinRoom(room.channel.id)}
@@ -506,7 +506,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                     }
                     {room.newMessage && <BiMessageAltAdd />}
                   </button>
-                </>
+                </div>
               );
             })}
           </>
