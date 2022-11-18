@@ -8,7 +8,7 @@ function CreateRoomsContainer() {
   const newPassword = useRef(null);
   const [type, setType] = useState<string>("public");
   const { socket } = useContext(SocketContext).SocketState;
-  const { setShowCreateMenu } = useChat();
+  const { setShowCreateMenu, CreateErrMsg } = useChat();
 
   function handleCreateRoom() {
     console.log("socket", socket);
@@ -47,6 +47,7 @@ function CreateRoomsContainer() {
           <HiXCircle className="chat-box-button-icon" />
         </button>
       </div>
+      {CreateErrMsg ? <p>{CreateErrMsg}</p> : <></>}
       <form className="create-join-menu-title">
         Room Name:
         <input

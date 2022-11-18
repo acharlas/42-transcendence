@@ -7,7 +7,7 @@ function JoinNewRoomComponent() {
   const newRoomRef = useRef(null);
   const newPassRef = useRef(null);
   const { socket } = useContext(SocketContext).SocketState;
-  const { setShowJoinMenu } = useChat();
+  const { setShowJoinMenu, JoinErrMsg } = useChat();
 
   const handleJoinRoom = (event) => {
     const name = newRoomRef.current.value || "";
@@ -34,6 +34,7 @@ function JoinNewRoomComponent() {
         </button>
       </div>
       <form className="create-join-menu-title">
+        {JoinErrMsg ? <p>{JoinErrMsg}</p> : <></>}
         Join Name:
         <input
           ref={newRoomRef}

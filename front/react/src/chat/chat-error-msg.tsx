@@ -1,4 +1,4 @@
-export enum ChannelType {
+export enum ErrMessage {
   err11 = "you are already friend",
   err12 = "user doesn't exist",
   err21 = "user already block",

@@ -289,6 +289,9 @@ export class ChannelService {
           },
         })
         .then((channel) => {
+          if (!channel) {
+            throw new ForbiddenException('err41');
+          }
           return resolve(
             new Promise<Room>((resolve, reject) => {
               this.prisma.user
@@ -321,7 +324,7 @@ export class ChannelService {
                   else if (channel.type === ChannelType.private)
                     return resolve(
                       new Promise<Room>((resolve, reject) => {
-                        this.joinProtectedChannel(user, channel, dto)
+                        this.joinUpdateChannel(user, channel)
                           .then((room) => {
                             return resolve(room);
                           })
@@ -354,11 +357,11 @@ export class ChannelService {
       dto.password === undefined ||
       dto.password === ''
     ) {
-      throw new ForbiddenException('Password incorrect');
+      throw new ForbiddenException('err42');
     }
     const pwMathes = await argon.verify(channel.hash, dto.password);
     if (!pwMathes) {
-      throw new ForbiddenException('Password incorrect');
+      throw new ForbiddenException('err42');
     }
     return new Promise<Room>((resolve, reject) => {
       this.joinUpdateChannel(user, channel)

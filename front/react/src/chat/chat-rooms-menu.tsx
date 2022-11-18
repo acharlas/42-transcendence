@@ -12,6 +12,7 @@ import { SiStarship } from "react-icons/si";
 import SocketContext from "../context/socket.context";
 import { HiXCircle } from "react-icons/hi";
 import { BiMessageAltAdd } from "react-icons/bi";
+import { ErrMessage } from "./chat-error-msg";
 
 function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   const [searchFriend, setSearchFriend] = useState<string>("");
@@ -21,15 +22,9 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   const [searchChannel, setSearchChannel] = useState<string>("");
   const {
     rooms,
-    showRoomMenu,
-    setShowRoomMenu,
-    setActChannel,
     actChannel,
-    setMessages,
-    setUserList,
     showCreateMenu,
     setShowCreateMenu,
-    setUser,
     setSelectUser,
     selectUser,
     user,
@@ -48,6 +43,8 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
     setShowDm,
     closeChatBox,
     setNewRoom,
+    FriendErrMsg,
+    BlockErrMsg,
   } = useChat();
 
   function handleJoinRoom(key: string) {
@@ -197,6 +194,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                 <IoIosAddCircle />
               </button>
             </form>
+            {FriendErrMsg ? <p>{FriendErrMsg}</p> : <></>}
             <ul>
               {friendList.map((friend, id) => {
                 if (!friend.nickname.search(newFriend)) {
@@ -262,6 +260,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                 <IoIosAddCircle />
               </button>
             </form>
+            {BlockErrMsg ? <p>{BlockErrMsg}</p> : <></>}
             <ul>
               {bloquedList.map((block, id) => {
                 if (!block.nickname.search(newBlock)) {

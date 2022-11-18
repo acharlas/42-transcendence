@@ -189,6 +189,8 @@ export class MessageGateway
           return resolve();
         })
         .catch((err) => {
+          console.log('MESSAGE: ', err.message);
+          if (err.message) client.emit('ErrMessage', { code: err.message });
           return reject(err);
         });
     });
