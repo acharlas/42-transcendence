@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  StreamableFile,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
 import { readFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
 
@@ -29,7 +25,7 @@ export class AvatarService {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
-      }
+      },
     });
 
     if (user.avatarPath) {
@@ -40,7 +36,7 @@ export class AvatarService {
           id: userId,
         },
         data: {
-          avatarPath: "",
+          avatarPath: '',
         },
       });
     }
@@ -50,7 +46,7 @@ export class AvatarService {
     const user = await this.prisma.user.findUnique({
       where: {
         id: targetId,
-      }
+      },
     });
     if (user && user.avatarPath) {
       const file = readFileSync(join(process.cwd(), user.avatarPath));

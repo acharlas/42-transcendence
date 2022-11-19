@@ -43,6 +43,8 @@ model User {
 
   avatarPath String?
 
+  refreshToken String?
+
   @@map("users")
 }
 

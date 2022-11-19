@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-// const responseHandler = response => {
-//   console.log(response);
-//   return response;
-// };
+const responseHandler = response => {
+  console.log(response);
+  return response;
+};
 
 const errorHandler = error => {
   // console.log(error);
+  console.log("boop");
+  
   if (error?.response?.status === 401) {
     if (error?.response?.data?.message === "2FA required") {
       console.log("Missing 2fa: redirecting to 2fa page.");

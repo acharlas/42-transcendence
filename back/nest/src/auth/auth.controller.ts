@@ -1,7 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { User } from '@prisma/client';
+import { Request } from 'express';
+
 import { AuthService } from './auth.service';
+import { GetUser } from './decorator';
 import { AuthSigninDto, AuthSignupDto, getApiToken } from './dto';
+import { JwtGuard, JwtRefreshGuard } from './guard';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -64,5 +69,21 @@ export class AuthController {
           return reject(err);
         });
     });
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtRefreshGuard)
+  @Get('refresh')
+  refreshTokens(@Req() req: Request) {
+    // refreshTokens(@GetUser() user: User) {
+
+    console.log('BOOP2');
+    console.log(req);
+    const userId = req.user['sub'];
+    // const userId = request.headers.authorization user['sub'];
+    const refreshToken = req.user['refreshToken'];
+    console.log(userId, refreshToken);
+
+    return this.authService.refreshTokens(userId, refreshToken);
   }
 }

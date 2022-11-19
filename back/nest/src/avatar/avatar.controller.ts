@@ -12,7 +12,7 @@ import {
   Res,
   BadRequestException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
 import { GetUser } from 'src/auth/decorator';
@@ -34,9 +34,9 @@ export class AvatarController {
     @GetUser('id') userId: string,
     @UploadedFile() avatar: Express.Multer.File,
   ) {
-    console.log("postAvatar");
+    console.log('postAvatar');
     if (!avatar) {
-      throw new BadRequestException("no avatar");
+      throw new BadRequestException('no avatar');
     }
     console.log(avatar);
     this.avatarService.saveAvatar(userId, { path: avatar.path });
@@ -47,7 +47,7 @@ export class AvatarController {
   @Delete('')
   @HttpCode(HttpStatus.NO_CONTENT)
   deleteAvatar(@GetUser('id') userId: string) {
-    console.log("deleteAvatar");
+    console.log('deleteAvatar');
     this.avatarService.deleteAvatar(userId);
   }
 
@@ -57,16 +57,17 @@ export class AvatarController {
     @Param('id') targetId: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    console.log("getAvatar");
+    console.log('getAvatar');
     return new Promise<StreamableFile>((resolve, reject) => {
-      return this.avatarService.getAvatar(targetId)
+      return this.avatarService
+        .getAvatar(targetId)
         .then((ret) => {
           res.set('Content-Type', 'image');
           return resolve(ret);
         })
         .catch((err) => {
           return reject(err);
-        })
-    })
+        });
+    });
   }
 }

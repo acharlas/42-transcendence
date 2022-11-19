@@ -3,10 +3,15 @@ import { ConfigService } from '@nestjs/config';
 import { ModuleRef } from '@nestjs/core';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Request } from 'express';
+
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class JwtRefreshStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh',
+) {
   constructor(
     config: ConfigService,
     private prisma: PrismaService,
@@ -23,6 +28,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     request: Request,
     payload: { sub: string; fullyAuth: boolean },
   ) {
+    const refreshToken = request
+      .get('Authorization')
+      .replace('Bearer', '')
+      .trim();
+    return { ...payload, refreshToken };
     if (
       !payload.fullyAuth &&
       request.url !== '/mfa/signin/init' &&
