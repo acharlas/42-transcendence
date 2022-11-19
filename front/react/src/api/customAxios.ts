@@ -20,10 +20,11 @@ const errorHandler = error => {
   return Promise.reject(error);
 };
 
-axios.interceptors.response.use(
-  // (response) => responseHandler(response),
+const axiosInstance = axios.create({});
+
+axiosInstance.interceptors.response.use(
+  (response) => responseHandler(response),
   (error) => errorHandler(error)
 );
 
-export default axios.create({
-});
+export default axiosInstance;
