@@ -20,7 +20,7 @@ import { Channel, ChannelType, ChannelUser, Message } from '@prisma/client';
 import { GetChannelById, MessageCont, Room } from './type_channel';
 
 @Controller('channels')
-@ApiTags('channels')
+@ApiTags('Channels')
 @ApiBearerAuth()
 @UseGuards(JwtGuard)
 export class ChannelController {

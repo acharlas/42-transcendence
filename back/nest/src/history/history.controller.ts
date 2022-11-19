@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from '../auth/guard';
 import { HistoryService } from './history.service';
 
-@ApiTags('friend')
+@ApiTags('History')
 @ApiBearerAuth()
 @UseGuards(JwtGuard)
 @Controller('history')

@@ -8,7 +8,7 @@ import { EditUserDto } from './dto';
 import { UserService } from './user.service';
 
 @Controller('users')
-@ApiTags('users')
+@ApiTags('Users')
 @ApiBearerAuth()
 @UseGuards(JwtGuard)
 export class UserController {

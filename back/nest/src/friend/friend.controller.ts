@@ -16,7 +16,7 @@ import { JwtGuard } from '../auth/guard';
 import { FriendDto } from './dto';
 import { FriendService } from './friend.service';
 
-@ApiTags('friend')
+@ApiTags('Friend')
 @ApiBearerAuth()
 @UseGuards(JwtGuard)
 @Controller('friend')
