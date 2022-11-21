@@ -40,6 +40,16 @@ export interface IoChatContextState {
   setNewRoom: Function;
   showChat: boolean;
   setShowChat: Function;
+  JoinErrMsg: string;
+  setJoinErrMsg: Function;
+  CreateErrMsg: string;
+  setCreateErrMsg: Function;
+  FriendErrMsg: string;
+  setFriendErrMsg: Function;
+  BlockErrMsg: string;
+  setBlockErrMsg: Function;
+  showInviteUser: boolean;
+  setShowInviteUser: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
@@ -81,6 +91,16 @@ const ChatContext = createContext<IoChatContextState>({
   setNewRoom: () => {},
   showChat: false,
   setShowChat: () => {},
+  JoinErrMsg: undefined,
+  setJoinErrMsg: () => {},
+  CreateErrMsg: undefined,
+  setCreateErrMsg: () => {},
+  FriendErrMsg: undefined,
+  setFriendErrMsg: () => {},
+  BlockErrMsg: undefined,
+  setBlockErrMsg: () => {},
+  showInviteUser: false,
+  setShowInviteUser: () => {},
 });
 
 function ChatProvider(props: any) {
@@ -102,6 +122,11 @@ function ChatProvider(props: any) {
   const [ShowRoomSetting, setShowRoomSetting] = useState<Room>(null);
   const [showDm, setShowDm] = useState<boolean>(false);
   const [showChat, setShowChat] = useState<boolean>(false);
+  const [JoinErrMsg, setJoinErrMsg] = useState<string>("");
+  const [CreateErrMsg, setCreateErrMsg] = useState<string>("");
+  const [FriendErrMsg, setFriendErrMsg] = useState<string>("");
+  const [BlockErrMsg, setBlockErrMsg] = useState<string>("");
+  const [showInviteUser, setShowInviteUser] = useState<boolean>(false);
 
   const closeChatBox = () => {
     setMessages([]);
@@ -112,6 +137,14 @@ function ChatProvider(props: any) {
     setSelectUser(null);
     setShowCreateMenu(null);
     setUserList([]);
+    resetErrMsg();
+  };
+
+  const resetErrMsg = () => {
+    setJoinErrMsg("");
+    setCreateErrMsg("");
+    setFriendErrMsg("");
+    setBlockErrMsg("");
   };
 
   const setNewRoom = (room: Room) => {
@@ -169,6 +202,16 @@ function ChatProvider(props: any) {
         setNewRoom,
         showChat,
         setShowChat,
+        JoinErrMsg,
+        setJoinErrMsg,
+        CreateErrMsg,
+        setCreateErrMsg,
+        FriendErrMsg,
+        setFriendErrMsg,
+        BlockErrMsg,
+        setBlockErrMsg,
+        showInviteUser,
+        setShowInviteUser,
       }}
       {...props}
     />

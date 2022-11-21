@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
-import e from 'express';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { FriendDto } from './dto';
@@ -21,7 +20,7 @@ import { FriendService } from './friend.service';
 @UseGuards(JwtGuard)
 @Controller('friend')
 export class FriendController {
-  constructor(private friendService: FriendService) { }
+  constructor(private friendService: FriendService) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('add')

@@ -131,6 +131,8 @@ export class MessageGateway
           return resolve();
         })
         .catch((err) => {
+          console.log('error create channel: ', err);
+          client.emit('ErrMessage', { code: 'err31' });
           return reject(err);
         });
     });
@@ -188,6 +190,8 @@ export class MessageGateway
           return resolve();
         })
         .catch((err) => {
+          console.log('MESSAGE: ', err.message);
+          if (err.message) client.emit('ErrMessage', { code: err.message });
           return reject(err);
         });
     });
@@ -299,6 +303,11 @@ export class MessageGateway
       this.userService
         .getUser(friend)
         .then((user) => {
+          if (!user) {
+            console.log('friend not found: ', friend);
+            client.emit('ErrMessage', { code: 'err12' });
+            return;
+          }
           return resolve(
             new Promise<void>((resolve, reject) => {
               this.friendService
@@ -314,7 +323,7 @@ export class MessageGateway
                         })
                         .catch((err) => {
                           console.log(err);
-                          return reject();
+                          return reject(err);
                         });
                     }),
                   );
@@ -328,7 +337,8 @@ export class MessageGateway
         })
         .catch((err) => {
           console.log(err);
-          return reject();
+          client.emit('ErrMessage', { code: 'err11' });
+          return reject(err);
         });
     });
   }
@@ -347,6 +357,10 @@ export class MessageGateway
       this.userService
         .getUser(Block)
         .then((user) => {
+          if (!user) {
+            client.emit('ErrMessage', { code: 'err22' });
+            return;
+          }
           return resolve(
             new Promise<void>((resolve, reject) => {
               this.blockService
@@ -369,6 +383,7 @@ export class MessageGateway
                 })
                 .catch((err) => {
                   console.log(err);
+                  client.emit('ErrMessage', { code: 'err21' });
                   return reject(err);
                 });
             }),
@@ -543,6 +558,31 @@ export class MessageGateway
         .catch((err) => {
           console.log(err);
           return reject();
+        });
+    });
+  }
+  /*============================================*/
+  /*============================================*/
+  /*Invite user to a serveur*/
+  @SubscribeMessage('InviteUser')
+  InviteUser(
+    @MessageBody('user') user: string,
+    @MessageBody('channel') channel: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('invite User: ', user, ' to: ', channel);
+    return new Promise<void>((resolve, reject) => {
+      this.userService
+        .getUser(user)
+        .then((userAdd) => {
+          this.channelService
+            .InviteUser(client.userID, userAdd.id, channel)
+            .then((room) => {
+              return resolve();
+            });
+        })
+        .catch((err) => {
+          return reject(err);
         });
     });
   }

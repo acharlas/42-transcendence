@@ -28,7 +28,6 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
     setShowChat(true);
   };
 
-  if (rooms) console.log("rooms at start:", rooms, "userselect: ", selectUser);
   return (
     <>
       {showChat ? (
