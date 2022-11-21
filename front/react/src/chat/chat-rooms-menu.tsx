@@ -394,7 +394,8 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                               //searchFriend.current.value = "";
                               if (
                                 !actUser.nickname.search(searchFriend) &&
-                                (actUser.status !== UserStatus.disconnected ||
+                                ((actUser.status !== UserStatus.invited &&
+                                  actUser.status !== UserStatus.disconnected) ||
                                   actUser.privilege === UserPrivilege.ban)
                               )
                                 return (
@@ -492,6 +493,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                     title={`Join ${room.channel.name}`}
                     onClick={() => handleJoinRoom(room.channel.id)}
                     className="room-menu-button-dm"
+                    disabled={room.channel.id === actChannel}
                   >
                     {
                       room.user.find((usr) => {

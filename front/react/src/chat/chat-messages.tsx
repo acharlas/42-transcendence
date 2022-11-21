@@ -1,31 +1,29 @@
 import { useContext, useEffect, useRef } from "react";
 import { useChat } from "../context/chat.context";
 import SocketContext from "../context/socket.context";
-import { HiXCircle } from "react-icons/hi";
-
-import { GiCat } from "react-icons/gi";
+import { HiPlusSm, HiXCircle } from "react-icons/hi";
 import "./chat-style.css";
-import { User } from "./type";
+import { ChannelType, User, UserPrivilege } from "./type";
 import UserMenu from "./chat-user-menu";
 import TimeSelector from "./chat-time-selector";
+import InviteUser from "./chat-invite-user";
 
 function MessagesComponent() {
   const newMessageRef = useRef(null);
   const bottomRef = useRef(null);
   const {
-    setRooms,
     rooms,
-    setMessages,
     messages,
     actChannel,
     userList,
     setSelectUser,
     selectUser,
     user,
-    setActChannel,
     showTimeSelector,
     bloquedList,
     closeChatBox,
+    setShowInviteUser,
+    showInviteUser,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -79,6 +77,24 @@ function MessagesComponent() {
     closeChatBox();
   };
 
+  const affInviteUserButton = (): boolean => {
+    const room = rooms.find((room) => {
+      if (room.channel.id === actChannel) return true;
+      return false;
+    });
+    if (
+      room.channel.type === ChannelType.private &&
+      (user.privilege === UserPrivilege.admin ||
+        user.privilege === UserPrivilege.owner)
+    )
+      return true;
+    return false;
+  };
+
+  const handleInviteUser = () => {
+    setShowInviteUser(true)
+  };
+
   if (!actChannel) return <></>;
   return (
     <div className="chat-box-container">
@@ -86,6 +102,11 @@ function MessagesComponent() {
         <button onClick={handleCloseChat} className="chat-box-button">
           <HiXCircle className="chat-box-button-icon" />
         </button>
+        {affInviteUserButton && (
+          <button onClick={handleInviteUser} className="chat-box-button">
+            <HiPlusSm className="chat-box-button-icon" />
+          </button>
+        )}
         {selectUser ? <UserMenu /> : <></>}
       </div>
       <div className="room-chat-message-container">
@@ -127,7 +148,8 @@ function MessagesComponent() {
         ref={newMessageRef}
         onKeyDown={handleEnter}
       />
-      {showTimeSelector ? <TimeSelector /> : <></>}
+      {showTimeSelector && <TimeSelector />}
+      {showInviteUser && <InviteUser />}
     </div>
   );
 }

@@ -48,6 +48,8 @@ export interface IoChatContextState {
   setFriendErrMsg: Function;
   BlockErrMsg: string;
   setBlockErrMsg: Function;
+  showInviteUser: boolean;
+  setShowInviteUser: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
@@ -97,6 +99,8 @@ const ChatContext = createContext<IoChatContextState>({
   setFriendErrMsg: () => {},
   BlockErrMsg: undefined,
   setBlockErrMsg: () => {},
+  showInviteUser: false,
+  setShowInviteUser: () => {},
 });
 
 function ChatProvider(props: any) {
@@ -122,6 +126,7 @@ function ChatProvider(props: any) {
   const [CreateErrMsg, setCreateErrMsg] = useState<string>("");
   const [FriendErrMsg, setFriendErrMsg] = useState<string>("");
   const [BlockErrMsg, setBlockErrMsg] = useState<string>("");
+  const [showInviteUser, setShowInviteUser] = useState<boolean>(false);
 
   const closeChatBox = () => {
     setMessages([]);
@@ -132,6 +137,14 @@ function ChatProvider(props: any) {
     setSelectUser(null);
     setShowCreateMenu(null);
     setUserList([]);
+    resetErrMsg();
+  };
+
+  const resetErrMsg = () => {
+    setJoinErrMsg("");
+    setCreateErrMsg("");
+    setFriendErrMsg("");
+    setBlockErrMsg("");
   };
 
   const setNewRoom = (room: Room) => {
@@ -197,6 +210,8 @@ function ChatProvider(props: any) {
         setFriendErrMsg,
         BlockErrMsg,
         setBlockErrMsg,
+        showInviteUser,
+        setShowInviteUser,
       }}
       {...props}
     />

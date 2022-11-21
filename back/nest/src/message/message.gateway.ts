@@ -131,6 +131,7 @@ export class MessageGateway
           return resolve();
         })
         .catch((err) => {
+          console.log('error create channel: ', err);
           client.emit('ErrMessage', { code: 'err31' });
           return reject(err);
         });
@@ -557,6 +558,31 @@ export class MessageGateway
         .catch((err) => {
           console.log(err);
           return reject();
+        });
+    });
+  }
+  /*============================================*/
+  /*============================================*/
+  /*Invite user to a serveur*/
+  @SubscribeMessage('InviteUser')
+  InviteUser(
+    @MessageBody('user') user: string,
+    @MessageBody('channel') channel: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('invite User: ', user, ' to: ', channel);
+    return new Promise<void>((resolve, reject) => {
+      this.userService
+        .getUser(user)
+        .then((userAdd) => {
+          this.channelService
+            .InviteUser(client.userID, userAdd.id, channel)
+            .then((room) => {
+              return resolve();
+            });
+        })
+        .catch((err) => {
+          return reject(err);
         });
     });
   }

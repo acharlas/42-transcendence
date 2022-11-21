@@ -6,6 +6,7 @@ export interface Message {
 export enum UserStatus {
   connected = "connected",
   disconnected = "disconnected",
+  invited = "invited",
 }
 
 export enum ChannelType {
