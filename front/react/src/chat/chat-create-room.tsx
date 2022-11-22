@@ -2,13 +2,14 @@ import { useContext, useRef, useState } from "react";
 import { HiXCircle } from "react-icons/hi";
 import { useChat } from "../context/chat.context";
 import SocketContext from "../context/socket.context";
+import { ChannelType } from "./type";
 
 function CreateRoomsContainer() {
   const newRoomRef = useRef(null);
   const newPassword = useRef(null);
   const [type, setType] = useState<string>("public");
   const { socket } = useContext(SocketContext).SocketState;
-  const { setShowCreateMenu, CreateErrMsg } = useChat();
+  const { setShowCreateMenu, CreateErrMsg, setCreateErrMsg } = useChat();
 
   function handleCreateRoom() {
     console.log("socket", socket);
@@ -20,6 +21,11 @@ function CreateRoomsContainer() {
 
     console.log("create room", roomName, password);
     if (!String(roomName).trim()) return;
+
+    if (!password.length && type === ChannelType.protected) {
+      setCreateErrMsg("protected channel must have a password");
+      return;
+    }
 
     socket.emit("CreateRoom", {
       roomName,
@@ -47,8 +53,12 @@ function CreateRoomsContainer() {
           <HiXCircle className="chat-box-button-icon" />
         </button>
       </div>
-      {CreateErrMsg ? <p>{CreateErrMsg}</p> : <></>}
       <form className="create-join-menu-title">
+        {CreateErrMsg ? (
+          <p className="room-chat-err-message">{CreateErrMsg}</p>
+        ) : (
+          <></>
+        )}
         Room Name:
         <input
           ref={newRoomRef}

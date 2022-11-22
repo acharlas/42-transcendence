@@ -115,7 +115,7 @@ const SocketContextComponent: React.FunctionComponent<
             return {
               channel: updateChan,
               user: room.user,
-              messages: room.message,
+              message: room.message,
             };
           return room;
         });

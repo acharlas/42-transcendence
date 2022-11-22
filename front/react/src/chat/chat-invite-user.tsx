@@ -16,11 +16,15 @@ const InviteUser: FunctionComponent<IInviteUserProps> = (props) => {
   };
 
   const handleValidate = () => {
+    setErrorMsg("");
     console.log("socket", socket);
     const userName = userInvite.current.value || "";
 
     console.log("invite user: ", userName);
-    if (!String(userName).trim()) return;
+    if (!String(userName).trim() && userName.length === 0) {
+      setErrorMsg("enter a username");
+      return;
+    }
 
     socket.emit("InviteUser", { user: userName, channel: actChannel });
     setShowInviteUser(false);

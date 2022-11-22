@@ -11,7 +11,7 @@ const ChatOwnerPopupComponent: FunctionComponent<
   IChatOwnerPopupContainerProps
 > = ({ setShowPopup }: { setShowPopup: Function }) => {
   const [newUser, setUser] = useState<string>("");
-  const { ShowRoomSetting, actChannel } = useChat();
+  const { ShowRoomSetting, setShowRoomSetting } = useChat();
   const [errorMsg, setErrorMsg] = useState<string>("");
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -38,52 +38,48 @@ const ChatOwnerPopupComponent: FunctionComponent<
     });
     socket.emit("LeaveRoom", { roomId: ShowRoomSetting.channel.id });
     setShowPopup(false);
+    setShowRoomSetting(undefined);
   };
 
   return (
-    <>
-      <div className="popup-container">
-        <div className="popup-popup">
-          <p>Choose a new owner:</p>
-          {errorMsg.length !== 0 ? (
-            <p className="time-selector-popup-error">{errorMsg}</p>
-          ) : (
-            <></>
-          )}
-          <select
-            onChange={handleChangeSelect}
-            value={newUser}
-            name="New Owner"
-            id="owner-select"
-            className="create-join-menu-input"
-          >
-            <option value=""></option>
-            {ShowRoomSetting.user.map((user, id) => {
-              if (
-                user.status === UserStatus.connected &&
-                user.privilege !== UserPrivilege.ban &&
-                user.username !== window.sessionStorage.getItem("username")
-              )
-                return (
-                  <option key={id} value={user.username}>
-                    {user.username}
-                  </option>
-                );
-              return;
-            })}
-          </select>
-          <button onClick={handleCancel} className="time-selector-popup-button">
-            cancel
-          </button>
-          <button
-            onClick={handleValidate}
-            className="time-selector-popup-button"
-          >
-            validate
-          </button>
-        </div>
+    <div className="popup-container">
+      <div className="popup-popup">
+        <p className="time-selector-popup-title">Choose a new owner:</p>
+        {errorMsg.length !== 0 ? (
+          <p className="time-selector-popup-error">{errorMsg}</p>
+        ) : (
+          <></>
+        )}
+        <select
+          onChange={handleChangeSelect}
+          value={newUser}
+          name="New Owner"
+          id="owner-select"
+          className="time-selector-popup-input"
+        >
+          <option value=""></option>
+          {ShowRoomSetting.user.map((user, id) => {
+            if (
+              user.status === UserStatus.connected &&
+              user.privilege !== UserPrivilege.ban &&
+              user.username !== window.sessionStorage.getItem("username")
+            )
+              return (
+                <option key={id} value={user.username}>
+                  {user.username}
+                </option>
+              );
+            return;
+          })}
+        </select>
+        <button onClick={handleCancel} className="time-selector-popup-button">
+          cancel
+        </button>
+        <button onClick={handleValidate} className="time-selector-popup-button">
+          validate
+        </button>
       </div>
-    </>
+    </div>
   );
 };
 

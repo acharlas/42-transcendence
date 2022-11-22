@@ -17,8 +17,13 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
   const newPassword = useRef(null);
   const [type, setType] = useState<ChannelType>(ChannelType.public);
   const { socket } = useContext(SocketContext).SocketState;
-  const { setShowRoomSetting, ShowRoomSetting, closeChatBox } = useChat();
-  const [errMsg, seterrMsg] = useState<string>("");
+  const {
+    setShowRoomSetting,
+    ShowRoomSetting,
+    closeChatBox,
+    CreateErrMsg,
+    setCreateErrMsg,
+  } = useChat();
   const newRoomRef = useRef(null);
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
@@ -31,6 +36,7 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
       type: undefined,
     };
 
+    setCreateErrMsg("");
     if (newPassword.current) password = newPassword.current.value || "";
     else password = null;
 
@@ -39,7 +45,7 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
 
     if (type !== ShowRoomSetting.channel.type) {
       if (type === ChannelType.protected && !password) {
-        seterrMsg("protected room must have a password");
+        setCreateErrMsg("protected room must have a password");
         return;
       } else {
         updateChannelDto.password = password;
@@ -50,7 +56,7 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
       ShowRoomSetting.channel.type === ChannelType.protected
     ) {
       if (!password) {
-        seterrMsg("protected room must have a password");
+        setCreateErrMsg("protected room must have a password");
         return;
       }
       updateChannelDto.type = ChannelType.protected;
@@ -106,6 +112,11 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
           </button>
         </div>
         <form className="create-join-menu-title">
+          {CreateErrMsg ? (
+            <p className="room-chat-err-message">{CreateErrMsg}</p>
+          ) : (
+            <></>
+          )}
           Room Name:
           <input
             ref={newRoomRef}
