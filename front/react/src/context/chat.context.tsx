@@ -50,6 +50,7 @@ export interface IoChatContextState {
   setBlockErrMsg: Function;
   showInviteUser: boolean;
   setShowInviteUser: Function;
+  resetErrMsg: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
@@ -101,6 +102,7 @@ const ChatContext = createContext<IoChatContextState>({
   setBlockErrMsg: () => {},
   showInviteUser: false,
   setShowInviteUser: () => {},
+  resetErrMsg: () => {},
 });
 
 function ChatProvider(props: any) {
@@ -212,6 +214,7 @@ function ChatProvider(props: any) {
         setBlockErrMsg,
         showInviteUser,
         setShowInviteUser,
+        resetErrMsg,
       }}
       {...props}
     />

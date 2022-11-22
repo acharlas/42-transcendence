@@ -86,13 +86,15 @@ function MessagesComponent() {
       room.channel.type === ChannelType.private &&
       (user.privilege === UserPrivilege.admin ||
         user.privilege === UserPrivilege.owner)
-    )
+    ) {
+      console.log("true");
       return true;
+    }
     return false;
   };
 
   const handleInviteUser = () => {
-    setShowInviteUser(true)
+    setShowInviteUser(true);
   };
 
   if (!actChannel) return <></>;
@@ -102,7 +104,7 @@ function MessagesComponent() {
         <button onClick={handleCloseChat} className="chat-box-button">
           <HiXCircle className="chat-box-button-icon" />
         </button>
-        {affInviteUserButton && (
+        {affInviteUserButton() && (
           <button onClick={handleInviteUser} className="chat-box-button">
             <HiPlusSm className="chat-box-button-icon" />
           </button>

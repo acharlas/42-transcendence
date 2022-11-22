@@ -214,9 +214,7 @@ export class ChannelService {
     let hash = null;
     if (dto.type === ChannelType.protected) {
       if (dto.password === undefined || dto.password === null) {
-        throw new ForbiddenException(
-          'Cannot update protected channel without password',
-        );
+        throw new ForbiddenException('err32');
       }
       hash = await argon.hash(dto.password);
     }
@@ -234,7 +232,7 @@ export class ChannelService {
       !getUserPrivilege ||
       getUserPrivilege.privilege !== UserPrivilege.owner
     ) {
-      throw new ForbiddenException('Access to resources denied');
+      throw new ForbiddenException('err33');
     }
     try {
       return await this.prisma.channel.update({
@@ -250,7 +248,7 @@ export class ChannelService {
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError) {
         if (e.code === 'P2002') {
-          throw new ForbiddenException('Name already taken');
+          throw new ForbiddenException('err31');
         }
       }
       throw e;
@@ -382,25 +380,30 @@ export class ChannelService {
     channel: Channel,
     dto: JoinChannelDto,
   ): Promise<Room> {
-    if (
-      dto.password === null ||
-      dto.password === undefined ||
-      dto.password === ''
-    ) {
-      throw new ForbiddenException('err42');
-    }
-    const pwMathes = await argon.verify(channel.hash, dto.password);
-    if (!pwMathes) {
-      throw new ForbiddenException('err42');
-    }
     return new Promise<Room>((resolve, reject) => {
-      this.joinUpdateChannel(user, channel)
-        .then((room) => {
-          return resolve(room);
-        })
-        .catch((err) => {
-          return reject(err);
-        });
+      if (
+        dto.password === null ||
+        dto.password === undefined ||
+        dto.password === ''
+      ) {
+        return reject(new ForbiddenException('err42'));
+      }
+      argon.verify(channel.hash, dto.password).then((pwMathes) => {
+        if (!pwMathes) {
+          return reject(new ForbiddenException('err42'));
+        }
+        return resolve(
+          new Promise<Room>((resolve, reject) => {
+            this.joinUpdateChannel(user, channel)
+              .then((room) => {
+                return resolve(room);
+              })
+              .catch((err) => {
+                return reject(err);
+              });
+          }),
+        );
+      });
     });
   }
 

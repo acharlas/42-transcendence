@@ -34,7 +34,11 @@ function JoinNewRoomComponent() {
         </button>
       </div>
       <form className="create-join-menu-title">
-        {JoinErrMsg ? <p>{JoinErrMsg}</p> : <></>}
+        {JoinErrMsg ? (
+          <p className="room-chat-err-message">{JoinErrMsg}</p>
+        ) : (
+          <></>
+        )}
         Join Name:
         <input
           ref={newRoomRef}

@@ -12,7 +12,6 @@ import { SiStarship } from "react-icons/si";
 import SocketContext from "../context/socket.context";
 import { HiXCircle } from "react-icons/hi";
 import { BiMessageAltAdd } from "react-icons/bi";
-import { ErrMessage } from "./chat-error-msg";
 
 function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   const [searchFriend, setSearchFriend] = useState<string>("");
@@ -45,6 +44,9 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
     setNewRoom,
     FriendErrMsg,
     BlockErrMsg,
+    setFriendErrMsg,
+    setBlockErrMsg,
+    resetErrMsg,
   } = useChat();
 
   function handleJoinRoom(key: string) {
@@ -95,14 +97,17 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   const handleShowRoomSetting = (room: Room) => {
     closeChatBox();
     setShowRoomSetting(room);
+    resetErrMsg();
   };
 
   const handleShowFriend = (event) => {
     showFriend ? setShowFriend(false) : setShowFriend(true);
+    setFriendErrMsg("");
   };
 
   const handleShowBloqued = (event) => {
     showBloqued ? setShowBloqued(false) : setShowBloqued(true);
+    setBlockErrMsg("");
   };
 
   const handleAddFriend = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -194,7 +199,11 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                 <IoIosAddCircle />
               </button>
             </form>
-            {FriendErrMsg ? <p>{FriendErrMsg}</p> : <></>}
+            {FriendErrMsg ? (
+              <p className="room-chat-err-message">{FriendErrMsg}</p>
+            ) : (
+              <></>
+            )}
             <ul>
               {friendList.map((friend, id) => {
                 if (!friend.nickname.search(newFriend)) {
@@ -260,7 +269,11 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                 <IoIosAddCircle />
               </button>
             </form>
-            {BlockErrMsg ? <p>{BlockErrMsg}</p> : <></>}
+            {BlockErrMsg ? (
+              <p className="room-chat-err-message">{BlockErrMsg}</p>
+            ) : (
+              <></>
+            )}
             <ul>
               {bloquedList.map((block, id) => {
                 if (!block.nickname.search(newBlock)) {
