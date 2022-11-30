@@ -69,7 +69,7 @@ const ChatOwnerPopupComponent: FunctionComponent<
                   {user.username}
                 </option>
               );
-            return;
+            return null;
           })}
         </select>
         <button onClick={handleCancel} className="time-selector-popup-button">

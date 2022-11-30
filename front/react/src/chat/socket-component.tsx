@@ -203,7 +203,7 @@ const SocketContextComponent: React.FunctionComponent<
       /**room list */
       socket.on("Rooms", (res: Room[]) => {
         console.log("room receive:", res);
-        res.map((room) => {
+        res.forEach((room) => {
           room.newMessage = false;
         });
         setRooms(res);
@@ -306,6 +306,16 @@ const SocketContextComponent: React.FunctionComponent<
     setUser,
     setActChannel,
     setShowRoomMenu,
+    navigate,
+    setBlockErrMsg,
+    setBloquedList,
+    setCreateErrMsg,
+    setFriendErrMsg,
+    setJoinErrMsg,
+    setSelectUser,
+    setShowJoinMenu,
+    setShowRoomSetting,
+    setFriendList,
   ]);
 
   return (

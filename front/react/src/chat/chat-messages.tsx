@@ -139,7 +139,7 @@ function MessagesComponent() {
                 {message.content}
               </div>
             );
-          return;
+          return null;
         })}
         <p ref={bottomRef}></p>
       </div>

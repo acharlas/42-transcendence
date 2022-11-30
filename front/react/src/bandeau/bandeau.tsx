@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import "./style-bandeau.css";
 import { RiShutDownLine } from "react-icons/ri";
 
-export interface IBandeauIndexProps { }
+export interface IBandeauIndexProps {}
 
 const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
   let navigate = useNavigate();
@@ -23,6 +23,10 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
     navigate("/app");
   };
 
+  const goGame = () => {
+    navigate("/app/game");
+  };
+
   const HandleDisconnect = () => {
     navigate("/");
   };
@@ -40,6 +44,9 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
       </button>
       <button onClick={goSettings} className="bandeau-button">
         settings
+      </button>
+      <button onClick={goGame} className="bandeau-button">
+        game
       </button>
       <button onClick={HandleDisconnect} className="bandeau-button">
         <RiShutDownLine className="bandeau-disconnect-icon" />

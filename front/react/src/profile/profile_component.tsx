@@ -9,7 +9,6 @@ import Avatar from "../avatar/avatar_component";
 import "../style.css";
 import "./profile.css";
 import BandeauIndex from "../bandeau/bandeau";
-import ChatIndex from "../chat/chat-index";
 
 interface User {
   nickname: string;
@@ -74,13 +73,13 @@ export default function Profile() {
   // Navigation
   const navigate = useNavigate();
   const goHome = () => {
-    navigate('/app');
-  }
+    navigate("/app");
+  };
 
   // Utils
   const isSelfProfile = () => {
-    return (id === sessionStorage.getItem("userid"));
-  }
+    return id === sessionStorage.getItem("userid");
+  };
 
   // Events
   const friendClick = async (event: React.MouseEvent<HTMLButtonElement>) => {

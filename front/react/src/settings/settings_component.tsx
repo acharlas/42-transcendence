@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  // FaUserLock,
-  // FaUserPlus,
-  // FaUserMinus,
-  // FaMinus,
-  // FaPlus,
-  FaPen,
-} from "react-icons/fa";
-import {
-  BsShieldFillMinus,
-  BsShieldFillPlus,
-  // BsShieldLockFill,
-  // BsShieldSlashFill,
-} from "react-icons/bs";
+import { FaPen } from "react-icons/fa";
+import { BsShieldFillMinus, BsShieldFillPlus } from "react-icons/bs";
 import { ImCheckmark, ImCross } from "react-icons/im";
 
 import { getUsersMe, patchNickname } from "../api/user-api";
@@ -32,10 +20,6 @@ import ReloadAvatar from "../avatar/reload_avatar_component";
 import "../style.css";
 import "../profile/profile.css";
 import "./settings.css";
-import BandeauIndex from "../bandeau/bandeau";
-import ChatProvider from "../context/chat.context";
-import SocketContextComponent from "../chat/socket-component";
-import ChatIndex from "../chat/chat-index";
 
 export default function Profile() {
   //utils
@@ -45,7 +29,7 @@ export default function Profile() {
   };
 
   function displayError(msg: string) {
-    return (<p className="error-msg">{msg}</p>);
+    return <p className="error-msg">{msg}</p>;
   }
 
   // State variables
@@ -110,7 +94,6 @@ export default function Profile() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   //AVATAR
 
   const uploadAvatar = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -123,8 +106,7 @@ export default function Profile() {
         setTimeout(() => {
           setAvatarReload(avatarReload + 1);
         }, 100);
-      }
-      catch (e) {
+      } catch (e) {
         setAvatarError(e?.response?.data?.message);
         console.log("failed to upload avatar");
       }
@@ -139,8 +121,7 @@ export default function Profile() {
     try {
       await deleteAvatar();
       setAvatarStatus(AvatarStatus.DELETED);
-    }
-    catch (e) {
+    } catch (e) {
       setAvatarError(e?.response?.data?.message);
     }
   };
@@ -161,10 +142,10 @@ export default function Profile() {
               {avatarStatus === AvatarStatus.DELETED
                 ? DefaultAvatar("settings__avatar")
                 : ReloadAvatar(
-                  window.sessionStorage.getItem("userid"),
-                  avatarReload,
-                  "settings__avatar"
-                )}
+                    window.sessionStorage.getItem("userid"),
+                    avatarReload,
+                    "settings__avatar"
+                  )}
             </div>
             <input type="file" onChange={selectFile} />
             <button
@@ -196,11 +177,10 @@ export default function Profile() {
       setEditingNickname(false);
       setNickname(newNickname);
       setNewNickname("");
-    }
-    catch (e) {
+    } catch (e) {
       setNicknameError(e?.response?.data?.message);
     }
-  }
+  };
 
   const startEditingNickname = async (
     event: React.MouseEvent<HTMLButtonElement>
@@ -225,13 +205,13 @@ export default function Profile() {
   };
 
   function nicknameSettings() {
-    return (<>
-      <div className="profile__panel__top">
-        <div className="profile__panel__title">Nickname</div>
-      </div>
-      <div className="profile__panel__bottom">
-        {editingNickname ?
-          (
+    return (
+      <>
+        <div className="profile__panel__top">
+          <div className="profile__panel__title">Nickname</div>
+        </div>
+        <div className="profile__panel__bottom">
+          {editingNickname ? (
             <div className="settings__line">
               <input
                 className="settings__line__elem settings__nickname__input"
@@ -257,18 +237,19 @@ export default function Profile() {
             </div>
           ) : (
             <div className="settings__line">
-              <div className="settings__line__elem">
-                {nickname}
-              </div>
-              <button className="settings__line__elem settings__button__texticon" onClick={startEditingNickname}>
+              <div className="settings__line__elem">{nickname}</div>
+              <button
+                className="settings__line__elem settings__button__texticon"
+                onClick={startEditingNickname}
+              >
                 <FaPen className="settings__icon" />
               </button>
             </div>
-          )
-        }
-        {displayError(nicknameError)}
-      </div>
-    </>)
+          )}
+          {displayError(nicknameError)}
+        </div>
+      </>
+    );
   }
 
   // MFA
@@ -285,8 +266,7 @@ export default function Profile() {
     try {
       await requestMfaSetupInit({ phoneNumber: phoneNumber });
       setMfaStatus(MfaStatus.VALIDATE);
-    }
-    catch (e) {
+    } catch (e) {
       setMfaError(e?.response?.data?.message);
     }
   };
@@ -298,8 +278,7 @@ export default function Profile() {
       await requestMfaSetupFinish({ codeToCheck: smsCode });
       setSmsCode("");
       setMfaStatus(MfaStatus.ENABLED);
-    }
-    catch (e) {
+    } catch (e) {
       console.log("Settings: error in validateCode", e);
       setMfaError(e?.response?.data?.message);
     }
@@ -315,18 +294,17 @@ export default function Profile() {
       } else {
         setMfaError("Disabling mfa failed.");
       }
-    }
-    catch (e) {
+    } catch (e) {
       setMfaError(e?.response?.data?.message);
     }
-  }
+  };
 
   const cancelInit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setMfaError("");
     setPhoneNumber("");
     setMfaStatus(MfaStatus.DISABLED);
-  }
+  };
 
   const cancelValidate = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -335,7 +313,9 @@ export default function Profile() {
     setMfaStatus(MfaStatus.INIT);
   };
 
-  const HandlePhoneNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const HandlePhoneNumberChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setPhoneNumber(event.target.value);
   };
 

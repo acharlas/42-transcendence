@@ -228,7 +228,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                     </li>
                   );
                 }
-                return;
+                return null;
               })}
             </ul>
           </>
@@ -293,7 +293,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                     </li>
                   );
                 }
-                return;
+                return null;
               })}
             </ul>
           </>
@@ -347,7 +347,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
             </button>
             {rooms ? (
               rooms.map((room, id) => {
-                if (room.channel.type === ChannelType.dm) return;
+                if (room.channel.type === ChannelType.dm) return null;
                 const channel = room.channel;
                 const chanUser = room.user.find((chanUser) => {
                   if (
@@ -446,7 +446,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                                     </button>
                                   </li>
                                 );
-                              return;
+                              return null;
                             })}
                           </ul>
                         </>
@@ -499,7 +499,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                   return false;
                 })
               )
-                return; //dead code
+                return null; 
               return (
                 <div key={id}>
                   <button
