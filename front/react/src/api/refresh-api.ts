@@ -1,5 +1,6 @@
 import axios from 'axios';
 //used by custom axios but we use base axios instances here
+import axiosWithAuth from './axiosInstances/protectedCalls';
 
 export const refreshTokens = async (): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
@@ -23,6 +24,20 @@ export const refreshTokens = async (): Promise<any> => {
       })
       .catch((e) => {
         console.log('Error in refreshTokens', e);
+        return reject(e);
+      });
+  });
+};
+
+export const deleteRefreshToken = async (): Promise<any> => {
+  return new Promise<any>((resolve, reject) => {
+    axiosWithAuth
+      .delete('/auth/logout')
+      .then((ret) => {
+        return resolve(ret);
+      })
+      .catch((e) => {
+        console.log('Error in deleteRefreshToken', e);
         return reject(e);
       });
   });

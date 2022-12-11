@@ -1,30 +1,35 @@
-import { useNavigate } from "react-router-dom";
-import "./style-bandeau.css";
-import { RiShutDownLine } from "react-icons/ri";
+import { useNavigate } from 'react-router-dom';
+import { RiShutDownLine } from 'react-icons/ri';
 
-export interface IBandeauIndexProps { }
+import './style-bandeau.css';
+import { deleteRefreshToken } from '../api/refresh-api';
+
+export interface IBandeauIndexProps {}
 
 const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
   let navigate = useNavigate();
 
   const goProfile = () => {
-    navigate("/app/profile/" + window.sessionStorage.getItem("userid"));
+    navigate('/app/profile/' + window.sessionStorage.getItem('userid'));
   };
 
   const goLeaderboard = () => {
-    navigate("/app/leaderboard");
+    navigate('/app/leaderboard');
   };
 
   const goSettings = () => {
-    navigate("/app/settings");
+    navigate('/app/settings');
   };
 
   const goHome = () => {
-    navigate("/app");
+    navigate('/app');
   };
 
-  const HandleDisconnect = () => {
-    navigate("/");
+  const HandleDisconnect = async () => {
+    try {
+      await deleteRefreshToken();
+    } catch {}
+    navigate('/');
   };
 
   return (

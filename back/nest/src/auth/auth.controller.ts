@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { Request } from 'express';
@@ -80,5 +88,21 @@ export class AuthController {
     const refreshToken = req.user['refreshToken'];
     console.log(userId, refreshToken);
     return this.authService.refreshTokens(userId, refreshToken);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtGuard)
+  @Delete('logout')
+  logout(@GetUser('id') userId: string): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.authService
+        .logout(userId)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
   }
 }
