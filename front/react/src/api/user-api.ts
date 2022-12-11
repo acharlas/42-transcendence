@@ -1,22 +1,22 @@
-import customAxios from "./customAxios";
+import axiosWithAuth from './axiosInstances/protectedCalls';
 
 export interface GetUserDto {
-  id: string,
+  id: string;
 }
 export interface PatchNicknameDto {
-  nickname: string,
+  nickname: string;
 }
 
 //Get data for a specific user.
 export const getUser = async (params: GetUserDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.get(`http://localhost:3333/users/` + params.id,
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
+    axiosWithAuth
+      .get('/users/' + params.id)
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in getUser", e);
+        console.log('Error in getUser', e);
         return reject(e);
       });
   });
@@ -25,28 +25,28 @@ export const getUser = async (params: GetUserDto): Promise<any> => {
 //Get data of all users.
 export const getUsers = async (): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.get(`http://localhost:3333/users/`,
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
+    axiosWithAuth
+      .get('/users/')
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in getUsers", e);
+        console.log('Error in getUsers', e);
         return reject(e);
       });
   });
-}
+};
 
 //Get data of logged-in user.
 export const getUsersMe = async (): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.get(`http://localhost:3333/users/me`,
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem("Token") } })
+    axiosWithAuth
+      .get('/users/me')
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in getUsersMe", e);
+        console.log('Error in getUsersMe', e);
         return reject(e);
       });
   });
@@ -54,14 +54,13 @@ export const getUsersMe = async (): Promise<any> => {
 
 export const patchNickname = async (params: PatchNicknameDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.patch(`http://localhost:3333/users`,
-      { nickname: params.nickname },
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem("Token") } })
+    axiosWithAuth
+      .patch('/users', { nickname: params.nickname })
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in patchNickname", e);
+        console.log('Error in patchNickname', e);
         return reject(e);
       });
   });

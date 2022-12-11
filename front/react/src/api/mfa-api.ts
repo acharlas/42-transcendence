@@ -1,83 +1,86 @@
-import customAxios from "./customAxios";
+import axiosMfaAuth from './axiosInstances/mfaAuthCalls';
+import axiosWithAuth from './axiosInstances/protectedCalls';
 
 export interface checkMfaDto {
-  codeToCheck: string,
+  codeToCheck: string;
 }
 
 export interface activateMfaDto {
-  phoneNumber: string,
+  phoneNumber: string;
 }
 
 export const requestMfaDisable = async (): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.delete(`http://localhost:3333/mfa/disable`,
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
+    axiosWithAuth
+      .delete('/mfa/disable')
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in requestMfaDisable", e);
+        console.log('Error in requestMfaDisable', e);
         return reject(e);
       });
-  })
-}
+  });
+};
 
-export const requestMfaSetupInit = async (params: activateMfaDto): Promise<any> => {
+export const requestMfaSetupInit = async (
+  params: activateMfaDto,
+): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.post(`http://localhost:3333/mfa/setup/init`,
-      { phoneNumber: params.phoneNumber },
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
+    axiosWithAuth
+      .post('/mfa/setup/init', { phoneNumber: params.phoneNumber })
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in requestMfaSetupInit", e);
+        console.log('Error in requestMfaSetupInit', e);
         return reject(e);
       });
-  })
-}
+  });
+};
 
-export const requestMfaSetupFinish = async (params: checkMfaDto): Promise<any> => {
+export const requestMfaSetupFinish = async (
+  params: checkMfaDto,
+): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.post(`http://localhost:3333/mfa/setup/validate`,
-      { codeToCheck: params.codeToCheck },
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
+    axiosWithAuth
+      .post('/mfa/setup/validate', { codeToCheck: params.codeToCheck })
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in requestMfaSetupFinish", e);
+        console.log('Error in requestMfaSetupFinish', e);
         return reject(e);
       });
-  })
-}
+  });
+};
 
 export const requestMfaSigninInit = async (): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.post(`http://localhost:3333/mfa/signin/init`,
-      {},
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
+    axiosMfaAuth
+      .post('/mfa/signin/init')
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in requestMfaSigninInit", e);
+        console.log('Error in requestMfaSigninInit', e);
         return reject(e);
       });
-  })
-}
+  });
+};
 
 export const requestMfaSigninFinish = async (params: checkMfaDto) => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.post(`http://localhost:3333/mfa/signin/validate`,
-      { codeToCheck: params.codeToCheck },
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
+    axiosMfaAuth
+      .post('/mfa/signin/validate', { codeToCheck: params.codeToCheck })
       .then((ret) => {
+        window.sessionStorage.setItem('AccessToken', ret.data.access_token);
+        window.sessionStorage.setItem('RefreshToken', ret.data.refresh_token);
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in requestMfaSigninFinish", e);
+        console.log('Error in requestMfaSigninFinish', e);
         return reject(e);
       });
-  })
-}
+  });
+};

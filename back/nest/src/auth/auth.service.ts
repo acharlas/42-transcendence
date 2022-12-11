@@ -22,14 +22,14 @@ export class AuthService {
     private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
-  ) { }
+  ) {}
 
   hashData(data: string) {
     return argon.hash(data);
   }
 
-  async updateRefreshToken(userId: string, token: string) {
-    const hashedRefreshToken = await this.hashData(token);
+  async updateRefreshToken(userId: string, newRefreshToken: string) {
+    const hashedRefreshToken = await this.hashData(newRefreshToken);
     await this.prisma.user.update({
       where: {
         id: userId,
@@ -42,26 +42,26 @@ export class AuthService {
 
   async signTokens(
     userId: string,
-    mfaEnabled: boolean,
+    mfaNeeded: boolean,
   ): Promise<{ access_token: string; refresh_token: string }> {
     //if mfa is disabled, the user is fully authenticated
     //if mfa is enabled, the user still needs to pass mfa
     const payload = {
       sub: userId,
-      fullyAuth: !mfaEnabled,
+      fullyAuth: !mfaNeeded,
     };
     //TODO: 2 secrets
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(payload, {
-        expiresIn: '10m',
+        expiresIn: '10s',
         secret: this.config.get('JWT_SECRET'),
       }),
       this.jwt.signAsync(payload, {
-        expiresIn: '60m',
+        expiresIn: '1h',
         secret: this.config.get('JWT_SECRET'),
       }),
     ]);
-    this.updateRefreshToken(userId, refreshToken);
+    await this.updateRefreshToken(userId, refreshToken);
     return { access_token: accessToken, refresh_token: refreshToken };
   }
 
@@ -139,7 +139,7 @@ export class AuthService {
             },
           })
           .then((ret) => {
-            this.signTokens(ret.id, ret.mfaEnabled)
+            this.signTokens(ret.id, false)
               .then((ret) => {
                 return resolve(ret);
               })
@@ -231,7 +231,7 @@ export class AuthService {
             .catch((err) => {
               console.log(err);
               return reject(
-                new ForbiddenException('Failed to signup with oauth'),
+                new ForbiddenException('Failed to signup with oauth.'),
               );
             });
         }
@@ -247,19 +247,14 @@ export class AuthService {
     });
     if (!user) throw new ForbiddenException('no user');
     if (!user.refreshToken) throw new ForbiddenException('no refresher stored');
-
     const refreshTokenMatches = await argon.verify(
       user.refreshToken,
       refreshToken,
     );
-    console.log('hash:', user.refreshToken);
-    console.log('tok:', refreshToken);
-    console.log('tok2:', await this.hashData(refreshToken));
-
     if (!refreshTokenMatches)
       throw new ForbiddenException('refresh token does not match');
-    const tokens = await this.signTokens(user.id, user.mfaEnabled);
-    await this.updateRefreshToken(user.id, user.refreshToken);
+    const tokens = await this.signTokens(user.id, false); //refresh authguard already denies if 2fa missing
+    await this.updateRefreshToken(user.id, tokens.refresh_token);
     return tokens;
   }
 }

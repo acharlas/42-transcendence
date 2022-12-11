@@ -1,4 +1,5 @@
-import customAxios from "./customAxios";
+import axiosWithAuth from './axiosInstances/protectedCalls';
+import axiosNoAuth from './axiosInstances/unprotectedCalls';
 
 export interface loginDto {
   username: string;
@@ -15,21 +16,19 @@ export interface fortyTwoLoginDto {
   state: string;
 }
 
-export interface getMeDto {
-  token: string;
-}
-export const getMe = async (dto: getMeDto): Promise<void> => {
+export const getMe = async (): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
-    customAxios
-      .get("http://localhost:3333/users/me", {
+    axiosWithAuth
+      .get('/users/me', {
         headers: {
-          Authorization: "Bearer " + dto.token,
+          Authorization:
+            'Bearer ' + window.sessionStorage.getItem('AccessToken'),
         },
       })
       .then((ret) => {
-        sessionStorage.setItem("username", ret.data.username);
-        sessionStorage.setItem("nickname", ret.data.nickname);
-        sessionStorage.setItem("userid", ret.data.id);
+        sessionStorage.setItem('username', ret.data.username);
+        sessionStorage.setItem('nickname', ret.data.nickname);
+        sessionStorage.setItem('userid', ret.data.id);
         return resolve();
       })
       .catch((err) => {
@@ -40,31 +39,36 @@ export const getMe = async (dto: getMeDto): Promise<void> => {
 };
 
 export const signin = async (credentials: loginDto) => {
-  const response = await customAxios.post("http://localhost:3333/auth/signin", {
+  const response = await axiosNoAuth.post('/auth/signin', {
     username: credentials.username,
     password: credentials.password,
   });
+  window.sessionStorage.setItem('AccessToken', response.data.access_token);
+  window.sessionStorage.setItem('RefreshToken', response.data.refresh_token);
   return response.data.access_token;
-}
+};
 
 export const signup = async (credentials: signupDto) => {
-  const response = await customAxios.post("http://localhost:3333/auth/signup", {
+  const response = await axiosNoAuth.post('/auth/signup', {
     password: credentials.password,
     username: credentials.username,
   });
+  window.sessionStorage.setItem('AccessToken', response.data.access_token);
+  window.sessionStorage.setItem('RefreshToken', response.data.refresh_token);
   return response.data.access_token;
-}
+};
 
 export const fortyTwoSign = async (dto: fortyTwoLoginDto) => {
   try {
-    const response = await customAxios.post("http://localhost:3333/auth/signinApi", {
+    const response = await axiosNoAuth.post('/auth/signinApi', {
       code: dto.code,
       state: dto.state,
     });
-    window.sessionStorage.setItem("Token", response.data.access_token);
+    window.sessionStorage.setItem('AccessToken', response.data.access_token);
+    window.sessionStorage.setItem('RefreshToken', response.data.refresh_token);
     return response;
   } catch (e) {
-    console.log("Oauth error", { e });
+    console.log('Oauth error', e);
     return e;
   }
-}
+};

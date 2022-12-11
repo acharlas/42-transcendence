@@ -11,7 +11,7 @@ import { JwtGuard, JwtRefreshGuard } from './guard';
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('signup')
   async signup(@Body() dto: AuthSignupDto): Promise<{ access_token: string }> {
@@ -75,15 +75,10 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Get('refresh')
   refreshTokens(@Req() req: Request) {
-    // refreshTokens(@GetUser() user: User) {
-
-    console.log('BOOP2');
     console.log(req);
     const userId = req.user['sub'];
-    // const userId = request.headers.authorization user['sub'];
     const refreshToken = req.user['refreshToken'];
     console.log(userId, refreshToken);
-
     return this.authService.refreshTokens(userId, refreshToken);
   }
 }

@@ -7,7 +7,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { MfaSetupDto } from './dto/mfa-setup.dto';
 import { MfaValidateDto } from './dto/mfa-validate.dto';
 import { AuthService } from 'src/auth/auth.service';
-import { AuthController } from 'src/auth/auth.controller';
 
 @Injectable()
 export class MfaService {
@@ -15,7 +14,8 @@ export class MfaService {
     private config: ConfigService,
     private prisma: PrismaService,
     private jwt: JwtService,
-  ) { }
+    private authService: AuthService,
+  ) {}
 
   async mfaSendSms(phoneNumber: string): Promise<boolean> {
     //TMP
@@ -25,23 +25,27 @@ export class MfaService {
     const serviceSid = this.config.get<string>('TWILIO_SERVICE_SID');
     const client = new Twilio(accountSid, authToken);
 
-    client.verify.v2.services(serviceSid)
-      .verifications
-      .create({ to: phoneNumber, channel: 'sms' },
+    client.verify.v2
+      .services(serviceSid)
+      .verifications.create(
+        { to: phoneNumber, channel: 'sms' },
         function (err, message) {
           if (err) {
             console.log(err);
-            return (true);
+            return true;
           } else {
             console.log('Sent 2fa request to ' + message.to);
-            return (false);
+            return false;
           }
-        }
+        },
       );
-    return (true);
+    return true;
   }
 
-  async mfaCheckCode(phoneNumber: string, codeToCheck: string): Promise<boolean> {
+  async mfaCheckCode(
+    phoneNumber: string,
+    codeToCheck: string,
+  ): Promise<boolean> {
     //TMP
     return true; //to test stuff without calling external API
     const accountSid = this.config.get<string>('TWILIO_ACCOUNT_SID');
@@ -49,30 +53,31 @@ export class MfaService {
     const serviceSid = this.config.get<string>('TWILIO_SERVICE_SID');
     const client = new Twilio(accountSid, authToken);
 
-    const ret = await client.verify.v2.services(serviceSid)
-      .verificationChecks
-      .create({ to: phoneNumber, code: codeToCheck },
+    const ret = await client.verify.v2
+      .services(serviceSid)
+      .verificationChecks.create(
+        { to: phoneNumber, code: codeToCheck },
         function (err, message) {
           if (err) {
             console.log(err);
-            return (true);
+            return true;
           } else {
-            return (false);
+            return false;
           }
-        });
+        },
+      );
 
-    console.log("Sent 2fa code checking request", ret);
+    console.log('Sent 2fa code checking request', ret);
 
-    if (ret.status === 'approved')
-      return true;
-    else
-      return false;
+    if (ret.status === 'approved') return true;
+    else return false;
   }
 
   async initSetup(userId: string, dto: MfaSetupDto) {
-    const user = await this.prisma.user.findFirst({ where: { id: userId }, })
+    const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (user === null) throw new ForbiddenException('no such user');
-    if (user.mfaEnabled === true) throw new ForbiddenException('mfa already enabled');
+    if (user.mfaEnabled === true)
+      throw new ForbiddenException('mfa already enabled');
 
     this.mfaSendSms(dto.phoneNumber);
 
@@ -88,8 +93,10 @@ export class MfaService {
   async finishSetup(userId: string, dto: MfaValidateDto) {
     const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (user === null) throw new ForbiddenException('no such user');
-    if (user.mfaEnabled === true) throw new ForbiddenException('mfa already enabled');
-    if (user.mfaPhoneNumber === null) throw new ForbiddenException('no phone number');
+    if (user.mfaEnabled === true)
+      throw new ForbiddenException('mfa already enabled');
+    if (user.mfaPhoneNumber === null)
+      throw new ForbiddenException('no phone number');
 
     this.mfaCheckCode(user.mfaPhoneNumber, dto.codeToCheck);
 
@@ -105,57 +112,40 @@ export class MfaService {
   async initSignIn(userId: string) {
     const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (user === null) throw new ForbiddenException('no such user');
-    if (user.mfaEnabled === false) throw new ForbiddenException('mfa not enabled');
-    if (user.mfaPhoneNumber === null) throw new ForbiddenException('no phone number');
+    if (user.mfaEnabled === false)
+      throw new ForbiddenException('mfa not enabled');
+    if (user.mfaPhoneNumber === null)
+      throw new ForbiddenException('no phone number');
 
     const success = await this.mfaSendSms(user.mfaPhoneNumber);
     if (success) {
-      console.log("mfa init signin ok");
+      console.log('mfa initSignIn ok');
     } else {
-      console.log("mfa init signin failed");
+      console.log('mfa initSignIn failed');
     }
-    //success:
-    //front must redirect to challenge page
   }
 
-  async signToken(userId: string): Promise<{ access_token: string }> {
-    const payload = {
-      sub: userId,
-      fullyAuth: true,
-    };
-    const secret = this.config.get('JWT_SECRET');
-
-    const token = await this.jwt.signAsync(payload, {
-      expiresIn: '60m',
-      secret: secret,
-    });
-
-    return {
-      access_token: token,
-    };
-  }
-
-  async validateSignIn(userId: string, dto: MfaValidateDto): Promise<{ access_token: string }> {
+  async validateSignIn(
+    userId: string,
+    dto: MfaValidateDto,
+  ): Promise<{ access_token: string }> {
     const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (user === null) throw new ForbiddenException('no such user');
-    if (user.mfaEnabled === false) throw new ForbiddenException('mfa not enabled');
-    if (user.mfaPhoneNumber === null) throw new ForbiddenException('no phone number');
+    if (user.mfaEnabled === false)
+      throw new ForbiddenException('mfa not enabled');
+    if (user.mfaPhoneNumber === null)
+      throw new ForbiddenException('no phone number');
 
-    const success = await this.mfaCheckCode(user.mfaPhoneNumber, dto.codeToCheck);
-
+    const success = await this.mfaCheckCode(
+      user.mfaPhoneNumber,
+      dto.codeToCheck,
+    );
     if (success) {
-      console.log("mfa setup signin ok");
-      const token = this.signToken(userId);
-      console.log(await token);
-
-      return token;
+      console.log('mfa validateSignIn ok');
+      return await this.authService.signTokens(userId, false);
     } else {
-      console.log("mfa setup signin failed");
+      console.log('mfa validateSignIn failed');
     }
-
-    //success:
-    //return new auth token
-    //front must save auth token
   }
 
   async disable(userId: string) {
@@ -163,7 +153,7 @@ export class MfaService {
       where: { id: userId },
       data: {
         mfaEnabled: false,
-        mfaPhoneNumber: null
+        mfaPhoneNumber: null,
       },
     });
     return user;

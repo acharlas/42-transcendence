@@ -1,6 +1,6 @@
-import React, { useReducer, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import jwt_decode from "jwt-decode";
+import React, { useReducer, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import jwt_decode from 'jwt-decode';
 import {
   FaUserAstronaut,
   FaRocket,
@@ -9,12 +9,12 @@ import {
   FaEye,
   FaEyeSlash,
   FaFighterJet,
-} from "react-icons/fa";
+} from 'react-icons/fa';
 
-import "./login_style.css";
-import "../style.css";
-import displayErrorMsgs from "../utils/displayErrMsgs";
-import { signin } from "../api/auth-api";
+import './login_style.css';
+import '../style.css';
+import displayErrorMsgs from '../utils/displayErrMsgs';
+import { signin } from '../api/auth-api';
 
 interface DecodedToken {
   sub: string;
@@ -23,12 +23,12 @@ interface DecodedToken {
   exp: string;
 }
 
-export interface ISigninFormProps { }
+export interface ISigninFormProps {}
 
 const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
-  const [newUsername, setNewUsername] = useState("");
-  const [newPass, setNewPass] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [newUsername, setNewUsername] = useState('');
+  const [newPass, setNewPass] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [hidePassword, setHidePassword] = useState<boolean>(true);
   let navigate = useNavigate();
 
@@ -42,13 +42,13 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   };
 
   const goSignup = () => {
-    navigate("/signup");
+    navigate('/signup');
   };
   const goHome = () => {
-    navigate("/app");
+    navigate('/app');
   };
   const goSigninMfa = () => {
-    navigate("/mfa-signin");
+    navigate('/mfa-signin');
   };
 
   const ftShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -59,14 +59,13 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   const signinClassic = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     try {
-      setErrorMessage("");
+      setErrorMessage('');
       const token = await signin({
         username: newUsername,
         password: newPass,
       });
-      window.sessionStorage.setItem("Token", token);
-      setNewUsername("");
-      setNewPass("");
+      setNewUsername('');
+      setNewPass('');
       const tokenInfo: DecodedToken = jwt_decode(token); //can throw InvalidTokenError
       if (tokenInfo.fullyAuth) {
         goHome();
@@ -74,7 +73,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
         goSigninMfa();
       }
     } catch (e) {
-      setErrorMessage("wrong username or password");
+      setErrorMessage('Wrong username or password.');
     }
   };
 
@@ -84,9 +83,9 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
 &redirect_uri=${encodeURI(process.env.REACT_APP_42API_REDIRECT)}
 &response_type=code
 &state=`;
-    let secretState = "";
+    let secretState = '';
     const possible =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const stringLength = Math.floor(Math.random() * 200 + 200);
 
     for (let i = 0; i < stringLength; i++) {
@@ -115,7 +114,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
                 className="login__input"
                 placeholder="Password"
                 value={newPass}
-                type={hidePassword ? "password" : "text"}
+                type={hidePassword ? 'password' : 'text'}
                 onChange={HandlePassChange}
               />
               <button

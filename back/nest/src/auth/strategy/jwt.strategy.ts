@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ModuleRef } from '@nestjs/core';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -28,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       request.url !== '/mfa/signin/init' &&
       request.url !== '/mfa/signin/validate'
     ) {
-      console.log('not fully auth');
+      console.log("Can't validate: Missing 2FA");
       throw new UnauthorizedException('2FA required');
     }
     const user = await this.prisma.user.findUnique({

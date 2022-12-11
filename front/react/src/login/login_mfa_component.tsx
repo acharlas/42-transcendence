@@ -1,34 +1,32 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaRocket } from "react-icons/fa";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaRocket } from 'react-icons/fa';
 
-import "./login_style.css";
-import "../style.css";
-import displayErrorMsgs from "../utils/displayErrMsgs";
-import { checkMfaDto, requestMfaSigninFinish, requestMfaSigninInit } from "../api/mfa-api";
+import './login_style.css';
+import '../style.css';
+import displayErrorMsgs from '../utils/displayErrMsgs';
+import {
+  checkMfaDto,
+  requestMfaSigninFinish,
+  requestMfaSigninInit,
+} from '../api/mfa-api';
 
 export default function MfaSignin() {
   let navigate = useNavigate();
   const goHome = () => {
-    navigate("/app");
+    navigate('/app');
   };
 
-  const [smsCode, setSmsCode] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [smsCode, setSmsCode] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const HandleSmsCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSmsCode(event.target.value);
   };
 
   const signinWithMfa = async (params: checkMfaDto) => {
-    try {
-      const response = await requestMfaSigninFinish(params);
-      window.sessionStorage.setItem(`Token`, response.data.access_token);
-      return response;
-    } catch (e) {
-      console.log(`Mfa error`, { e });
-      return e;
-    }
+    const response = await requestMfaSigninFinish(params);
+    return response;
   };
 
   const sendSmsCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -41,12 +39,16 @@ export default function MfaSignin() {
     event.preventDefault();
 
     try {
-      setErrorMessage("");
+      setErrorMessage('');
       await signinWithMfa({ codeToCheck: smsCode });
       goHome();
     } catch (e) {
-      console.log({ e });
-      setErrorMessage("Incorrect code."); //TODO: improve error msg
+      console.log(e);
+      if (e.response?.status === 401) {
+        setErrorMessage('Session expired, please sign in again.');
+      } else {
+        setErrorMessage(e.response?.data?.message);
+      }
     }
   };
   return (
@@ -74,10 +76,7 @@ export default function MfaSignin() {
               />
             </div>
             {displayErrorMsgs(errorMessage)}
-            <button
-              className="login__buttons"
-              onClick={checkSmsCode}
-            >
+            <button className="login__buttons" onClick={checkSmsCode}>
               <span className="button__text">Check code</span>
               <FaRocket className="login__icon" />
             </button>

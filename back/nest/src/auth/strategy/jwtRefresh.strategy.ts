@@ -28,25 +28,18 @@ export class JwtRefreshStrategy extends PassportStrategy(
     request: Request,
     payload: { sub: string; fullyAuth: boolean },
   ) {
-    const refreshToken = request
-      .get('Authorization')
-      .replace('Bearer', '')
-      .trim();
-    return { ...payload, refreshToken };
     if (
       !payload.fullyAuth &&
       request.url !== '/mfa/signin/init' &&
       request.url !== '/mfa/signin/validate'
     ) {
-      console.log('not fully auth');
+      console.log("Can't validate: Missing 2FA");
       throw new UnauthorizedException('2FA required');
     }
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: payload.sub,
-      },
-    });
-    delete user.hash;
-    return user;
+    const refreshToken = request
+      .get('Authorization')
+      .replace('Bearer', '')
+      .trim();
+    return { ...payload, refreshToken };
   }
 }

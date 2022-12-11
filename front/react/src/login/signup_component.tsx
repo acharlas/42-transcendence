@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   FaUserAstronaut,
   FaRocket,
@@ -7,17 +7,17 @@ import {
   FaLock,
   FaEye,
   FaEyeSlash,
-} from "react-icons/fa";
+} from 'react-icons/fa';
 
-import "./login_style.css";
-import "../style.css";
-import displayErrorMsgs from "../utils/displayErrMsgs";
-import { signup } from "../api/auth-api";
+import './login_style.css';
+import '../style.css';
+import displayErrorMsgs from '../utils/displayErrMsgs';
+import { signup } from '../api/auth-api';
 
 export function SignupForm() {
-  const [newPass, setNewPass] = useState("");
-  const [newUsername, setNewUsername] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [newPass, setNewPass] = useState('');
+  const [newUsername, setNewUsername] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [hidePassword, setHidePassword] = useState<boolean>(true);
   let navigate = useNavigate();
 
@@ -32,11 +32,11 @@ export function SignupForm() {
   };
 
   const goSignin = () => {
-    navigate("/");
+    navigate('/');
   };
 
   const goHome = () => {
-    navigate("/app");
+    navigate('/app');
   };
 
   const ftShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -47,15 +47,13 @@ export function SignupForm() {
   const createUser = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     try {
-      setErrorMessage("");
-      const token = await signup({
+      setErrorMessage('');
+      await signup({
         password: newPass,
         username: newUsername,
       });
-      console.log({ token });
-      window.sessionStorage.setItem("Token", token);
-      setNewPass("");
-      setNewUsername("");
+      setNewPass('');
+      setNewUsername('');
       goHome();
     } catch (e) {
       console.log({ e });
@@ -83,10 +81,13 @@ export function SignupForm() {
                 className="login__input"
                 placeholder="Password"
                 value={newPass}
-                type={hidePassword ? "password" : "text"}
+                type={hidePassword ? 'password' : 'text'}
                 onChange={HandlePassChange}
               />
-              <button className="login__input___show-button" onClick={ftShowPassword}>
+              <button
+                className="login__input___show-button"
+                onClick={ftShowPassword}
+              >
                 {hidePassword ? <FaEye /> : <FaEyeSlash />}
               </button>
             </div>

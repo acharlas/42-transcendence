@@ -1,63 +1,60 @@
-import customAxios from "./customAxios";
+import axiosWithAuth from './axiosInstances/protectedCalls';
 
 export interface FriendDto {
-  id: string,
+  id: string;
 }
 
 export const addFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.post(
-      `http://localhost:3333/friend/add/`,
-      { userId: params.id },
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
+    axiosWithAuth
+      .post('/friend/add/', { userId: params.id })
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in addFriend", e);
+        console.log('Error in addFriend', e);
         return reject(e);
       });
   });
-}
+};
 
 export const removeFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.post(
-      `http://localhost:3333/friend/remove/`,
-      { userId: params.id },
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
+    axiosWithAuth
+      .post('/friend/remove/', { userId: params.id })
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in removeFriend", e);
+        console.log('Error in removeFriend', e);
         return reject(e);
       });
   });
-}
+};
 
 export const getFriend = async (params: FriendDto): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
-    customAxios.get(`http://localhost:3333/friend/` + params.id,
-      { headers: { Authorization: `Bearer ` + window.sessionStorage.getItem(`Token`) } })
+    axiosWithAuth
+      .get('/friend/' + params.id)
       .then((ret) => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in getFriend", e);
+        console.log('Error in getFriend', e);
         return reject(e);
       });
   });
-}
+};
 
 //utils
 
 export const checkIfFriend = async (params: FriendDto): Promise<boolean> => {
-  const friendList = (await getFriend({ id: sessionStorage.getItem(`userid`) })).data.myfriend;
+  const friendList = (await getFriend({ id: sessionStorage.getItem('userid') }))
+    .data.myfriend;
   for (let i = 0; i < friendList.length; i++) {
     if (friendList[i].id === params.id) {
-      return (true);
+      return true;
     }
   }
-  return (false);
-}
+  return false;
+};
