@@ -1,11 +1,12 @@
 import { PropsWithChildren, useEffect, useReducer } from "react";
-import { useNavigate } from "react-router-dom";
+import { useGame } from "../context/game.context";
 import {
   defaultSocketContextState,
   SocketContextProvider,
   SocketReducer,
 } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
+import { Lobby } from "./game-type";
 
 export interface ISocketGameContextComponentProps extends PropsWithChildren {}
 
@@ -17,6 +18,7 @@ const SocketGameContextComponent: React.FunctionComponent<
     SocketReducer,
     defaultSocketContextState
   );
+  const { setInQueue, setLobby, lobby, inQueue } = useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
     reconnectionAttempts: 5,
@@ -26,7 +28,6 @@ const SocketGameContextComponent: React.FunctionComponent<
       token: sessionStorage.getItem("Token"),
     },
   });
-  let navigate = useNavigate();
 
   useEffect(() => {
     /** connect to the web socket */
@@ -48,6 +49,19 @@ const SocketGameContextComponent: React.FunctionComponent<
       /**handshake */
       socket.on("handshake", (id: string) => {
         console.log("user id is: ", id);
+      });
+      /**Queue Join */
+      socket.on("QueueJoin", () => {
+        console.log("joining the queue ");
+
+        setInQueue(true);
+      });
+      /**new match found*/
+      socket.on("'JoinLobby'", (lobby: Lobby) => {
+        console.log("new lobby arrive ");
+
+        setInQueue(false);
+        setLobby(lobby);
       });
       /** receive new id */
       socket.on("new_user", (uid: string) => {
@@ -76,7 +90,7 @@ const SocketGameContextComponent: React.FunctionComponent<
       });
     };
     StartListener();
-  }, [socket]);
+  }, [socket, lobby, setLobby, setInQueue, inQueue]);
 
   return (
     <SocketContextProvider value={{ SocketState, SocketDispatch }}>

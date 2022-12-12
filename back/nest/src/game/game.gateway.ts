@@ -1,3 +1,4 @@
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -6,8 +7,12 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { CronJob, job } from 'cron';
+import { resolve } from 'path';
 import { Server, Socket, Namespace } from 'socket.io';
 import { socketTab, SocketWithAuth } from '../message/types_message';
+import { GameService } from './game.service';
+import { Lobby, Player } from './types_game';
 
 @WebSocketGateway({
   namespace: 'game',
@@ -16,6 +21,8 @@ export class GameGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
+    private gameService: GameService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   SocketList: socketTab[] = [];
@@ -60,17 +67,116 @@ export class GameGateway
       if (sock.userId === client.userID) return false;
       return true;
     });
-    console.log(`Client disconnected of game: ${client.id} | name: ${client.username}`);
+    console.log(
+      `Client disconnected of game: ${client.id} | name: ${client.username}`,
+    );
     console.log(`number of soket connected to game: ${socket.size}`);
   }
-
   /*==========================================*/
-  /*USER CREATE A ROOM*/
+  /*==========================================*/
+  /*HandShake*/
   @SubscribeMessage('handshake')
   handshake(client: SocketWithAuth): Promise<void> {
     console.log('sending back user id....');
     client.emit('handshake', client.id);
     return;
+  }
+  /*==========================================*/
+  /*==========================================*/
+  /*Join queue*/
+  @SubscribeMessage('JoiningQueue')
+  JoiningQueue(client: SocketWithAuth): Promise<void> {
+    console.log('User:', client.userID, ' joining the queue');
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .JoiningQueue(client.userID)
+        .then(() => {
+          const job = new CronJob(`10 * * * * *`, () => {
+            this.gameService
+              .MatchPlayer()
+              .then((newLobby) => {
+                this.gameService
+                  .SendingLobby(newLobby, this.SocketList)
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          });
+          this.schedulerRegistry.addCronJob(client.userID, job);
+          job.start();
+          client.emit('QueueJoin');
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+  /*==========================================*/
+  /*==========================================*/
+  /*Leaving queue*/
+  @SubscribeMessage('LeavingQueue')
+  LeavingQueue(client: SocketWithAuth): Promise<void> {
+    console.log('User:', client.userID, ' Living the queue');
+
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .LeavingQueue(client.userID)
+        .then(() => {
+          client.emit('LeaveQueue');
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+      return resolve();
+    });
+  }
+  /*==========================================*/
+  /*==========================================*/
+  /*Create lobby*/
+  @SubscribeMessage('CreateLobby')
+  CreateLobby(client: SocketWithAuth): Promise<void> {
+    console.log('User:', client.userID, ' Living the queue');
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .CreateLobby(client.userID)
+        .then((lobby) => {
+          client.join(lobby.id);
+          client.emit('JoinLobby', lobby);
+          client.to(lobby.id).emit('UserJoinLobby', client.userID);
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+  /*==========================================*/
+  /*==========================================*/
+  /*Create lobby*/
+  @SubscribeMessage('CreateLobby')
+  LeavingLobby(client: SocketWithAuth): Promise<void> {
+    console.log('User:', client.userID, ' Living the queue');
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .LeaveLobby(client.userID)
+        .then((lobbyId) => {
+          client.to(lobbyId).emit('UserLeaveLobby', client.userID);
+          client.emit('LeaveLobby');
+          client.leave(lobbyId);
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
   }
   /*==========================================*/
 }
