@@ -13,7 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MfaModule } from './mfa/mfa.module';
 import { AvatarModule } from './avatar/avatar.module';
 import { GameModule } from './game/game.module';
-import { ScheduleModule } from '@nestjs/schedule';
+//import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -33,7 +33,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     MfaModule,
     AvatarModule,
     GameModule,
-    ScheduleModule.forRoot(),
+    //ScheduleModule.forRoot(),
   ],
 })
 export class AppModule {}
