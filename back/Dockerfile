@@ -6,7 +6,8 @@ WORKDIR /nest
 
 COPY ./nest ./
 
-RUN npm install
+RUN npm install -g npm@9.2.0
+RUN npm install --save --legacy-peer-deps
 RUN nest build
 
 COPY ./entrypoint.sh /entrypoint.sh

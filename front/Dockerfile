@@ -9,7 +9,9 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 COPY ./react ./
 
-RUN npm install 
+RUN npm install -g npm@9.2.0
+RUN npm install
+
 
 #start app
 

@@ -1,4 +1,4 @@
-import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+//import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -7,12 +7,10 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { CronJob, job } from 'cron';
-import { resolve } from 'path';
+//import { CronJob, job } from 'cron';
 import { Server, Socket, Namespace } from 'socket.io';
 import { socketTab, SocketWithAuth } from '../message/types_message';
 import { GameService } from './game.service';
-import { Lobby, Player } from './types_game';
 
 @WebSocketGateway({
   namespace: 'game',
@@ -22,7 +20,7 @@ export class GameGateway
 {
   constructor(
     private gameService: GameService,
-    private schedulerRegistry: SchedulerRegistry,
+    //private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   SocketList: socketTab[] = [];
@@ -91,22 +89,22 @@ export class GameGateway
       this.gameService
         .JoiningQueue(client.userID)
         .then(() => {
-          const job = new CronJob(`10 * * * * *`, () => {
-            this.gameService
-              .MatchPlayer()
-              .then((newLobby) => {
-                this.gameService
-                  .SendingLobby(newLobby, this.SocketList)
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          });
-          this.schedulerRegistry.addCronJob(client.userID, job);
-          job.start();
+          // const job = new CronJob(`10 * * * * *`, () => {
+          //   this.gameService
+          //     .MatchPlayer()
+          //     .then((newLobby) => {
+          //       this.gameService
+          //         .SendingLobby(newLobby, this.SocketList)
+          //         .catch((err) => {
+          //           console.log(err);
+          //         });
+          //     })
+          //     .catch((err) => {
+          //       console.log(err);
+          //     });
+          // });
+          // this.schedulerRegistry.addCronJob(client.userID, job);
+          // job.start();
           client.emit('QueueJoin');
           return resolve();
         })

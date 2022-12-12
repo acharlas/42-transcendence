@@ -1,5 +1,4 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
 import { socketTab } from 'src/message/types_message';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Lobby, Player } from './types_game';
@@ -10,22 +9,6 @@ export class GameService {
 
   LobbyList: Lobby[] = [];
   Queue: Player[] = [];
-
-  /*==========================================*/
-  /*HandShake*/
-  @Cron('45 * * * * *')
-  MatchMaking() {
-    this.MatchPlayer()
-      .then((newLobby) => {
-        this.SendingLobby(newLobby, []).catch((err) => {
-          console.log(err);
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-  /*==========================================*/
 
   /*==================Queue===========================*/
   async JoiningQueue(userId: string): Promise<void> {
