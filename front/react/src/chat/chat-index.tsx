@@ -1,13 +1,11 @@
 import "./chat-style.css";
-import { BsFillChatRightTextFill } from "react-icons/bs";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import { useChat } from "../context/chat.context";
 import RoomsMenuContainer from "./chat-rooms-menu";
 import MessagesComponent from "./chat-messages";
 import CreateRoomsContainer from "./chat-create-room";
 import JoinNewRoomComponent from "./chat-join-new-room";
 import ChatOptionComponent from "./chat-option";
-import { BiMessageAltAdd } from "react-icons/bi";
 import { MdMarkChatRead, MdMarkChatUnread } from "react-icons/md";
 
 export interface IChatIndexProps {}
@@ -15,7 +13,6 @@ export interface IChatIndexProps {}
 const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
   const {
     rooms,
-    selectUser,
     actChannel,
     showCreateMenu,
     showJoinMenu,
@@ -28,7 +25,6 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
     setShowChat(true);
   };
 
-  if (rooms) console.log("rooms at start:", rooms, "userselect: ", selectUser);
   return (
     <>
       {showChat ? (

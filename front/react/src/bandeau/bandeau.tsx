@@ -25,6 +25,10 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
     navigate('/app');
   };
 
+  const goGame = () => {
+    navigate('/app/game');
+  };
+
   const HandleDisconnect = async () => {
     try {
       await deleteRefreshToken();
@@ -45,6 +49,9 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
       </button>
       <button onClick={goSettings} className="bandeau-button">
         settings
+      </button>
+      <button onClick={goGame} className="bandeau-button">
+        game
       </button>
       <button onClick={HandleDisconnect} className="bandeau-button">
         <RiShutDownLine className="bandeau-disconnect-icon" />

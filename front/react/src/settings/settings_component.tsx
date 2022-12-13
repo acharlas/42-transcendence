@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  // FaUserLock,
-  // FaUserPlus,
-  // FaUserMinus,
-  // FaMinus,
-  // FaPlus,
-  FaPen,
-} from 'react-icons/fa';
-import {
-  BsShieldFillMinus,
-  BsShieldFillPlus,
-  // BsShieldLockFill,
-  // BsShieldSlashFill,
-} from 'react-icons/bs';
+import { FaPen } from 'react-icons/fa';
+import { BsShieldFillMinus, BsShieldFillPlus } from 'react-icons/bs';
 import { ImCheckmark, ImCross } from 'react-icons/im';
 
 import { getUsersMe, patchNickname } from '../api/user-api';

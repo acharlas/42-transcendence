@@ -20,7 +20,7 @@ import { FriendService } from './friend.service';
 @UseGuards(JwtGuard)
 @Controller('friend')
 export class FriendController {
-  constructor(private friendService: FriendService) { }
+  constructor(private friendService: FriendService) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('add')

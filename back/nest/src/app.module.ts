@@ -12,6 +12,7 @@ import { LeaderboardModule } from './leaderboard/leaderboard.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MfaModule } from './mfa/mfa.module';
 import { AvatarModule } from './avatar/avatar.module';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AvatarModule } from './avatar/avatar.module';
     JwtModule,
     MfaModule,
     AvatarModule,
+    GameModule
   ],
 })
 export class AppModule {}

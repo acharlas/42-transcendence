@@ -50,6 +50,22 @@ export class SokcetIOAdapter extends IoAdapter {
       ),
     );
 
+    server.of('game').use(
+      createTokenGameMiddleware(
+        jwtService,
+        this.configService.get('JWT_SECRET'),
+        async (payload: { sub: string }) => {
+          const user = await this.prisma.user.findUnique({
+            where: {
+              id: payload.sub,
+            },
+          });
+          delete user.hash;
+          return user;
+        },
+      ),
+    );
+
     return server;
   }
 }
@@ -65,6 +81,35 @@ const createTokenMiddleware =
 
     try {
       console.log({ token }, 'secret: ', secret);
+      const payload = JwtService.verify(token, { secret });
+      console.log({ payload });
+      validate({ sub: payload.sub })
+        .then((ret: User) => {
+          console.log('user', { ret });
+          socket.userID = ret.id;
+          socket.username = ret.username;
+          next();
+        })
+        .catch((err) => {
+          return err;
+        });
+    } catch (e) {
+      console.log(e);
+      next(new Error('FORBIDDEN'));
+    }
+  };
+
+  const createTokenGameMiddleware =
+  (JwtService: JwtService, secret: string, validate: Function) =>
+  (socket: SocketWithAuth, next) => {
+    const token =
+      socket.handshake.auth.token || socket.handshake.headers['token'];
+    console.log(
+      `middleware Game: validating auth token before connection: ${token}`,
+    );
+
+    try {
+      console.log({ token }, 'secret Game: ', secret);
       const payload = JwtService.verify(token, { secret });
       console.log({ payload });
       validate({ sub: payload.sub })

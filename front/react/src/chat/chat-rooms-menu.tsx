@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { FaAngleRight, FaBan, FaLock } from "react-icons/fa";
+import { FaBan, FaLock } from "react-icons/fa";
 import { GiAlienStare, GiAstronautHelmet } from "react-icons/gi";
 import { TbMessageCircleOff } from "react-icons/tb";
 import { RiArrowDropDownFill, RiArrowDropUpFill } from "react-icons/ri";
@@ -21,15 +21,9 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   const [searchChannel, setSearchChannel] = useState<string>("");
   const {
     rooms,
-    showRoomMenu,
-    setShowRoomMenu,
-    setActChannel,
     actChannel,
-    setMessages,
-    setUserList,
     showCreateMenu,
     setShowCreateMenu,
-    setUser,
     setSelectUser,
     selectUser,
     user,
@@ -48,6 +42,11 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
     setShowDm,
     closeChatBox,
     setNewRoom,
+    FriendErrMsg,
+    BlockErrMsg,
+    setFriendErrMsg,
+    setBlockErrMsg,
+    resetErrMsg,
   } = useChat();
 
   function handleJoinRoom(key: string) {
@@ -98,14 +97,17 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   const handleShowRoomSetting = (room: Room) => {
     closeChatBox();
     setShowRoomSetting(room);
+    resetErrMsg();
   };
 
   const handleShowFriend = (event) => {
     showFriend ? setShowFriend(false) : setShowFriend(true);
+    setFriendErrMsg("");
   };
 
   const handleShowBloqued = (event) => {
     showBloqued ? setShowBloqued(false) : setShowBloqued(true);
+    setBlockErrMsg("");
   };
 
   const handleAddFriend = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -197,6 +199,11 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                 <IoIosAddCircle />
               </button>
             </form>
+            {FriendErrMsg ? (
+              <p className="room-chat-err-message">{FriendErrMsg}</p>
+            ) : (
+              <></>
+            )}
             <ul>
               {friendList.map((friend, id) => {
                 if (!friend.nickname.search(newFriend)) {
@@ -221,7 +228,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                     </li>
                   );
                 }
-                return;
+                return null;
               })}
             </ul>
           </>
@@ -262,6 +269,11 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                 <IoIosAddCircle />
               </button>
             </form>
+            {BlockErrMsg ? (
+              <p className="room-chat-err-message">{BlockErrMsg}</p>
+            ) : (
+              <></>
+            )}
             <ul>
               {bloquedList.map((block, id) => {
                 if (!block.nickname.search(newBlock)) {
@@ -281,7 +293,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                     </li>
                   );
                 }
-                return;
+                return null;
               })}
             </ul>
           </>
@@ -335,7 +347,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
             </button>
             {rooms ? (
               rooms.map((room, id) => {
-                if (room.channel.type === ChannelType.dm) return;
+                if (room.channel.type === ChannelType.dm) return null;
                 const channel = room.channel;
                 const chanUser = room.user.find((chanUser) => {
                   if (
@@ -395,7 +407,8 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                               //searchFriend.current.value = "";
                               if (
                                 !actUser.nickname.search(searchFriend) &&
-                                (actUser.status !== UserStatus.disconnected ||
+                                ((actUser.status !== UserStatus.invited &&
+                                  actUser.status !== UserStatus.disconnected) ||
                                   actUser.privilege === UserPrivilege.ban)
                               )
                                 return (
@@ -433,7 +446,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                                     </button>
                                   </li>
                                 );
-                              return;
+                              return null;
                             })}
                           </ul>
                         </>
@@ -473,7 +486,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
         </button>
         {showDm ? (
           <>
-            {rooms.map((room) => {
+            {rooms.map((room, id) => {
               const usr = room.user.find((usr) => {
                 if (usr.username !== window.sessionStorage.getItem("username"))
                   return true;
@@ -486,13 +499,14 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                   return false;
                 })
               )
-                return; //dead code
+                return null; 
               return (
-                <>
+                <div key={id}>
                   <button
                     title={`Join ${room.channel.name}`}
                     onClick={() => handleJoinRoom(room.channel.id)}
                     className="room-menu-button-dm"
+                    disabled={room.channel.id === actChannel}
                   >
                     {
                       room.user.find((usr) => {
@@ -506,7 +520,7 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
                     }
                     {room.newMessage && <BiMessageAltAdd />}
                   </button>
-                </>
+                </div>
               );
             })}
           </>

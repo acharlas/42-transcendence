@@ -7,6 +7,7 @@ import {
   SocketReducer,
 } from '../context/socket.context';
 import { useSocket } from '../context/use-socket';
+import { ErrMessage } from './chat-error-msg';
 import { Channel, Message, Room, User, UserStatus } from './type';
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
@@ -36,6 +37,10 @@ const SocketContextComponent: React.FunctionComponent<
     setShowJoinMenu,
     setSelectUser,
     setShowRoomSetting,
+    setJoinErrMsg,
+    setBlockErrMsg,
+    setFriendErrMsg,
+    setCreateErrMsg,
   } = useChat();
 
   const socket = useSocket('http://localhost:3333/chat', {
@@ -60,6 +65,24 @@ const SocketContextComponent: React.FunctionComponent<
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
+      /**error receive */
+      socket.on('ErrMessage', ({ code }: { code: string }) => {
+        console.log(
+          'erreur aarrived: ',
+          code,
+          'err message: ',
+          ErrMessage[code],
+        );
+        if (code.search('err1') >= 0) {
+          setFriendErrMsg(ErrMessage[code]);
+        } else if (code.search('err2') >= 0) {
+          setBlockErrMsg(ErrMessage[code]);
+        } else if (code.search('err3') >= 0) {
+          setCreateErrMsg(ErrMessage[code]);
+        } else if (code.search('err4') >= 0) {
+          setJoinErrMsg(ErrMessage[code]);
+        }
+      });
       /**disconnect */
       socket.on('Disconnect', () => {
         console.log('disconnect');
@@ -92,7 +115,7 @@ const SocketContextComponent: React.FunctionComponent<
             return {
               channel: updateChan,
               user: room.user,
-              messages: room.message,
+              message: room.message,
             };
           return room;
         });
@@ -180,7 +203,7 @@ const SocketContextComponent: React.FunctionComponent<
       /**room list */
       socket.on('Rooms', (res: Room[]) => {
         console.log('room receive:', res);
-        res.map((room) => {
+        res.forEach((room) => {
           room.newMessage = false;
         });
         setRooms(res);
@@ -283,6 +306,16 @@ const SocketContextComponent: React.FunctionComponent<
     setUser,
     setActChannel,
     setShowRoomMenu,
+    navigate,
+    setBlockErrMsg,
+    setBloquedList,
+    setCreateErrMsg,
+    setFriendErrMsg,
+    setJoinErrMsg,
+    setSelectUser,
+    setShowJoinMenu,
+    setShowRoomSetting,
+    setFriendList,
   ]);
 
   return (
