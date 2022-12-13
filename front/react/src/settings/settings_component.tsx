@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   // FaUserLock,
   // FaUserPlus,
@@ -7,64 +7,60 @@ import {
   // FaMinus,
   // FaPlus,
   FaPen,
-} from "react-icons/fa";
+} from 'react-icons/fa';
 import {
   BsShieldFillMinus,
   BsShieldFillPlus,
   // BsShieldLockFill,
   // BsShieldSlashFill,
-} from "react-icons/bs";
-import { ImCheckmark, ImCross } from "react-icons/im";
+} from 'react-icons/bs';
+import { ImCheckmark, ImCross } from 'react-icons/im';
 
-import { getUsersMe, patchNickname } from "../api/user-api";
+import { getUsersMe, patchNickname } from '../api/user-api';
 import {
   requestMfaDisable,
   requestMfaSetupFinish,
   requestMfaSetupInit,
-} from "../api/mfa-api";
-import { getBlock } from "../api/block-api";
-import { getFriend } from "../api/friend-api";
-import { deleteAvatar, postAvatar } from "../api/avatar-api";
-import { MfaStatus } from "./constants/mfa-status";
-import { AvatarStatus } from "./constants/avatar-status";
-import DefaultAvatar from "../avatar/default_avatar_component";
-import ReloadAvatar from "../avatar/reload_avatar_component";
-import "../style.css";
-import "../profile/profile.css";
-import "./settings.css";
-import BandeauIndex from "../bandeau/bandeau";
-import ChatProvider from "../context/chat.context";
-import SocketContextComponent from "../chat/socket-component";
-import ChatIndex from "../chat/chat-index";
+} from '../api/mfa-api';
+import { getBlock } from '../api/block-api';
+import { getFriend } from '../api/friend-api';
+import { deleteAvatar, postAvatar } from '../api/avatar-api';
+import { MfaStatus } from './constants/mfa-status';
+import { AvatarStatus } from './constants/avatar-status';
+import DefaultAvatar from '../avatar/default_avatar_component';
+import ReloadAvatar from '../avatar/reload_avatar_component';
+import '../style.css';
+import '../profile/profile.css';
+import './settings.css';
 
 export default function Profile() {
   //utils
   const navigate = useNavigate();
   const goSignIn = () => {
-    navigate("/");
+    navigate('/');
   };
 
   function displayError(msg: string) {
-    return (<p className="error-msg">{msg}</p>);
+    return <p className="error-msg">{msg}</p>;
   }
 
   // State variables
-  const [nickname, setNickname] = useState("");
-  const [newNickname, setNewNickname] = useState("");
+  const [nickname, setNickname] = useState('');
+  const [newNickname, setNewNickname] = useState('');
   const [editingNickname, setEditingNickname] = useState(false);
   const [blocklist, setBlocklist] = useState([]);
   const [friendlist, setFriendlist] = useState([]);
   const [mfaStatus, setMfaStatus] = useState<MfaStatus>(MfaStatus.LOADING);
   const [avatarStatus, setAvatarStatus] = useState<AvatarStatus>(
-    AvatarStatus.LOADING
+    AvatarStatus.LOADING,
   );
   const [avatarToUpload, setAvatarToUpload] = useState<File>(null);
   const [avatarReload, setAvatarReload] = useState<number>(0);
-  const [smsCode, setSmsCode] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [avatarError, setAvatarError] = useState("");
-  const [mfaError, setMfaError] = useState("");
-  const [nicknameError, setNicknameError] = useState("");
+  const [smsCode, setSmsCode] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [avatarError, setAvatarError] = useState('');
+  const [mfaError, setMfaError] = useState('');
+  const [nicknameError, setNicknameError] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -72,11 +68,11 @@ export default function Profile() {
         .then((res) => {
           setNickname(res.data.nickname);
           setMfaStatus(
-            res.data.mfaEnabled ? MfaStatus.ENABLED : MfaStatus.DISABLED
+            res.data.mfaEnabled ? MfaStatus.ENABLED : MfaStatus.DISABLED,
           );
         })
         .catch((e) => {
-          console.log("Settings: Error in fetchUserData", e);
+          console.log('Settings: Error in fetchUserData', e);
           // redirect to auth page if auth failed
           if (e.response.status === 401) {
             goSignIn();
@@ -85,22 +81,22 @@ export default function Profile() {
     };
 
     const fetchBlocklist = async () => {
-      await getBlock({ id: window.sessionStorage.getItem("userid") })
+      await getBlock({ id: window.sessionStorage.getItem('userid') })
         .then((res) => {
           setBlocklist(res.data.myblock);
         })
         .catch((e) => {
-          console.log("Error while fetching blocklist", e);
+          console.log('Error while fetching blocklist', e);
         });
     };
 
     const fetchFriendlist = async () => {
-      await getFriend({ id: window.sessionStorage.getItem("userid") })
+      await getFriend({ id: window.sessionStorage.getItem('userid') })
         .then((res) => {
           setFriendlist(res.data.myfriend);
         })
         .catch((e) => {
-          console.log("Error while fetching friendlist", e);
+          console.log('Error while fetching friendlist', e);
         });
     };
 
@@ -110,37 +106,34 @@ export default function Profile() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   //AVATAR
 
   const uploadAvatar = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     if (avatarToUpload) {
-      setAvatarError("");
+      setAvatarError('');
       try {
         await postAvatar(avatarToUpload);
         setAvatarStatus(AvatarStatus.UPLOADED);
         setTimeout(() => {
           setAvatarReload(avatarReload + 1);
         }, 100);
-      }
-      catch (e) {
+      } catch (e) {
         setAvatarError(e?.response?.data?.message);
-        console.log("failed to upload avatar");
+        console.log('failed to upload avatar');
       }
     } else {
-      setAvatarError("please select a file to upload");
+      setAvatarError('please select a file to upload');
     }
   };
 
   const removeAvatar = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setAvatarError("");
+    setAvatarError('');
     try {
       await deleteAvatar();
       setAvatarStatus(AvatarStatus.DELETED);
-    }
-    catch (e) {
+    } catch (e) {
       setAvatarError(e?.response?.data?.message);
     }
   };
@@ -159,12 +152,12 @@ export default function Profile() {
           <div className="settings__avatar__div">
             <div className="settings__avatar__container">
               {avatarStatus === AvatarStatus.DELETED
-                ? DefaultAvatar("settings__avatar")
+                ? DefaultAvatar('settings__avatar')
                 : ReloadAvatar(
-                  window.sessionStorage.getItem("userid"),
-                  avatarReload,
-                  "settings__avatar"
-                )}
+                    window.sessionStorage.getItem('userid'),
+                    avatarReload,
+                    'settings__avatar',
+                  )}
             </div>
             <input type="file" onChange={selectFile} />
             <button
@@ -190,33 +183,32 @@ export default function Profile() {
 
   const editNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setNicknameError("");
+    setNicknameError('');
     try {
       await patchNickname({ nickname: newNickname });
       setEditingNickname(false);
       setNickname(newNickname);
-      setNewNickname("");
-    }
-    catch (e) {
+      setNewNickname('');
+    } catch (e) {
       setNicknameError(e?.response?.data?.message);
     }
-  }
+  };
 
   const startEditingNickname = async (
-    event: React.MouseEvent<HTMLButtonElement>
+    event: React.MouseEvent<HTMLButtonElement>,
   ) => {
     setEditingNickname(true);
   };
 
   const stopEditingNickname = async (
-    event: React.MouseEvent<HTMLButtonElement>
+    event: React.MouseEvent<HTMLButtonElement>,
   ) => {
     setEditingNickname(false);
-    setNewNickname("");
+    setNewNickname('');
   };
 
   const handleNewNicknameChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setNewNickname(event.target.value);
   };
@@ -225,13 +217,13 @@ export default function Profile() {
   };
 
   function nicknameSettings() {
-    return (<>
-      <div className="profile__panel__top">
-        <div className="profile__panel__title">Nickname</div>
-      </div>
-      <div className="profile__panel__bottom">
-        {editingNickname ?
-          (
+    return (
+      <>
+        <div className="profile__panel__top">
+          <div className="profile__panel__title">Nickname</div>
+        </div>
+        <div className="profile__panel__bottom">
+          {editingNickname ? (
             <div className="settings__line">
               <input
                 className="settings__line__elem settings__nickname__input"
@@ -257,85 +249,85 @@ export default function Profile() {
             </div>
           ) : (
             <div className="settings__line">
-              <div className="settings__line__elem">
-                {nickname}
-              </div>
-              <button className="settings__line__elem settings__button__texticon" onClick={startEditingNickname}>
+              <div className="settings__line__elem">{nickname}</div>
+              <button
+                className="settings__line__elem settings__button__texticon"
+                onClick={startEditingNickname}
+              >
                 <FaPen className="settings__icon" />
               </button>
             </div>
-          )
-        }
-        {displayError(nicknameError)}
-      </div>
-    </>)
+          )}
+          {displayError(nicknameError)}
+        </div>
+      </>
+    );
   }
 
   // MFA
 
   const beginFlow = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError("");
+    setMfaError('');
     setMfaStatus(MfaStatus.INIT);
   };
 
   const sendCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError("");
+    setMfaError('');
     try {
       await requestMfaSetupInit({ phoneNumber: phoneNumber });
       setMfaStatus(MfaStatus.VALIDATE);
-    }
-    catch (e) {
+    } catch (e) {
       setMfaError(e?.response?.data?.message);
     }
   };
 
   const validateCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError("");
+    setMfaError('');
     try {
       await requestMfaSetupFinish({ codeToCheck: smsCode });
-      setSmsCode("");
+      setSmsCode('');
       setMfaStatus(MfaStatus.ENABLED);
-    }
-    catch (e) {
-      console.log("Settings: error in validateCode", e);
+    } catch (e) {
+      console.log('Settings: error in validateCode', e);
       setMfaError(e?.response?.data?.message);
     }
   };
 
   const disable = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError("");
+    setMfaError('');
     try {
       const response = await requestMfaDisable();
       if (response.status === 204) {
         setMfaStatus(MfaStatus.DISABLED);
       } else {
-        setMfaError("Disabling mfa failed.");
+        setMfaError('Disabling mfa failed.');
       }
-    }
-    catch (e) {
+    } catch (e) {
       setMfaError(e?.response?.data?.message);
     }
-  }
+  };
 
   const cancelInit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError("");
-    setPhoneNumber("");
+    setMfaError('');
+    setPhoneNumber('');
     setMfaStatus(MfaStatus.DISABLED);
-  }
+  };
 
   const cancelValidate = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError("");
-    setSmsCode("");
+    setMfaError('');
+    setSmsCode('');
     setMfaStatus(MfaStatus.INIT);
   };
 
-  const HandlePhoneNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const HandlePhoneNumberChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setPhoneNumber(event.target.value);
   };
 
@@ -451,7 +443,7 @@ export default function Profile() {
               {friendlist.map((n, index) => (
                 <tr key={n.nickname}>
                   <td>
-                    <a href={"/profile/" + n.id}>{n.nickname}</a>
+                    <a href={'/profile/' + n.id}>{n.nickname}</a>
                   </td>
                   <td>unfriend</td>
                 </tr>
@@ -475,7 +467,7 @@ export default function Profile() {
               {blocklist.map((n, index) => (
                 <tr key={n.nickname}>
                   <td>
-                    <a href={"/profile/" + n.id}>{n.nickname}</a>
+                    <a href={'/profile/' + n.id}>{n.nickname}</a>
                   </td>
                   <td>unblock</td>
                 </tr>

@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-// import { FaRocket } from "react-icons/fa";
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
-import { getUser } from "../api/user-api";
-import { addFriend, removeFriend, checkIfFriend } from "../api/friend-api";
-import { addBlock, removeBlock, checkIfBlocked } from "../api/block-api";
-import Avatar from "../avatar/avatar_component";
-import "../style.css";
-import "./profile.css";
-import BandeauIndex from "../bandeau/bandeau";
-import ChatIndex from "../chat/chat-index";
+import { getUser } from '../api/user-api';
+import { addFriend, removeFriend, checkIfFriend } from '../api/friend-api';
+import { addBlock, removeBlock, checkIfBlocked } from '../api/block-api';
+import Avatar from '../avatar/avatar_component';
+import '../style.css';
+import './profile.css';
+import BandeauIndex from '../bandeau/bandeau';
 
 interface User {
   nickname: string;
@@ -24,7 +22,7 @@ export default function Profile() {
   var { id } = useParams();
 
   const [userData, setUserData] = useState<User>({
-    nickname: "",
+    nickname: '',
     wins: 0,
     losses: 0,
     mmr: 0,
@@ -40,8 +38,8 @@ export default function Profile() {
           setUserData(res.data);
         })
         .catch((e) => {
-          if (e.response.data.message === "no such user") {
-            console.log("no such user");
+          if (e.response.data.message === 'no such user') {
+            console.log('no such user');
             goHome();
             return;
           }
@@ -54,7 +52,7 @@ export default function Profile() {
           setIsFriend(res);
         })
         .catch((e) => {
-          console.log("checkIfFriend err: " + e);
+          console.log('checkIfFriend err: ' + e);
         });
 
       await checkIfBlocked({ id: id })
@@ -62,7 +60,7 @@ export default function Profile() {
           setIsBlocked(res);
         })
         .catch((e) => {
-          console.log("checkIfBlocked err: " + e);
+          console.log('checkIfBlocked err: ' + e);
         });
     };
 
@@ -75,12 +73,12 @@ export default function Profile() {
   const navigate = useNavigate();
   const goHome = () => {
     navigate('/app');
-  }
+  };
 
   // Utils
   const isSelfProfile = () => {
-    return (id === sessionStorage.getItem("userid"));
-  }
+    return id === sessionStorage.getItem('userid');
+  };
 
   // Events
   const friendClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -94,7 +92,7 @@ export default function Profile() {
         setIsFriend(true);
       }
     } catch (e) {
-      console.log("Failed friend event.", e);
+      console.log('Failed friend event.', e);
       //TODO: improve error
     }
   };
@@ -110,7 +108,7 @@ export default function Profile() {
         setIsBlocked(true);
       }
     } catch (e) {
-      console.log("Failed block event.", e);
+      console.log('Failed block event.', e);
       //TODO: improve error
     }
   };
@@ -134,10 +132,10 @@ export default function Profile() {
                   {isSelfProfile() || (
                     <div className="profile__button__container">
                       <button className="profile__button" onClick={friendClick}>
-                        {isFriend ? "UNFRIEND" : "FRIEND"}
+                        {isFriend ? 'UNFRIEND' : 'FRIEND'}
                       </button>
                       <button className="profile__button" onClick={blockClick}>
-                        {isBlocked ? "UNBLOCK" : "BLOCK"}
+                        {isBlocked ? 'UNBLOCK' : 'BLOCK'}
                       </button>
                     </div>
                   )}
