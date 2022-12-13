@@ -1,4 +1,4 @@
-//import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -7,7 +7,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-//import { CronJob, job } from 'cron';
+import { rejects } from 'assert';
 import { Server, Socket, Namespace } from 'socket.io';
 import { socketTab, SocketWithAuth } from '../message/types_message';
 import { GameService } from './game.service';
@@ -19,8 +19,7 @@ export class GameGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
-    private gameService: GameService,
-    //private schedulerRegistry: SchedulerRegistry,
+    private gameService: GameService, //private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   SocketList: socketTab[] = [];
@@ -71,6 +70,37 @@ export class GameGateway
     console.log(`number of soket connected to game: ${socket.size}`);
   }
   /*==========================================*/
+  @Cron('*/10 * * * * *')
+  sync() {
+    console.log('cron');
+    this.gameService
+      .MatchPlayer()
+      .then((newLobby) => {
+        console.log('lobby: ', { newLobby });
+        newLobby.forEach((lobby) => {
+          const socketPlayerOne = this.SocketList.find((socket) => {
+            if (socket.userId === lobby.playerOne) return true;
+            return false;
+          });
+          const socketPlayerTwo = this.SocketList.find((socket) => {
+            if (socket.userId === lobby.playerTwo) return true;
+            return false;
+          });
+          console.log('player one: ', { socketPlayerOne }, ' player two: ', {
+            socketPlayerTwo,
+          });
+          socketPlayerOne.socket.join(lobby.id);
+          socketPlayerTwo.socket.join(lobby.id);
+          socketPlayerOne.socket.emit('JoinLobby', lobby);
+          socketPlayerTwo.socket.emit('JoinLobby', lobby);
+          socketPlayerOne.socket.emit('QueueJoin');
+          socketPlayerTwo.socket.emit('QueueJoin');
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   /*==========================================*/
   /*HandShake*/
   @SubscribeMessage('handshake')
@@ -89,22 +119,6 @@ export class GameGateway
       this.gameService
         .JoiningQueue(client.userID)
         .then(() => {
-          // const job = new CronJob(`10 * * * * *`, () => {
-          //   this.gameService
-          //     .MatchPlayer()
-          //     .then((newLobby) => {
-          //       this.gameService
-          //         .SendingLobby(newLobby, this.SocketList)
-          //         .catch((err) => {
-          //           console.log(err);
-          //         });
-          //     })
-          //     .catch((err) => {
-          //       console.log(err);
-          //     });
-          // });
-          // this.schedulerRegistry.addCronJob(client.userID, job);
-          // job.start();
           client.emit('QueueJoin');
           return resolve();
         })

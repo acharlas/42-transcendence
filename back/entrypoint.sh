@@ -5,5 +5,7 @@ while ! nc -z db 5432; do
 done
 echo "Postgres ready"
 
+sleep 40
+
 # exec npm run start:dev:deploy
 exec $@

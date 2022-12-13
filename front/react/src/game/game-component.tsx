@@ -12,8 +12,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     socket.emit("JoiningQueue");
   };
 
-  console.log({ inQueue });
-
   return (
     <div>
       {inQueue ? (

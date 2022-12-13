@@ -1,4 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { socketTab } from 'src/message/types_message';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Lobby, Player } from './types_game';
@@ -35,25 +36,6 @@ export class GameService {
   }
   /*=============================================*/
   /*==================Lobby===========================*/
-  async SendingLobby(lobby: Lobby[], socketList: socketTab[]): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      lobby.forEach((lobby) => {
-        const socketPlayerOne = socketList.find((socket) => {
-          if (socket.userId === lobby.playerOne) return true;
-          return false;
-        });
-        const socketPlayerTwo = socketList.find((socket) => {
-          if (socket.userId === lobby.playerTwo) return true;
-          return false;
-        });
-        socketPlayerOne.socket.join(lobby.id);
-        socketPlayerTwo.socket.join(lobby.id);
-        socketPlayerOne.socket.emit('JoinLobby', lobby);
-        socketPlayerTwo.socket.emit('JoinLobby', lobby);
-      });
-      return resolve();
-    });
-  }
 
   async CreateLobby(userId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {

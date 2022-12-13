@@ -33,7 +33,6 @@ import { GameModule } from './game/game.module';
     MfaModule,
     AvatarModule,
     GameModule,
-    //ScheduleModule.forRoot(),
   ],
 })
 export class AppModule {}

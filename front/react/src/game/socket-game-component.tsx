@@ -52,13 +52,13 @@ const SocketGameContextComponent: React.FunctionComponent<
       });
       /**Queue Join */
       socket.on("QueueJoin", () => {
-        console.log("joining the queue ");
+        console.log("joining the queue");
 
         setInQueue(true);
       });
       /**new match found*/
-      socket.on("'JoinLobby'", (lobby: Lobby) => {
-        console.log("new lobby arrive ");
+      socket.on("JoinLobby", (lobby: Lobby) => {
+        console.log("new lobby arrive ", { lobby });
 
         setInQueue(false);
         setLobby(lobby);
