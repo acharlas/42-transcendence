@@ -1,10 +1,12 @@
-import { PropsWithChildren, useEffect, useReducer } from 'react';
+import { PropsWithChildren, useEffect, useReducer } from "react";
+import { useGame } from "../context/game.context";
 import {
   defaultSocketContextState,
   SocketContextProvider,
   SocketReducer,
-} from '../context/socket.context';
-import { useSocket } from '../context/use-socket';
+} from "../context/socket.context";
+import { useSocket } from "../context/use-socket";
+import { Lobby } from "./game-type";
 
 export interface ISocketGameContextComponentProps extends PropsWithChildren {}
 
@@ -14,24 +16,25 @@ const SocketGameContextComponent: React.FunctionComponent<
   const { children } = props;
   const [SocketState, SocketDispatch] = useReducer(
     SocketReducer,
-    defaultSocketContextState,
+    defaultSocketContextState
   );
+  const { setInQueue, setLobby, lobby, inQueue } = useGame();
 
-  const socket = useSocket('http://localhost:3333/game', {
+  const socket = useSocket("http://localhost:3333/game", {
     reconnectionAttempts: 5,
     reconnectionDelay: 5000,
     autoConnect: false,
     auth: {
-      token: sessionStorage.getItem('Token'),
+      token: sessionStorage.getItem("Token"),
     },
   });
 
   useEffect(() => {
     /** connect to the web socket */
-    console.log('SOCKET CONNECT');
+    console.log("SOCKET CONNECT");
     socket.connect();
     /** save socket in context */
-    SocketDispatch({ type: 'update_socket', payload: socket });
+    SocketDispatch({ type: "update_socket", payload: socket });
   }, [socket]);
 
   useEffect(() => {
@@ -39,42 +42,55 @@ const SocketGameContextComponent: React.FunctionComponent<
     socket.removeAllListeners();
     const StartListener = () => {
       /**disconnect */
-      socket.on('Disconnect', () => {
-        console.log('disconnect');
+      socket.on("Disconnect", () => {
+        console.log("disconnect");
         socket.disconnect();
       });
       /**handshake */
-      socket.on('handshake', (id: string) => {
-        console.log('user id is: ', id);
+      socket.on("handshake", (id: string) => {
+        console.log("user id is: ", id);
+      });
+      /**Queue Join */
+      socket.on("QueueJoin", () => {
+        console.log("joining the queue");
+
+        setInQueue(true);
+      });
+      /**new match found*/
+      socket.on("JoinLobby", (lobby: Lobby) => {
+        console.log("new lobby arrive ", { lobby });
+
+        setInQueue(false);
+        setLobby(lobby);
       });
       /** receive new id */
-      socket.on('new_user', (uid: string) => {
-        console.log('User connected, new user receive', uid, 'last uid');
-        SocketDispatch({ type: 'update_uid', payload: uid });
+      socket.on("new_user", (uid: string) => {
+        console.log("User connected, new user receive", uid, "last uid");
+        SocketDispatch({ type: "update_uid", payload: uid });
       });
       /** reconnect event*/
-      socket.io.on('reconnect', (attempt) => {
-        console.log('reconnect on attempt: ' + attempt);
+      socket.io.on("reconnect", (attempt) => {
+        console.log("reconnect on attempt: " + attempt);
       });
 
       /**reconnect attempt event */
-      socket.io.on('reconnect_attempt', (attempt) => {
-        console.log('reconnect on attempt: ' + attempt);
+      socket.io.on("reconnect_attempt", (attempt) => {
+        console.log("reconnect on attempt: " + attempt);
       });
 
       /**Reconnection error */
-      socket.io.on('reconnect_error', (error) => {
-        console.log('reconnect error: ' + error);
+      socket.io.on("reconnect_error", (error) => {
+        console.log("reconnect error: " + error);
       });
 
       /**Reconnection failed */
-      socket.io.on('reconnect_failed', () => {
-        console.log('reconnection failed ');
-        alert('we are unable to reconnect you to the web socket');
+      socket.io.on("reconnect_failed", () => {
+        console.log("reconnection failed ");
+        alert("we are unable to reconnect you to the web socket");
       });
     };
     StartListener();
-  }, [socket]);
+  }, [socket, lobby, setLobby, setInQueue, inQueue]);
 
   return (
     <SocketContextProvider value={{ SocketState, SocketDispatch }}>

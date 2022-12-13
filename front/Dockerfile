@@ -11,6 +11,11 @@ RUN npm install
 
 # Install the rest
 COPY ./react ./
+
+RUN npm install -g npm@9.2.0
 RUN npm install
+
+
+#start app
 
 CMD ["npm", "start"]

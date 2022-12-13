@@ -1,4 +1,5 @@
 import { FunctionComponent } from "react";
+import GameProvider from "../context/game.context";
 import GameComponent from "./game-component";
 import SocketGameContextComponent from "./socket-game-component";
 
@@ -6,9 +7,11 @@ export interface IGameIndexProps {}
 
 const GameIndex: FunctionComponent<IGameIndexProps> = (props) => {
   return (
-    <SocketGameContextComponent>
-      <GameComponent />
-    </SocketGameContextComponent>
+    <GameProvider>
+      <SocketGameContextComponent>
+        <GameComponent />
+      </SocketGameContextComponent>
+    </GameProvider>
   );
 };
 
