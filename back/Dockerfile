@@ -5,9 +5,9 @@ WORKDIR /nest
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# nc for entrypoint + openssl for prisma
+# nc for entrypoint + openssl for prisma + ps for nest
 RUN apt-get update \
-&& apt-get install -y netcat openssl \
+&& apt-get install -y netcat openssl procps \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/*
 
