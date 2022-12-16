@@ -7,7 +7,6 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { rejects } from 'assert';
 import { Server, Socket, Namespace } from 'socket.io';
 import { socketTab, SocketWithAuth } from '../message/types_message';
 import { GameService } from './game.service';
@@ -68,6 +67,16 @@ export class GameGateway
       `Client disconnected of game: ${client.id} | name: ${client.username}`,
     );
     console.log(`number of soket connected to game: ${socket.size}`);
+    this.gameService
+      .PlayerDisconnect(client.userID)
+      .then((lobbyId) => {
+        console.log('lobby found');
+        if (lobbyId) client.to(lobbyId).emit('PlayerLeave', client.userID);
+      })
+      .catch((err) => {
+        console.log(err);
+        return;
+      });
   }
   /*==========================================*/
   @Cron('*/10 * * * * *')

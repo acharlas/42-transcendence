@@ -6,6 +6,7 @@ export interface IoGameContextState {
   setInQueue: Function;
   lobby: Lobby;
   setLobby: Function;
+  Removeplayer: Function;
 }
 
 const GameContext = createContext<IoGameContextState>({
@@ -13,12 +14,24 @@ const GameContext = createContext<IoGameContextState>({
   setInQueue: () => {},
   lobby: undefined,
   setLobby: () => {},
+  Removeplayer: () => {},
 });
 
 function GameProvider(props: any) {
   const [inQueue, setInQueue] = useState<boolean>(false);
   const [lobby, setLobby] = useState<Lobby>(null);
 
+  const Removeplayer = (UserId: string) => {
+    if (lobby) {
+      if (lobby.playerOne === UserId) setLobby({ ...lobby, playerTwo: null });
+      else if (lobby.playerTwo === UserId)
+        setLobby({
+          ...lobby,
+          playerOne: lobby.playerTwo,
+          playerTwo: null,
+        });
+    }
+  };
   return (
     <GameContext.Provider
       value={{
@@ -26,6 +39,7 @@ function GameProvider(props: any) {
         setInQueue,
         lobby,
         setLobby,
+        Removeplayer,
       }}
       {...props}
     />

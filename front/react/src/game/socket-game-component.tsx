@@ -18,14 +18,14 @@ const SocketGameContextComponent: React.FunctionComponent<
     SocketReducer,
     defaultSocketContextState
   );
-  const { setInQueue, setLobby, lobby, inQueue } = useGame();
+  const { setInQueue, setLobby, lobby, inQueue, Removeplayer } = useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
     reconnectionAttempts: 5,
     reconnectionDelay: 5000,
     autoConnect: false,
     auth: {
-      token: sessionStorage.getItem("Token"),
+      token: sessionStorage.getItem("RefreshToken"),
     },
   });
 
@@ -62,6 +62,11 @@ const SocketGameContextComponent: React.FunctionComponent<
 
         setInQueue(false);
         setLobby(lobby);
+      });
+      /** Player leave the lobby */
+      socket.on("PlayerLeave", (uid: string) => {
+        console.log("user: ", uid, " leave the lobby");
+        Removeplayer(uid);
       });
       /** receive new id */
       socket.on("new_user", (uid: string) => {

@@ -1,7 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
-import { socketTab } from 'src/message/types_message';
 import { PrismaService } from 'src/prisma/prisma.service';
+import PlayerIsInLobby from './game.utils';
 import { Lobby, Player } from './types_game';
 
 @Injectable()
@@ -98,6 +97,23 @@ export class GameService {
         return lobby;
       });
       return resolve({ ...joinLobby, playerTwo: userId });
+    });
+  }
+
+  async PlayerDisconnect(userId: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const lobbyFind = this.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userId, lobby);
+      });
+      if (lobbyFind)
+        this.LeaveLobby(userId)
+          .then((lobbyId) => {
+            return resolve(lobbyId);
+          })
+          .catch((err) => {
+            return reject(err);
+          });
+      else return resolve(null);
     });
   }
   /*=============================================*/
