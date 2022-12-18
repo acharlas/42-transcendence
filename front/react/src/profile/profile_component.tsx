@@ -7,7 +7,6 @@ import { addBlock, removeBlock, checkIfBlocked } from '../api/block-api';
 import Avatar from '../avatar/avatar_component';
 import '../style.css';
 import './profile.css';
-import BandeauIndex from '../bandeau/header-left';
 
 interface User {
   nickname: string;

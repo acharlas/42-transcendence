@@ -1,7 +1,8 @@
 import { useContext, useRef } from "react";
 import { HiXCircle } from "react-icons/hi";
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
+
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
 
 function JoinNewRoomComponent() {
   const newRoomRef = useRef(null);

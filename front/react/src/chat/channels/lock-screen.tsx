@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import { FaLock } from "react-icons/fa";
 import { Socket } from "socket.io-client";
-import { useChat } from "../context/chat.context";
+
+import { useChat } from "../../context/chat.context";
 
 function LockScreen({
   socket,

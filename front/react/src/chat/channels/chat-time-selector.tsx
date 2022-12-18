@@ -1,6 +1,7 @@
 import { FunctionComponent, useContext, useRef, useState } from "react";
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
+
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
 
 export interface ItimeSelectorProps {}
 

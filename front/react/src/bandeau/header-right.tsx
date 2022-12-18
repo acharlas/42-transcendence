@@ -3,26 +3,31 @@ import { RiShutDownLine } from 'react-icons/ri';
 
 import './style-bandeau.css';
 import { deleteRefreshToken } from '../api/refresh-api';
+import { SelectedChatWindow, useChat } from "../context/chat.context";
 
 export interface IBandeauIndexProps {}
 
 const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
-  const goProfile = () => {
-    navigate('/app/profile/' + window.sessionStorage.getItem('userid'));
+  const {
+    setSelectedChatWindow,
+  } = useChat();
+
+  const selectChannels = () => {
+    setSelectedChatWindow(SelectedChatWindow.CHANNELS);
   };
 
-  const goLeaderboard = () => {
-    navigate('/app/leaderboard');
+  const selectMessages = () => {
+    setSelectedChatWindow(SelectedChatWindow.MESSAGES);
   };
 
-  const goSettings = () => {
-    navigate('/app/settings');
+  const selectFriendlist = () => {
+    setSelectedChatWindow(SelectedChatWindow.FRIENDLIST);
   };
 
-  const goHome = () => {
-    navigate('/app');
+  const selectBlocklist = () => {
+    setSelectedChatWindow(SelectedChatWindow.BLOCKLIST);
   };
 
   const HandleDisconnect = async () => {
@@ -34,16 +39,16 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
 
   return (
     <>
-      <button onClick={goHome} className="bandeau-button extra-margin-left">
-        messages
-      </button>
-      <button onClick={goProfile} className="bandeau-button">
+      <button onClick={selectChannels} className="bandeau-button extra-margin-left">
         channels
       </button>
-      <button onClick={goLeaderboard} className="bandeau-button">
+      <button onClick={selectMessages} className="bandeau-button">
+        messages
+      </button>
+      <button onClick={selectFriendlist} className="bandeau-button">
         friendlist
       </button>
-      <button onClick={goSettings} className="bandeau-button">
+      <button onClick={selectBlocklist} className="bandeau-button">
         blocklist
       </button>
       <button onClick={HandleDisconnect} className="bandeau-button margin-left no-margin-right bandeau-disconnect-button">

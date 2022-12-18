@@ -1,7 +1,8 @@
 import { FunctionComponent, useContext, useState } from "react";
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
-import { UserPrivilege, UserStatus } from "./type";
+
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
+import { UserPrivilege, UserStatus } from "../type";
 
 export interface IChatOwnerPopupContainerProps {
   setShowPopup: Function;

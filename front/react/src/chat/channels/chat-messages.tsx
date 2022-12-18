@@ -1,10 +1,11 @@
 import { useContext, useEffect, useRef } from "react";
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
 import { HiPlusSm, HiXCircle } from "react-icons/hi";
-import "./chat-style.css";
-import { ChannelType, User, UserPrivilege } from "./type";
+
+import "../chat-style.css";
+import { ChannelType, User, UserPrivilege } from "../type";
 import UserMenu from "./chat-user-menu";
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
 import TimeSelector from "./chat-time-selector";
 import InviteUser from "./chat-invite-user";
 
@@ -34,8 +35,6 @@ function MessagesComponent() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   });
-
-  // bottomRef.current?.scrollIntoView({ behavior: "smooth" });
 
   function handleSendMessage() {
     const message = newMessageRef.current.value;

@@ -8,9 +8,9 @@ import { GiPrisoner } from "react-icons/gi";
 import { TbMessage, TbMessageOff } from "react-icons/tb";
 import { ImUserMinus } from "react-icons/im";
 
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
-import { ChannelType, UserPrivilege } from "./type";
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
+import { ChannelType, UserPrivilege } from "../type";
 
 function UserMenu() {
   const {

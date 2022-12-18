@@ -2,24 +2,25 @@ import { useContext, useState } from "react";
 import { FaBan, FaLock } from "react-icons/fa";
 import { GiAlienStare, GiAstronautHelmet } from "react-icons/gi";
 import { TbMessageCircleOff } from "react-icons/tb";
-import { RiArrowDropDownFill, RiArrowDropUpFill } from "react-icons/ri";
-import { useChat } from "../context/chat.context";
 import { IoIosAddCircle } from "react-icons/io";
 import { AiFillSetting } from "react-icons/ai";
 import { MdPersonRemove } from "react-icons/md";
-import { ChannelType, Room, User, UserPrivilege, UserStatus } from "./type";
 import { SiStarship } from "react-icons/si";
-import SocketContext from "../context/socket.context";
 import { HiXCircle } from "react-icons/hi";
 import { BiMessageAltAdd } from "react-icons/bi";
 
-function RoomsMenuContainer({ setShow }: { setShow: Function }) {
+import { SelectedChatWindow, useChat } from "../context/chat.context";
+import { ChannelType, Room, User, UserPrivilege, UserStatus } from "./type";
+import SocketContext from "../context/socket.context";
+
+function RoomsMenuContainer() {
   const [searchFriend, setSearchFriend] = useState<string>("");
   const [newFriend, setNewFriend] = useState<string>("");
   const [newBlock, setNewBlock] = useState<string>("");
   const { socket } = useContext(SocketContext).SocketState;
   const [searchChannel, setSearchChannel] = useState<string>("");
   const {
+    selectedChatWindow,
     rooms,
     actChannel,
     showCreateMenu,
@@ -27,25 +28,15 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
     setSelectUser,
     selectUser,
     user,
-    showChannel,
-    setShowChannel,
-    setShowBloqued,
-    showBloqued,
-    showFriend,
-    setShowFriend,
     friendList,
     bloquedList,
     setShowJoinMenu,
     showJoinMenu,
     setShowRoomSetting,
-    showDm,
-    setShowDm,
     closeChatBox,
     setNewRoom,
     FriendErrMsg,
     BlockErrMsg,
-    setFriendErrMsg,
-    setBlockErrMsg,
     resetErrMsg,
   } = useChat();
 
@@ -61,10 +52,6 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
     setNewRoom(curRoom);
     console.log("user set to: ", user);
   }
-
-  const handleShowRoomMenu = (event) => {
-    setShow(false);
-  };
 
   const handleShowCreateRoom = (event) => {
     closeChatBox();
@@ -90,24 +77,10 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
     setSearchChannel(event.target.value);
   };
 
-  const handleShowChannel = (event) => {
-    showChannel ? setShowChannel(false) : setShowChannel(true);
-  };
-
   const handleShowRoomSetting = (room: Room) => {
     closeChatBox();
     setShowRoomSetting(room);
     resetErrMsg();
-  };
-
-  const handleShowFriend = (event) => {
-    showFriend ? setShowFriend(false) : setShowFriend(true);
-    setFriendErrMsg("");
-  };
-
-  const handleShowBloqued = (event) => {
-    showBloqued ? setShowBloqued(false) : setShowBloqued(true);
-    setBlockErrMsg("");
   };
 
   const handleAddFriend = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -143,10 +116,6 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
     socket.emit("LeaveRoom", { roomId });
   };
 
-  const handleShowDm = () => {
-    showDm ? setShowDm(false) : setShowDm(true);
-  };
-
   const handleSendDm = (username: string) => {
     const chan = rooms.find((room) => {
       const u = room.user.find((usr) => {
@@ -172,18 +141,6 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   function menuElemFriendlist() {
     return (
       <div>
-        <button
-          onClick={handleShowFriend}
-          className="room-menu-button-scroll-menu"
-        >
-          Friendlist{" "}
-          {showFriend ? (
-            <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
-          ) : (
-            <RiArrowDropDownFill className="room-menu-button-scroll-menu-icon" />
-          )}
-        </button>
-        {showFriend ? (
           <>
             <form>
               <input
@@ -232,9 +189,6 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
               })}
             </ul>
           </>
-        ) : (
-          <></>
-        )}
       </div>
     );
   }
@@ -242,18 +196,6 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   function menuElemBlocklist() {
     return (
       <div>
-        <button
-          onClick={handleShowBloqued}
-          className="room-menu-button-scroll-menu"
-        >
-          Blocklist{" "}
-          {showBloqued ? (
-            <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
-          ) : (
-            <RiArrowDropDownFill className="room-menu-button-scroll-menu-icon" />
-          )}
-        </button>
-        {showBloqued ? (
           <>
             <form>
               <input
@@ -297,9 +239,6 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
               })}
             </ul>
           </>
-        ) : (
-          <></>
-        )}
       </div>
     );
   }
@@ -307,23 +246,6 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   function menuElemChannels() {
     return (
       <div>
-        <button
-          onClick={handleShowChannel}
-          className="room-menu-button-scroll-menu"
-        >
-          Channels{" "}
-          {rooms.find((room) => {
-            if (room.channel.type !== ChannelType.dm && room.newMessage)
-              return true;
-            return false;
-          }) && <BiMessageAltAdd />}
-          {showChannel ? (
-            <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
-          ) : (
-            <RiArrowDropDownFill className="room-menu-button-scroll-menu-icon" />
-          )}
-        </button>
-        {showChannel ? (
           <div className="room-menu-room-list-container">
             <input
               value={searchChannel}
@@ -461,9 +383,6 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
               <></>
             )}
           </div>
-        ) : (
-          <></>
-        )}
       </div>
     );
   }
@@ -471,77 +390,53 @@ function RoomsMenuContainer({ setShow }: { setShow: Function }) {
   function menuElemMessages() {
     return (
       <div>
-        <button onClick={handleShowDm} className="room-menu-button-scroll-menu">
-          Private Messages{" "}
-          {rooms.find((room) => {
-            if (room.channel.type === ChannelType.dm && room.newMessage)
+        {rooms.map((room, id) => {
+          const usr = room.user.find((usr) => {
+            if (usr.username !== window.sessionStorage.getItem("username"))
               return true;
             return false;
-          }) && <BiMessageAltAdd />}
-          {showDm ? (
-            <RiArrowDropUpFill className="room-menu-button-scroll-menu-icon" />
-          ) : (
-            <RiArrowDropDownFill className="room-menu-button-scroll-menu-icon" />
-          )}
-        </button>
-        {showDm ? (
-          <>
-            {rooms.map((room, id) => {
-              const usr = room.user.find((usr) => {
-                if (usr.username !== window.sessionStorage.getItem("username"))
-                  return true;
-                return false;
-              });
-              if (
-                room.channel.type !== ChannelType.dm ||
-                bloquedList.find((block) => {
-                  if (block.username === usr.username) return true;
-                  return false;
-                })
-              )
-                return null; 
-              return (
-                <div key={id}>
-                  <button
-                    title={`Join ${room.channel.name}`}
-                    onClick={() => handleJoinRoom(room.channel.id)}
-                    className="room-menu-button-dm"
-                    disabled={room.channel.id === actChannel}
-                  >
-                    {
-                      room.user.find((usr) => {
-                        if (
-                          usr.username !==
-                          window.sessionStorage.getItem("username")
-                        )
-                          return true;
-                        return false;
-                      }).username
-                    }
-                    {room.newMessage && <BiMessageAltAdd />}
-                  </button>
-                </div>
-              );
-            })}
-          </>
-        ) : (
-          <></>
-        )}
+          });
+          if (
+            room.channel.type !== ChannelType.dm ||
+            bloquedList.find((block) => {
+              if (block.username === usr.username) return true;
+              return false;
+            })
+          )
+            return null; 
+          return (
+            <div key={id}>
+              <button
+                title={`Join ${room.channel.name}`}
+                onClick={() => handleJoinRoom(room.channel.id)}
+                className="room-menu-button-dm"
+                disabled={room.channel.id === actChannel}
+              >
+                {
+                  room.user.find((usr) => {
+                    if (
+                      usr.username !==
+                      window.sessionStorage.getItem("username")
+                    )
+                      return true;
+                    return false;
+                  }).username
+                }
+                {room.newMessage && <BiMessageAltAdd />}
+              </button>
+            </div>
+          );
+        })}
       </div>
     );
   }
 
   return (
     <nav className="room-menu">
-      <div className="room-menu-search-channel-container">
-        <button className="room-menu-close-button" onClick={handleShowRoomMenu}>
-          <HiXCircle />
-        </button>
-      </div>
-      {menuElemFriendlist()}
-      {menuElemBlocklist()}
-      {menuElemChannels()}
-      {menuElemMessages()}
+      {selectedChatWindow === SelectedChatWindow.CHANNELS && menuElemChannels()}
+      {selectedChatWindow === SelectedChatWindow.MESSAGES && menuElemMessages()}
+      {selectedChatWindow === SelectedChatWindow.FRIENDLIST && menuElemFriendlist()}
+      {selectedChatWindow === SelectedChatWindow.BLOCKLIST && menuElemBlocklist()}
     </nav>
   );
 }

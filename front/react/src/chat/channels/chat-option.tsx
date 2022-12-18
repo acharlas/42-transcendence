@@ -1,9 +1,10 @@
 import { FunctionComponent, useContext, useRef, useState } from "react";
 import { HiXCircle } from "react-icons/hi";
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
+
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
 import ChatOwnerPopupComponent from "./chat-owner-leaving";
-import { ChannelType, UserStatus } from "./type";
+import { ChannelType, UserStatus } from "../type";
 
 export interface IChatOptionProps {}
 

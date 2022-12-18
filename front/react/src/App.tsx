@@ -4,7 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 import './style.css';
 import { getMe } from './api/auth-api';
 import SocketContextComponent from './chat/socket-component';
-import ChatIndex from './chat/chat-index';
+import ChatIndex from './chat/channels/chat-index';
 import HeaderLeft from './bandeau/header-left';
 import HeaderRight from './bandeau/header-right';
 import ChatProvider from './context/chat.context';

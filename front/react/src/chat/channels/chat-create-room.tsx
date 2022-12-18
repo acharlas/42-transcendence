@@ -1,8 +1,9 @@
 import { useContext, useRef, useState } from "react";
 import { HiXCircle } from "react-icons/hi";
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
-import { ChannelType } from "./type";
+
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
+import { ChannelType } from "../type";
 
 function CreateRoomsContainer() {
   const newRoomRef = useRef(null);
