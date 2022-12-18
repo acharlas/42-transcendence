@@ -54,7 +54,7 @@ export interface IoChatContextState {
 }
 
 const ChatContext = createContext<IoChatContextState>({
-  selectedChatWindow: SelectedChatWindow.CHANNELS,
+  selectedChatWindow: SelectedChatWindow,
   setSelectedChatWindow: () => { },
   rooms: [],
   setRooms: () => {},
@@ -98,7 +98,7 @@ const ChatContext = createContext<IoChatContextState>({
 });
 
 function ChatProvider(props: any) {
-  const [selectedChatWindow, setSelectedChatWindow] = useState<SelectedChatWindow>(SelectedChatWindow.NONE);
+  const [selectedChatWindow, setSelectedChatWindow] = useState<SelectedChatWindow>(SelectedChatWindow.CHANNELS);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [user, setUser] = useState<User>(null);
   const [messages, setMessages] = useState<Message[]>([]);
