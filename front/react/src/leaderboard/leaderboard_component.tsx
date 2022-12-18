@@ -31,37 +31,31 @@ export default function Userlist() {
 
   return (
     <>
-      <div className="container">
-        <div className="profile__screen">
-          <div className="profile__content ">
-            <div className="profile__panel__top">1v1 matches</div>
+      <div className="profile__screen">
+        <div className="profile__content ">
+          <div className="profile__panel__top">Astropong leaderboard</div>
 
-            <div className="profile__panel__bottom">
-              <table>
-                <tbody>
-                  <tr>
-                    <th>rank</th>
-                    <th>MMR</th>
-                    <th>player</th>
+          <div className="profile__panel__bottom">
+            <table className="lb__table">
+              <tbody>
+                <tr>
+                  <th>rank</th>
+                  <th>MMR</th>
+                  <th>player</th>
+                </tr>
+                {userlist.map((n, index) => (
+                  <tr
+                    className="lb__clickable__line"
+                    key={n.id}
+                    onClick={event => handleProfileClick(event, n.id)}
+                  >
+                    <td>{index + 1}</td>
+                    <td>{n.mmr}</td>
+                    <td>{n.nickname}</td>
                   </tr>
-                  {userlist.map((n, index) => (
-                    <tr
-                      className="lb__clickable__line"
-                      key={n.id}
-                      onClick={event => handleProfileClick(event, n.id)}
-                    >
-                      <td>{index + 1}</td>
-                      <td>{n.mmr}</td>
-                      <td>{n.nickname}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="profile__panel__top">battle royale</div>
-
-            <div className="profile__panel__bottom">todo</div>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

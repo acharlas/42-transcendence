@@ -29,9 +29,7 @@ const ChatIndex: FunctionComponent<IChatIndexProps> = (props) => {
     <>
       {showChat ? (
         <>
-          <div className="chat-container">
-            <RoomsMenuContainer setShow={setShowChat} />
-          </div>
+          <RoomsMenuContainer setShow={setShowChat} />
           <div>
             {actChannel ? (
               <div>

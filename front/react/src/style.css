@@ -31,12 +31,112 @@ body {
   margin-left: 200px;
 }
 
-.container {
+/* contains left + right side */
+.app-container {
   background-image: url("./image/background-login.svg");
   background-repeat: no-repeat;
   background-size: cover;
+
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
+  
   height: 100vh;
+}
+
+/* contains game etc */
+.left-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  align-items: center;
+  justify-content: center;
+
+  height: 100%;
+  width: 50%;
+  overflow: clip;
+}
+
+/* contains chat etc */
+.right-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  
+  align-items: center;
+  justify-content: center;
+
+  height: 100%;
+  width: 50%;
+  overflow: clip;
+}
+
+/* headers for each side */
+.header-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  width: 50%;
+
+  overflow-x: scroll;
+  overflow-y: clip;
+}
+
+/* everything below headers for each side */
+.below-header-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  
+  width: 50%;
+
+  overflow-x: clip;
+  overflow-y: scroll;
+}
+
+.below-header-container:first-child {
+  position: relative;
+  height: 100%;
+}
+
+/* absolute positioning for each quadrant */
+.left-side {
+  position: absolute;
+  left: 0%;
+}
+.right-side {
+  position: absolute;
+  left: 50%;
+}
+.top-side {
+  position: absolute;
+  margin-top: 7px;
+  top: 0px;
+  height: 50px;
+}
+.bot-side {
+  position: absolute;
+  top: 60px;
+  height: calc(100% - 60px);
+}
+.header-underline {
+  position: absolute;
+  top: 57px;
+  height: 3px;
+  width: 100%;
+  background: rgb(145, 145, 145);
+  border-top: 1px solid rgb(37, 37, 37);
+  border-bottom: 1px solid rgb(37, 37, 37);
+  box-shadow: 0px 1px 1px 0px rgb(42, 42, 42);
+}
+.header-filter {
+  position: absolute;
+  top: 0;
+  height: 57px;
+  width: 100%;
+  background: rgb(190, 190, 190);
+  opacity: 0.2;
 }

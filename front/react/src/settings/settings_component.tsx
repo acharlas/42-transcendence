@@ -469,21 +469,15 @@ export default function Profile() {
 
   return (
     <>
-      <div className="container">
-        <div className="profile__screen">
-          <div className="profile__content">
-            {avatarSettings()}
-            <br></br>
-            {nicknameSettings()}
-            <br></br>
-            {mfaSettings()}
-            <br></br>
-            {friendSettings()}
-            <br></br>
-            {blockSettings()}
-          </div>
-        </div>
-      </div>
+      {avatarSettings()}
+      <br></br>
+      {nicknameSettings()}
+      <br></br>
+      {mfaSettings()}
+      <br></br>
+      {friendSettings()}
+      <br></br>
+      {blockSettings()}
     </>
   );
 }

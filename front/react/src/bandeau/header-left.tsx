@@ -37,26 +37,26 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
   };
 
   return (
-    <nav className="bandeau-container">
-      <button onClick={goHome} className="bandeau-button">
+    <>
+      <button onClick={goHome} className="bandeau-button no-margin-left">
         home
+      </button>
+      <button onClick={goGame} className="bandeau-button">
+        play
+      </button>
+      <button onClick={goLeaderboard} className="bandeau-button">
+        rankings
       </button>
       <button onClick={goProfile} className="bandeau-button">
         profile
       </button>
-      <button onClick={goLeaderboard} className="bandeau-button">
-        leaderboard
-      </button>
       <button onClick={goSettings} className="bandeau-button">
         settings
       </button>
-      <button onClick={goGame} className="bandeau-button">
-        game
-      </button>
-      <button onClick={HandleDisconnect} className="bandeau-button">
+      {/* <button onClick={HandleDisconnect} className="bandeau-button">
         <RiShutDownLine className="bandeau-disconnect-icon" />
-      </button>
-    </nav>
+      </button> */}
+    </>
   );
 };
 

@@ -2,12 +2,14 @@ a {
   color: black;
 }
 
+.lb__table {
+  width: 100%;
+}
+
 .lb__clickable__line {
   background-color: rgb(171, 206, 43);
-  color: rgb(194, 23, 23);
 }
 
 .lb__clickable__line:hover {
   background-color: blueviolet;
-  color: black;
 }

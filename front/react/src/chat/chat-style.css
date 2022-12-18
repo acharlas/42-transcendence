@@ -4,11 +4,6 @@ ul {
 
 /* menu user */
 .menu-user-button {
-  z-index: 99;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-
   width: min(10vw, 10vh);
   height: min(10vw, 10vh);
   border-radius: 10% 0 0 0;
@@ -37,8 +32,6 @@ ul {
 
 /* chat box */
 .chat-container {
-  z-index: 99;
-  position: absolute;
   right: 0;
   bottom: 0;
   background: rgb(44, 55, 95);
@@ -47,7 +40,6 @@ ul {
     rgba(44, 55, 95, 1) 3%,
     rgba(31, 35, 60, 1) 100%
   );
-  height: 40%;
   width: 20%;
   box-shadow: 0px 0px 15px #2c375f;
 }
@@ -70,7 +62,6 @@ ul {
 }
 
 .room-chat-textbox-container {
-  position: absolute;
   top: 78%;
   height: 15%;
   width: 100%;
@@ -79,18 +70,12 @@ ul {
 .room-chat-textbox {
   height: 20%;
   width: 100%;
-  position: absolute;
   top: 80%;
   resize: none;
   outline: none;
 }
 
 .chat-box-container {
-  z-index: 99;
-  position: absolute;
-  bottom: 0;
-  right: 20%;
-  width: 25%;
   height: 40%;
   background: #262d4e;
 }
@@ -137,7 +122,6 @@ ul {
 /* end chat box */
 /* user menu */
 .user-menu {
-  position: absolute;
   background-color: white;
   width: 50%;
   height: fit-content;
@@ -240,7 +224,6 @@ ul {
 .popup-container {
   width: 100%;
   height: 100%;
-  position: absolute;
   left: 0;
   top: 0;
   background: rgb(0, 0, 0, 0.5);
@@ -330,7 +313,6 @@ ul {
 /* end chat option modif*/
 /* room menu */
 .room-menu {
-  position: absolute;
   right: 0;
   background: rgb(44, 55, 95);
   background: linear-gradient(
@@ -352,7 +334,6 @@ ul {
 }
 
 .room-button {
-  position: absolute;
   right: 0;
   width: 5%;
   background: #fff;
@@ -529,7 +510,6 @@ ul {
 }
 
 .room-menu-close-button {
-  position: absolute;
   right: 0;
   width: 10%;
   background: #fff;
@@ -603,7 +583,6 @@ ul {
 }
 
 .room-menu-button-scroll-menu-icon {
-  position: absolute;
   right: 2%;
 }
 
