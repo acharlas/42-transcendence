@@ -122,11 +122,14 @@ body {
   top: 60px;
   height: calc(100% - 60px);
 }
+
+/* cosmetic addons to headers */
 .header-underline {
   position: absolute;
   top: 57px;
   height: 3px;
   width: 100%;
+
   background: rgb(145, 145, 145);
   border-top: 1px solid rgb(37, 37, 37);
   border-bottom: 1px solid rgb(37, 37, 37);
@@ -137,6 +140,7 @@ body {
   top: 0;
   height: 57px;
   width: 100%;
+
   background: rgb(190, 190, 190);
   opacity: 0.2;
 }
