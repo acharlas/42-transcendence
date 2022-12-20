@@ -8,6 +8,7 @@ import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
 import TimeSelector from "./chat-time-selector";
 import InviteUser from "./chat-invite-user";
+import ChannelSettingsComponent from "./channel-settings-component";
 
 function MessagesComponent() {
   const newMessageRef = useRef(null);
@@ -23,8 +24,6 @@ function MessagesComponent() {
     showTimeSelector,
     bloquedList,
     closeChatBox,
-    setShowInviteUser,
-    showInviteUser,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -76,50 +75,41 @@ function MessagesComponent() {
     closeChatBox();
   };
 
-  const affInviteUserButton = (): boolean => {
-    const room = rooms.find((room) => {
-      if (room.channel.id === actChannel) return true;
-      return false;
-    });
-    if (
+  const room = rooms.find((room) => { return (room.channel.id === actChannel); });
+  const affInvite = (): boolean => {
+    return (room &&
       room.channel.type === ChannelType.private &&
       (user.privilege === UserPrivilege.admin ||
         user.privilege === UserPrivilege.owner)
-    ) {
-      console.log("true");
-      return true;
-    }
-    return false;
+    );
   };
+  const affSettings = (): boolean => {
+    return (room &&
+      room.channel.type !== ChannelType.dm &&
+      (user.privilege === UserPrivilege.admin ||
+        user.privilege === UserPrivilege.owner)
+    );
+  };
+  const getChannelName = (): string => {
+    return (room?.channel?.name || "Chat");
+  }
 
-  const handleInviteUser = () => {
-    setShowInviteUser(true);
-  };
 
   if (!actChannel) return <></>;
-  return (
-    <div className="chat-box-container">
-      <div className="room-chat-option">
-        <button onClick={handleCloseChat} className="chat-box-button">
-          <HiXCircle className="chat-box-button-icon" />
-        </button>
-        {affInviteUserButton() && (
-          <button onClick={handleInviteUser} className="chat-box-button">
-            <HiPlusSm className="chat-box-button-icon" />
-          </button>
-        )}
-        {selectUser ? <UserMenu /> : <></>}
-      </div>
+  return (<>
+    <div className="profile__panel__top">
+      {getChannelName()}
+    </div>
+    <div className="profile__panel__bottom">
+      {selectUser && <UserMenu />}
       <div className="room-chat-message-container">
         {messages.map((message, index) => {
           const msgUser = userList.find((user) => {
-            if (user.username === message.username) return true;
-            return false;
+            return (user.username === message.username);
           });
           if (
             !bloquedList.find((bloque) => {
-              if (bloque.username === message.username) return true;
-              return false;
+              return (bloque.username === message.username);
             })
           )
             return (
@@ -145,14 +135,15 @@ function MessagesComponent() {
 
       <textarea
         className="room-chat-textbox"
-        placeholder="time to talk"
+        placeholder="message channel"
         ref={newMessageRef}
         onKeyDown={handleEnter}
       />
       {showTimeSelector && <TimeSelector />}
-      {showInviteUser && <InviteUser />}
     </div>
-  );
+    {affSettings() && <ChannelSettingsComponent />}
+    {affInvite() && <InviteUser />}
+  </>);
 }
 
 export default MessagesComponent;

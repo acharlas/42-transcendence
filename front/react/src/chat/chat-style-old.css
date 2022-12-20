@@ -35,11 +35,9 @@ ul {
   right: 0;
   bottom: 0;
   background: rgb(44, 55, 95);
-  background: linear-gradient(
-    180deg,
-    rgba(44, 55, 95, 1) 3%,
-    rgba(31, 35, 60, 1) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(44, 55, 95, 1) 3%,
+      rgba(31, 35, 60, 1) 100%);
   width: 20%;
   box-shadow: 0px 0px 15px #2c375f;
 }
@@ -126,11 +124,9 @@ ul {
   width: 50%;
   height: fit-content;
   background: rgb(44, 55, 95);
-  background: linear-gradient(
-    220deg,
-    rgba(44, 55, 95, 1) 3%,
-    rgba(31, 35, 60, 1) 100%
-  );
+  background: linear-gradient(220deg,
+      rgba(44, 55, 95, 1) 3%,
+      rgba(31, 35, 60, 1) 100%);
   width: 50%;
   height: 100%;
   word-wrap: break-word;
@@ -315,11 +311,9 @@ ul {
 .room-menu {
   right: 0;
   background: rgb(44, 55, 95);
-  background: linear-gradient(
-    140deg,
-    rgba(44, 55, 95, 1) 3%,
-    rgba(31, 35, 60, 1) 100%
-  );
+  background: linear-gradient(140deg,
+      rgba(44, 55, 95, 1) 3%,
+      rgba(31, 35, 60, 1) 100%);
   width: 100%;
   height: 100%;
   word-wrap: break-word;
@@ -586,7 +580,7 @@ ul {
   right: 2%;
 }
 
-.room-menu-input-search-block-friend {
+.room-menu-input-search-friend-block {
   width: 80%;
 }
 

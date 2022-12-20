@@ -29,33 +29,26 @@ function JoinNewRoomComponent() {
 
   return (
     <div className="chat-box-container">
-      <div className="room-chat-option">
-        <button onClick={handleCloseMenu} className="chat-box-button">
-          <HiXCircle className="chat-box-button-icon" />
-        </button>
-      </div>
       <form className="create-join-menu-title">
-        {JoinErrMsg ? (
+        {JoinErrMsg && (
           <p className="room-chat-err-message">{JoinErrMsg}</p>
-        ) : (
-          <></>
         )}
-        Join Name:
+        Name:
         <input
           ref={newRoomRef}
-          placeholder="Room name..."
+          placeholder="Name"
           className="create-join-menu-input"
         />
         <p />
-        Room password
+        Password (if protected):
         <input
           ref={newPassRef}
-          placeholder="Room password (optional) ..."
+          placeholder="Password"
           className="create-join-menu-input"
         />
       </form>
-      <button className="create-join-menu-button" onClick={handleJoinRoom}>
-        JOIN ROOM
+      <button className="fullwidth-button" onClick={handleJoinRoom}>
+        JOIN
       </button>
     </div>
   );

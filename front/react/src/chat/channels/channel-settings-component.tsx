@@ -5,8 +5,9 @@ import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
 import ChatOwnerPopupComponent from "./chat-owner-leaving";
 import { ChannelType, UserStatus } from "../type";
+import InviteUser from "./chat-invite-user";
 
-export interface IChatOptionProps {}
+export interface IChatOptionProps { }
 
 interface iUpdateChannelDto {
   name?: string;
@@ -14,7 +15,7 @@ interface iUpdateChannelDto {
   password?: string;
 }
 
-const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
+const ChannelSettings: FunctionComponent<IChatOptionProps> = (props) => {
   const newPassword = useRef(null);
   const [type, setType] = useState<ChannelType>(ChannelType.public);
   const { socket } = useContext(SocketContext).SocketState;
@@ -99,8 +100,11 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
     setShowPopup(true);
   };
 
-  return (
-    <>
+  return (<>
+    <div className="profile__panel__top">
+      Channel settings
+    </div>
+    <div className="profile__panel__bottom">
       <div className="chat-box-container">
         {showPopup ? (
           <ChatOwnerPopupComponent setShowPopup={setShowPopup} />
@@ -137,7 +141,7 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
             <option value={ChannelType.protected}>protected</option>
             <option value={ChannelType.private}>private</option>
           </select>
-          {type === ChannelType.protected ? (
+          {type === ChannelType.protected && (
             <>
               <p />
               Password:
@@ -147,8 +151,6 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
                 className="create-join-menu-input"
               />
             </>
-          ) : (
-            <></>
           )}
         </form>
         <button className="option-menu-button" onClick={handleUpdateRoom}>
@@ -158,8 +160,8 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
           {"Leave Room"}
         </button>
       </div>
-    </>
-  );
+    </div>
+  </>);
 };
 
-export default ChatOptionComponent;
+export default ChannelSettings;

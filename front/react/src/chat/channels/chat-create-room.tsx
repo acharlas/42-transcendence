@@ -1,4 +1,5 @@
 import { useContext, useRef, useState } from "react";
+import { FaCheck } from "react-icons/fa";
 import { HiXCircle } from "react-icons/hi";
 
 import { useChat } from "../../context/chat.context";
@@ -24,7 +25,7 @@ function CreateRoomsContainer() {
     if (!String(roomName).trim()) return;
 
     if (!password.length && type === ChannelType.protected) {
-      setCreateErrMsg("protected channel must have a password");
+      setCreateErrMsg("a protected room needs a password");
       return;
     }
 
@@ -43,61 +44,44 @@ function CreateRoomsContainer() {
       newPassword.current.value = "";
   };
 
-  const handleCloseMenu = (event) => {
-    setShowCreateMenu(false);
-  };
-
-  return (
-    <div className="chat-box-container">
-      <div className="room-chat-option">
-        <button onClick={handleCloseMenu} className="chat-box-button">
-          <HiXCircle className="chat-box-button-icon" />
-        </button>
-      </div>
-      <form className="create-join-menu-title">
-        {CreateErrMsg ? (
-          <p className="room-chat-err-message">{CreateErrMsg}</p>
-        ) : (
-          <></>
-        )}
-        Room Name:
-        <input
-          ref={newRoomRef}
-          placeholder="Room name..."
-          className="create-join-menu-input"
-        />
-        <p />
-        Room Type:
-        <select
-          onChange={handleChangeSelect}
-          value={type}
-          name="channel type"
-          id="channel-select"
-          className="create-join-menu-input"
-        >
-          <option value="public">public</option>
-          <option value="protected">protected</option>
-          <option value="private">private</option>
-        </select>
-        {type === "protected" ? (
-          <>
-            <p />
+  return (<>
+    <form className="create-join-menu-title">
+      {CreateErrMsg && <p className="room-chat-err-message">{CreateErrMsg}</p>}
+      <p>Name:</p>
+      <input
+        ref={newRoomRef}
+        placeholder="Name"
+        className="create-join-menu-input"
+      />
+      <p>Room Type:</p>
+      <select
+        onChange={handleChangeSelect}
+        value={type}
+        name="channel type"
+        id="channel-select"
+        className="create-join-menu-input"
+      >
+        <option value="public">public</option>
+        <option value="protected">protected</option>
+        <option value="private">private</option>
+      </select>
+      {type === "protected" && (
+        <>
+          <p>
             Password:
-            <input
-              ref={newPassword}
-              placeholder="Password optional..."
-              className="create-join-menu-input"
-            />
-          </>
-        ) : (
-          <></>
-        )}
-      </form>
-      <button className="create-join-menu-button" onClick={handleCreateRoom}>
-        CREATE ROOM
-      </button>
-    </div>
-  );
+          </p>
+          <input
+            ref={newPassword}
+            placeholder="Password"
+            className="create-join-menu-input"
+          />
+        </>
+      )}
+    </form>
+    <button className="fullwidth-button" onClick={handleCreateRoom}>
+      CREATE
+    </button>
+  </>);
 }
 
 export default CreateRoomsContainer;

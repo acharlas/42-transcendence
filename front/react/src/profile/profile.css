@@ -37,7 +37,11 @@
   padding: 10px;
   margin: 0 10px 10px;
 
-  text-align: center;
+  text-align: left;
+}
+
+.profile__panel__bottom input {
+  width: 100%
 }
 
 /* header (avatar + nickname + friend/block) */
