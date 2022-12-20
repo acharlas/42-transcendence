@@ -106,11 +106,6 @@ const ChannelSettings: FunctionComponent<IChatOptionProps> = (props) => {
     </div>
     <div className="profile__panel__bottom">
       <div className="chat-box-container">
-        {showPopup ? (
-          <ChatOwnerPopupComponent setShowPopup={setShowPopup} />
-        ) : (
-          <></>
-        )}
         <div className="room-chat-option">
           <button onClick={handleCloseMenu} className="chat-box-button">
             <HiXCircle className="chat-box-button-icon" />
@@ -159,6 +154,9 @@ const ChannelSettings: FunctionComponent<IChatOptionProps> = (props) => {
         <button className="option-menu-button" onClick={handleLeaveRoom}>
           {"Leave Room"}
         </button>
+        {showPopup && (
+          <ChatOwnerPopupComponent setShowPopup={setShowPopup} />
+        )}
       </div>
     </div>
   </>);

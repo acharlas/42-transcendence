@@ -42,46 +42,40 @@ const ChatOwnerPopupComponent: FunctionComponent<
     setShowRoomSetting(undefined);
   };
 
-  return (
-    <div className="popup-container">
-      <div className="popup-popup">
-        <p className="time-selector-popup-title">Choose a new owner:</p>
-        {errorMsg.length !== 0 ? (
-          <p className="time-selector-popup-error">{errorMsg}</p>
-        ) : (
-          <></>
-        )}
-        <select
-          onChange={handleChangeSelect}
-          value={newUser}
-          name="New Owner"
-          id="owner-select"
-          className="time-selector-popup-input"
-        >
-          <option value=""></option>
-          {ShowRoomSetting.user.map((user, id) => {
-            if (
-              user.status === UserStatus.connected &&
-              user.privilege !== UserPrivilege.ban &&
-              user.username !== window.sessionStorage.getItem("username")
-            )
-              return (
-                <option key={id} value={user.username}>
-                  {user.username}
-                </option>
-              );
-            return null;
-          })}
-        </select>
-        <button onClick={handleCancel} className="time-selector-popup-button">
-          cancel
-        </button>
-        <button onClick={handleValidate} className="time-selector-popup-button">
-          validate
-        </button>
-      </div>
-    </div>
-  );
+  return (<>
+    <p>Please choose a new owner before leaving:</p>
+    {errorMsg.length !== 0 && (
+      <p className="time-selector-popup-error">{errorMsg}</p>
+    )}
+    <select
+      onChange={handleChangeSelect}
+      value={newUser}
+      name="New Owner"
+      id="owner-select"
+      className="time-selector-popup-input"
+    >
+      <option value=""></option>
+      {ShowRoomSetting.user.map((user, id) => {
+        if (
+          user.status === UserStatus.connected &&
+          user.privilege !== UserPrivilege.ban &&
+          user.username !== window.sessionStorage.getItem("username")
+        )
+          return (
+            <option key={id} value={user.username}>
+              {user.username}
+            </option>
+          );
+        return null;
+      })}
+    </select>
+    <button onClick={handleCancel} className="time-selector-popup-button">
+      cancel
+    </button>
+    <button onClick={handleValidate} className="time-selector-popup-button">
+      validate
+    </button>
+  </>);
 };
 
 export default ChatOwnerPopupComponent;

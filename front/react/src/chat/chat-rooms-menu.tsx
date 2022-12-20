@@ -256,10 +256,9 @@ function RoomsMenuContainer() {
           rooms.map((room, id) => {
             if (room.channel.type === ChannelType.dm) return null;
             const channel = room.channel;
-            const chanUser = room.user.find((chanUser) => {
-              return (chanUser.username === window.sessionStorage.getItem("username"));
-            });
-            // if (chanUser) return (<></>);
+            // const chanUser = room.user.find((chanUser) => {
+            //   return (chanUser.username === window.sessionStorage.getItem("username"));
+            // });
             return (
               <div key={id}>
                 <button
@@ -317,36 +316,6 @@ function RoomsMenuContainer() {
           })
         ) : (
           <>No joined channels</>
-        )}
-      </div>
-
-      <div className="profile__panel__top">
-        Public channels
-      </div>
-      <div className="profile__panel__bottom chan-list">
-        {rooms ? (
-          rooms.map((room, id) => {
-            if (room.channel.type === ChannelType.dm) return null;
-            const channel = room.channel;
-            return (
-              <div key={id}>
-                <button
-                  className="chan-list-button"
-                  disabled={
-                    channel.id === actChannel ||
-                    (user && user.privilege === UserPrivilege.ban)
-                  }
-                  title={`Join ${channel.name}`}
-                  onClick={() => handleJoinRoom(channel.id)}
-                >
-                  {<FaGlobe />}
-                  {channel.name}
-                </button>
-              </div>
-            );
-          })
-        ) : (
-          <>No public channels available</>
         )}
       </div>
       <RoomComponent />
