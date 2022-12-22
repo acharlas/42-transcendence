@@ -23,7 +23,7 @@ interface DecodedToken {
   exp: string;
 }
 
-export interface ISigninFormProps {}
+export interface ISigninFormProps { }
 
 const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   const [newUsername, setNewUsername] = useState('');
@@ -103,7 +103,7 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
               <FaUserAstronaut />
               <input
                 className="login__input"
-                placeholder="username"
+                placeholder="Username"
                 value={newUsername}
                 onChange={HandleUsernameChange}
               />

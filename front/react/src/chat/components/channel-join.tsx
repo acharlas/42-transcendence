@@ -36,14 +36,14 @@ function JoinNewRoomComponent() {
         Name:
         <input
           ref={newRoomRef}
-          placeholder="Name"
+          placeholder="Name..."
           className="create-join-menu-input"
         />
         <p />
         Password (if protected):
         <input
           ref={newPassRef}
-          placeholder="Password"
+          placeholder="Password..."
           className="create-join-menu-input"
         />
       </form>

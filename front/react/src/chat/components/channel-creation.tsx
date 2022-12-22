@@ -50,7 +50,7 @@ function CreateRoomsContainer() {
       <p>Name:</p>
       <input
         ref={newRoomRef}
-        placeholder="Name"
+        placeholder="Name..."
         className="create-join-menu-input"
       />
       <p>Room Type:</p>
@@ -72,7 +72,7 @@ function CreateRoomsContainer() {
           </p>
           <input
             ref={newPassword}
-            placeholder="Password"
+            placeholder="Password..."
             className="create-join-menu-input"
           />
         </>

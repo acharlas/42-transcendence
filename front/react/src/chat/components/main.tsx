@@ -144,7 +144,7 @@ function RoomsMenuContainer() {
           <input
             value={newFriend}
             onChange={handleChangeNewFriend}
-            placeholder="nickname"
+            placeholder="Nickname..."
             className="room-menu-input-search-friend-block"
           />
           <button
@@ -192,7 +192,7 @@ function RoomsMenuContainer() {
           <input
             value={newBlock}
             onChange={handleChangeNewBlock}
-            placeholder="nickname"
+            placeholder="Nickname..."
             className="room-menu-input-search-friend-block"
           />
           <button

@@ -137,7 +137,7 @@ function MessagesComponent() {
 
       <textarea
         className="room-chat-textbox"
-        placeholder="message channel"
+        placeholder="New message..."
         ref={newMessageRef}
         onKeyDown={handleEnter}
       />
