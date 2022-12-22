@@ -15,7 +15,7 @@ interface iUpdateChannelDto {
   password?: string;
 }
 
-const ChannelSettings: FunctionComponent<IChatOptionProps> = (props) => {
+const ChannelLeave: FunctionComponent<IChatOptionProps> = (props) => {
   const newPassword = useRef(null);
   const [type, setType] = useState<ChannelType>(ChannelType.public);
   const { socket } = useContext(SocketContext).SocketState;
@@ -149,7 +149,7 @@ const ChannelSettings: FunctionComponent<IChatOptionProps> = (props) => {
           )}
         </form>
         <button className="fullwidth-button" onClick={handleUpdateRoom}>
-          {"update Room"}
+          {"Update Room"}
         </button>
         <button className="fullwidth-button" onClick={handleLeaveRoom}>
           {"Leave Room"}
@@ -162,4 +162,4 @@ const ChannelSettings: FunctionComponent<IChatOptionProps> = (props) => {
   </>);
 };
 
-export default ChannelSettings;
+export default ChannelLeave;

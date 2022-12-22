@@ -10,7 +10,7 @@ import { ImUserMinus } from "react-icons/im";
 
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
-import { ChannelType, UserPrivilege } from "../type";
+import { ChannelType, User, UserPrivilege } from "../type";
 
 function UserMenu() {
   const {

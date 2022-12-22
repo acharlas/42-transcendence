@@ -9,6 +9,7 @@ import SocketContext from "../../context/socket.context";
 import TimeSelector from "./channel-timeban";
 import InviteUser from "./channel-invite";
 import ChannelSettingsComponent from "./channel-settings";
+import ChannelLeaveComponent from "./channel-leave";
 
 function MessagesComponent() {
   const newMessageRef = useRef(null);
@@ -85,6 +86,13 @@ function MessagesComponent() {
         user.privilege === UserPrivilege.owner)
     );
   };
+  const affLeave = (): boolean => {
+    return (room &&
+      room.channel.type !== ChannelType.dm &&
+      (user.privilege !== UserPrivilege.admin &&
+        user.privilege !== UserPrivilege.owner)
+    );
+  };
   const getChannelName = (): string => {
     return (room?.channel?.name || "Chat");
   }
@@ -137,6 +145,7 @@ function MessagesComponent() {
     </div>
     {selectUser && <UserMenu />}
     {affSettings() && <ChannelSettingsComponent />}
+    {affLeave() && <ChannelLeaveComponent />}
     {affInvite() && <InviteUser />}
   </>);
 }

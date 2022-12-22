@@ -14,7 +14,6 @@ import { ChannelType, Room, User, UserPrivilege, UserStatus } from "../type";
 import SocketContext from "../../context/socket.context";
 import JoinNewRoomComponent from "./channel-join";
 import CreateRoomsContainer from "./channel-creation";
-import ChatOptionComponent from "./channel-settings";
 import RoomComponent from "./room";
 
 function RoomsMenuContainer() {
@@ -115,11 +114,6 @@ function RoomsMenuContainer() {
 
   const handleRemoveBlock = (username: string) => {
     socket.emit("RemoveBlock", { username });
-  };
-
-  const handleLeaveChannel = (roomId: string) => {
-    console.log("leave room: ", roomId);
-    socket.emit("LeaveRoom", { roomId });
   };
 
   const handleSendDm = (username: string) => {
