@@ -239,7 +239,6 @@ export class MessageGateway
       this.channelService
         .channelUserUpdate(client.userID, toModifie, roomId, privilege, time)
         .then((ret) => {
-          console.log('uwerqwuo');
           return resolve(
             new Promise<void>((resolve, reject) => {
               this.channelService
