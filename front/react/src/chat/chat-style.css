@@ -197,8 +197,7 @@ ul {
 }
 
 .time-selector-popup-input {
-  width: 80%;
-  margin-left: 10%;
+  width: 100%;
   cursor: pointer;
 }
 

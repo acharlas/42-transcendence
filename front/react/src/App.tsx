@@ -4,7 +4,6 @@ import { Route, Routes } from 'react-router-dom';
 import './style.css';
 import { getMe } from './api/auth-api';
 import SocketContextComponent from './chat/socket-component';
-import ChatIndex from './chat/channels/chat-index';
 import HeaderLeft from './bandeau/header-left';
 import HeaderRight from './bandeau/header-right';
 import ChatProvider from './context/chat.context';
@@ -13,8 +12,7 @@ import Profile from './profile/profile_component';
 import Settings from './settings/settings_component';
 import Leaderboard from './leaderboard/leaderboard_component';
 import GameIndex from './game/game-index';
-import RoomComponent from './chat/channels/room-component';
-import RoomsMenuContainer from './chat/chat-rooms-menu';
+import RoomsMenuContainer from './chat/components/main';
 
 export interface IAppProps { }
 const App: React.FunctionComponent<IAppProps> = (props) => {

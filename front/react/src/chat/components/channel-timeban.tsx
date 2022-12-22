@@ -3,7 +3,7 @@ import { FunctionComponent, useContext, useRef, useState } from "react";
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
 
-export interface ItimeSelectorProps {}
+export interface ItimeSelectorProps { }
 
 const TimeSelector: FunctionComponent<ItimeSelectorProps> = (props) => {
   const {
@@ -42,9 +42,9 @@ const TimeSelector: FunctionComponent<ItimeSelectorProps> = (props) => {
   };
 
   return (
-    <div className="popup-container">
-      <div className="popup-popup">
-        <p className="time-selector-popup-title">ban until:</p>
+    <div className="">
+      <div className="">
+        <p className="">ban until:</p>
         {errorMsg.length !== 0 ? (
           <p className="time-selector-popup-error">{errorMsg}</p>
         ) : (
@@ -56,11 +56,11 @@ const TimeSelector: FunctionComponent<ItimeSelectorProps> = (props) => {
           ref={newDateRef}
           className="time-selector-popup-input"
         />
-        <button onClick={handleCancel} className="time-selector-popup-button">
-          cancel
-        </button>
-        <button onClick={handleValidate} className="time-selector-popup-button">
+        <button onClick={handleValidate} className="fullwidth-button">
           validate
+        </button>
+        <button onClick={handleCancel} className="fullwidth-button">
+          cancel
         </button>
       </div>
     </div>

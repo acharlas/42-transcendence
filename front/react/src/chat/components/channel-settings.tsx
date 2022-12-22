@@ -3,9 +3,9 @@ import { HiXCircle } from "react-icons/hi";
 
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
-import ChatOwnerPopupComponent from "./chat-owner-leaving";
+import ChatOwnerPopupComponent from "./channel-owner-leaving";
 import { ChannelType, UserStatus } from "../type";
-import InviteUser from "./chat-invite-user";
+import InviteUser from "./channel-invite";
 
 export interface IChatOptionProps { }
 
@@ -148,10 +148,10 @@ const ChannelSettings: FunctionComponent<IChatOptionProps> = (props) => {
             </>
           )}
         </form>
-        <button className="option-menu-button" onClick={handleUpdateRoom}>
+        <button className="fullwidth-button" onClick={handleUpdateRoom}>
           {"update Room"}
         </button>
-        <button className="option-menu-button" onClick={handleLeaveRoom}>
+        <button className="fullwidth-button" onClick={handleLeaveRoom}>
           {"Leave Room"}
         </button>
         {showPopup && (

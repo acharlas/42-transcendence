@@ -69,11 +69,11 @@ const ChatOwnerPopupComponent: FunctionComponent<
         return null;
       })}
     </select>
-    <button onClick={handleCancel} className="time-selector-popup-button">
-      cancel
-    </button>
-    <button onClick={handleValidate} className="time-selector-popup-button">
+    <button onClick={handleValidate} className="fullwidth-button">
       validate
+    </button>
+    <button onClick={handleCancel} className="fullwidth-button">
+      cancel
     </button>
   </>);
 };

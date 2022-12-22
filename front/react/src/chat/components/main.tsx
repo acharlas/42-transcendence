@@ -9,13 +9,13 @@ import { SiStarship } from "react-icons/si";
 import { HiXCircle } from "react-icons/hi";
 import { BiMessageAltAdd } from "react-icons/bi";
 
-import { SelectedChatWindow, useChat } from "../context/chat.context";
-import { ChannelType, Room, User, UserPrivilege, UserStatus } from "./type";
-import SocketContext from "../context/socket.context";
-import JoinNewRoomComponent from "./channels/chat-join-new-room";
-import CreateRoomsContainer from "./channels/chat-create-room";
-import ChatOptionComponent from "./channels/channel-settings-component";
-import RoomComponent from "./channels/room-component";
+import { SelectedChatWindow, useChat } from "../../context/chat.context";
+import { ChannelType, Room, User, UserPrivilege, UserStatus } from "../type";
+import SocketContext from "../../context/socket.context";
+import JoinNewRoomComponent from "./channel-join";
+import CreateRoomsContainer from "./channel-creation";
+import ChatOptionComponent from "./channel-settings";
+import RoomComponent from "./room";
 
 function RoomsMenuContainer() {
   const [searchFriend, setSearchFriend] = useState<string>("");

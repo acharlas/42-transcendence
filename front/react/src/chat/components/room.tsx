@@ -3,12 +3,12 @@ import { HiPlusSm, HiXCircle } from "react-icons/hi";
 
 import "../chat-style.css";
 import { ChannelType, User, UserPrivilege } from "../type";
-import UserMenu from "./chat-user-menu";
+import UserMenu from "./room-user-menu";
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
-import TimeSelector from "./chat-time-selector";
-import InviteUser from "./chat-invite-user";
-import ChannelSettingsComponent from "./channel-settings-component";
+import TimeSelector from "./channel-timeban";
+import InviteUser from "./channel-invite";
+import ChannelSettingsComponent from "./channel-settings";
 
 function MessagesComponent() {
   const newMessageRef = useRef(null);
@@ -69,10 +69,6 @@ function MessagesComponent() {
       handleSendMessage();
       newMessageRef.current.value = "";
     }
-  };
-
-  const handleCloseChat = (event) => {
-    closeChatBox();
   };
 
   const room = rooms.find((room) => { return (room.channel.id === actChannel); });

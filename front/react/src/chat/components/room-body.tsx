@@ -1,8 +1,8 @@
 import { Socket } from "socket.io-client";
 
-import CreateRoomsContainer from "./chat-create-room";
-import JoinNewRoomComponent from "./chat-join-new-room";
-import LockScreen from "./lock-screen";
+import CreateRoomsContainer from "./channel-creation";
+import JoinNewRoomComponent from "./channel-join";
+import LockScreen from "./channel-join-password-input";
 
 function ChatBodyComponent({
   socket,
