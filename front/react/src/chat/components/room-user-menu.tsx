@@ -45,6 +45,14 @@ function UserMenu() {
     socket.emit("AddBlock", { newBlock: selectUser.username });
   };
 
+  const handleRemoveBlock = () => {
+    socket.emit("RemoveBlock", { username: selectUser.username });
+  };
+
+  const handleRemoveFriend = () => {
+    socket.emit("RemoveFriend", { username: selectUser.username });
+  };
+
   const AdminUser = () => {
     console.log("admin user");
 
@@ -54,7 +62,7 @@ function UserMenu() {
       time: null,
       toModifie: selectUser.username,
     });
-    setSelectUser(undefined);
+    // setSelectUser(undefined);
   };
 
   const setToDefault = () => {
@@ -66,7 +74,7 @@ function UserMenu() {
       time: null,
       toModifie: selectUser.username,
     });
-    setSelectUser(undefined);
+    // setSelectUser(undefined);
   };
 
   const handleShowUserProfile = () => {
@@ -98,67 +106,74 @@ function UserMenu() {
   };
 
   if (user.username === selectUser.username) return <></>;
-  return (
-    <>
-      <button onClick={handleShowUserProfile} className="chat-box-button">
-        <FaUserAstronaut className="chat-box-button-icon" />
+  return (<>
+    <div className="profile__panel__top">
+      {selectUser.username}
+    </div>
+    <div className="profile__panel__bottom">
+      <button onClick={handleShowUserProfile} className="fullwidth-button">
+        Go to profile
       </button>
-      <button onClick={handleSendDm} className="chat-box-button">
-        <HiMail className="chat-box-button-icon" />
+      <button onClick={handleSendDm} className="fullwidth-button">
+        Send message
       </button>
       {!friendList.find((user) => {
         if (selectUser.username === user.username) return true;
         return false;
       }) ? (
-        <button onClick={handleAddFriend} className="chat-box-button">
-          <AiFillHeart className="chat-box-button-icon" />
+        <button onClick={handleAddFriend} className="fullwidth-button">
+          Friend
         </button>
       ) : (
-        <></>
+        <button onClick={handleRemoveFriend} className="fullwidth-button">
+          Unfriend
+        </button>
       )}
       {!bloquedList.find((user) => {
         if (selectUser.username === user.username) return true;
         return false;
       }) ? (
-        <button onClick={handleBlockUser} className="chat-box-button">
-          <ImUserMinus className="chat-box-button-icon" />
+        <button onClick={handleBlockUser} className="fullwidth-button">
+          Block
         </button>
       ) : (
-        <></>
+        <button onClick={handleRemoveBlock} className="fullwidth-button">
+          Unblock
+        </button>
       )}
       {user.privilege !== "admin" && user.privilege !== "owner" ? (
         <></>
       ) : (
         <>
           {selectUser.privilege === "admin" && user.privilege === "owner" ? (
-            <button onClick={setToDefault} className="chat-box-button">
-              <MdRemoveModerator className="chat-box-button-icon" />
+            <button onClick={setToDefault} className="fullwidth-button">
+              Revoke moderator rights
             </button>
           ) : (
             <></>
           )}
           {selectUser.privilege !== "owner" &&
-          selectUser.privilege !== "admin" ? (
+            selectUser.privilege !== "admin" ? (
             <>
-              <button onClick={AdminUser} className="chat-box-button">
-                <MdAddModerator className="chat-box-button-icon" />
+              <button onClick={AdminUser} className="fullwidth-button">
+                Make moderator
               </button>
               {selectUser.privilege === UserPrivilege.muted ? (
-                <button onClick={setToDefault} className="chat-box-button">
-                  <TbMessage className="chat-box-button-icon" />
+                <button onClick={setToDefault} className="fullwidth-button">
+                  Unmute
                 </button>
               ) : (
-                <button onClick={MuteUser} className="chat-box-button">
-                  <TbMessageOff className="chat-box-button-icon" />
+                <button onClick={MuteUser} className="fullwidth-button">
+                  Mute
                 </button>
               )}
               {selectUser.privilege === UserPrivilege.ban ? (
-                <button onClick={setToDefault} className="chat-box-button">
-                  <AiFillUnlock className="chat-box-button-icon" />
+                <button onClick={setToDefault} className="fullwidth-button">
+                  Unban
                 </button>
               ) : (
-                <button onClick={banUser} className="chat-box-button">
-                  <GiPrisoner className="chat-box-button-icon" />
+                <button onClick={banUser} className="fullwidth-button">
+                  Ban
                 </button>
               )}
             </>
@@ -167,8 +182,8 @@ function UserMenu() {
           )}
         </>
       )}
-    </>
-  );
+    </div>
+  </>);
 }
 
 export default UserMenu;

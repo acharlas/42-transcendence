@@ -23,7 +23,6 @@ function MessagesComponent() {
     user,
     showTimeSelector,
     bloquedList,
-    closeChatBox,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -97,7 +96,6 @@ function MessagesComponent() {
       {getChannelName()}
     </div>
     <div className="profile__panel__bottom">
-      {selectUser && <UserMenu />}
       <div className="room-chat-message-container">
         {messages.map((message, index) => {
           const msgUser = userList.find((user) => {
@@ -137,6 +135,7 @@ function MessagesComponent() {
       />
       {showTimeSelector && <TimeSelector />}
     </div>
+    {selectUser && <UserMenu />}
     {affSettings() && <ChannelSettingsComponent />}
     {affInvite() && <InviteUser />}
   </>);
