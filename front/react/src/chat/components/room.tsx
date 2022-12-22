@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef } from "react";
-import { HiPlusSm, HiXCircle } from "react-icons/hi";
 
 import "../chat-style.css";
 import { ChannelType, User, UserPrivilege } from "../type";

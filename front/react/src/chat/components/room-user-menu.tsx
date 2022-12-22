@@ -1,12 +1,5 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUserAstronaut } from "react-icons/fa";
-import { MdAddModerator, MdRemoveModerator } from "react-icons/md";
-import { AiFillHeart, AiFillUnlock } from "react-icons/ai";
-import { HiMail } from "react-icons/hi";
-import { GiPrisoner } from "react-icons/gi";
-import { TbMessage, TbMessageOff } from "react-icons/tb";
-import { ImUserMinus } from "react-icons/im";
 
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";

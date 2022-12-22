@@ -1,6 +1,4 @@
 import { useContext, useRef, useState } from "react";
-import { FaCheck } from "react-icons/fa";
-import { HiXCircle } from "react-icons/hi";
 
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";

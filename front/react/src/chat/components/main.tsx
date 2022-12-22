@@ -1,16 +1,11 @@
 import { useContext, useState } from "react";
-import { FaBan, FaGlobe, FaLock, FaUserSecret } from "react-icons/fa";
-import { GiAlienStare, GiAstronautHelmet } from "react-icons/gi";
-import { TbMessageCircleOff } from "react-icons/tb";
+import { FaGlobe, FaLock, FaUserSecret } from "react-icons/fa";
 import { IoIosAddCircle } from "react-icons/io";
-import { AiFillSetting } from "react-icons/ai";
 import { MdPersonRemove } from "react-icons/md";
-import { SiStarship } from "react-icons/si";
-import { HiXCircle } from "react-icons/hi";
 import { BiMessageAltAdd } from "react-icons/bi";
 
 import { SelectedChatWindow, useChat } from "../../context/chat.context";
-import { ChannelType, Room, User, UserPrivilege, UserStatus } from "../type";
+import { ChannelType, Room, User, UserPrivilege } from "../type";
 import SocketContext from "../../context/socket.context";
 import JoinNewRoomComponent from "./channel-join";
 import CreateRoomsContainer from "./channel-creation";
@@ -55,36 +50,6 @@ function RoomsMenuContainer() {
     setNewRoom(curRoom);
     console.log("user set to: ", user);
   }
-
-  const handleShowCreateRoom = (event) => {
-    closeChatBox();
-    setShowCreateMenu(true);
-  };
-
-  const handleJoinNewRoom = (event) => {
-    closeChatBox();
-    setShowJoinMenu(true);
-  };
-
-  const handleShowUser = (user: User) => {
-    if (selectUser && selectUser.username === user.username)
-      setSelectUser(undefined);
-    else setSelectUser(user);
-  };
-
-  const handleSearchFriend = (event) => {
-    setSearchFriend(event.target.value);
-  };
-
-  const handleSearchChannel = (event) => {
-    setSearchChannel(event.target.value);
-  };
-
-  const handleShowRoomSetting = (room: Room) => {
-    closeChatBox();
-    setShowRoomSetting(room);
-    resetErrMsg();
-  };
 
   const handleAddFriend = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();

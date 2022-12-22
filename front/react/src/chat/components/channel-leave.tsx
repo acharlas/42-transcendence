@@ -1,11 +1,10 @@
-import { FunctionComponent, useContext, useRef, useState } from "react";
+import { FunctionComponent, useContext } from "react";
 
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
-import ChatOwnerPopupComponent from "./channel-owner-leaving";
-import { ChannelType, UserStatus } from "../type";
 import { IChatOptionProps } from "./channel-settings";
 
+//Leave button when user doesn't have settings privileges
 
 const ChannelSettings: FunctionComponent<IChatOptionProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
