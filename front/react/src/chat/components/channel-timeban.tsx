@@ -45,10 +45,8 @@ const TimeSelector: FunctionComponent<ItimeSelectorProps> = (props) => {
     <div className="">
       <div className="">
         <p className="">ban until:</p>
-        {errorMsg.length !== 0 ? (
+        {errorMsg.length !== 0 && (
           <p className="time-selector-popup-error">{errorMsg}</p>
-        ) : (
-          <></>
         )}
         <input
           type="datetime-local"
