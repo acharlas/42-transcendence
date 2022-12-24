@@ -99,10 +99,8 @@ const ChannelLeave: FunctionComponent<IChatOptionProps> = (props) => {
     </div>
     <div className="profile__panel__bottom">
       <form className="create-join-menu-title">
-        {CreateErrMsg ? (
+        {CreateErrMsg && (
           <p className="room-chat-err-message">{CreateErrMsg}</p>
-        ) : (
-          <></>
         )}
         <p>Name:</p>
         <input

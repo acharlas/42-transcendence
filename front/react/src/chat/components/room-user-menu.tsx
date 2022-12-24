@@ -117,6 +117,8 @@ function UserMenu() {
       <button onClick={handleSendDm} className="fullwidth-button">
         Send message
       </button>
+
+      {/* friend/unfriend */}
       {!friendList.find((user) => {
         if (selectUser.username === user.username) return true;
         return false;
@@ -129,6 +131,8 @@ function UserMenu() {
           Unfriend
         </button>
       )}
+
+      {/* block/unblock */}
       {!bloquedList.find((user) => {
         if (selectUser.username === user.username) return true;
         return false;
@@ -141,47 +145,48 @@ function UserMenu() {
           Unblock
         </button>
       )}
-      {user.privilege !== "admin" && user.privilege !== "owner" ? (
-        <></>
-      ) : (
-        <>
-          {selectUser.privilege === "admin" && user.privilege === "owner" ? (
+
+      {/* Owner can give/remove admin rights */}
+      {
+        user.privilege === "owner" && (
+          selectUser.privilege === "admin" ? (
             <button onClick={setToDefault} className="fullwidth-button">
               Revoke moderator rights
             </button>
           ) : (
-            <></>
-          )}
-          {selectUser.privilege !== "owner" &&
-            selectUser.privilege !== "admin" ? (
-            <>
-              <button onClick={AdminUser} className="fullwidth-button">
-                Make moderator
-              </button>
-              {selectUser.privilege === UserPrivilege.muted ? (
-                <button onClick={setToDefault} className="fullwidth-button">
-                  Unmute
-                </button>
-              ) : (
-                <button onClick={MuteUser} className="fullwidth-button">
-                  Mute
-                </button>
-              )}
-              {selectUser.privilege === UserPrivilege.ban ? (
-                <button onClick={setToDefault} className="fullwidth-button">
-                  Unban
-                </button>
-              ) : (
-                <button onClick={banUser} className="fullwidth-button">
-                  Ban
-                </button>
-              )}
-            </>
+            <button onClick={AdminUser} className="fullwidth-button">
+              Make moderator
+            </button>
+          )
+        )
+      }
+
+      {/* Admins can give/remove mutes and bans to non admins */}
+      {
+        (user.privilege === "admin" || user.privilege === "owner")
+        && selectUser.privilege !== "owner" && selectUser.privilege !== "admin"
+        && (
+          selectUser.privilege === UserPrivilege.muted ? (
+            <button onClick={setToDefault} className="fullwidth-button">
+              Unmute
+            </button>
           ) : (
-            <></>
-          )}
-        </>
-      )}
+            <button onClick={MuteUser} className="fullwidth-button">
+              Mute
+            </button>
+          )
+        ) && (
+          selectUser.privilege === UserPrivilege.ban ? (
+            <button onClick={setToDefault} className="fullwidth-button">
+              Unban
+            </button>
+          ) : (
+            <button onClick={banUser} className="fullwidth-button">
+              Ban
+            </button>
+          )
+        )
+      }
     </div>
   </>);
 }
