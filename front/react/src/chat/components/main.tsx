@@ -182,7 +182,7 @@ function RoomsMenuContainer() {
       </div>
     </>);
   }
-
+  var chanListIsEmpty: boolean = true;
   function menuElemChannels() {
     return (<>
       <div className="profile__panel__top">
@@ -201,31 +201,34 @@ function RoomsMenuContainer() {
         Your channels
       </div>
       <div className="profile__panel__bottom chan-list">
-        {rooms ? (
-          rooms.map((room, id) => {
-            if (room.channel.type === ChannelType.dm) return null;
-            const channel = room.channel;
-            // const chanUser = room.user.find((chanUser) => {
-            //   return (chanUser.username === window.sessionStorage.getItem("username"));
-            // });
-            return (
-              <div key={id}>
-                <button
-                  className="chan-list-button"
-                  disabled={
-                    channel.id === actChannel ||
-                    (user && user.privilege === UserPrivilege.ban)
-                  }
-                  title={`Go to ${channel.name}`}
-                  onClick={() => handleJoinRoom(channel.id)}
-                >
-                  {channel.type === ChannelType.public && <FaGlobe />}
-                  {channel.type === ChannelType.protected && <FaLock />}
-                  {channel.type === ChannelType.private && <FaUserSecret />}
-                  {channel.name}
-                  {room.newMessage && <BiMessageAltAdd />}
-                </button>
-                {/* {room.channel.id === actChannel ? (
+        {chanListIsEmpty = true}
+        {
+          rooms && (
+            rooms.map((room, id) => {
+              if (room.channel.type === ChannelType.dm) return null;
+              chanListIsEmpty = false;
+              const channel = room.channel;
+              // const chanUser = room.user.find((chanUser) => {
+              //   return (chanUser.username === window.sessionStorage.getItem("username"));
+              // });
+              return (
+                <div key={id}>
+                  <button
+                    className="chan-list-button"
+                    disabled={
+                      channel.id === actChannel ||
+                      (user && user.privilege === UserPrivilege.ban)
+                    }
+                    title={`Go to ${channel.name}`}
+                    onClick={() => handleJoinRoom(channel.id)}
+                  >
+                    {channel.type === ChannelType.public && <FaGlobe />}
+                    {channel.type === ChannelType.protected && <FaLock />}
+                    {channel.type === ChannelType.private && <FaUserSecret />}
+                    {channel.name}
+                    {room.newMessage && <BiMessageAltAdd />}
+                  </button>
+                  {/* {room.channel.id === actChannel ? (
                     <>
                       <input
                         value={searchFriend}
@@ -260,12 +263,11 @@ function RoomsMenuContainer() {
                   ) : (
                     <></>
                   )} */}
-              </div>
-            );
-          })
-        ) : (
-          <>No joined channels</>
-        )}
+                </div>
+              );
+            })
+          )}
+        {chanListIsEmpty && <>Join a channel or create one to chat!</>}
       </div>
       <RoomComponent />
     </>);
