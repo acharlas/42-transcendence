@@ -182,6 +182,7 @@ function RoomsMenuContainer() {
       </div>
     </>);
   }
+
   var chanListIsEmpty: boolean = true;
   function menuElemChannels() {
     return (<>
@@ -273,6 +274,7 @@ function RoomsMenuContainer() {
     </>);
   }
 
+  var messageListIsEmpty: boolean = true;
   function menuElemMessages() {
     return (<>
       <div className="profile__panel__top">
@@ -283,13 +285,11 @@ function RoomsMenuContainer() {
           const usr = room.user.find((usr) => {
             return (usr.username !== window.sessionStorage.getItem("username"));
           });
-          if (
-            room.channel.type !== ChannelType.dm ||
-            bloquedList.find((block) => {
-              return (block.username === usr.username);
-            })
+          if (room.channel.type !== ChannelType.dm
+            || bloquedList.find((block) => { return (block.username === usr.username); })
           )
             return null;
+          messageListIsEmpty = false;
           return (
             <div key={id}>
               <button
@@ -310,6 +310,7 @@ function RoomsMenuContainer() {
             </div>
           );
         })}
+        {messageListIsEmpty && <>Your private chats will show here!</>}
       </div>
       <RoomComponent />
     </>);
