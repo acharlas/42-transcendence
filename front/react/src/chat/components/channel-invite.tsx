@@ -12,10 +12,6 @@ const InviteUser: FunctionComponent<IInviteUserProps> = (props) => {
   const [errorMsg, setErrorMsg] = useState<string>("");
   const userInvite = useRef(null);
 
-  const handleCancel = () => {
-    setShowInviteUser(false);
-  };
-
   const handleValidate = () => {
     setErrorMsg("");
     console.log("socket", socket);

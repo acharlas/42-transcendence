@@ -9,7 +9,7 @@ function CreateRoomsContainer() {
   const newPassword = useRef(null);
   const [type, setType] = useState<string>("public");
   const { socket } = useContext(SocketContext).SocketState;
-  const { setShowCreateMenu, CreateErrMsg, setCreateErrMsg } = useChat();
+  const { CreateErrMsg, setCreateErrMsg } = useChat();
 
   function handleCreateRoom() {
     console.log("socket", socket);

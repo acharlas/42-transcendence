@@ -5,33 +5,23 @@ import { MdPersonRemove } from "react-icons/md";
 import { BiMessageAltAdd } from "react-icons/bi";
 
 import { SelectedChatWindow, useChat } from "../../context/chat.context";
-import { ChannelType, Room, User, UserPrivilege } from "../type";
+import { ChannelType, UserPrivilege } from "../type";
 import SocketContext from "../../context/socket.context";
 import JoinNewRoomComponent from "./channel-join";
 import CreateRoomsContainer from "./channel-creation";
 import RoomComponent from "./room";
 
 function RoomsMenuContainer() {
-  const [searchFriend, setSearchFriend] = useState<string>("");
   const [newFriend, setNewFriend] = useState<string>("");
   const [newBlock, setNewBlock] = useState<string>("");
   const { socket } = useContext(SocketContext).SocketState;
-  const [searchChannel, setSearchChannel] = useState<string>("");
   const {
     selectedChatWindow,
     rooms,
     actChannel,
-    showCreateMenu,
-    setShowCreateMenu,
-    setSelectUser,
-    selectUser,
     user,
     friendList,
     bloquedList,
-    setShowJoinMenu,
-    showJoinMenu,
-    ShowRoomSetting,
-    setShowRoomSetting,
     closeChatBox,
     setNewRoom,
     FriendErrMsg,

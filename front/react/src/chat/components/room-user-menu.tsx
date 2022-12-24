@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
-import { ChannelType, User, UserPrivilege } from "../type";
+import { ChannelType, UserPrivilege } from "../type";
 
 function UserMenu() {
   const {
-    setSelectUser,
+    // setSelectUser,
     selectUser,
     actChannel,
     user,
@@ -70,6 +70,10 @@ function UserMenu() {
     // setSelectUser(undefined);
   };
 
+  const handleInviteToPlay = () => {
+    console.log('TODO');
+  };
+
   const handleShowUserProfile = () => {
     navigate("/app/profile/" + selectUser.id);
   };
@@ -104,6 +108,9 @@ function UserMenu() {
       {selectUser.username}
     </div>
     <div className="profile__panel__bottom">
+      <button onClick={handleInviteToPlay} className="fullwidth-button">
+        Invite to play
+      </button>
       <button onClick={handleShowUserProfile} className="fullwidth-button">
         Go to profile
       </button>

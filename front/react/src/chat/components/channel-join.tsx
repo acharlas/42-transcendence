@@ -7,7 +7,7 @@ function JoinNewRoomComponent() {
   const newRoomRef = useRef(null);
   const newPassRef = useRef(null);
   const { socket } = useContext(SocketContext).SocketState;
-  const { setShowJoinMenu, JoinErrMsg } = useChat();
+  const { JoinErrMsg } = useChat();
 
   const handleJoinRoom = (event) => {
     const name = newRoomRef.current.value || "";
@@ -20,10 +20,6 @@ function JoinNewRoomComponent() {
     });
     if (newPassRef.current) newPassRef.current.value = "";
     if (newRoomRef.current) newRoomRef.current.value = "";
-  };
-
-  const handleCloseMenu = (event) => {
-    setShowJoinMenu(false);
   };
 
   return (
