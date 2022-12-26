@@ -526,7 +526,7 @@ export class MessageGateway
   }
   /*============================================*/
   /*============================================*/
-  /*remove block*/
+  /*Dm*/
   @SubscribeMessage('Dm')
   Dm(
     @MessageBody('sendTo') sendTo: string,
