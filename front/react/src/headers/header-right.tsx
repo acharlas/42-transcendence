@@ -9,7 +9,9 @@ const ChatHeaderComponent: React.FunctionComponent = () => {
   const navigate = useNavigate();
 
   const {
+    actChannel,
     closeChatBox,
+    selectedChatWindow,
     setSelectedChatWindow,
   } = useChat();
 
@@ -42,20 +44,32 @@ const ChatHeaderComponent: React.FunctionComponent = () => {
 
   return (
     <>
-      <button onClick={selectChannels} className="bandeau-button extra-margin-left">
+      <button onClick={selectChannels}
+        className="headers-button extra-margin-left"
+        disabled={!actChannel && selectedChatWindow === SelectedChatWindow.CHANNELS}
+      >
         channels
       </button>
-      <button onClick={selectMessages} className="bandeau-button">
+      <button onClick={selectMessages}
+        className="headers-button"
+        disabled={!actChannel && selectedChatWindow === SelectedChatWindow.MESSAGES}
+      >
         messages
       </button>
-      <button onClick={selectFriendlist} className="bandeau-button">
+      <button onClick={selectFriendlist}
+        className="headers-button"
+        disabled={!actChannel && selectedChatWindow === SelectedChatWindow.FRIENDLIST}
+      >
         friendlist
       </button>
-      <button onClick={selectBlocklist} className="bandeau-button">
+      <button onClick={selectBlocklist}
+        className="headers-button"
+        disabled={!actChannel && selectedChatWindow === SelectedChatWindow.BLOCKLIST}
+      >
         blocklist
       </button>
-      <button onClick={HandleDisconnect} className="bandeau-button margin-left no-margin-right bandeau-disconnect-button">
-        <RiShutDownLine className="bandeau-disconnect-icon" />
+      <button onClick={HandleDisconnect} className="headers-button margin-left no-margin-right headers-disconnect-button">
+        <RiShutDownLine className="headers-disconnect-icon" />
       </button>
     </>
   );

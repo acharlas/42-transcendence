@@ -4,8 +4,8 @@ import { Route, Routes } from 'react-router-dom';
 import './style.css';
 import { getMe } from './api/auth-api';
 import SocketContextComponent from './chat/socket-component';
-import HeaderLeft from './headers/header-left';
-import HeaderRight from './headers/header-right';
+import AppHeaderComponent from './headers/header-left';
+import ChatHeaderComponent from './headers/header-right';
 import ChatProvider from './context/chat.context';
 import HomeComponent from './home/home_index';
 import Profile from './profile/profile_component';
@@ -28,7 +28,7 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
         <div className="app-container">
           <div className="left-container">
             <div className="header-container left-side top-side">
-              <HeaderLeft />
+              <AppHeaderComponent />
             </div>
             <div className="below-header-container left-side bot-side">
               <div>
@@ -44,7 +44,7 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
           </div>
           <div className="right-container">
             <div className="header-container header-container-right right-side top-side">
-              <HeaderRight />
+              <ChatHeaderComponent />
             </div>
             <div className="below-header-container right-side bot-side">
               <div>

@@ -1,4 +1,4 @@
-.bandeau-button {
+.headers-button {
   width: 20%;
   height: 100%;
 
@@ -19,11 +19,15 @@
   border-bottom: none;
 }
 
-.bandeau-button:hover {
+.headers-button:hover {
   background-color: rgb(255, 255, 255);
 }
 
-.bandeau-disconnect-button {
+.headers-button:disabled {
+  background-color: rgb(200, 200, 200);
+}
+
+.headers-disconnect-button {
   height: 80%;
   width: 10%;
 
@@ -33,27 +37,31 @@
   border-top-right-radius: 10px;
 }
 
-.bandeau-disconnect-icon {
+.headers-disconnect-icon {
   color: inherit;
   font-weight: 700;
 }
 
-.bandeau-disconnect-icon:hover {
+.headers-disconnect-icon:hover {
   text-shadow: 0 0 10px #eda33d;
 }
 
 .extra-margin-left {
   margin-left: 5%;
 }
+
 .margin-left {
   margin-left: 0.2em;
 }
+
 .margin-right {
   margin-right: 0.2em;
 }
+
 .no-margin-left {
   margin-left: 0;
 }
+
 .no-margin-right {
   margin-right: 0;
 }
