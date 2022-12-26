@@ -8,7 +8,7 @@ export interface IChatOwnerPopupContainerProps {
   setShowPopup: Function;
 }
 
-const ChatOwnerPopupComponent: FunctionComponent<
+const ChannelOwnerLeavingComponent: FunctionComponent<
   IChatOwnerPopupContainerProps
 > = ({ setShowPopup }: { setShowPopup: Function }) => {
   const [newUser, setUser] = useState<string>("");
@@ -78,4 +78,4 @@ const ChatOwnerPopupComponent: FunctionComponent<
   </>);
 };
 
-export default ChatOwnerPopupComponent;
+export default ChannelOwnerLeavingComponent;

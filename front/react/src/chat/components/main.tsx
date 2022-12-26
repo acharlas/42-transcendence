@@ -7,11 +7,11 @@ import { BiMessageAltAdd } from "react-icons/bi";
 import { SelectedChatWindow, useChat } from "../../context/chat.context";
 import { ChannelType, UserPrivilege } from "../type";
 import SocketContext from "../../context/socket.context";
-import JoinNewRoomComponent from "./channel-join";
-import CreateRoomsContainer from "./channel-creation";
+import ChannelJoinComponent from "./channel-join";
+import ChannelCreationComponent from "./channel-creation";
 import RoomComponent from "./room";
 
-function RoomsMenuContainer() {
+function ChatMainComponent() {
   const [newFriend, setNewFriend] = useState<string>("");
   const [newBlock, setNewBlock] = useState<string>("");
   const { socket } = useContext(SocketContext).SocketState;
@@ -190,13 +190,13 @@ function RoomsMenuContainer() {
         Join channel
       </div>
       <div className="profile__panel__bottom">
-        <JoinNewRoomComponent />
+        <ChannelJoinComponent />
       </div>
       <div className="profile__panel__top">
         Create channel
       </div>
       <div className="profile__panel__bottom">
-        <CreateRoomsContainer />
+        <ChannelCreationComponent />
       </div>
       <div className="profile__panel__top">
         Your channels
@@ -229,41 +229,6 @@ function RoomsMenuContainer() {
                     {channel.name}
                     {room.newMessage && <BiMessageAltAdd />}
                   </button>
-                  {/* {room.channel.id === actChannel ? (
-                    <>
-                      <input
-                        value={searchFriend}
-                        onChange={handleSearchFriend}
-                        placeholder="looking for friend?"
-                        className="room-menu-input-friend"
-                      />
-                      <ul>
-                        {room.user.map((actUser, id) => {
-                          if (!actUser.nickname.search(searchFriend)
-                            && ((actUser.status === UserStatus.connected) || actUser.privilege === UserPrivilege.ban))
-                            return (
-                              <li key={id}>
-                                <button
-                                  className="room-menu-button-user"
-                                  onClick={() => { handleShowUser(actUser); }}
-                                  disabled={user.username === actUser.username}
-                                >
-                                  {actUser.privilege === UserPrivilege.admin && (<GiAlienStare className="room-menu-user-icon" />)}
-                                  {actUser.privilege === UserPrivilege.owner && (<SiStarship className="room-menu-user-icon" />)}
-                                  {actUser.privilege === UserPrivilege.ban && (<FaBan className="room-menu-user-icon" />)}
-                                  {actUser.privilege === UserPrivilege.muted && (<TbMessageCircleOff className="room-menu-user-icon" />)}
-                                  {actUser.privilege === UserPrivilege.default && (<GiAstronautHelmet className="room-menu-user-icon" />)}
-                                  {actUser.nickname}
-                                </button>
-                              </li>
-                            );
-                          return null;
-                        })}
-                      </ul>
-                    </>
-                  ) : (
-                    <></>
-                  )} */}
                 </div>
               );
             })
@@ -324,4 +289,4 @@ function RoomsMenuContainer() {
   </>);
 }
 
-export default RoomsMenuContainer;
+export default ChatMainComponent;

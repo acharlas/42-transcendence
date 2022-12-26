@@ -2,7 +2,7 @@ import { FunctionComponent, useContext, useRef, useState } from "react";
 
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
-import ChatOwnerPopupComponent from "./channel-owner-leaving";
+import ChannelOwnerLeavingComponent from "./channel-owner-leaving";
 import { ChannelType, UserStatus } from "../type";
 
 export interface IChatOptionProps { }
@@ -13,7 +13,7 @@ interface iUpdateChannelDto {
   password?: string;
 }
 
-const ChannelLeave: FunctionComponent<IChatOptionProps> = (props) => {
+const ChannelSettingsComponent: FunctionComponent<IChatOptionProps> = (props) => {
   const newPassword = useRef(null);
   const [type, setType] = useState<ChannelType>(ChannelType.public);
   const { socket } = useContext(SocketContext).SocketState;
@@ -138,10 +138,10 @@ const ChannelLeave: FunctionComponent<IChatOptionProps> = (props) => {
         {"Leave Room"}
       </button>
       {showPopup && (
-        <ChatOwnerPopupComponent setShowPopup={setShowPopup} />
+        <ChannelOwnerLeavingComponent setShowPopup={setShowPopup} />
       )}
     </div>
   </>);
 };
 
-export default ChannelLeave;
+export default ChannelSettingsComponent;

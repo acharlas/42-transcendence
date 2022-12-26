@@ -6,7 +6,7 @@ import { IChatOptionProps } from "./channel-settings";
 
 //Leave button when user doesn't have settings privileges
 
-const ChannelSettings: FunctionComponent<IChatOptionProps> = (props) => {
+const ChannelLeaveComponent: FunctionComponent<IChatOptionProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
   const {
     actChannel,
@@ -31,4 +31,4 @@ const ChannelSettings: FunctionComponent<IChatOptionProps> = (props) => {
   </>);
 };
 
-export default ChannelSettings;
+export default ChannelLeaveComponent;

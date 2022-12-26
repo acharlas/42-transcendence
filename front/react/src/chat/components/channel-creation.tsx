@@ -4,7 +4,7 @@ import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
 import { ChannelType } from "../type";
 
-function CreateRoomsContainer() {
+function ChannelCreationComponent() {
   const newRoomRef = useRef(null);
   const newPassword = useRef(null);
   const [type, setType] = useState<string>("public");
@@ -82,4 +82,4 @@ function CreateRoomsContainer() {
   </>);
 }
 
-export default CreateRoomsContainer;
+export default ChannelCreationComponent;

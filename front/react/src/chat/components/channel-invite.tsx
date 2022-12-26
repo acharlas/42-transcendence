@@ -6,7 +6,7 @@ import SocketContext from "../../context/socket.context";
 
 export interface IInviteUserProps { }
 
-const InviteUser: FunctionComponent<IInviteUserProps> = (props) => {
+const ChannelInviteComponent: FunctionComponent<IInviteUserProps> = (props) => {
   const { setShowInviteUser, actChannel } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -46,4 +46,4 @@ const InviteUser: FunctionComponent<IInviteUserProps> = (props) => {
   </>);
 };
 
-export default InviteUser;
+export default ChannelInviteComponent;

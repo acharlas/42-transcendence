@@ -5,7 +5,7 @@ import SocketContext from "../../context/socket.context";
 
 export interface ItimeSelectorProps { }
 
-const TimeSelector: FunctionComponent<ItimeSelectorProps> = (props) => {
+const TimeBanComponent: FunctionComponent<ItimeSelectorProps> = (props) => {
   const {
     setShowTimeSelector,
     showTimeSelector,
@@ -43,26 +43,24 @@ const TimeSelector: FunctionComponent<ItimeSelectorProps> = (props) => {
 
   return (
     <div className="">
-      <div className="">
-        <p className="">ban until:</p>
-        {errorMsg.length !== 0 && (
-          <p className="time-selector-popup-error">{errorMsg}</p>
-        )}
-        <input
-          type="datetime-local"
-          name="time"
-          ref={newDateRef}
-          className="time-selector-popup-input"
-        />
-        <button onClick={handleValidate} className="fullwidth-button">
-          validate
-        </button>
-        <button onClick={handleCancel} className="fullwidth-button">
-          cancel
-        </button>
-      </div>
+      <p className="">ban until:</p>
+      {errorMsg.length !== 0 && (
+        <p className="time-selector-popup-error">{errorMsg}</p>
+      )}
+      <input
+        type="datetime-local"
+        name="time"
+        ref={newDateRef}
+        className="time-selector-popup-input"
+      />
+      <button onClick={handleValidate} className="fullwidth-button">
+        validate
+      </button>
+      <button onClick={handleCancel} className="fullwidth-button">
+        cancel
+      </button>
     </div>
   );
 };
 
-export default TimeSelector;
+export default TimeBanComponent;

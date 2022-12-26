@@ -3,7 +3,7 @@ import { useContext, useRef } from "react";
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
 
-function JoinNewRoomComponent() {
+function ChannelJoinComponent() {
   const newRoomRef = useRef(null);
   const newPassRef = useRef(null);
   const { socket } = useContext(SocketContext).SocketState;
@@ -49,4 +49,4 @@ function JoinNewRoomComponent() {
   );
 }
 
-export default JoinNewRoomComponent;
+export default ChannelJoinComponent;

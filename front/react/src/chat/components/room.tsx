@@ -2,15 +2,15 @@ import { useContext, useEffect, useRef } from "react";
 
 import "../chat-style.css";
 import { ChannelType, User, UserPrivilege } from "../type";
-import UserMenu from "./room-user-menu";
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
-import TimeSelector from "./channel-timeban";
-import InviteUser from "./channel-invite";
+import RoomUserMenuComponent from "./room-user-menu";
+import ChannelTimeBanComponent from "./channel-time-ban";
+import ChannelInviteComponent from "./channel-invite";
 import ChannelSettingsComponent from "./channel-settings";
 import ChannelLeaveComponent from "./channel-leave";
 
-function MessagesComponent() {
+function RoomComponent() {
   const newMessageRef = useRef(null);
   const bottomRef = useRef(null);
   const {
@@ -140,13 +140,13 @@ function MessagesComponent() {
         ref={newMessageRef}
         onKeyDown={handleEnter}
       />
-      {showTimeSelector && <TimeSelector />}
+      {showTimeSelector && <ChannelTimeBanComponent />}
     </div>
-    {selectUser && <UserMenu />}
+    {selectUser && <RoomUserMenuComponent />}
     {affSettings() && <ChannelSettingsComponent />}
     {affLeave() && <ChannelLeaveComponent />}
-    {affInvite() && <InviteUser />}
+    {affInvite() && <ChannelInviteComponent />}
   </>);
 }
 
-export default MessagesComponent;
+export default RoomComponent;

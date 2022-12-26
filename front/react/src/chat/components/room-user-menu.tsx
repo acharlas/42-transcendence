@@ -5,7 +5,7 @@ import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
 import { ChannelType, UserPrivilege } from "../type";
 
-function UserMenu() {
+function UserMenuComponent() {
   const {
     // setSelectUser,
     selectUser,
@@ -191,4 +191,4 @@ function UserMenu() {
   </>);
 }
 
-export default UserMenu;
+export default UserMenuComponent;
