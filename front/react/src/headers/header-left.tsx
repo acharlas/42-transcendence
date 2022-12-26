@@ -1,10 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 
-import './style-bandeau.css';
+import './headers.css';
 
-export interface IBandeauIndexProps {}
-
-const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
+const AppHeaderComponent: React.FunctionComponent = () => {
   let navigate = useNavigate();
 
   const goProfile = () => {
@@ -48,4 +46,4 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
   );
 };
 
-export default BandeauIndex;
+export default AppHeaderComponent;

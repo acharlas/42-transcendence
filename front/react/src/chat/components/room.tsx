@@ -95,7 +95,6 @@ function RoomComponent() {
     return (room?.channel?.name || "Chat");
   }
 
-
   if (!actChannel) return <></>;
   return (<>
     <div className="profile__panel__top">

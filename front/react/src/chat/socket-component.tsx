@@ -11,7 +11,7 @@ import { useSocket } from '../context/use-socket';
 import { ErrMessage } from './chat-error-msg';
 import { Channel, Message, Room, User, UserStatus } from './type';
 
-export interface ISocketContextComponentProps extends PropsWithChildren {}
+export interface ISocketContextComponentProps extends PropsWithChildren { }
 
 const SocketContextComponent: React.FunctionComponent<
   ISocketContextComponentProps
@@ -69,7 +69,7 @@ const SocketContextComponent: React.FunctionComponent<
       /**error receive */
       socket.on('ErrMessage', ({ code }: { code: string }) => {
         console.log(
-          'erreur aarrived: ',
+          'error received: ',
           code,
           'err message: ',
           ErrMessage[code],
@@ -182,24 +182,25 @@ const SocketContextComponent: React.FunctionComponent<
           room,
         ]);
         setRooms([...rooms, room]);
-        if (itch) {
-          setMessages(room.message);
-          setUserList(room.user);
-          setActChannel(room.channel.id);
-        }
+        // if (itch) {
+        setMessages(room.message);
+        setUserList(room.user);
+        setActChannel(room.channel.id);
+        // }
         const user = room.user.find((user) => {
           if (user.username === window.sessionStorage.getItem('username'))
             return true;
           return false;
         });
-        if (itch) {
-          setUser(user);
-          setShowCreateMenu(false);
-          setShowRoomMenu(false);
-          setSelectUser(null);
-          setShowJoinMenu(false);
-          setShowRoomSetting(null);
-        }
+        // if (itch) {
+        setUser(user);
+        setShowCreateMenu(false);
+        setShowRoomMenu(false);
+        setSelectUser(null);
+        setShowJoinMenu(false);
+        setShowRoomSetting(null);
+        // }
+        setActChannel(room.channel.id);
       });
       /**room list */
       socket.on('Rooms', (res: Room[]) => {

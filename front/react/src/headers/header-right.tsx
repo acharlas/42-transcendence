@@ -1,39 +1,42 @@
 import { useNavigate } from 'react-router-dom';
 import { RiShutDownLine } from 'react-icons/ri';
 
-import './style-bandeau.css';
+import './headers.css';
 import { deleteRefreshToken } from '../api/refresh-api';
 import { SelectedChatWindow, useChat } from "../context/chat.context";
 
-export interface IBandeauIndexProps {}
-
-const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
+const ChatHeaderComponent: React.FunctionComponent = () => {
   const navigate = useNavigate();
 
   const {
+    closeChatBox,
     setSelectedChatWindow,
   } = useChat();
 
   const selectChannels = () => {
+    closeChatBox();
     setSelectedChatWindow(SelectedChatWindow.CHANNELS);
   };
 
   const selectMessages = () => {
+    closeChatBox();
     setSelectedChatWindow(SelectedChatWindow.MESSAGES);
   };
 
   const selectFriendlist = () => {
+    closeChatBox();
     setSelectedChatWindow(SelectedChatWindow.FRIENDLIST);
   };
 
   const selectBlocklist = () => {
+    closeChatBox();
     setSelectedChatWindow(SelectedChatWindow.BLOCKLIST);
   };
 
   const HandleDisconnect = async () => {
     try {
       await deleteRefreshToken();
-    } catch {}
+    } catch { }
     navigate('/');
   };
 
@@ -58,4 +61,4 @@ const BandeauIndex: React.FunctionComponent<IBandeauIndexProps> = (props) => {
   );
 };
 
-export default BandeauIndex;
+export default ChatHeaderComponent;

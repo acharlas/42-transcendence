@@ -72,7 +72,7 @@ function ChatMainComponent() {
   };
 
   const handleSendDm = (username: string) => {
-    const chan = rooms.find((room) => {
+    const foundDmRoom = rooms.find((room) => {
       const u = room.user.find((usr) => {
         return (usr.username === window.sessionStorage.getItem("username"));
       });
@@ -81,12 +81,13 @@ function ChatMainComponent() {
       });
       return (room.channel.type === ChannelType.dm && u && u2);
     });
-    if (!chan) {
+    if (foundDmRoom) {
+      closeChatBox();
+      setNewRoom(foundDmRoom);
+    } else {
+      closeChatBox();
       socket.emit("Dm", { sendTo: username });
-      return;
     }
-    closeChatBox();
-    setNewRoom(chan);
   };
 
   function menuElemFriendlist() {
@@ -184,6 +185,7 @@ function ChatMainComponent() {
   }
 
   var chanListIsEmpty: boolean = true;
+
   function menuElemChannels() {
     return (<>
       <div className="profile__panel__top">
@@ -235,11 +237,12 @@ function ChatMainComponent() {
           )}
         {chanListIsEmpty && <>Join a channel or create one to chat!</>}
       </div>
-      <RoomComponent />
+      {/* <RoomComponent /> */}
     </>);
   }
 
   var messageListIsEmpty: boolean = true;
+
   function menuElemMessages() {
     return (<>
       <div className="profile__panel__top">
@@ -277,10 +280,11 @@ function ChatMainComponent() {
         })}
         {messageListIsEmpty && <>Your private chats will show here!</>}
       </div>
-      <RoomComponent />
+      {/* <RoomComponent /> */}
     </>);
   }
 
+  if (actChannel) return (< RoomComponent />);
   return (<>
     {selectedChatWindow === SelectedChatWindow.CHANNELS && menuElemChannels()}
     {selectedChatWindow === SelectedChatWindow.MESSAGES && menuElemMessages()}
