@@ -211,9 +211,6 @@ function ChatMainComponent() {
               if (room.channel.type === ChannelType.dm) return null;
               chanListIsEmpty = false;
               const channel = room.channel;
-              // const chanUser = room.user.find((chanUser) => {
-              //   return (chanUser.username === window.sessionStorage.getItem("username"));
-              // });
               return (
                 <div key={id}>
                   <button
@@ -237,7 +234,6 @@ function ChatMainComponent() {
           )}
         {chanListIsEmpty && <>Join a channel or create one to chat!</>}
       </div>
-      {/* <RoomComponent /> */}
     </>);
   }
 
@@ -280,7 +276,6 @@ function ChatMainComponent() {
         })}
         {messageListIsEmpty && <>Your private chats will show here!</>}
       </div>
-      {/* <RoomComponent /> */}
     </>);
   }
 
