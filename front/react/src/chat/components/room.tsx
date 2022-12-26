@@ -5,10 +5,10 @@ import { ChannelType, User, UserPrivilege } from "../type";
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
 import RoomUserMenuComponent from "./room-user-menu";
-import ChannelTimeBanComponent from "./channel-time-ban";
 import ChannelInviteComponent from "./channel-invite";
 import ChannelSettingsComponent from "./channel-settings";
 import ChannelLeaveComponent from "./channel-leave";
+import ChannelUserListComponent from "./channel-user-list";
 
 function RoomComponent() {
   const newMessageRef = useRef(null);
@@ -21,7 +21,6 @@ function RoomComponent() {
     setSelectUser,
     selectUser,
     user,
-    showTimeSelector,
     bloquedList,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
@@ -56,7 +55,7 @@ function RoomComponent() {
     }
   }
 
-  const handleShowUser = ({ user }: { user: User }) => {
+  const handleSelectUser = ({ user }: { user: User }) => {
     if (selectUser && selectUser.username === user.username)
       setSelectUser(undefined);
     else setSelectUser(user);
@@ -118,7 +117,7 @@ function RoomComponent() {
                 <button
                   className="room-chat-button-user"
                   onClick={() =>
-                    handleShowUser({
+                    handleSelectUser({
                       user: msgUser,
                     })
                   }
@@ -140,8 +139,8 @@ function RoomComponent() {
         ref={newMessageRef}
         onKeyDown={handleEnter}
       />
-      {showTimeSelector && <ChannelTimeBanComponent />}
     </div>
+    {affSettings() && <ChannelUserListComponent {...room} />}
     {selectUser && <RoomUserMenuComponent />}
     {affSettings() && <ChannelSettingsComponent />}
     {affLeave() && <ChannelLeaveComponent />}

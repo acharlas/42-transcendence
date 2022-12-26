@@ -54,7 +54,7 @@ export interface IoChatContextState {
 }
 
 const ChatContext = createContext<IoChatContextState>({
-  selectedChatWindow: SelectedChatWindow,
+  selectedChatWindow: undefined,
   setSelectedChatWindow: () => { },
   rooms: [],
   setRooms: () => { },

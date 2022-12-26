@@ -4,13 +4,15 @@ import { useNavigate } from "react-router-dom";
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
 import { ChannelType, UserPrivilege } from "../type";
+import ChannelTimeSelectorComponent from "./channel-time-selector";
 
 function UserMenuComponent() {
   const {
-    // setSelectUser,
+    setSelectUser,
     selectUser,
     actChannel,
     user,
+    showTimeSelector,
     setShowTimeSelector,
     friendList,
     bloquedList,
@@ -47,27 +49,25 @@ function UserMenuComponent() {
   };
 
   const AdminUser = () => {
-    console.log("admin user");
-
+    console.log("set as admin");
     socket.emit("UpdateUserPrivilege", {
       roomId: actChannel,
       privilege: "admin",
       time: null,
       toModifie: selectUser.username,
     });
-    // setSelectUser(undefined);
+    setSelectUser(undefined);
   };
 
   const setToDefault = () => {
     console.log("set to default");
-
     socket.emit("UpdateUserPrivilege", {
       roomId: actChannel,
       privilege: "default",
       time: null,
       toModifie: selectUser.username,
     });
-    // setSelectUser(undefined);
+    setSelectUser(undefined);
   };
 
   const handleInviteToPlay = () => {
@@ -165,28 +165,29 @@ function UserMenuComponent() {
       {
         (user.privilege === "admin" || user.privilege === "owner")
         && selectUser.privilege !== "owner" && selectUser.privilege !== "admin"
-        && (
-          selectUser.privilege === UserPrivilege.muted ? (
-            <button onClick={setToDefault} className="fullwidth-button">
-              Unmute
-            </button>
-          ) : (
-            <button onClick={MuteUser} className="fullwidth-button">
-              Mute
-            </button>
-          )
-        ) && (
-          selectUser.privilege === UserPrivilege.ban ? (
+        && (<>
+          {selectUser.privilege === UserPrivilege.ban ? (
             <button onClick={setToDefault} className="fullwidth-button">
               Unban
             </button>
-          ) : (
+          ) : (<>
             <button onClick={banUser} className="fullwidth-button">
               Ban
             </button>
-          )
-        )
+            {/* Only show mute option if user isn't banned */}
+            {selectUser.privilege === UserPrivilege.muted ? (
+              <button onClick={setToDefault} className="fullwidth-button">
+                Unmute
+              </button>
+            ) : (
+              <button onClick={MuteUser} className="fullwidth-button">
+                Mute
+              </button>
+            )}
+          </>)}
+        </>)
       }
+      {showTimeSelector && <ChannelTimeSelectorComponent />}
     </div>
   </>);
 }

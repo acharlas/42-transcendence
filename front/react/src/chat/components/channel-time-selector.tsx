@@ -5,7 +5,9 @@ import SocketContext from "../../context/socket.context";
 
 export interface ItimeSelectorProps { }
 
-const TimeBanComponent: FunctionComponent<ItimeSelectorProps> = (props) => {
+// Selects endtime for mutes and bans
+
+const TimeSelectorComponent: FunctionComponent<ItimeSelectorProps> = (props) => {
   const {
     setShowTimeSelector,
     showTimeSelector,
@@ -41,26 +43,24 @@ const TimeBanComponent: FunctionComponent<ItimeSelectorProps> = (props) => {
     setShowTimeSelector(undefined);
   };
 
-  return (
-    <div className="">
-      <p className="">ban until:</p>
-      {errorMsg.length !== 0 && (
-        <p className="time-selector-popup-error">{errorMsg}</p>
-      )}
-      <input
-        type="datetime-local"
-        name="time"
-        ref={newDateRef}
-        className="time-selector-popup-input"
-      />
-      <button onClick={handleValidate} className="fullwidth-button">
-        validate
-      </button>
-      <button onClick={handleCancel} className="fullwidth-button">
-        cancel
-      </button>
-    </div>
-  );
+  return (<>
+    <p className="">until:</p>
+    {errorMsg.length !== 0 && (
+      <p className="time-selector-popup-error">{errorMsg}</p>
+    )}
+    <input
+      type="datetime-local"
+      name="time"
+      ref={newDateRef}
+      className="time-selector-popup-input"
+    />
+    <button onClick={handleValidate} className="fullwidth-button">
+      validate
+    </button>
+    <button onClick={handleCancel} className="fullwidth-button">
+      cancel
+    </button>
+  </>);
 };
 
-export default TimeBanComponent;
+export default TimeSelectorComponent;
