@@ -31,102 +31,84 @@ body {
   margin-left: 200px;
 }
 
-/* contains left + right side */
+/* global container */
 .app-container {
   background-image: url("./image/background-login.svg");
   background-repeat: no-repeat;
   background-size: cover;
 
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  
+
   height: 100vh;
+  width: 100vw;
 }
 
-/* contains game etc */
-.left-container {
+/* each side of middle section */
+.middle-container {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-
-  align-items: center;
-  justify-content: center;
 
   height: 100%;
-  width: 50%;
-  overflow: clip;
+  width: 100%;
+  overflow-x: clip;
+  overflow-y: scroll;
 }
 
-/* contains chat etc */
-.right-container {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  
-  align-items: center;
-  justify-content: center;
-
-  height: 100%;
-  width: 50%;
-  overflow: clip;
-}
-
-/* headers for each side */
+/* top and bottom headers */
 .header-container {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  align-items: center;
 
-  width: 50%;
+  width: 100vw;
 
   overflow-x: scroll;
   overflow-y: clip;
 }
 
-/* everything below headers for each side */
-.below-header-container {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  
-  width: 50%;
-
-  overflow-x: clip;
-  overflow-y: scroll;
-}
-
-.below-header-container:first-child {
-  position: relative;
-  height: 100%;
-}
-
-/* absolute positioning for each quadrant */
-.left-side {
+.topbar {
   position: absolute;
-  left: 0%;
-}
-.right-side {
-  position: absolute;
-  left: 50%;
-}
-.top-side {
-  position: absolute;
-  margin-top: 7px;
   top: 0px;
-  height: 50px;
+  height: 60px;
+  justify-content: left;
 }
-.bot-side {
+
+.bottombar {
+  position: absolute;
+  bottom: 0px;
+  height: 60px;
+  justify-content: right;
+}
+
+.middle {
   position: absolute;
   top: 60px;
-  height: calc(100% - 60px);
+  height: calc(100% - 120px);
+  width: 100%;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* width of game-side */
+.game-width {
+  width: 55%;
+}
+
+/* width of chat-side */
+.chat-width {
+  width: 45%;
 }
 
 /* cosmetic addons to headers */
-.header-underline {
+.header-line {
   position: absolute;
-  top: 57px;
   height: 3px;
   width: 100%;
 
@@ -135,12 +117,36 @@ body {
   border-bottom: 1px solid rgb(37, 37, 37);
   box-shadow: 0px 1px 1px 0px rgb(42, 42, 42);
 }
+
+.header-line-1a {
+  top: 0px;
+}
+
+.header-line-1b {
+  top: 57px;
+}
+
+.header-line-2a {
+  bottom: 57px;
+}
+
+.header-line-2b {
+  bottom: 0px;
+}
+
 .header-filter {
   position: absolute;
-  top: 0;
-  height: 57px;
+  height: 60px;
   width: 100%;
 
   background: rgb(190, 190, 190);
   opacity: 0.2;
+}
+
+.header-filter-1 {
+  top: 0px;
+}
+
+.header-filter-2 {
+  bottom: 0px;
 }

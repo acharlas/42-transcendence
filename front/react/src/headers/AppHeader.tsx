@@ -1,4 +1,6 @@
+import { RiShutDownLine } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
+import { deleteRefreshToken } from '../api/refresh-api';
 
 import './headers.css';
 
@@ -17,10 +19,17 @@ const AppHeaderComponent: React.FunctionComponent = () => {
   const goProfile = () => { navigate(pathToProfile); };
   const goSettings = () => { navigate(pathToSettings); };
 
+  const HandleDisconnect = async () => {
+    try {
+      await deleteRefreshToken();
+    } catch { }
+    navigate('/');
+  };
+
   return (
     <>
       <button onClick={goHome}
-        className="headers-button no-margin-left"
+        className="headers-button"
         disabled={window.location.pathname === pathToHome}
       >
         home
@@ -48,6 +57,10 @@ const AppHeaderComponent: React.FunctionComponent = () => {
         disabled={window.location.pathname === pathToSettings}
       >
         settings
+      </button>
+      <button onClick={HandleDisconnect}
+        className="headers-button headers-disconnect-button">
+        <RiShutDownLine className="headers-disconnect-icon" />
       </button>
     </>
   );

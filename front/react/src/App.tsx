@@ -4,8 +4,8 @@ import { Route, Routes } from 'react-router-dom';
 import './style.css';
 import { getMe } from './api/auth-api';
 import SocketContextComponent from './chat/socket-component';
-import AppHeaderComponent from './headers/header-left';
-import ChatHeaderComponent from './headers/header-right';
+import AppHeaderComponent from './headers/AppHeader';
+import ChatHeaderComponent from './headers/ChatHeader';
 import ChatProvider from './context/chat.context';
 import HomeComponent from './home/home_index';
 import Profile from './profile/profile_component';
@@ -23,15 +23,22 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
   return (
     <ChatProvider>
       <SocketContextComponent>
-        <div className="header-underline"></div>
-        <div className="header-filter"></div>
+        <div className="header-line header-line-1a"></div>
+        <div className="header-line header-line-1b"></div>
+        <div className="header-line header-line-2a"></div>
+        <div className="header-line header-line-2b"></div>
+        <div className="header-filter header-filter-1"></div>
+        <div className="header-filter header-filter-2"></div>
+        <div className="header-container topbar">
+          <AppHeaderComponent />
+        </div>
+        <div className="header-container bottombar">
+          <ChatHeaderComponent />
+        </div>
         <div className="app-container">
-          <div className="left-container">
-            <div className="header-container left-side top-side">
-              <AppHeaderComponent />
-            </div>
-            <div className="below-header-container left-side bot-side">
-              <div>
+          <div className="middle">
+            <div className="game-width">
+              <div className="middle-container">
                 <Routes>
                   <Route path="/" element={<HomeComponent />} />
                   <Route path="/settings" element={<Settings />} />
@@ -41,20 +48,15 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
                 </Routes>
               </div>
             </div>
-          </div>
-          <div className="right-container">
-            <div className="header-container header-container-right right-side top-side">
-              <ChatHeaderComponent />
-            </div>
-            <div className="below-header-container right-side bot-side">
-              <div>
+            <div className="chat-width">
+              <div className="middle-container">
                 <RoomsMenuContainer />
               </div>
             </div>
           </div>
         </div>
-      </SocketContextComponent>
-    </ChatProvider>
+      </SocketContextComponent >
+    </ChatProvider >
   );
 };
 export default App;

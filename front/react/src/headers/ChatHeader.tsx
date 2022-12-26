@@ -1,13 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-import { RiShutDownLine } from 'react-icons/ri';
-
 import './headers.css';
-import { deleteRefreshToken } from '../api/refresh-api';
 import { SelectedChatWindow, useChat } from "../context/chat.context";
 
 const ChatHeaderComponent: React.FunctionComponent = () => {
-  const navigate = useNavigate();
-
   const {
     actChannel,
     closeChatBox,
@@ -35,17 +29,10 @@ const ChatHeaderComponent: React.FunctionComponent = () => {
     setSelectedChatWindow(SelectedChatWindow.BLOCKLIST);
   };
 
-  const HandleDisconnect = async () => {
-    try {
-      await deleteRefreshToken();
-    } catch { }
-    navigate('/');
-  };
-
   return (
     <>
       <button onClick={selectChannels}
-        className="headers-button extra-margin-left"
+        className="headers-button"
         disabled={!actChannel && selectedChatWindow === SelectedChatWindow.CHANNELS}
       >
         channels
@@ -67,9 +54,6 @@ const ChatHeaderComponent: React.FunctionComponent = () => {
         disabled={!actChannel && selectedChatWindow === SelectedChatWindow.BLOCKLIST}
       >
         blocklist
-      </button>
-      <button onClick={HandleDisconnect} className="headers-button margin-left no-margin-right headers-disconnect-button">
-        <RiShutDownLine className="headers-disconnect-icon" />
       </button>
     </>
   );
