@@ -22,10 +22,6 @@ export interface IoChatContextState {
   setUserList: Function;
   actChannel: string | undefined;
   setActChannel: Function;
-  showRoomMenu: boolean;
-  setShowRoomMenu: Function;
-  showCreateMenu: boolean;
-  setShowCreateMenu: Function;
   selectUser: User | undefined;
   setSelectUser: Function;
   showTimeSelector: UserPrivilege | undefined;
@@ -34,8 +30,6 @@ export interface IoChatContextState {
   setFriendList: Function;
   bloquedList: User[] | undefined;
   setBloquedList: Function;
-  showJoinMenu: boolean;
-  setShowJoinMenu: Function;
   ShowRoomSetting: Room | undefined;
   setShowRoomSetting: Function;
   closeChatBox: Function;
@@ -48,8 +42,6 @@ export interface IoChatContextState {
   setFriendErrMsg: Function;
   BlockErrMsg: string;
   setBlockErrMsg: Function;
-  showInviteUser: boolean;
-  setShowInviteUser: Function;
   resetErrMsg: Function;
 }
 
@@ -66,10 +58,6 @@ const ChatContext = createContext<IoChatContextState>({
   setUserList: () => { },
   actChannel: "",
   setActChannel: () => { },
-  showRoomMenu: false,
-  setShowRoomMenu: () => { },
-  showCreateMenu: false,
-  setShowCreateMenu: () => { },
   selectUser: undefined,
   setSelectUser: () => { },
   showTimeSelector: undefined,
@@ -78,8 +66,6 @@ const ChatContext = createContext<IoChatContextState>({
   setFriendList: () => { },
   bloquedList: undefined,
   setBloquedList: () => { },
-  showJoinMenu: false,
-  setShowJoinMenu: () => { },
   ShowRoomSetting: undefined,
   setShowRoomSetting: () => { },
   closeChatBox: () => { },
@@ -92,8 +78,6 @@ const ChatContext = createContext<IoChatContextState>({
   setFriendErrMsg: () => { },
   BlockErrMsg: undefined,
   setBlockErrMsg: () => { },
-  showInviteUser: false,
-  setShowInviteUser: () => { },
   resetErrMsg: () => { },
 });
 
@@ -104,28 +88,22 @@ function ChatProvider(props: any) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userList, setUserList] = useState<User[]>([]);
   const [actChannel, setActChannel] = useState<string>("");
-  const [showRoomMenu, setShowRoomMenu] = useState<boolean>(false);
-  const [showCreateMenu, setShowCreateMenu] = useState<boolean>(false);
   const [selectUser, setSelectUser] = useState<User>();
   const [showTimeSelector, setShowTimeSelector] = useState<UserPrivilege>(null);
   const [friendList, setFriendList] = useState<User[]>([]);
   const [bloquedList, setBloquedList] = useState<User[]>([]);
-  const [showJoinMenu, setShowJoinMenu] = useState<boolean>(false);
   const [ShowRoomSetting, setShowRoomSetting] = useState<Room>(null);
   const [JoinErrMsg, setJoinErrMsg] = useState<string>("");
   const [CreateErrMsg, setCreateErrMsg] = useState<string>("");
   const [FriendErrMsg, setFriendErrMsg] = useState<string>("");
   const [BlockErrMsg, setBlockErrMsg] = useState<string>("");
-  const [showInviteUser, setShowInviteUser] = useState<boolean>(false);
 
   const closeChatBox = () => {
     setMessages([]);
     setActChannel(null);
     setShowRoomSetting(null);
-    setShowJoinMenu(false);
     setShowTimeSelector(null);
     setSelectUser(null);
-    setShowCreateMenu(null);
     setUserList([]);
     resetErrMsg();
   };
@@ -169,18 +147,12 @@ function ChatProvider(props: any) {
         setMessages,
         user,
         setUser,
-        showRoomMenu,
-        setShowRoomMenu,
-        showCreateMenu,
-        setShowCreateMenu,
         showTimeSelector,
         setShowTimeSelector,
         friendList,
         setFriendList,
         bloquedList,
         setBloquedList,
-        showJoinMenu,
-        setShowJoinMenu,
         ShowRoomSetting,
         setShowRoomSetting,
         closeChatBox,
@@ -193,8 +165,6 @@ function ChatProvider(props: any) {
         setFriendErrMsg,
         BlockErrMsg,
         setBlockErrMsg,
-        showInviteUser,
-        setShowInviteUser,
         resetErrMsg,
       }}
       {...props}

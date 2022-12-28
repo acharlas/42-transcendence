@@ -29,13 +29,10 @@ const SocketContextComponent: React.FunctionComponent<
     setActChannel,
     setMessages,
     setUserList,
-    setShowRoomMenu,
-    setShowCreateMenu,
     actChannel,
     setUser,
     setFriendList,
     setBloquedList,
-    setShowJoinMenu,
     setSelectUser,
     setShowRoomSetting,
     setJoinErrMsg,
@@ -194,10 +191,7 @@ const SocketContextComponent: React.FunctionComponent<
         });
         // if (itch) {
         setUser(user);
-        setShowCreateMenu(false);
-        setShowRoomMenu(false);
         setSelectUser(null);
-        setShowJoinMenu(false);
         setShowRoomSetting(room);
         // }
         setActChannel(room.channel.id);
@@ -304,10 +298,8 @@ const SocketContextComponent: React.FunctionComponent<
     setUserList,
     setMessages,
     setRooms,
-    setShowCreateMenu,
     setUser,
     setActChannel,
-    setShowRoomMenu,
     navigate,
     setBlockErrMsg,
     setBloquedList,
@@ -315,7 +307,6 @@ const SocketContextComponent: React.FunctionComponent<
     setFriendErrMsg,
     setJoinErrMsg,
     setSelectUser,
-    setShowJoinMenu,
     setShowRoomSetting,
     setFriendList,
   ]);
@@ -328,5 +319,3 @@ const SocketContextComponent: React.FunctionComponent<
 };
 
 export default SocketContextComponent;
-
-// export default Chat;

@@ -7,7 +7,7 @@ import SocketContext from "../../context/socket.context";
 export interface IInviteUserProps { }
 
 const ChannelInviteComponent: FunctionComponent<IInviteUserProps> = (props) => {
-  const { setShowInviteUser, actChannel } = useChat();
+  const { actChannel } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
   const [errorMsg, setErrorMsg] = useState<string>("");
   const userInvite = useRef(null);
@@ -24,7 +24,6 @@ const ChannelInviteComponent: FunctionComponent<IInviteUserProps> = (props) => {
     }
 
     socket.emit("InviteUser", { user: userName, channel: actChannel });
-    setShowInviteUser(false);
   };
 
   return (<>
