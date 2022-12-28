@@ -198,7 +198,7 @@ const SocketContextComponent: React.FunctionComponent<
         setShowRoomMenu(false);
         setSelectUser(null);
         setShowJoinMenu(false);
-        setShowRoomSetting(null);
+        setShowRoomSetting(room);
         // }
         setActChannel(room.channel.id);
       });
