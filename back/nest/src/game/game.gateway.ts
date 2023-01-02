@@ -162,7 +162,7 @@ export class GameGateway
   /*Create lobby*/
   @SubscribeMessage('CreateLobby')
   CreateLobby(client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, ' Living the queue');
+    console.log('User:', client.userID, ' Leaving the queue');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .CreateLobby(client.userID)
@@ -180,15 +180,15 @@ export class GameGateway
   }
   /*==========================================*/
   /*==========================================*/
-  /*Create lobby*/
-  @SubscribeMessage('CreateLobby')
+  /*Leaving lobby*/
+  @SubscribeMessage('LeavingLobby')
   LeavingLobby(client: SocketWithAuth): Promise<void> {
     console.log('User:', client.userID, ' Living the queue');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .LeaveLobby(client.userID)
         .then((lobbyId) => {
-          client.to(lobbyId).emit('UserLeaveLobby', client.userID);
+          client.broadcast.to(lobbyId).emit('PlayerLeave', client.userID);
           client.emit('LeaveLobby');
           client.leave(lobbyId);
           return resolve();

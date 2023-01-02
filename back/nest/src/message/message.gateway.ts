@@ -579,10 +579,14 @@ export class MessageGateway
             .InviteUser(client.userID, userAdd.id, channel)
             .then((room) => {
               return resolve();
+            })
+            .catch((err) => {
+              return reject(err);
             });
         })
         .catch((err) => {
-          return reject(err);
+          console.log(err);
+          return reject;
         });
     });
   }
