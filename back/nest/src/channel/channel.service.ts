@@ -759,7 +759,7 @@ export class ChannelService {
                     userPriv.privilege !== UserPrivilege.admin &&
                     userPriv.privilege !== UserPrivilege.owner
                   ) {
-                    return new ForbiddenException("missing admin rights");
+                    return new ForbiddenException('missing admin rights');
                   }
                   console.log('is admin or owner');
                   return resolve(
@@ -777,10 +777,7 @@ export class ChannelService {
                           },
                         })
                         .then((modifPriv) => {
-                          console.log(
-                            'find channelUser modifie',
-                            priv,
-                          );
+                          console.log('find channelUser modifie', priv);
                           if (modifPriv.privilege === priv) return;
                           if (
                             (modifPriv.privilege === 'admin' ||
@@ -789,9 +786,11 @@ export class ChannelService {
                           ) {
                             console.log("can't ban/mute an admin/owner");
                             return reject(
-                              new ForbiddenException("can't ban/mute an admin/owner"),
-                              );
-                            }
+                              new ForbiddenException(
+                                "can't ban/mute an admin/owner",
+                              ),
+                            );
+                          }
                           if (priv === 'ban')
                             return resolve(
                               new Promise<void>((resolve, reject) => {
@@ -817,10 +816,13 @@ export class ChannelService {
                                   });
                               }),
                             );
-                          } else { //change privileges
+                          } else {
+                            //change privileges
                             if (userPriv.privilege !== UserPrivilege.owner) {
                               console.log('missing owner rights');
-                              return new ForbiddenException('missing owner rights');
+                              return new ForbiddenException(
+                                'missing owner rights',
+                              );
                             }
                             return resolve(
                               new Promise<void>((resolve, reject) => {
@@ -1158,6 +1160,7 @@ export class ChannelService {
         })
         .then((user) => {
           if (
+            userId === userAdd ||
             !user ||
             (user.privilege !== UserPrivilege.admin &&
               user.privilege !== UserPrivilege.owner)
@@ -1294,6 +1297,9 @@ export class ChannelService {
                       }),
                     );
                   }
+                })
+                .catch((err) => {
+                  return reject(err);
                 });
             }),
           );

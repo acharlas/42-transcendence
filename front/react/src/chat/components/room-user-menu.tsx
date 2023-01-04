@@ -71,7 +71,8 @@ function UserMenuComponent() {
   };
 
   const handleInviteToPlay = () => {
-    console.log('TODO');
+    navigate("/app/game");
+    socket.emit("CreateLobby");
   };
 
   const handleShowUserProfile = () => {
@@ -103,53 +104,51 @@ function UserMenuComponent() {
   };
 
   if (user.username === selectUser.username) return <></>;
-  return (<>
-    <div className="profile__panel__top">
-      {selectUser.username}
-    </div>
-    <div className="profile__panel__bottom">
-      <button onClick={handleInviteToPlay} className="fullwidth-button">
-        Invite to play
-      </button>
-      <button onClick={handleShowUserProfile} className="fullwidth-button">
-        Go to profile
-      </button>
-      <button onClick={handleSendDm} className="fullwidth-button">
-        Send message
-      </button>
+  return (
+    <>
+      <div className="profile__panel__top">{selectUser.username}</div>
+      <div className="profile__panel__bottom">
+        <button onClick={handleInviteToPlay} className="fullwidth-button">
+          Invite to play
+        </button>
+        <button onClick={handleShowUserProfile} className="fullwidth-button">
+          Go to profile
+        </button>
+        <button onClick={handleSendDm} className="fullwidth-button">
+          Send message
+        </button>
 
-      {/* friend/unfriend */}
-      {!friendList.find((user) => {
-        if (selectUser.username === user.username) return true;
-        return false;
-      }) ? (
-        <button onClick={handleAddFriend} className="fullwidth-button">
-          Friend
-        </button>
-      ) : (
-        <button onClick={handleRemoveFriend} className="fullwidth-button">
-          Unfriend
-        </button>
-      )}
+        {/* friend/unfriend */}
+        {!friendList.find((user) => {
+          if (selectUser.username === user.username) return true;
+          return false;
+        }) ? (
+          <button onClick={handleAddFriend} className="fullwidth-button">
+            Friend
+          </button>
+        ) : (
+          <button onClick={handleRemoveFriend} className="fullwidth-button">
+            Unfriend
+          </button>
+        )}
 
-      {/* block/unblock */}
-      {!bloquedList.find((user) => {
-        if (selectUser.username === user.username) return true;
-        return false;
-      }) ? (
-        <button onClick={handleBlockUser} className="fullwidth-button">
-          Block
-        </button>
-      ) : (
-        <button onClick={handleRemoveBlock} className="fullwidth-button">
-          Unblock
-        </button>
-      )}
+        {/* block/unblock */}
+        {!bloquedList.find((user) => {
+          if (selectUser.username === user.username) return true;
+          return false;
+        }) ? (
+          <button onClick={handleBlockUser} className="fullwidth-button">
+            Block
+          </button>
+        ) : (
+          <button onClick={handleRemoveBlock} className="fullwidth-button">
+            Unblock
+          </button>
+        )}
 
-      {/* Owner can give/remove admin rights */}
-      {
-        user.privilege === "owner" && (
-          selectUser.privilege === "admin" ? (
+        {/* Owner can give/remove admin rights */}
+        {user.privilege === "owner" &&
+          (selectUser.privilege === "admin" ? (
             <button onClick={setToDefault} className="fullwidth-button">
               Revoke moderator rights
             </button>
@@ -157,39 +156,40 @@ function UserMenuComponent() {
             <button onClick={AdminUser} className="fullwidth-button">
               Make moderator
             </button>
-          )
-        )
-      }
+          ))}
 
-      {/* Admins can give/remove mutes and bans to non admins */}
-      {
-        (user.privilege === "admin" || user.privilege === "owner")
-        && selectUser.privilege !== "owner" && selectUser.privilege !== "admin"
-        && (<>
-          {selectUser.privilege === UserPrivilege.ban ? (
-            <button onClick={setToDefault} className="fullwidth-button">
-              Unban
-            </button>
-          ) : (<>
-            <button onClick={banUser} className="fullwidth-button">
-              Ban
-            </button>
-            {/* Only show mute option if user isn't banned */}
-            {selectUser.privilege === UserPrivilege.muted ? (
-              <button onClick={setToDefault} className="fullwidth-button">
-                Unmute
-              </button>
-            ) : (
-              <button onClick={MuteUser} className="fullwidth-button">
-                Mute
-              </button>
-            )}
-          </>)}
-        </>)
-      }
-      {showTimeSelector && <ChannelTimeSelectorComponent />}
-    </div>
-  </>);
+        {/* Admins can give/remove mutes and bans to non admins */}
+        {(user.privilege === "admin" || user.privilege === "owner") &&
+          selectUser.privilege !== "owner" &&
+          selectUser.privilege !== "admin" && (
+            <>
+              {selectUser.privilege === UserPrivilege.ban ? (
+                <button onClick={setToDefault} className="fullwidth-button">
+                  Unban
+                </button>
+              ) : (
+                <>
+                  <button onClick={banUser} className="fullwidth-button">
+                    Ban
+                  </button>
+                  {/* Only show mute option if user isn't banned */}
+                  {selectUser.privilege === UserPrivilege.muted ? (
+                    <button onClick={setToDefault} className="fullwidth-button">
+                      Unmute
+                    </button>
+                  ) : (
+                    <button onClick={MuteUser} className="fullwidth-button">
+                      Mute
+                    </button>
+                  )}
+                </>
+              )}
+            </>
+          )}
+        {showTimeSelector && <ChannelTimeSelectorComponent />}
+      </div>
+    </>
+  );
 }
 
 export default UserMenuComponent;

@@ -1,20 +1,20 @@
-import { useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
 
-import './style.css';
-import { getMe } from './api/auth-api';
-import SocketContextComponent from './chat/socket-component';
-import AppHeaderComponent from './headers/AppHeader';
-import ChatHeaderComponent from './headers/ChatHeader';
-import ChatProvider from './context/chat.context';
-import HomeComponent from './home/home_index';
-import Profile from './profile/profile_component';
-import Settings from './settings/settings_component';
-import Leaderboard from './leaderboard/leaderboard_component';
-import GameIndex from './game/game-index';
-import RoomsMenuContainer from './chat/components/main';
+import "./style.css";
+import { getMe } from "./api/auth-api";
+import SocketContextComponent from "./chat/socket-component";
+import AppHeaderComponent from "./headers/AppHeader";
+import ChatHeaderComponent from "./headers/ChatHeader";
+import ChatProvider from "./context/chat.context";
+import HomeComponent from "./home/home_index";
+import Profile from "./profile/profile_component";
+import Settings from "./settings/settings_component";
+import Leaderboard from "./leaderboard/leaderboard_component";
+import GameIndex from "./game/game-index";
+import RoomsMenuContainer from "./chat/components/main";
 
-export interface IAppProps { }
+export interface IAppProps {}
 const App: React.FunctionComponent<IAppProps> = (props) => {
   useEffect(() => {
     getMe();
@@ -55,8 +55,8 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
             </div>
           </div>
         </div>
-      </SocketContextComponent >
-    </ChatProvider >
+      </SocketContextComponent>
+    </ChatProvider>
   );
 };
 export default App;
