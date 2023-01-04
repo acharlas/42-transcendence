@@ -520,7 +520,7 @@ export class MessageGateway
         .catch((err) => {
           console.log(err);
           client.emit('ErrMessage', { code: err.message });
-          return reject();
+          return reject(err);
         });
     });
   }
