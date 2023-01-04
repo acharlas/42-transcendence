@@ -1,10 +1,13 @@
 import { FunctionComponent, useContext, useRef, useState } from "react";
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
 
-export interface ItimeSelectorProps {}
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
 
-const TimeSelector: FunctionComponent<ItimeSelectorProps> = (props) => {
+export interface ItimeSelectorProps { }
+
+// Selects endtime for mutes and bans
+
+const TimeSelectorComponent: FunctionComponent<ItimeSelectorProps> = (props) => {
   const {
     setShowTimeSelector,
     showTimeSelector,
@@ -40,30 +43,24 @@ const TimeSelector: FunctionComponent<ItimeSelectorProps> = (props) => {
     setShowTimeSelector(undefined);
   };
 
-  return (
-    <div className="popup-container">
-      <div className="popup-popup">
-        <p className="time-selector-popup-title">ban until:</p>
-        {errorMsg.length !== 0 ? (
-          <p className="time-selector-popup-error">{errorMsg}</p>
-        ) : (
-          <></>
-        )}
-        <input
-          type="datetime-local"
-          name="time"
-          ref={newDateRef}
-          className="time-selector-popup-input"
-        />
-        <button onClick={handleCancel} className="time-selector-popup-button">
-          cancel
-        </button>
-        <button onClick={handleValidate} className="time-selector-popup-button">
-          validate
-        </button>
-      </div>
-    </div>
-  );
+  return (<>
+    <p className="">until:</p>
+    {errorMsg.length !== 0 && (
+      <p className="time-selector-popup-error">{errorMsg}</p>
+    )}
+    <input
+      type="datetime-local"
+      name="time"
+      ref={newDateRef}
+      className="time-selector-popup-input"
+    />
+    <button onClick={handleValidate} className="fullwidth-button">
+      validate
+    </button>
+    <button onClick={handleCancel} className="fullwidth-button">
+      cancel
+    </button>
+  </>);
 };
 
-export default TimeSelector;
+export default TimeSelectorComponent;

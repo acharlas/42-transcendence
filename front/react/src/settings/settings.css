@@ -31,8 +31,6 @@
 }
 
 .settings__icon {
-  /* margin-left: 33%; */
-  /* top: 30px; */
   color: #2c385e;
 }
 
@@ -56,7 +54,6 @@
   max-width: 100%;
   height: auto;
 
-  /* border-radius: 10px; */
   border-radius: 5%;
   border: 2px solid rgb(0, 0, 0);
   margin: auto;
@@ -64,7 +61,6 @@
 
 .settings__avatar__container {
   display: flex;
-  /* align-items: center; */
   flex-wrap: wrap;
 }
 
@@ -80,7 +76,5 @@
 }
 
 .settings__nickname__input {
-  /* display: inline-flex;
-  width: max-content; */
   flex-grow: 1;
 }

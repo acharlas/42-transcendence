@@ -239,7 +239,6 @@ export class MessageGateway
       this.channelService
         .channelUserUpdate(client.userID, toModifie, roomId, privilege, time)
         .then((ret) => {
-          console.log('uwerqwuo');
           return resolve(
             new Promise<void>((resolve, reject) => {
               this.channelService
@@ -527,7 +526,7 @@ export class MessageGateway
   }
   /*============================================*/
   /*============================================*/
-  /*remove block*/
+  /*Dm*/
   @SubscribeMessage('Dm')
   Dm(
     @MessageBody('sendTo') sendTo: string,
@@ -580,10 +579,14 @@ export class MessageGateway
             .InviteUser(client.userID, userAdd.id, channel)
             .then((room) => {
               return resolve();
+            })
+            .catch((err) => {
+              return reject(err);
             });
         })
         .catch((err) => {
-          return reject(err);
+          console.log(err);
+          return reject;
         });
     });
   }

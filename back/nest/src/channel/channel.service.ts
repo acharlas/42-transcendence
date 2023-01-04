@@ -759,9 +759,9 @@ export class ChannelService {
                     userPriv.privilege !== UserPrivilege.admin &&
                     userPriv.privilege !== UserPrivilege.owner
                   ) {
-                    return new ForbiddenException("can't modifie right");
+                    return new ForbiddenException('missing admin rights');
                   }
-                  console.log('is admin owner');
+                  console.log('is admin or owner');
                   return resolve(
                     new Promise<void>((resolve, reject) => {
                       this.prisma.channelUser
@@ -777,22 +777,20 @@ export class ChannelService {
                           },
                         })
                         .then((modifPriv) => {
-                          console.log(
-                            'aaaaaaaaaaaaaaaaaafind channelUser modifie',
-                            priv,
-                          );
+                          console.log('find channelUser modifie', priv);
                           if (modifPriv.privilege === priv) return;
                           if (
                             (modifPriv.privilege === 'admin' ||
                               modifPriv.privilege === 'owner') &&
                             (priv === 'ban' || priv === 'muted')
-                          )
+                          ) {
+                            console.log("can't ban/mute an admin/owner");
                             return reject(
                               new ForbiddenException(
-                                "can't ban/muted a admin/owner",
+                                "can't ban/mute an admin/owner",
                               ),
                             );
-                          console.log('modifie');
+                          }
                           if (priv === 'ban')
                             return resolve(
                               new Promise<void>((resolve, reject) => {
@@ -819,6 +817,13 @@ export class ChannelService {
                               }),
                             );
                           } else {
+                            //change privileges
+                            if (userPriv.privilege !== UserPrivilege.owner) {
+                              console.log('missing owner rights');
+                              return new ForbiddenException(
+                                'missing owner rights',
+                              );
+                            }
                             return resolve(
                               new Promise<void>((resolve, reject) => {
                                 this.changeUserPrivilege(
@@ -838,7 +843,7 @@ export class ChannelService {
                           }
                         })
                         .catch((err) => {
-                          console.log('errror', err);
+                          console.log('error', err);
                           return reject(err);
                         });
                     }),
@@ -1155,6 +1160,7 @@ export class ChannelService {
         })
         .then((user) => {
           if (
+            userId === userAdd ||
             !user ||
             (user.privilege !== UserPrivilege.admin &&
               user.privilege !== UserPrivilege.owner)
@@ -1291,6 +1297,9 @@ export class ChannelService {
                       }),
                     );
                   }
+                })
+                .catch((err) => {
+                  return reject(err);
                 });
             }),
           );

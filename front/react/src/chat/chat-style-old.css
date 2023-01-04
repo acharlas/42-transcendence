@@ -2,6 +2,34 @@ ul {
   list-style-type: none;
 }
 
+/* menu user */
+.menu-user-button {
+  width: min(10vw, 10vh);
+  height: min(10vw, 10vh);
+  border-radius: 10% 0 0 0;
+  border: 0px;
+
+  display: flex;
+  justify-content: center;
+
+  cursor: pointer;
+  background-color: rgb(44, 55, 95);
+  color: rgb(255, 255, 255);
+}
+
+.menu-user-button:active,
+.menu-user-button:focus,
+.menu-user-button:hover {
+  color: #eda33d;
+}
+
+.menu-user-icon {
+  display: block;
+  margin: auto;
+  width: 70%;
+  height: 70%;
+}
+
 /* chat box */
 .chat-container {
   right: 0;
@@ -20,27 +48,35 @@ ul {
 }
 
 .room-chat-message-container {
+  height: 72%;
+  overflow-y: scroll;
   word-wrap: break-word;
 }
 
-/* 
 .room-chat-option {
   height: 8%;
   width: 100%;
   overflow-y: hidden;
-} */
+}
+
+.room-chat-textbox-container {
+  top: 78%;
+  height: 15%;
+  width: 100%;
+}
 
 .room-chat-textbox {
+  height: 20%;
   width: 100%;
+  top: 80%;
   resize: none;
   outline: none;
 }
 
-/* 
 .chat-box-container {
   height: 40%;
   background: #262d4e;
-} */
+}
 
 .chat-message {
   word-wrap: break-word;
@@ -102,6 +138,7 @@ ul {
   width: 100%;
   border: 0px;
   font-weight: 700;
+  color: white;
   padding-bottom: 2%;
 }
 
@@ -135,13 +172,12 @@ ul {
 
 /* end user menu */
 
-/* create/join menu */
-/* .create-join-menu-contaner {
+/*create/join menu*/
+.create-join-menu-contaner {
   width: 100%;
   height: inherit;
-} */
+}
 
-/* 
 .create-join-menu-title {
   padding-top: 23%;
   color: white;
@@ -150,12 +186,34 @@ ul {
   margin-left: 15%;
   height: 72%;
   overflow-y: scroll;
-} */
-/* 
+}
+
 .create-join-menu-input {
   margin-bottom: 5%;
   margin-left: 5%;
-} */
+}
+
+.create-join-menu-button {
+  width: 100%;
+  height: 20%;
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid #d4d3e8;
+  text-transform: uppercase;
+  font-weight: 700;
+  align-items: center;
+  color: #2c385e;
+  box-shadow: 0px 2px 2px #2c385e;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.create-join-menu-button:active,
+.create-join-menu-button:focus,
+.create-join-menu-button:hover {
+  border-color: #2c385e;
+  outline: none;
+}
 
 /* end create /join menu */
 /*popup window*/
@@ -187,11 +245,13 @@ ul {
 }
 
 .time-selector-popup-input {
-  width: 100%;
+  width: 80%;
+  margin-left: 10%;
   cursor: pointer;
 }
 
 .time-selector-popup-title {
+  color: white;
   text-align: center;
   font-weight: 800;
   margin-bottom: 5%;
@@ -248,7 +308,7 @@ ul {
 
 /* end chat option modif*/
 /* room menu */
-/* .room-menu {
+.room-menu {
   right: 0;
   background: rgb(44, 55, 95);
   background: linear-gradient(140deg,
@@ -257,7 +317,7 @@ ul {
   width: 100%;
   height: 100%;
   word-wrap: break-word;
-} */
+}
 
 .room-menu-input-channel {
   width: 100%;
@@ -309,6 +369,7 @@ ul {
 }
 
 .room-chat-message-text {
+  color: rgb(255, 255, 255);
   font-weight: 500;
   font-size: 90%;
 }
@@ -322,6 +383,7 @@ ul {
   background: transparent;
   font-weight: 700;
   cursor: pointer;
+  color: rgb(255, 255, 255);
 }
 
 .room-chat-button-user:active,
@@ -350,6 +412,7 @@ ul {
   background: transparent;
   font-weight: 700;
   cursor: pointer;
+  color: white;
   text-overflow: ellipsis;
 }
 
@@ -551,6 +614,7 @@ ul {
   font-weight: 700;
   cursor: pointer;
   text-overflow: ellipsis;
+  color: white;
 }
 
 .room-menu-button-user-block-friend:active,
@@ -592,51 +656,3 @@ ul {
 }
 
 /* end room-menu */
-
-.fullwidth-button {
-  width: 100%;
-  background: #fff;
-  border-radius: 2px;
-  border: 1px solid #d4d3e8;
-  text-transform: uppercase;
-  font-weight: 700;
-  align-items: center;
-  color: #2c385e;
-  box-shadow: 0px 1px 1px #2c385e;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.fullwidth-button:active,
-.fullwidth-button:focus,
-.fullwidth-button:hover {
-  border-color: #2c385e;
-  outline: none;
-}
-
-.chan-list-button {
-  width: 100%;
-  background: #fff;
-  border-radius: 2px;
-  border: 1px solid #d4d3e8;
-  font-weight: 600;
-  color: #2c385e;
-  box-shadow: 0px 1px 1px #2c385e;
-  cursor: pointer;
-  transition: 0.2s;
-  text-align: left;
-  display: flex;
-  align-items: center;
-}
-
-.chan-list-button:active,
-.chan-list-button:focus,
-.chan-list-button:hover {
-  border-color: #2c385e;
-  outline: none;
-}
-
-.chan-list-button svg {
-  margin-left: 0.5em;
-  margin-right: 0.5em;
-}

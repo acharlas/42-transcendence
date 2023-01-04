@@ -142,10 +142,10 @@ export default function Profile() {
               {avatarStatus === AvatarStatus.DELETED
                 ? DefaultAvatar('settings__avatar')
                 : ReloadAvatar(
-                    window.sessionStorage.getItem('userid'),
-                    avatarReload,
-                    'settings__avatar',
-                  )}
+                  window.sessionStorage.getItem('userid'),
+                  avatarReload,
+                  'settings__avatar',
+                )}
             </div>
             <input type="file" onChange={selectFile} />
             <button
@@ -215,7 +215,7 @@ export default function Profile() {
             <div className="settings__line">
               <input
                 className="settings__line__elem settings__nickname__input"
-                placeholder="new nickname"
+                placeholder="New nickname..."
                 value={newNickname}
                 onChange={handleNewNicknameChange}
                 type="text"
@@ -469,21 +469,15 @@ export default function Profile() {
 
   return (
     <>
-      <div className="container">
-        <div className="profile__screen">
-          <div className="profile__content">
-            {avatarSettings()}
-            <br></br>
-            {nicknameSettings()}
-            <br></br>
-            {mfaSettings()}
-            <br></br>
-            {friendSettings()}
-            <br></br>
-            {blockSettings()}
-          </div>
-        </div>
-      </div>
+      {avatarSettings()}
+      <br></br>
+      {nicknameSettings()}
+      <br></br>
+      {mfaSettings()}
+      <br></br>
+      {friendSettings()}
+      <br></br>
+      {blockSettings()}
     </>
   );
 }

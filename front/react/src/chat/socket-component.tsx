@@ -1,14 +1,15 @@
-import { PropsWithChildren, useEffect, useReducer } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useChat } from '../context/chat.context';
+import { PropsWithChildren, useEffect, useReducer } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { useChat } from "../context/chat.context";
 import {
   defaultSocketContextState,
   SocketContextProvider,
   SocketReducer,
-} from '../context/socket.context';
-import { useSocket } from '../context/use-socket';
-import { ErrMessage } from './chat-error-msg';
-import { Channel, Message, Room, User, UserStatus } from './type';
+} from "../context/socket.context";
+import { useSocket } from "../context/use-socket";
+import { ErrMessage } from "./chat-error-msg";
+import { Channel, Message, Room, User, UserStatus } from "./type";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
@@ -18,7 +19,7 @@ const SocketContextComponent: React.FunctionComponent<
   const { children } = props;
   const [SocketState, SocketDispatch] = useReducer(
     SocketReducer,
-    defaultSocketContextState,
+    defaultSocketContextState
   );
   const {
     rooms,
@@ -28,37 +29,35 @@ const SocketContextComponent: React.FunctionComponent<
     setActChannel,
     setMessages,
     setUserList,
-    setShowRoomMenu,
-    setShowCreateMenu,
     actChannel,
     setUser,
     setFriendList,
     setBloquedList,
-    setShowJoinMenu,
     setSelectUser,
     setShowRoomSetting,
     setJoinErrMsg,
     setBlockErrMsg,
     setFriendErrMsg,
     setCreateErrMsg,
+    ShowRoomSetting,
   } = useChat();
 
-  const socket = useSocket('http://localhost:3333/chat', {
+  const socket = useSocket("http://localhost:3333/chat", {
     reconnectionAttempts: 5,
     reconnectionDelay: 5000,
     autoConnect: false,
     auth: {
-      token: sessionStorage.getItem('AccessToken'),
+      token: sessionStorage.getItem("AccessToken"),
     },
   });
   let navigate = useNavigate();
 
   useEffect(() => {
     /** connect to the web socket */
-    console.log('SOCKET CONNECT');
+    console.log("SOCKET CONNECT");
     socket.connect();
     /** save socket in context */
-    SocketDispatch({ type: 'update_socket', payload: socket });
+    SocketDispatch({ type: "update_socket", payload: socket });
   }, [socket]);
 
   useEffect(() => {
@@ -66,37 +65,37 @@ const SocketContextComponent: React.FunctionComponent<
     socket.removeAllListeners();
     const StartListener = () => {
       /**error receive */
-      socket.on('ErrMessage', ({ code }: { code: string }) => {
+      socket.on("ErrMessage", ({ code }: { code: string }) => {
         console.log(
-          'erreur aarrived: ',
+          "error received: ",
           code,
-          'err message: ',
-          ErrMessage[code],
+          "err message: ",
+          ErrMessage[code]
         );
-        if (code.search('err1') >= 0) {
+        if (code.search("err1") >= 0) {
           setFriendErrMsg(ErrMessage[code]);
-        } else if (code.search('err2') >= 0) {
+        } else if (code.search("err2") >= 0) {
           setBlockErrMsg(ErrMessage[code]);
-        } else if (code.search('err3') >= 0) {
+        } else if (code.search("err3") >= 0) {
           setCreateErrMsg(ErrMessage[code]);
-        } else if (code.search('err4') >= 0) {
+        } else if (code.search("err4") >= 0) {
           setJoinErrMsg(ErrMessage[code]);
         }
       });
       /**disconnect */
-      socket.on('Disconnect', () => {
-        console.log('disconnect');
+      socket.on("Disconnect", () => {
+        console.log("disconnect");
         window.sessionStorage.clear();
         socket.disconnect();
-        navigate('/');
+        navigate("/");
       });
       /**user is ban from chan */
-      socket.on('UserBan', (roomId) => {
-        console.log('you have been ban from: ', roomId);
+      socket.on("UserBan", (roomId) => {
+        console.log("you have been ban from: ", roomId);
       });
       /**remove a room */
-      socket.on('RemoveRoom', (channelId) => {
-        console.log('remove room: ', channelId);
+      socket.on("RemoveRoom", (channelId) => {
+        console.log("remove room: ", channelId);
         const newRooms = rooms.filter((room) => {
           if (room.channel.id === channelId) return false;
           return true;
@@ -108,8 +107,8 @@ const SocketContextComponent: React.FunctionComponent<
         }
       });
       /**update an existing channel */
-      socket.on('UpdateRoom', (updateChan: Channel) => {
-        console.log('update channel: ', { updateChan });
+      socket.on("UpdateRoom", (updateChan: Channel) => {
+        console.log("update channel: ", { updateChan });
         const newRoom = rooms.map((room) => {
           if (room.channel.id === updateChan.id)
             return {
@@ -122,18 +121,18 @@ const SocketContextComponent: React.FunctionComponent<
         setRooms(newRoom);
       });
       /**receive a friend list */
-      socket.on('FriendList', (friendList: User[]) => {
+      socket.on("FriendList", (friendList: User[]) => {
         setFriendList(friendList);
-        console.log('receive friendlist:', { friendList });
+        console.log("receive friendlist:", { friendList });
       });
       /**receive the bloqued user list */
-      socket.on('BloquedList', (bloquedList: User[]) => {
+      socket.on("BloquedList", (bloquedList: User[]) => {
         setBloquedList(bloquedList);
-        console.log('receive bloquelist: ', { bloquedList });
+        console.log("receive bloquelist: ", { bloquedList });
       });
       /** A new User join a room*/
-      socket.on('JoinRoom', ({ id, user }: { id: string; user: User }) => {
-        console.log('user: ', user, 'join room: ', id);
+      socket.on("JoinRoom", ({ id, user }: { id: string; user: User }) => {
+        console.log("user: ", user, "join room: ", id);
         const newRooms = [...rooms];
         const room = newRooms.find((room) => {
           if (room.channel.id === id) return true;
@@ -158,9 +157,9 @@ const SocketContextComponent: React.FunctionComponent<
       });
       /**receive Room message */
       socket.on(
-        'RoomMessage',
+        "RoomMessage",
         ({ roomId, message }: { roomId: string; message: Message }) => {
-          console.log('message receive on: ', roomId, ' message: ', {
+          console.log("message receive on: ", roomId, " message: ", {
             message,
           });
           const newRooms = [...rooms];
@@ -172,37 +171,35 @@ const SocketContextComponent: React.FunctionComponent<
           if (room.channel.id !== actChannel) room.newMessage = true;
           setRooms(newRooms);
           if (roomId === actChannel) setMessages(room.message);
-        },
+        }
       );
       /**add a new room */
-      socket.on('NewRoom', ({ room, itch }: { room: Room; itch: Boolean }) => {
-        console.log('new room receive: ', room, 'try to create: ', [
+      socket.on("NewRoom", ({ room, itch }: { room: Room; itch: Boolean }) => {
+        console.log("new room receive: ", room, "try to create: ", [
           ...rooms,
           room,
         ]);
         setRooms([...rooms, room]);
-        if (itch) {
-          setMessages(room.message);
-          setUserList(room.user);
-          setActChannel(room.channel.id);
-        }
+        // if (itch) {
+        setMessages(room.message);
+        setUserList(room.user);
+        setActChannel(room.channel.id);
+        // }
         const user = room.user.find((user) => {
-          if (user.username === window.sessionStorage.getItem('username'))
+          if (user.username === window.sessionStorage.getItem("username"))
             return true;
           return false;
         });
-        if (itch) {
-          setUser(user);
-          setShowCreateMenu(false);
-          setShowRoomMenu(false);
-          setSelectUser(null);
-          setShowJoinMenu(false);
-          setShowRoomSetting(null);
-        }
+        // if (itch) {
+        setUser(user);
+        setSelectUser(null);
+        setShowRoomSetting(room);
+        // }
+        setActChannel(room.channel.id);
       });
       /**room list */
-      socket.on('Rooms', (res: Room[]) => {
-        console.log('room receive:', res);
+      socket.on("Rooms", (res: Room[]) => {
+        console.log("room receive:", res);
         res.forEach((room) => {
           room.newMessage = false;
         });
@@ -210,9 +207,9 @@ const SocketContextComponent: React.FunctionComponent<
       });
       /**UserList update */
       socket.on(
-        'UpdateUserList',
+        "UpdateUserList",
         ({ user, roomId }: { user: User[]; roomId: string }) => {
-          console.log('updateUserList', user);
+          console.log("updateUserList", user);
           const newRooms = rooms.map((room) => {
             if (room.channel.id === roomId) {
               room.user = [...user];
@@ -230,21 +227,21 @@ const SocketContextComponent: React.FunctionComponent<
           if (actChannel === roomId) {
             setUserList(user);
             const newUser = room.user.find((user) => {
-              if (user.username === window.sessionStorage.getItem('username'))
+              if (user.username === window.sessionStorage.getItem("username"))
                 return true;
               return false;
             });
             console.log(user);
             setUser({ ...newUser });
-            console.log('userList', userList, 'priv: ', newUser.privilege);
+            console.log("userList", userList, "priv: ", newUser.privilege);
           }
-        },
+        }
       );
       /**set a user disconected */
       socket.on(
-        'RemoveUser',
+        "RemoveUser",
         ({ username, roomId }: { username: string; roomId: string }) => {
-          console.log('user: ', username, 'disconnect from: ', roomId);
+          console.log("user: ", username, "disconnect from: ", roomId);
           const newRooms = rooms.map((room) => {
             if (room.channel.id === roomId)
               return {
@@ -264,32 +261,40 @@ const SocketContextComponent: React.FunctionComponent<
             return room;
           });
           setRooms(newRooms);
-        },
+          if (roomId === ShowRoomSetting.channel.id) {
+            setShowRoomSetting(
+              newRooms.find((room) => {
+                if (room.channel.id === roomId) return true;
+                return false;
+              })
+            );
+          }
+        }
       );
       /** receive new id */
-      socket.on('new_user', (uid: string) => {
-        console.log('User connected, new user receive', uid, 'last uid');
-        SocketDispatch({ type: 'update_uid', payload: uid });
+      socket.on("new_user", (uid: string) => {
+        console.log("User connected, new user receive", uid, "last uid");
+        SocketDispatch({ type: "update_uid", payload: uid });
       });
       /** reconnect event*/
-      socket.io.on('reconnect', (attempt) => {
-        console.log('reconnect on attempt: ' + attempt);
+      socket.io.on("reconnect", (attempt) => {
+        console.log("reconnect on attempt: " + attempt);
       });
 
       /**reconnect attempt event */
-      socket.io.on('reconnect_attempt', (attempt) => {
-        console.log('reconnect on attempt: ' + attempt);
+      socket.io.on("reconnect_attempt", (attempt) => {
+        console.log("reconnect on attempt: " + attempt);
       });
 
       /**Reconnection error */
-      socket.io.on('reconnect_error', (error) => {
-        console.log('reconnect error: ' + error);
+      socket.io.on("reconnect_error", (error) => {
+        console.log("reconnect error: " + error);
       });
 
       /**Reconnection failed */
-      socket.io.on('reconnect_failed', () => {
-        console.log('reconnection failed ');
-        alert('we are unable to reconnect you to the web socket');
+      socket.io.on("reconnect_failed", () => {
+        console.log("reconnection failed ");
+        alert("we are unable to reconnect you to the web socket");
       });
     };
     StartListener();
@@ -302,10 +307,8 @@ const SocketContextComponent: React.FunctionComponent<
     setUserList,
     setMessages,
     setRooms,
-    setShowCreateMenu,
     setUser,
     setActChannel,
-    setShowRoomMenu,
     navigate,
     setBlockErrMsg,
     setBloquedList,
@@ -313,7 +316,6 @@ const SocketContextComponent: React.FunctionComponent<
     setFriendErrMsg,
     setJoinErrMsg,
     setSelectUser,
-    setShowJoinMenu,
     setShowRoomSetting,
     setFriendList,
   ]);
@@ -326,5 +328,3 @@ const SocketContextComponent: React.FunctionComponent<
 };
 
 export default SocketContextComponent;
-
-// export default Chat;

@@ -68,6 +68,12 @@ const SocketGameContextComponent: React.FunctionComponent<
         console.log("user: ", uid, " leave the lobby");
         Removeplayer(uid);
       });
+      /** you leave the lobby */
+      socket.on("LeaveLobby", (lobbyId: string) => {
+        console.log("you leave the lobby: ", lobbyId);
+        setInQueue(false);
+        setLobby(null);
+      });
       /** receive new id */
       socket.on("new_user", (uid: string) => {
         console.log("User connected, new user receive", uid, "last uid");

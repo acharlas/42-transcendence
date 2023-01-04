@@ -1,14 +1,16 @@
 import { useContext, useEffect, useRef } from "react";
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
-import { HiPlusSm, HiXCircle } from "react-icons/hi";
-import "./chat-style.css";
-import { ChannelType, User, UserPrivilege } from "./type";
-import UserMenu from "./chat-user-menu";
-import TimeSelector from "./chat-time-selector";
-import InviteUser from "./chat-invite-user";
 
-function MessagesComponent() {
+import "../chat-style.css";
+import { ChannelType, User, UserPrivilege } from "../type";
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
+import RoomUserMenuComponent from "./room-user-menu";
+import ChannelInviteComponent from "./channel-invite";
+import ChannelSettingsComponent from "./channel-settings";
+import ChannelLeaveComponent from "./channel-leave";
+import ChannelUserListComponent from "./channel-user-list";
+
+function RoomComponent() {
   const newMessageRef = useRef(null);
   const bottomRef = useRef(null);
   const {
@@ -19,11 +21,7 @@ function MessagesComponent() {
     setSelectUser,
     selectUser,
     user,
-    showTimeSelector,
     bloquedList,
-    closeChatBox,
-    setShowInviteUser,
-    showInviteUser,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
@@ -34,8 +32,6 @@ function MessagesComponent() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   });
-
-  // bottomRef.current?.scrollIntoView({ behavior: "smooth" });
 
   function handleSendMessage() {
     const message = newMessageRef.current.value;
@@ -59,7 +55,7 @@ function MessagesComponent() {
     }
   }
 
-  const handleShowUser = ({ user }: { user: User }) => {
+  const handleSelectUser = ({ user }: { user: User }) => {
     if (selectUser && selectUser.username === user.username)
       setSelectUser(undefined);
     else setSelectUser(user);
@@ -73,54 +69,46 @@ function MessagesComponent() {
     }
   };
 
-  const handleCloseChat = (event) => {
-    closeChatBox();
-  };
-
-  const affInviteUserButton = (): boolean => {
-    const room = rooms.find((room) => {
-      if (room.channel.id === actChannel) return true;
-      return false;
-    });
-    if (
+  const room = rooms.find((room) => { return (room.channel.id === actChannel); });
+  const affInvite = (): boolean => {
+    return (room &&
       room.channel.type === ChannelType.private &&
       (user.privilege === UserPrivilege.admin ||
         user.privilege === UserPrivilege.owner)
-    ) {
-      console.log("true");
-      return true;
-    }
-    return false;
+    );
   };
-
-  const handleInviteUser = () => {
-    setShowInviteUser(true);
+  const affSettings = (): boolean => {
+    return (room &&
+      room.channel.type !== ChannelType.dm &&
+      (user.privilege === UserPrivilege.admin ||
+        user.privilege === UserPrivilege.owner)
+    );
   };
+  const affLeave = (): boolean => {
+    return (room &&
+      room.channel.type !== ChannelType.dm &&
+      (user.privilege !== UserPrivilege.admin &&
+        user.privilege !== UserPrivilege.owner)
+    );
+  };
+  const getChannelName = (): string => {
+    return (room?.channel?.name || "Chat");
+  }
 
   if (!actChannel) return <></>;
-  return (
-    <div className="chat-box-container">
-      <div className="room-chat-option">
-        <button onClick={handleCloseChat} className="chat-box-button">
-          <HiXCircle className="chat-box-button-icon" />
-        </button>
-        {affInviteUserButton() && (
-          <button onClick={handleInviteUser} className="chat-box-button">
-            <HiPlusSm className="chat-box-button-icon" />
-          </button>
-        )}
-        {selectUser ? <UserMenu /> : <></>}
-      </div>
+  return (<>
+    <div className="profile__panel__top">
+      {getChannelName()}
+    </div>
+    <div className="profile__panel__bottom">
       <div className="room-chat-message-container">
         {messages.map((message, index) => {
           const msgUser = userList.find((user) => {
-            if (user.username === message.username) return true;
-            return false;
+            return (user.username === message.username);
           });
           if (
             !bloquedList.find((bloque) => {
-              if (bloque.username === message.username) return true;
-              return false;
+              return (bloque.username === message.username);
             })
           )
             return (
@@ -128,7 +116,7 @@ function MessagesComponent() {
                 <button
                   className="room-chat-button-user"
                   onClick={() =>
-                    handleShowUser({
+                    handleSelectUser({
                       user: msgUser,
                     })
                   }
@@ -146,14 +134,17 @@ function MessagesComponent() {
 
       <textarea
         className="room-chat-textbox"
-        placeholder="time to talk"
+        placeholder="New message..."
         ref={newMessageRef}
         onKeyDown={handleEnter}
       />
-      {showTimeSelector && <TimeSelector />}
-      {showInviteUser && <InviteUser />}
     </div>
-  );
+    {affSettings() && <ChannelUserListComponent {...room} />}
+    {selectUser && <RoomUserMenuComponent />}
+    {affSettings() && <ChannelSettingsComponent />}
+    {affLeave() && <ChannelLeaveComponent />}
+    {affInvite() && <ChannelInviteComponent />}
+  </>);
 }
 
-export default MessagesComponent;
+export default RoomComponent;

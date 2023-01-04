@@ -1,7 +1,17 @@
 import { createContext, useContext, useState } from "react";
 import { Message, Room, User, UserPrivilege } from "../chat/type";
 
+export enum SelectedChatWindow {
+  NONE = "None",
+  CHANNELS = "Channels",
+  MESSAGES = "Messages",
+  FRIENDLIST = "Friendlist",
+  BLOCKLIST = "Blocklist",
+}
+
 export interface IoChatContextState {
+  selectedChatWindow: SelectedChatWindow,
+  setSelectedChatWindow: Function,
   rooms: Room[];
   setRooms: Function;
   user: User | undefined;
@@ -12,34 +22,18 @@ export interface IoChatContextState {
   setUserList: Function;
   actChannel: string | undefined;
   setActChannel: Function;
-  showRoomMenu: boolean;
-  setShowRoomMenu: Function;
-  showCreateMenu: boolean;
-  setShowCreateMenu: Function;
   selectUser: User | undefined;
   setSelectUser: Function;
   showTimeSelector: UserPrivilege | undefined;
   setShowTimeSelector: Function;
-  showChannel: boolean | undefined;
-  setShowChannel: Function;
-  showFriend: boolean | undefined;
-  setShowFriend: Function;
-  showBloqued: boolean;
-  setShowBloqued: Function;
   friendList: User[] | undefined;
   setFriendList: Function;
   bloquedList: User[] | undefined;
   setBloquedList: Function;
-  showJoinMenu: boolean;
-  setShowJoinMenu: Function;
   ShowRoomSetting: Room | undefined;
   setShowRoomSetting: Function;
-  showDm: Boolean;
-  setShowDm: Function;
   closeChatBox: Function;
   setNewRoom: Function;
-  showChat: boolean;
-  setShowChat: Function;
   JoinErrMsg: string;
   setJoinErrMsg: Function;
   CreateErrMsg: string;
@@ -48,96 +42,68 @@ export interface IoChatContextState {
   setFriendErrMsg: Function;
   BlockErrMsg: string;
   setBlockErrMsg: Function;
-  showInviteUser: boolean;
-  setShowInviteUser: Function;
   resetErrMsg: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
+  selectedChatWindow: undefined,
+  setSelectedChatWindow: () => { },
   rooms: [],
-  setRooms: () => {},
+  setRooms: () => { },
   user: undefined,
-  setUser: () => {},
+  setUser: () => { },
   messages: [],
-  setMessages: () => {},
+  setMessages: () => { },
   userList: [],
-  setUserList: () => {},
+  setUserList: () => { },
   actChannel: "",
-  setActChannel: () => {},
-  showRoomMenu: false,
-  setShowRoomMenu: () => {},
-  showCreateMenu: false,
-  setShowCreateMenu: () => {},
+  setActChannel: () => { },
   selectUser: undefined,
-  setSelectUser: () => {},
+  setSelectUser: () => { },
   showTimeSelector: undefined,
-  setShowTimeSelector: () => {},
-  showChannel: false,
-  setShowChannel: () => {},
-  showFriend: false,
-  setShowFriend: () => {},
-  showBloqued: false,
-  setShowBloqued: () => {},
+  setShowTimeSelector: () => { },
   friendList: undefined,
-  setFriendList: () => {},
+  setFriendList: () => { },
   bloquedList: undefined,
-  setBloquedList: () => {},
-  showJoinMenu: false,
-  setShowJoinMenu: () => {},
+  setBloquedList: () => { },
   ShowRoomSetting: undefined,
-  setShowRoomSetting: () => {},
-  showDm: false,
-  setShowDm: () => {},
-  closeChatBox: () => {},
-  setNewRoom: () => {},
-  showChat: false,
-  setShowChat: () => {},
+  setShowRoomSetting: () => { },
+  closeChatBox: () => { },
+  setNewRoom: () => { },
   JoinErrMsg: undefined,
-  setJoinErrMsg: () => {},
+  setJoinErrMsg: () => { },
   CreateErrMsg: undefined,
-  setCreateErrMsg: () => {},
+  setCreateErrMsg: () => { },
   FriendErrMsg: undefined,
-  setFriendErrMsg: () => {},
+  setFriendErrMsg: () => { },
   BlockErrMsg: undefined,
-  setBlockErrMsg: () => {},
-  showInviteUser: false,
-  setShowInviteUser: () => {},
-  resetErrMsg: () => {},
+  setBlockErrMsg: () => { },
+  resetErrMsg: () => { },
 });
 
 function ChatProvider(props: any) {
+  const [selectedChatWindow, setSelectedChatWindow] = useState<SelectedChatWindow>(SelectedChatWindow.CHANNELS);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [user, setUser] = useState<User>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [userList, setUserList] = useState<User[]>([]);
   const [actChannel, setActChannel] = useState<string>("");
-  const [showRoomMenu, setShowRoomMenu] = useState<boolean>(false);
-  const [showCreateMenu, setShowCreateMenu] = useState<boolean>(false);
   const [selectUser, setSelectUser] = useState<User>();
   const [showTimeSelector, setShowTimeSelector] = useState<UserPrivilege>(null);
-  const [showChannel, setShowChannel] = useState<boolean>(false);
-  const [showFriend, setShowFriend] = useState<boolean>(false);
-  const [showBloqued, setShowBloqued] = useState<boolean>(false);
   const [friendList, setFriendList] = useState<User[]>([]);
   const [bloquedList, setBloquedList] = useState<User[]>([]);
-  const [showJoinMenu, setShowJoinMenu] = useState<boolean>(false);
   const [ShowRoomSetting, setShowRoomSetting] = useState<Room>(null);
-  const [showDm, setShowDm] = useState<boolean>(false);
-  const [showChat, setShowChat] = useState<boolean>(false);
   const [JoinErrMsg, setJoinErrMsg] = useState<string>("");
   const [CreateErrMsg, setCreateErrMsg] = useState<string>("");
   const [FriendErrMsg, setFriendErrMsg] = useState<string>("");
   const [BlockErrMsg, setBlockErrMsg] = useState<string>("");
-  const [showInviteUser, setShowInviteUser] = useState<boolean>(false);
 
   const closeChatBox = () => {
     setMessages([]);
     setActChannel(null);
     setShowRoomSetting(null);
-    setShowJoinMenu(false);
     setShowTimeSelector(null);
     setSelectUser(null);
-    setShowCreateMenu(null);
     setUserList([]);
     resetErrMsg();
   };
@@ -151,6 +117,7 @@ function ChatProvider(props: any) {
 
   const setNewRoom = (room: Room) => {
     setSelectUser(null);
+    setShowRoomSetting(room);
     setActChannel(room.channel.id);
     setMessages(room.message);
     setUserList(room.user);
@@ -166,6 +133,8 @@ function ChatProvider(props: any) {
   return (
     <ChatContext.Provider
       value={{
+        selectedChatWindow,
+        setSelectedChatWindow,
         selectUser,
         setSelectUser,
         userList,
@@ -178,32 +147,16 @@ function ChatProvider(props: any) {
         setMessages,
         user,
         setUser,
-        showRoomMenu,
-        setShowRoomMenu,
-        showCreateMenu,
-        setShowCreateMenu,
         showTimeSelector,
         setShowTimeSelector,
-        showBloqued,
-        setShowBloqued,
-        showChannel,
-        setShowChannel,
-        showFriend,
-        setShowFriend,
         friendList,
         setFriendList,
         bloquedList,
         setBloquedList,
-        showJoinMenu,
-        setShowJoinMenu,
         ShowRoomSetting,
         setShowRoomSetting,
-        showDm,
-        setShowDm,
         closeChatBox,
         setNewRoom,
-        showChat,
-        setShowChat,
         JoinErrMsg,
         setJoinErrMsg,
         CreateErrMsg,
@@ -212,8 +165,6 @@ function ChatProvider(props: any) {
         setFriendErrMsg,
         BlockErrMsg,
         setBlockErrMsg,
-        showInviteUser,
-        setShowInviteUser,
         resetErrMsg,
       }}
       {...props}

@@ -1,11 +1,11 @@
 import { FunctionComponent, useContext, useRef, useState } from "react";
-import { HiXCircle } from "react-icons/hi";
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
-import ChatOwnerPopupComponent from "./chat-owner-leaving";
-import { ChannelType, UserStatus } from "./type";
 
-export interface IChatOptionProps {}
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
+import ChannelOwnerLeavingComponent from "./channel-owner-leaving";
+import { ChannelType, UserStatus } from "../type";
+
+export interface IChatOptionProps { }
 
 interface iUpdateChannelDto {
   name?: string;
@@ -13,14 +13,13 @@ interface iUpdateChannelDto {
   password?: string;
 }
 
-const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
+const ChannelSettingsComponent: FunctionComponent<IChatOptionProps> = (props) => {
   const newPassword = useRef(null);
   const [type, setType] = useState<ChannelType>(ChannelType.public);
   const { socket } = useContext(SocketContext).SocketState;
   const {
     setShowRoomSetting,
     ShowRoomSetting,
-    closeChatBox,
     CreateErrMsg,
     setCreateErrMsg,
   } = useChat();
@@ -45,7 +44,7 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
 
     if (type !== ShowRoomSetting.channel.type) {
       if (type === ChannelType.protected && !password) {
-        setCreateErrMsg("protected room must have a password");
+        setCreateErrMsg("a protected room needs a password");
         return;
       } else {
         updateChannelDto.password = password;
@@ -56,7 +55,7 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
       ShowRoomSetting.channel.type === ChannelType.protected
     ) {
       if (!password) {
-        setCreateErrMsg("protected room must have a password");
+        setCreateErrMsg("a protected room needs a password");
         return;
       }
       updateChannelDto.type = ChannelType.protected;
@@ -80,10 +79,6 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
       newPassword.current.value = "";
   };
 
-  const handleCloseMenu = (event) => {
-    closeChatBox();
-  };
-
   const handleLeaveRoom = (event) => {
     const u = ShowRoomSetting.user.filter((user) => {
       if (user.status === UserStatus.disconnected) return false;
@@ -98,67 +93,55 @@ const ChatOptionComponent: FunctionComponent<IChatOptionProps> = (props) => {
     setShowPopup(true);
   };
 
-  return (
-    <>
-      <div className="chat-box-container">
-        {showPopup ? (
-          <ChatOwnerPopupComponent setShowPopup={setShowPopup} />
-        ) : (
-          <></>
+  return (<>
+    <div className="profile__panel__top">
+      Channel settings
+    </div>
+    <div className="profile__panel__bottom">
+      <form className="create-join-menu-title">
+        {CreateErrMsg && (
+          <p className="room-chat-err-message">{CreateErrMsg}</p>
         )}
-        <div className="room-chat-option">
-          <button onClick={handleCloseMenu} className="chat-box-button">
-            <HiXCircle className="chat-box-button-icon" />
-          </button>
-        </div>
-        <form className="create-join-menu-title">
-          {CreateErrMsg ? (
-            <p className="room-chat-err-message">{CreateErrMsg}</p>
-          ) : (
-            <></>
-          )}
-          Room Name:
-          <input
-            ref={newRoomRef}
-            placeholder="Room name..."
-            className="create-join-menu-input"
-          />
-          <p />
-          Room Type:
-          <select
-            onChange={handleChangeSelect}
-            value={type}
-            name="channel type"
-            id="channel-select"
-            className="create-join-menu-input"
-          >
-            <option value={ChannelType.public}>public</option>
-            <option value={ChannelType.protected}>protected</option>
-            <option value={ChannelType.private}>private</option>
-          </select>
-          {type === ChannelType.protected ? (
-            <>
-              <p />
-              Password:
-              <input
-                ref={newPassword}
-                placeholder="Password optional..."
-                className="create-join-menu-input"
-              />
-            </>
-          ) : (
-            <></>
-          )}
-        </form>
-        <button className="option-menu-button" onClick={handleUpdateRoom}>
-          {"update Room"}
-        </button>
-        <button className="option-menu-button" onClick={handleLeaveRoom}>
-          {"Leave Room"}
-        </button>
-      </div>
-    </>
-  );
+        <p>Name:</p>
+        <input
+          ref={newRoomRef}
+          placeholder="New name..."
+          className="create-join-menu-input"
+        />
+        <p>Room Type:</p>
+        <select
+          onChange={handleChangeSelect}
+          value={type}
+          name="channel type"
+          id="channel-select"
+          className="create-join-menu-input"
+        >
+          <option value={ChannelType.public}>public</option>
+          <option value={ChannelType.protected}>protected</option>
+          <option value={ChannelType.private}>private</option>
+        </select>
+        {type === ChannelType.protected && (
+          <>
+            Password:
+            <input
+              ref={newPassword}
+              placeholder="Password..."
+              className="create-join-menu-input"
+            />
+          </>
+        )}
+      </form>
+      <button className="fullwidth-button" onClick={handleUpdateRoom}>
+        {"Update Room"}
+      </button>
+      <button className="fullwidth-button" onClick={handleLeaveRoom}>
+        {"Leave Room"}
+      </button>
+      {showPopup && (
+        <ChannelOwnerLeavingComponent setShowPopup={setShowPopup} />
+      )}
+    </div>
+  </>);
 };
 
-export default ChatOptionComponent;
+export default ChannelSettingsComponent;

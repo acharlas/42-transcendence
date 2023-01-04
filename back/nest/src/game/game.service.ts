@@ -52,10 +52,13 @@ export class GameService {
   async LeaveLobby(userId: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const lobbyId = this.LobbyList.find((lobby) => {
-        if (lobby.playerOne === userId || lobby.playerTwo === userId)
+        console.log({ lobby });
+        if (lobby && (lobby.playerOne === userId || lobby.playerTwo === userId))
           return true;
         return false;
       }).id;
+      if (!lobbyId)
+        return reject(new ForbiddenException("user isn't in a lobby"));
       this.LobbyList = this.LobbyList.map((lobby) => {
         if (lobby.playerTwo === null) return;
         if (lobby.playerOne === userId) {

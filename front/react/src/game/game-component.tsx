@@ -12,16 +12,32 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     socket.emit("JoiningQueue");
   };
 
+  const handleCreateLobbyClick = () => {
+    socket.emit("CreateLobby");
+  };
+
+  const handleLeavingLobbyClick = () => {
+    socket.emit("LeavingLobby");
+  };
+
   return (
     <div>
-      {inQueue ? (
-        <button>waiting for player</button>
-      ) : (
-        <button onClick={handleClick}>join matchmaking</button>
-      )}
-      {lobby && (
+      {socket ? <>salut: {socket.id}</> : <></>}
+      {lobby ? (
         <>
           <button>{lobby.playerOne}</button> <button>{lobby.playerTwo}</button>
+          <button onClick={handleLeavingLobbyClick}>Leave lobby</button>
+        </>
+      ) : (
+        <>
+          {inQueue ? (
+            <button>waiting for player</button>
+          ) : (
+            <>
+              <button onClick={handleClick}>join matchmaking</button>
+              <button onClick={handleCreateLobbyClick}>create lobby</button>
+            </>
+          )}
         </>
       )}
     </div>

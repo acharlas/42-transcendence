@@ -1,13 +1,14 @@
 import { FunctionComponent, useContext, useState } from "react";
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
-import { UserPrivilege, UserStatus } from "./type";
+
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
+import { UserPrivilege, UserStatus } from "../type";
 
 export interface IChatOwnerPopupContainerProps {
   setShowPopup: Function;
 }
 
-const ChatOwnerPopupComponent: FunctionComponent<
+const ChannelOwnerLeavingComponent: FunctionComponent<
   IChatOwnerPopupContainerProps
 > = ({ setShowPopup }: { setShowPopup: Function }) => {
   const [newUser, setUser] = useState<string>("");
@@ -42,23 +43,21 @@ const ChatOwnerPopupComponent: FunctionComponent<
   };
 
   return (
-    <div className="popup-container">
-      <div className="popup-popup">
-        <p className="time-selector-popup-title">Choose a new owner:</p>
-        {errorMsg.length !== 0 ? (
-          <p className="time-selector-popup-error">{errorMsg}</p>
-        ) : (
-          <></>
-        )}
-        <select
-          onChange={handleChangeSelect}
-          value={newUser}
-          name="New Owner"
-          id="owner-select"
-          className="time-selector-popup-input"
-        >
-          <option value=""></option>
-          {ShowRoomSetting.user.map((user, id) => {
+    <>
+      <p>Please choose a new owner before leaving:</p>
+      {errorMsg.length !== 0 && (
+        <p className="time-selector-popup-error">{errorMsg}</p>
+      )}
+      <select
+        onChange={handleChangeSelect}
+        value={newUser}
+        name="New Owner"
+        id="owner-select"
+        className="time-selector-popup-input"
+      >
+        <option value=""></option>
+        {ShowRoomSetting &&
+          ShowRoomSetting.user.map((user, id) => {
             if (
               user.status === UserStatus.connected &&
               user.privilege !== UserPrivilege.ban &&
@@ -71,16 +70,15 @@ const ChatOwnerPopupComponent: FunctionComponent<
               );
             return null;
           })}
-        </select>
-        <button onClick={handleCancel} className="time-selector-popup-button">
-          cancel
-        </button>
-        <button onClick={handleValidate} className="time-selector-popup-button">
-          validate
-        </button>
-      </div>
-    </div>
+      </select>
+      <button onClick={handleValidate} className="fullwidth-button">
+        validate
+      </button>
+      <button onClick={handleCancel} className="fullwidth-button">
+        cancel
+      </button>
+    </>
   );
 };
 
-export default ChatOwnerPopupComponent;
+export default ChannelOwnerLeavingComponent;

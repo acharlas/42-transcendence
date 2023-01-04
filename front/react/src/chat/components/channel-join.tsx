@@ -1,13 +1,13 @@
 import { useContext, useRef } from "react";
-import { HiXCircle } from "react-icons/hi";
-import { useChat } from "../context/chat.context";
-import SocketContext from "../context/socket.context";
 
-function JoinNewRoomComponent() {
+import { useChat } from "../../context/chat.context";
+import SocketContext from "../../context/socket.context";
+
+function ChannelJoinComponent() {
   const newRoomRef = useRef(null);
   const newPassRef = useRef(null);
   const { socket } = useContext(SocketContext).SocketState;
-  const { setShowJoinMenu, JoinErrMsg } = useChat();
+  const { JoinErrMsg } = useChat();
 
   const handleJoinRoom = (event) => {
     const name = newRoomRef.current.value || "";
@@ -22,42 +22,31 @@ function JoinNewRoomComponent() {
     if (newRoomRef.current) newRoomRef.current.value = "";
   };
 
-  const handleCloseMenu = (event) => {
-    setShowJoinMenu(false);
-  };
-
   return (
     <div className="chat-box-container">
-      <div className="room-chat-option">
-        <button onClick={handleCloseMenu} className="chat-box-button">
-          <HiXCircle className="chat-box-button-icon" />
-        </button>
-      </div>
       <form className="create-join-menu-title">
-        {JoinErrMsg ? (
+        {JoinErrMsg && (
           <p className="room-chat-err-message">{JoinErrMsg}</p>
-        ) : (
-          <></>
         )}
-        Join Name:
+        Name:
         <input
           ref={newRoomRef}
-          placeholder="Room name..."
+          placeholder="Name..."
           className="create-join-menu-input"
         />
         <p />
-        Room password
+        Password (if protected):
         <input
           ref={newPassRef}
-          placeholder="Room password (optional) ..."
+          placeholder="Password..."
           className="create-join-menu-input"
         />
       </form>
-      <button className="create-join-menu-button" onClick={handleJoinRoom}>
-        JOIN ROOM
+      <button className="fullwidth-button" onClick={handleJoinRoom}>
+        JOIN
       </button>
     </div>
   );
 }
 
-export default JoinNewRoomComponent;
+export default ChannelJoinComponent;
