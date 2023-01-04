@@ -17,18 +17,18 @@ Deploy project with:
 
 ### Front
 
-`localhost:3001/`
+http://localhost:3001/
 
 ### OpenApi (swagger)
 
-`localhost:3333/docs`
+http://localhost:3333/docs/
 
 ## Env files templates
 
 *  frontend: `/front/react/.env` (exposed to the public - no secrets here!)
 ```
-REACT_APP_42API_REDIRECT="http://localhost:3001/42-redirect"
-REACT_APP_42API_UID="REPLACE"
+REACT_APP_42API_REDIRECT='http://localhost:3001/42-redirect'
+REACT_APP_42API_UID='REPLACE'
 ```
 
 * backend: `/back/nest/.env`
