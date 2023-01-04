@@ -197,7 +197,7 @@ function ChatMainComponent() {
           <ChannelJoinComponent />
         </div>
         <div className="profile__panel__top">
-          Create channel {socket ? <p>{socket.id}</p> : <></>}
+          Create channel
         </div>
         <div className="profile__panel__bottom">
           <ChannelCreationComponent />
