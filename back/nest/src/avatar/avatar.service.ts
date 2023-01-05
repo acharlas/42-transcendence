@@ -54,7 +54,6 @@ export class AvatarService {
         console.log(file);
         return new StreamableFile(file);
       } catch (e) {
-        
         throw new NotFoundException();
       }
   }

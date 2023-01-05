@@ -9,6 +9,12 @@ export enum UserStatus {
   invited = "invited",
 }
 
+export enum ConnectionStatus {
+  offline = "offline",
+  online = "online",
+  ingame = "ingame",
+}
+
 export enum ChannelType {
   public = "public",
   private = "private",
@@ -43,4 +49,5 @@ export interface User {
   id: string;
   privilege: UserPrivilege;
   status: UserStatus;
+  connectionStatus: ConnectionStatus;
 }

@@ -550,13 +550,16 @@ ul {
   background: transparent;
   font-weight: 700;
   cursor: pointer;
+  overflow: hidden;
   text-overflow: ellipsis;
+  display: inline-flex;
+  align-items: center;
 }
 
 .room-menu-button-user-block-friend:active,
 .room-menu-button-user-block-friend:focus,
 .room-menu-button-user-block-friend:hover {
-  color: #eda33d;
+  color: #5a3500;
 }
 
 .room-menu-button-user-block-friend:disabled {
@@ -639,4 +642,46 @@ ul {
 .chan-list-button svg {
   margin-left: 0.5em;
   margin-right: 0.5em;
+}
+
+.indicator {
+  display: flex;
+  aspect-ratio: 1;
+  width: max-content;
+  height: max-content;
+  border-radius: 50%;
+  position: relative;
+  border: 1px solid black;
+}
+
+.online {
+  background-color: #00ff48;
+}
+.offline {
+  background-color: #fdfdfd;
+}
+.ingame {
+  background-color: #0004ff;
+}
+
+.menu{ 
+  position: relative;
+  display: block;
+  width:1em;
+  height:1em;
+  aspect-ratio: 1;
+  border-radius:50%;
+  color:rgb(211, 0, 0);
+  background:rgb(165, 120, 120)}
+
+.menu:hover{
+  background:#333}
+
+.Media {
+  display: flex;
+  align-items: flex-start;
+}
+
+.Media-body {
+  flex: 1;
 }
