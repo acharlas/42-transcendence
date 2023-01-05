@@ -1,5 +1,7 @@
 import { Cron } from '@nestjs/schedule';
 import {
+  ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -8,6 +10,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket, Namespace } from 'socket.io';
+import { CreateHistoryDto } from 'src/history/dto/create-history.dto';
+import { HistoryService } from 'src/history/history.service';
 import { socketTab, SocketWithAuth } from '../message/types_message';
 import { GameService } from './game.service';
 
@@ -18,7 +22,8 @@ export class GameGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
-    private gameService: GameService, //private schedulerRegistry: SchedulerRegistry,
+    private gameService: GameService,
+    private historyService: HistoryService, //private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   SocketList: socketTab[] = [];
@@ -113,7 +118,7 @@ export class GameGateway
   /*==========================================*/
   /*HandShake*/
   @SubscribeMessage('handshake')
-  handshake(client: SocketWithAuth): Promise<void> {
+  handshake(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('sending back user id....');
     client.emit('handshake', client.id);
     return;
@@ -122,7 +127,7 @@ export class GameGateway
   /*==========================================*/
   /*Join queue*/
   @SubscribeMessage('JoiningQueue')
-  JoiningQueue(client: SocketWithAuth): Promise<void> {
+  JoiningQueue(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('User:', client.userID, ' joining the queue');
     return new Promise<void>((resolve, reject) => {
       this.gameService
@@ -141,7 +146,7 @@ export class GameGateway
   /*==========================================*/
   /*Leaving queue*/
   @SubscribeMessage('LeavingQueue')
-  LeavingQueue(client: SocketWithAuth): Promise<void> {
+  LeavingQueue(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('User:', client.userID, ' Living the queue');
 
     return new Promise<void>((resolve, reject) => {
@@ -161,7 +166,7 @@ export class GameGateway
   /*==========================================*/
   /*Create lobby*/
   @SubscribeMessage('CreateLobby')
-  CreateLobby(client: SocketWithAuth): Promise<void> {
+  CreateLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('User:', client.userID, ' Leaving the queue');
     return new Promise<void>((resolve, reject) => {
       this.gameService
@@ -182,7 +187,7 @@ export class GameGateway
   /*==========================================*/
   /*Leaving lobby*/
   @SubscribeMessage('LeavingLobby')
-  LeavingLobby(client: SocketWithAuth): Promise<void> {
+  LeavingLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('User:', client.userID, ' Living the queue');
     return new Promise<void>((resolve, reject) => {
       this.gameService
@@ -191,6 +196,27 @@ export class GameGateway
           client.broadcast.to(lobbyId).emit('PlayerLeave', client.userID);
           client.emit('LeaveLobby');
           client.leave(lobbyId);
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+  /*==========================================*/
+  /*==========================================*/
+  /*new history*/
+  @SubscribeMessage('NewHistory')
+  NewHistory(
+    @ConnectedSocket() client: SocketWithAuth,
+    @MessageBody('newHistory') history: CreateHistoryDto,
+  ): Promise<void> {
+    console.log('historyAdd:', history);
+    return new Promise<void>((resolve, reject) => {
+      this.historyService
+        .createhistory(history)
+        .then(() => {
           return resolve();
         })
         .catch((err) => {

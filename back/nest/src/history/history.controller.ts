@@ -1,7 +1,9 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { GetUser } from 'src/auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { HistoryService } from './history.service';
+import { HistoryMatch } from './types_history';
 
 @ApiTags('History')
 @ApiBearerAuth()
@@ -10,8 +12,19 @@ import { HistoryService } from './history.service';
 export class HistoryController {
   constructor(private historyService: HistoryService) {}
 
-  @Get(':id')
-  getHistoryId(@Param('id') userId: string) {
-    return this.historyService.getHistoryId(userId);
+  @Get('me')
+  getUserHistory(@GetUser('id') userId: string): Promise<HistoryMatch[]> {
+    return new Promise<HistoryMatch[]>((resolve, reject) => {
+      console.log('get history: ', userId);
+      this.historyService
+        .getUserHistory(userId)
+        .then((history) => {
+          return resolve(history);
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject(err);
+        });
+    });
   }
 }

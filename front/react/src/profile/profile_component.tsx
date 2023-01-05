@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
-import { getUser } from '../api/user-api';
-import { addFriend, removeFriend, checkIfFriend } from '../api/friend-api';
-import { addBlock, removeBlock, checkIfBlocked } from '../api/block-api';
-import Avatar from '../avatar/avatar_component';
-import '../style.css';
-import './profile.css';
+import { getUser } from "../api/user-api";
+import { addFriend, removeFriend, checkIfFriend } from "../api/friend-api";
+import { addBlock, removeBlock, checkIfBlocked } from "../api/block-api";
+import Avatar from "../avatar/avatar_component";
+import "../style.css";
+import "./profile.css";
+import { HistoryMatch } from "../game/game-type";
+import { getHistory } from "../api/history-api";
 
 interface User {
   nickname: string;
@@ -21,13 +23,14 @@ export default function Profile() {
   var { id } = useParams();
 
   const [userData, setUserData] = useState<User>({
-    nickname: '',
+    nickname: "",
     wins: 0,
     losses: 0,
     mmr: 0,
   });
   const [isFriend, setIsFriend] = useState<boolean>(false);
   const [isBlocked, setIsBlocked] = useState<boolean>(false);
+  const [history, setHistory] = useState<HistoryMatch[]>([]);
 
   //useEffect once to get user data and friend/block initial status
   useEffect(() => {
@@ -37,8 +40,8 @@ export default function Profile() {
           setUserData(res.data);
         })
         .catch((e) => {
-          if (e.response.data.message === 'no such user') {
-            console.log('no such user');
+          if (e.response.data.message === "no such user") {
+            console.log("no such user");
             goHome();
             return;
           }
@@ -51,7 +54,7 @@ export default function Profile() {
           setIsFriend(res);
         })
         .catch((e) => {
-          console.log('checkIfFriend err: ' + e);
+          console.log("checkIfFriend err: " + e);
         });
 
       await checkIfBlocked({ id: id })
@@ -59,24 +62,38 @@ export default function Profile() {
           setIsBlocked(res);
         })
         .catch((e) => {
-          console.log('checkIfBlocked err: ' + e);
+          console.log("checkIfBlocked err: " + e);
+        });
+    };
+
+    const fetchUserHistory = async () => {
+      await getHistory()
+        .then((res) => {
+          console.log("history: ", { res });
+          setHistory(res.data);
+        })
+        .catch((e) => {
+          console.log(e);
+          goHome();
+          return;
         });
     };
 
     fetchUserData();
     fetchFriendBlockStates();
+    fetchUserHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // Navigation
   const navigate = useNavigate();
   const goHome = () => {
-    navigate('/app');
+    navigate("/app");
   };
 
   // Utils
   const isSelfProfile = () => {
-    return id === sessionStorage.getItem('userid');
+    return id === sessionStorage.getItem("userid");
   };
 
   // Events
@@ -91,7 +108,7 @@ export default function Profile() {
         setIsFriend(true);
       }
     } catch (e) {
-      console.log('Failed friend event.', e);
+      console.log("Failed friend event.", e);
       //TODO: improve error
     }
   };
@@ -107,7 +124,7 @@ export default function Profile() {
         setIsBlocked(true);
       }
     } catch (e) {
-      console.log('Failed block event.', e);
+      console.log("Failed block event.", e);
       //TODO: improve error
     }
   };
@@ -115,27 +132,27 @@ export default function Profile() {
   return (
     <>
       <div className="profile__panel">
-      <div className="profile__panel__top">
-        <div className="profile__nickname">{userData.nickname}</div>
-      </div>
-
-      <div className="profile__panel__bottom">
-        <div className="profile__avatar__container">
-          {Avatar(id)}
-          {/*TODO: display profile pictures */}
-
-          {isSelfProfile() || (
-            <div className="profile__button__container">
-              <button className="profile__button" onClick={friendClick}>
-                {isFriend ? 'UNFRIEND' : 'FRIEND'}
-              </button>
-              <button className="profile__button" onClick={blockClick}>
-                {isBlocked ? 'UNBLOCK' : 'BLOCK'}
-              </button>
-            </div>
-          )}
+        <div className="profile__panel__top">
+          <div className="profile__nickname">{userData.nickname}</div>
         </div>
-      </div>
+
+        <div className="profile__panel__bottom">
+          <div className="profile__avatar__container">
+            {Avatar(id)}
+            {/*TODO: display profile pictures */}
+
+            {isSelfProfile() || (
+              <div className="profile__button__container">
+                <button className="profile__button" onClick={friendClick}>
+                  {isFriend ? "UNFRIEND" : "FRIEND"}
+                </button>
+                <button className="profile__button" onClick={blockClick}>
+                  {isBlocked ? "UNBLOCK" : "BLOCK"}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <br></br>
@@ -160,78 +177,63 @@ export default function Profile() {
       <br></br>
 
       <div className="profile__panel">
-      <div className="profile__panel__top">
-        <div className="profile__panel__title">MATCH HISTORY</div>
-      </div>
-      {/* <table className="profile__panel__bottom profile__hist__table"> */}
-      <div className="profile__panel__bottom">
-      <table className="profile__hist__table">
-        {/*TODO: match history*/}
-        <tbody>
-          <tr className="profile__hist__head">
-            <th>W/L</th>
-            <th>SCORE</th>
-            <th>MODE</th>
-          </tr>
-          <tr className="profile__hist__w">
-            <th>W</th>
-            <th>10-8</th>
-            <th>classic</th>
-          </tr>
-          <tr className="profile__hist__l">
-            <th>L</th>
-            <th>3-10</th>
-            <th>classic</th>
-          </tr>
-          <tr className="profile__hist__l">
-            <th>L</th>
-            <th>6-10</th>
-            <th>classic</th>
-          </tr>
-          <tr className="profile__hist__w">
-            <th>W</th>
-            <th>10-9</th>
-            <th>classic</th>
-          </tr>
-          <tr className="profile__hist__l">
-            <th>L</th>
-            <th>3-10</th>
-            <th>classic</th>
-          </tr>
-          <tr className="profile__hist__w">
-            <th>W</th>
-            <th>10-9</th>
-            <th>classic</th>
-          </tr>
-          <tr className="profile__hist__w">
-            <th>W</th>
-            <th>10-8</th>
-            <th>classic</th>
-          </tr>
-          <tr className="profile__hist__l">
-            <th>L</th>
-            <th>6-10</th>
-            <th>classic</th>
-          </tr>
-        </tbody>
-      </table>
-      </div>
+        <div className="profile__panel__top">
+          <div className="profile__panel__title">MATCH HISTORY</div>
+        </div>
+        {/* <table className="profile__panel__bottom profile__hist__table"> */}
+        <div className="profile__panel__bottom">
+          <table className="profile__hist__table">
+            {/*TODO: match history*/}
+            <tbody>
+              <tr className="profile__hist__head">
+                <th>W/L</th>
+                <th>SCORE</th>
+                <th>MODE</th>
+              </tr>
+              {history.map((history, i) => {
+                if (
+                  history.player.find((player) => {
+                    if (player.id === id) return true;
+                    return false;
+                  }).placement === 1
+                )
+                  return (
+                    <tr id="i" className="profile__hist__w">
+                      <th>W</th>
+                      <th>
+                        {history.player[0].score}-{history.player[1].score}
+                      </th>
+                      <th>{history.gameMode}</th>
+                    </tr>
+                  );
+                else
+                  return (
+                    <tr id="i" className="profile__hist__l">
+                      <th>L</th>
+                      <th>
+                        {history.player[0].score}-{history.player[1].score}
+                      </th>
+                      <th>{history.gameMode}</th>
+                    </tr>
+                  );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <br></br>
 
       <div className="profile__panel">
-      <div className="profile__panel__top">
-        <div className="profile__panel__title">ACHIEVEMENTS</div>
-      </div>
-      <div className="profile__panel__bottom profile__achiev__list">
-        {/*TODO: achievements */}
-        <div className="profile__achiev profile__bubble">on a roll</div>
-        <div className="profile__achiev profile__bubble">close call</div>
-        <div className="profile__achiev profile__bubble">
-          reverse sweep
+        <div className="profile__panel__top">
+          <div className="profile__panel__title">ACHIEVEMENTS</div>
         </div>
-      </div>
+        <div className="profile__panel__bottom profile__achiev__list">
+          {/*TODO: achievements */}
+          <div className="profile__achiev profile__bubble">on a roll</div>
+          <div className="profile__achiev profile__bubble">close call</div>
+          <div className="profile__achiev profile__bubble">reverse sweep</div>
+        </div>
       </div>
     </>
   );

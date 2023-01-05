@@ -1,6 +1,7 @@
 import { FunctionComponent, useContext } from "react";
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
+import { GameMode } from "./game-type";
 
 export interface IGameComponentProps {}
 
@@ -20,6 +21,24 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     socket.emit("LeavingLobby");
   };
 
+  const handleSendHistoryClick = () => {
+    const playerOne = {
+      id: "2ce6e635-f65c-4150-ae8c-4293a4227bdb",
+      score: 3,
+      placement: 1,
+    };
+    const playerTwo = {
+      id: "afc89610-96e7-4ef5-bd9c-2dd279936c2c",
+      score: 0,
+      placement: 2,
+    };
+    const newHistory = {
+      mode: GameMode.classic,
+      score: [playerOne, playerTwo],
+    };
+    socket.emit("NewHistory", { newHistory: newHistory });
+  };
+
   return (
     <div>
       {socket ? <>salut: {socket.id}</> : <></>}
@@ -36,6 +55,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
             <>
               <button onClick={handleClick}>join matchmaking</button>
               <button onClick={handleCreateLobbyClick}>create lobby</button>
+              <button onClick={handleSendHistoryClick}>send history</button>
             </>
           )}
         </>
