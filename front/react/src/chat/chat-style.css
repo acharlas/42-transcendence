@@ -644,44 +644,31 @@ ul {
   margin-right: 0.5em;
 }
 
-.indicator {
-  display: flex;
-  aspect-ratio: 1;
-  width: max-content;
-  height: max-content;
-  border-radius: 50%;
-  position: relative;
-  border: 1px solid black;
-}
-
 .online {
-  background-color: #00ff48;
+  background:rgb(165, 120, 120)
 }
 .offline {
-  background-color: #fdfdfd;
+  background: #fdfdfd;
 }
 .ingame {
-  background-color: #0004ff;
+  background: #000000;
 }
 
-.menu{ 
+.indicator{ 
   position: relative;
   display: block;
-  width:1em;
-  height:1em;
+  width: 1em;
+  height: 1em;
   aspect-ratio: 1;
-  border-radius:50%;
-  color:rgb(211, 0, 0);
-  background:rgb(165, 120, 120)}
+  margin-right: 0.5em;
 
-.menu:hover{
-  background:#333}
-
-.Media {
-  display: flex;
-  align-items: flex-start;
+  border-radius: 50%;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #000000;
 }
 
-.Media-body {
-  flex: 1;
+.line-with-indicator {
+  display: flex;
+  align-items: flex-start;
 }

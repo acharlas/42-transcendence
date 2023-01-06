@@ -116,10 +116,9 @@ function ChatMainComponent() {
           <ul>
             {friendList.map((friend, id) => {
               return (
-                <li className="Media" key={id}>
+                <li className="line-with-indicator" key={id}>
                   <OnlineIndicatorComponent id={friend.id}/>
                   <button
-                    // className="Media-body"
                     className="room-menu-button-user-block-friend"
                     onClick={() => {
                       handleSendDm(friend.username);
@@ -261,7 +260,6 @@ function ChatMainComponent() {
             return (
               <div key={id}>
                 <button
-                  title={`Join ${room.channel.name}`}
                   onClick={() => handleJoinRoom(room.channel.id)}
                   className="room-menu-button-dm"
                   disabled={room.channel.id === actChannel}

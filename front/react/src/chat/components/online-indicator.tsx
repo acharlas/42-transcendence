@@ -1,5 +1,4 @@
 import { useChat } from "../../context/chat.context";
-// import {ReactComponent as Ingame} from "../../image/"
 
 const OnlineIndicatorComponent = (props) => {
   const {
@@ -7,11 +6,15 @@ const OnlineIndicatorComponent = (props) => {
   } = useChat();
 
   return (<>
-    <div className={`menu ${onlineList.includes(props.id) ? "online" : "offline"}`}>
-    </div>
-    {/* <img src={ingame} alt="in game"/>
-    <img src={require('../../mySvgImage.svg').default} alt='mySvgImage' /> */}
-  </>);
+  {
+    onlineList.includes(props.id)
+    ?
+    <div className="indicator online" alt="online" title="online"></div>
+    :
+    <div className="indicator offline" alt="offline" title="offline"></div>
+    // <div className="indicator ingame" alt="ingame" title="ingame"></div>
+  }
+</>);
 };
 
 export default OnlineIndicatorComponent;
