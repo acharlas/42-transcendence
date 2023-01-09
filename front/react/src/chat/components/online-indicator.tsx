@@ -9,10 +9,10 @@ const OnlineIndicatorComponent = (props) => {
   {
     onlineList.includes(props.id)
     ?
-    <div className="indicator online" alt="online" title="online"></div>
+    <div className="indicator online" title="online"></div>
     :
-    <div className="indicator offline" alt="offline" title="offline"></div>
-    // <div className="indicator ingame" alt="ingame" title="ingame"></div>
+    <div className="indicator offline" title="offline"></div>
+    // <div className="indicator ingame" title="ingame"></div>
   }
 </>);
 };
