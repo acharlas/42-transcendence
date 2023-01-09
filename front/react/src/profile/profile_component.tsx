@@ -67,10 +67,16 @@ export default function Profile() {
     };
 
     const fetchUserHistory = async () => {
+      const comp = (a: HistoryMatch, b: HistoryMatch) => {
+        if (a.date > b.date) return 1;
+        else if (a.date === b.date) return 1;
+        return 0;
+      };
       await getHistory()
         .then((res) => {
-          console.log("history: ", { res });
-          setHistory(res.data);
+          console.log("history: ", res);
+          const hist = res.sort(comp);
+          setHistory(hist);
         })
         .catch((e) => {
           console.log(e);

@@ -8,6 +8,7 @@ export type UserScore = {
 };
 
 export type HistoryMatch = {
+  date: Date;
   gameMode: GameMode;
   player: UserScore[];
 };

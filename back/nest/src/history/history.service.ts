@@ -88,7 +88,11 @@ export class HistoryService {
           },
           select: {
             history: {
-              select: { mode: true, user: { include: { user: true } } },
+              select: {
+                createdAt: true,
+                mode: true,
+                user: { include: { user: true } },
+              },
             },
           },
         })
@@ -98,6 +102,7 @@ export class HistoryService {
           }
           const hist = history.map((history) => {
             return {
+              date: history.history.createdAt,
               gameMode: history.history.mode,
               player: history.history.user.map((user) => {
                 return {
