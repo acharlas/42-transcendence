@@ -34,8 +34,8 @@ export class GameService {
     });
   }
   /*=============================================*/
-  /*==================Lobby===========================*/
 
+  /*==================Lobby===========================*/
   async CreateLobby(userId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const lobby = {
@@ -120,12 +120,13 @@ export class GameService {
     });
   }
   /*=============================================*/
+
   /*==================matchmaking===========================*/
   async MatchPlayer(): Promise<Lobby[]> {
     let n = 0;
     const newLobby: Lobby[] = [];
 
-    console.log('queue: ', this.Queue);
+    // console.log('queue: ', this.Queue);
     return new Promise<Lobby[]>((resolve, reject) => {
       while (n < this.Queue.length) {
         const playerOne = this.Queue[n];

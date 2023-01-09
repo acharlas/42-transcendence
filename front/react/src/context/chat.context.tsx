@@ -20,6 +20,8 @@ export interface IoChatContextState {
   setMessages: Function;
   userList: User[];
   setUserList: Function;
+  onlineList: User[];
+  setOnlineList: Function;
   actChannel: string | undefined;
   setActChannel: Function;
   selectUser: User | undefined;
@@ -56,6 +58,8 @@ const ChatContext = createContext<IoChatContextState>({
   setMessages: () => { },
   userList: [],
   setUserList: () => { },
+  onlineList: [],
+  setOnlineList: () => { },
   actChannel: "",
   setActChannel: () => { },
   selectUser: undefined,
@@ -87,6 +91,7 @@ function ChatProvider(props: any) {
   const [user, setUser] = useState<User>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [userList, setUserList] = useState<User[]>([]);
+  const [onlineList, setOnlineList] = useState<string[]>([]);
   const [actChannel, setActChannel] = useState<string>("");
   const [selectUser, setSelectUser] = useState<User>();
   const [showTimeSelector, setShowTimeSelector] = useState<UserPrivilege>(null);
@@ -139,6 +144,8 @@ function ChatProvider(props: any) {
         setSelectUser,
         userList,
         setUserList,
+        onlineList,
+        setOnlineList,
         rooms,
         setRooms,
         actChannel,

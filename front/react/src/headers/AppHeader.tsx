@@ -9,14 +9,14 @@ const AppHeaderComponent: React.FunctionComponent = () => {
   const pathToHome = '/app';
   const pathToGame = '/app/game';
   const pathToLeaderboard = '/app/leaderboard';
-  const pathToProfile = '/app/profile/' + window.sessionStorage.getItem('userid');
+  const pathToProfile = () => {return '/app/profile/' + window.sessionStorage.getItem('userid');};
   const pathToSettings = '/app/settings';
 
   let navigate = useNavigate();
   const goHome = () => { navigate(pathToHome); };
   const goGame = () => { navigate(pathToGame); };
   const goLeaderboard = () => { navigate(pathToLeaderboard); };
-  const goProfile = () => { navigate(pathToProfile); };
+  const goProfile = () => { navigate(pathToProfile()); };
   const goSettings = () => { navigate(pathToSettings); };
 
   const HandleDisconnect = async () => {
@@ -48,7 +48,7 @@ const AppHeaderComponent: React.FunctionComponent = () => {
       </button>
       <button onClick={goProfile}
         className="headers-button"
-        disabled={window.location.pathname === pathToProfile}
+        disabled={window.location.pathname === pathToProfile()}
       >
         profile
       </button>

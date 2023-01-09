@@ -42,7 +42,6 @@ export class MessageGateway
   handleConnection(client: SocketWithAuth): void {
     const socket = this.io.sockets;
 
-    console.log('socket list: ', this.SocketList);
     const find = this.SocketList.find((socket) => {
       if (socket.userId === client.userID) return true;
       return false;
@@ -59,11 +58,17 @@ export class MessageGateway
       }
     }
     this.SocketList.push({ userId: client.userID, socket: client });
+    //Inform frontend clients
+    this.io.emit('OnlineList', this.SocketList.map(function(a) {return a.userId}));
+
+    console.log('socket list after connection: ', this.SocketList);
+    console.log(`number of sockets connected: ${socket.size}`);
+
     this.channelService
-      .getUserRoom(client.userID)
-      .then((res) => {
-        console.log('room on connection:', { res });
-        client.emit('Rooms', res);
+    .getUserRoom(client.userID)
+    .then((res) => {
+      console.log('room on connection:', { res });
+      client.emit('Rooms', res);
         res.forEach((room) => {
           client.join(room.channel.id);
         });
@@ -71,7 +76,7 @@ export class MessageGateway
       .catch((err) => {
         console.log(err);
       });
-    this.friendService
+      this.friendService
       .getFriendList(client.userID)
       .then((friendList) => {
         console.log('send friend list: ', friendList);
@@ -80,7 +85,7 @@ export class MessageGateway
       .catch((err) => {
         console.log(err);
       });
-    this.blockService
+      this.blockService
       .getBlockList(client.userID)
       .then((bloquedList) => {
         client.emit('BloquedList', bloquedList);
@@ -91,7 +96,6 @@ export class MessageGateway
     console.log(
       `Client connected: ${client.id} | userid: ${client.userID} | name: ${client.username}`,
     );
-    console.log(`number of soket connected: ${socket.size}`);
   }
 
   handleDisconnect(client: SocketWithAuth): void {
@@ -100,12 +104,16 @@ export class MessageGateway
       if (sock.userId === client.userID) return false;
       return true;
     });
+    //Inform frontend clients
+    this.io.emit('OnlineList', this.SocketList.map(function(a) {return a.userId}));
+    
     console.log(`Client disconnected: ${client.id} | name: ${client.username}`);
-    console.log(`number of soket connected: ${socket.size}`);
+    console.log('socket list after disconnection: ', this.SocketList);
+    console.log(`number of sockets connected: ${socket.size}`);
   }
 
   /*==========================================*/
-  /*USER CREATE A ROOM*/
+  /*HANDSHAKE*/
   @SubscribeMessage('handshake')
   handshake(client: SocketWithAuth): Promise<void> {
     console.log('sending back user id....');
@@ -139,7 +147,7 @@ export class MessageGateway
   }
 
   /*==========================================*/
-  /*USER SEND A ROOM MESSAGE*/
+  /*USER SENDS A ROOM MESSAGE*/
   @SubscribeMessage('SendRoomMessage')
   sendRoomMessage(
     @MessageBody('roomId') roomId: string,
@@ -166,7 +174,7 @@ export class MessageGateway
   }
 
   /*=====================================*/
-  /* USER JOIN A ROOM*/
+  /* USER JOINS A ROOM*/
   @SubscribeMessage('JoinRoom')
   joinRoom(
     @MessageBody('name') name: string,
@@ -198,7 +206,7 @@ export class MessageGateway
   }
 
   /*=====================================*/
-  /* USER JOIN A ROOM*/
+  /* USER LEAVES A ROOM*/
   @SubscribeMessage('LeaveRoom')
   LeaveRoom(
     @MessageBody('roomId') roomId: string,
@@ -224,7 +232,8 @@ export class MessageGateway
   }
 
   /*============================================*/
-  /*User uppdate*/
+  /*============================================*/
+  /*UPDATE USER PRIVILEGES*/
   @SubscribeMessage('UpdateUserPrivilege')
   UpdateUserPrivilege(
     @MessageBody('roomId') roomId: string,
@@ -275,8 +284,7 @@ export class MessageGateway
   }
 
   /*============================================*/
-  /*============================================*/
-  /*Ban User*/
+  /*BAN USER*/
   @SubscribeMessage('UpdateUserPrivilege')
   BanUser(
     @MessageBody('user') user: string,
@@ -290,8 +298,7 @@ export class MessageGateway
   }
 
   /*============================================*/
-  /*============================================*/
-  /*addFriend*/
+  /*ADD FRIEND*/
   @SubscribeMessage('AddFriend')
   addFriend(
     @MessageBody('newFriend') friend: string,
@@ -343,9 +350,7 @@ export class MessageGateway
   }
 
   /*============================================*/
-  /*============================================*/
-  /*============================================*/
-  /*addFriend*/
+  /*ADD BLOCK*/
   @SubscribeMessage('AddBlock')
   addBlock(
     @MessageBody('newBlock') Block: string,
@@ -396,8 +401,7 @@ export class MessageGateway
   }
 
   /*============================================*/
-  /*============================================*/
-  /*remove Friend*/
+  /*REMOVE FRIEND*/
   @SubscribeMessage('RemoveFriend')
   RemoveFriend(
     @MessageBody('username') remove: string,
@@ -443,8 +447,7 @@ export class MessageGateway
   }
 
   /*============================================*/
-  /*============================================*/
-  /*remove block*/
+  /*REMOVE BLOCK*/
   @SubscribeMessage('RemoveBlock')
   RemoveBlock(
     @MessageBody('username') remove: string,
@@ -490,8 +493,7 @@ export class MessageGateway
   }
 
   /*============================================*/
-  /*============================================*/
-  /*remove block*/
+  /*UPDATE ROOM*/
   @SubscribeMessage('UpdateRoom')
   UpdateRoom(
     @MessageBody('roomId') roomId: string,
@@ -520,13 +522,13 @@ export class MessageGateway
         .catch((err) => {
           console.log(err);
           client.emit('ErrMessage', { code: err.message });
-          return reject();
+          return reject(err);
         });
     });
   }
+
   /*============================================*/
-  /*============================================*/
-  /*Dm*/
+  /*DM USER*/
   @SubscribeMessage('Dm')
   Dm(
     @MessageBody('sendTo') sendTo: string,
@@ -561,9 +563,9 @@ export class MessageGateway
         });
     });
   }
+
   /*============================================*/
-  /*============================================*/
-  /*Invite user to a serveur*/
+  /*INVITE USER TO CHANNEL*/
   @SubscribeMessage('InviteUser')
   InviteUser(
     @MessageBody('user') user: string,

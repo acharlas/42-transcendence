@@ -48,11 +48,15 @@ export class AvatarService {
         id: targetId,
       },
     });
-    if (user && user.avatarPath) {
-      const file = readFileSync(join(process.cwd(), user.avatarPath));
-      console.log(file);
-      return new StreamableFile(file);
-    }
+    if (user?.avatarPath) {
+      try {
+        const file = readFileSync(join(process.cwd(), user.avatarPath));
+        console.log(file);
+        return new StreamableFile(file);
+      } catch (e) {
+        throw new NotFoundException();
+      }
+  }
     throw new NotFoundException();
   }
 }

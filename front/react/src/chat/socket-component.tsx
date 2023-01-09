@@ -29,6 +29,7 @@ const SocketContextComponent: React.FunctionComponent<
     setActChannel,
     setMessages,
     setUserList,
+    setOnlineList,
     actChannel,
     setUser,
     setFriendList,
@@ -89,9 +90,9 @@ const SocketContextComponent: React.FunctionComponent<
         socket.disconnect();
         navigate("/");
       });
-      /**user is ban from chan */
+      /**user is banned from chan */
       socket.on("UserBan", (roomId) => {
-        console.log("you have been ban from: ", roomId);
+        console.log("you have been banned from: ", roomId);
       });
       /**remove a room */
       socket.on("RemoveRoom", (channelId) => {
@@ -271,12 +272,12 @@ const SocketContextComponent: React.FunctionComponent<
           }
         }
       );
-      /** receive new id */
+      /**receive new id */
       socket.on("new_user", (uid: string) => {
         console.log("User connected, new user receive", uid, "last uid");
         SocketDispatch({ type: "update_uid", payload: uid });
       });
-      /** reconnect event*/
+      /**reconnect event*/
       socket.io.on("reconnect", (attempt) => {
         console.log("reconnect on attempt: " + attempt);
       });
@@ -294,7 +295,22 @@ const SocketContextComponent: React.FunctionComponent<
       /**Reconnection failed */
       socket.io.on("reconnect_failed", () => {
         console.log("reconnection failed ");
-        alert("we are unable to reconnect you to the web socket");
+        alert("Connection to chat lost. Please refresh the page.");
+      });
+
+      /**user online status*/
+      // /**online */
+      // socket.on("Online", (userId) => {
+      //   console.log(userId + " is now online.");
+      // });
+      // /**offine */
+      // socket.on("Offline", (userId) => {
+      //   console.log(userId + " is now offline.");
+      // });
+      /**receive list of online users */
+      socket.on("OnlineList", (newOnlineList: User[]) => {
+        setOnlineList(newOnlineList);
+        console.log("receive onlineList: ", { newOnlineList });
       });
     };
     StartListener();
@@ -312,6 +328,7 @@ const SocketContextComponent: React.FunctionComponent<
     navigate,
     setBlockErrMsg,
     setBloquedList,
+    setOnlineList,
     setCreateErrMsg,
     setFriendErrMsg,
     setJoinErrMsg,

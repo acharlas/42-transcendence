@@ -10,6 +10,7 @@ import SocketContext from "../../context/socket.context";
 import ChannelJoinComponent from "./channel-join";
 import ChannelCreationComponent from "./channel-creation";
 import RoomComponent from "./room";
+import OnlineIndicatorComponent from "./online-indicator";
 
 function ChatMainComponent() {
   const [newFriend, setNewFriend] = useState<string>("");
@@ -115,7 +116,8 @@ function ChatMainComponent() {
           <ul>
             {friendList.map((friend, id) => {
               return (
-                <li key={id}>
+                <li className="line-with-indicator" key={id}>
+                  <OnlineIndicatorComponent id={friend.id}/>
                   <button
                     className="room-menu-button-user-block-friend"
                     onClick={() => {
@@ -258,7 +260,6 @@ function ChatMainComponent() {
             return (
               <div key={id}>
                 <button
-                  title={`Join ${room.channel.name}`}
                   onClick={() => handleJoinRoom(room.channel.id)}
                   className="room-menu-button-dm"
                   disabled={room.channel.id === actChannel}

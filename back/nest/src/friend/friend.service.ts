@@ -207,10 +207,10 @@ export class FriendService {
   async getFriendList(
     userId: string,
   ): Promise<
-    { username: string; nickname: string; privilege: UserPrivilege }[]
+    { username: string; nickname: string; id: string }[]
   > {
     return new Promise<
-      { username: string; nickname: string; privilege: UserPrivilege }[]
+      { username: string; nickname: string; id: string }[]
     >((resolve, reject) => {
       this.getFriend(userId, userId)
         .then((ret) => {
@@ -219,7 +219,7 @@ export class FriendService {
               return {
                 username: friend.username,
                 nickname: friend.nickname,
-                privilege: UserPrivilege.default,
+                id: friend.id,
               };
             }),
           );

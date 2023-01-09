@@ -86,11 +86,11 @@ export class GameGateway
   /*==========================================*/
   @Cron('*/10 * * * * *')
   sync() {
-    console.log('cron');
+    // console.log('cron');
     this.gameService
       .MatchPlayer()
       .then((newLobby) => {
-        console.log('lobby: ', { newLobby });
+        // console.log('lobby: ', { newLobby });
         newLobby.forEach((lobby) => {
           const socketPlayerOne = this.SocketList.find((socket) => {
             if (socket.userId === lobby.playerOne) return true;
@@ -100,9 +100,9 @@ export class GameGateway
             if (socket.userId === lobby.playerTwo) return true;
             return false;
           });
-          console.log('player one: ', { socketPlayerOne }, ' player two: ', {
-            socketPlayerTwo,
-          });
+          // console.log('player one: ', { socketPlayerOne }, ' player two: ', {
+          //   socketPlayerTwo,
+          // });
           socketPlayerOne.socket.join(lobby.id);
           socketPlayerTwo.socket.join(lobby.id);
           socketPlayerOne.socket.emit('JoinLobby', lobby);

@@ -212,10 +212,10 @@ export class BlockService {
   async getBlockList(
     userId: string,
   ): Promise<
-    { username: string; nickname: string; privilege: UserPrivilege }[]
+    { username: string; nickname: string; }[]
   > {
     return new Promise<
-      { username: string; nickname: string; privilege: UserPrivilege }[]
+      { username: string; nickname: string; }[]
     >((resolve, reject) => {
       this.getBlock(userId, userId)
         .then((ret) => {
@@ -224,7 +224,6 @@ export class BlockService {
               return {
                 username: block.username,
                 nickname: block.nickname,
-                privilege: UserPrivilege.default,
               };
             }),
           );
