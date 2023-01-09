@@ -25,12 +25,12 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     const playerOne = {
       id: "2ce6e635-f65c-4150-ae8c-4293a4227bdb",
       score: 3,
-      placement: 1,
+      placement: 2,
     };
     const playerTwo = {
       id: "afc89610-96e7-4ef5-bd9c-2dd279936c2c",
-      score: 0,
-      placement: 2,
+      score: 10,
+      placement: 1,
     };
     const newHistory = {
       mode: GameMode.classic,

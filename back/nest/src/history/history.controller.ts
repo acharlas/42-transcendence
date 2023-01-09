@@ -22,7 +22,7 @@ export class HistoryController {
           return resolve(history);
         })
         .catch((err) => {
-          console.log(err);
+          console.log('err: ', err);
           return reject(err);
         });
     });

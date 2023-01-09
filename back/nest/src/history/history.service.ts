@@ -93,20 +93,23 @@ export class HistoryService {
           },
         })
         .then((history) => {
-          if (!history) return resolve(null);
-          return history.map((history) => {
+          if (!history) {
+            return resolve(null);
+          }
+          const hist = history.map((history) => {
             return {
               gameMode: history.history.mode,
               player: history.history.user.map((user) => {
                 return {
                   id: user.userId,
-                  username: user.user.username,
+                  userName: user.user.username,
                   score: user.yourScore,
                   placement: user.placement,
                 };
               }),
             };
           });
+          return resolve(hist);
         })
         .catch((err) => {
           return reject(err);

@@ -191,27 +191,30 @@ export default function Profile() {
                 <th>MODE</th>
               </tr>
               {history.map((history, i) => {
-                if (
-                  history.player.find((player) => {
-                    if (player.id === id) return true;
-                    return false;
-                  }).placement === 1
-                )
+                const me = history.player.find((player) => {
+                  if (player.id === id) return true;
+                  return false;
+                });
+                const add = history.player.find((player) => {
+                  if (player.id !== id) return true;
+                  return false;
+                });
+                if (me.placement === 1)
                   return (
-                    <tr id="i" className="profile__hist__w">
+                    <tr key={i} className="profile__hist__w">
                       <th>W</th>
                       <th>
-                        {history.player[0].score}-{history.player[1].score}
+                        {me.score}-{add.score}
                       </th>
                       <th>{history.gameMode}</th>
                     </tr>
                   );
                 else
                   return (
-                    <tr id="i" className="profile__hist__l">
+                    <tr key={i} className="profile__hist__l">
                       <th>L</th>
                       <th>
-                        {history.player[0].score}-{history.player[1].score}
+                        {me.score}-{add.score}
                       </th>
                       <th>{history.gameMode}</th>
                     </tr>
