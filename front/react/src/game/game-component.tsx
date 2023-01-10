@@ -104,19 +104,31 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       player1.body.setVelocityY(0);
       player2.body.setVelocityY(0);
 
-      if (cursors.up.isDown) {
-        player1.body.setVelocityY(-350);
-      } else if (cursors.down.isDown) {
-        player1.body.setVelocityY(350);
-      }
-      // TODO: Allow player to move forward
+      //PLAYER DROITE
+      //If statement to get player position from server
+      //
 
-      if (keys.W.isDown || keys.Z.isDown) {
-        player2.body.setVelocityY(-350);
-      } else if (keys.S.isDown) {
-        player2.body.setVelocityY(350);
-      }
-      // TODO: Allow player to move forward
+      // if(cursors.up.isDown)
+      // {
+      //   player1.body.position = new Phaser.Math.Vector2(player1.body.position.x, y) // y = nouvelle valeur
+      // }
+
+      //PLAYER GAUCHE
+      if(keys.W.isDown || keys.Z.isDown || keys.S.isDown)
+      {
+        if (keys.W.isDown || keys.Z.isDown)
+        {
+          player2.body.setVelocityY(-350);
+        } 
+        else if (keys.S.isDown)
+        {
+          player2.body.setVelocityY(350);
+        }
+        //EMIT POSITION
+
+
+    }
+
 
       if (!gameStarted) {
         if (cursors.space.isDown) {
@@ -129,6 +141,10 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
           // openingText.setVisible(false);
         }
       }
+    }
+
+    function playerMovement() {
+      
     }
 
     function isPlayer1Point() {
