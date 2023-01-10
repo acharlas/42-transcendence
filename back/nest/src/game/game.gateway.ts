@@ -14,6 +14,7 @@ import { CreateHistoryDto } from 'src/history/dto/create-history.dto';
 import { HistoryService } from 'src/history/history.service';
 import { socketTab, SocketWithAuth } from '../message/types_message';
 import { GameService } from './game.service';
+import { Lobby } from './types_game';
 
 @WebSocketGateway({
   namespace: 'game',
@@ -224,6 +225,18 @@ export class GameGateway
           return reject();
         });
     });
+  }
+  /*==========================================*/
+  /*==========================================*/
+  /*new Player position*/
+  @SubscribeMessage('UpdatePlayerPosition')
+  UpdatePlayerPosition(
+    @ConnectedSocket() client: SocketWithAuth,
+    @MessageBody('lobby') lobby: Lobby,
+    @MessageBody('pos') position: number,
+  ): void {
+    console.log('UpdatePlayerPosition:', position);
+    client.broadcast.to(lobby.id).emit('NewPlayerPos', position);
   }
   /*==========================================*/
 }
