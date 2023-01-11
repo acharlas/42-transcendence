@@ -18,14 +18,8 @@ const SocketGameContextComponent: React.FunctionComponent<
     SocketReducer,
     defaultSocketContextState
   );
-  const {
-    setInQueue,
-    setLobby,
-    lobby,
-    inQueue,
-    Removeplayer,
-    setPlayerTwoPosition,
-  } = useGame();
+  const { setInQueue, setLobby, lobby, inQueue, Removeplayer, player1 } =
+    useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
     reconnectionAttempts: 5,
@@ -48,11 +42,27 @@ const SocketGameContextComponent: React.FunctionComponent<
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
+      /**PlayerUnPressKeyDown */
+      socket.on("PlayerPressKeyDown", () => {
+        console.log("PlayerPressKeyDown");
+        player1.setVelocityY(0);
+        player1.setVelocityY(350);
+      });
       /**new position for player 2 */
+      socket.on("PlayerPressKeyUp", () => {
+        console.log("PlayerPressKeyUp");
+        player1.setVelocityY(0);
+        player1.setVelocityY(-350);
+      });
+      /**new position for player 2 */
+      socket.on("PlayerUnPressKey", () => {
+        console.log("PlayerUnPressKey");
+        player1.setVelocityY(0);
+      });
+      /**setPlayerPosition */
       socket.on("NewPlayerPos", (position: number) => {
-        console.log("new position: ", position);
-        setPlayerTwoPosition(position);
-        socket.disconnect();
+        console.log("NewPlayerPos: ", position);
+        player1.setPosition(783, position);
       });
       /**disconnect */
       socket.on("Disconnect", () => {

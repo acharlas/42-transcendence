@@ -6,9 +6,19 @@ export interface IoGameContextState {
   setInQueue: Function;
   lobby: Lobby;
   setLobby: Function;
-  playerTwoPosition: number;
-  setPlayerTwoPosition: Function;
   Removeplayer: Function;
+  ball: Phaser.Physics.Arcade.Sprite;
+  player1: Phaser.Physics.Arcade.Sprite;
+  player2: Phaser.Physics.Arcade.Sprite;
+  keys: Phaser.Input.Keyboard.KeyboardPlugin;
+  cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  gameStarted: boolean;
+  setBall: Function;
+  setPlayer1: Function;
+  setPlayer2: Function;
+  setKeys: Function;
+  setCursors: Function;
+  setGameStarted: Function;
 }
 
 const GameContext = createContext<IoGameContextState>({
@@ -17,14 +27,30 @@ const GameContext = createContext<IoGameContextState>({
   lobby: undefined,
   setLobby: () => {},
   Removeplayer: () => {},
-  playerTwoPosition: undefined,
-  setPlayerTwoPosition: () => {},
+  ball: undefined,
+  player1: undefined,
+  player2: undefined,
+  keys: undefined,
+  cursors: undefined,
+  gameStarted: false,
+  setBall: () => {},
+  setPlayer1: () => {},
+  setPlayer2: () => {},
+  setKeys: () => {},
+  setCursors: () => {},
+  setGameStarted: () => {},
 });
 
 function GameProvider(props: any) {
   const [inQueue, setInQueue] = useState<boolean>(false);
   const [lobby, setLobby] = useState<Lobby>(null);
-  const [playerTwoPosition, setPlayerTwoPosition] = useState<number>(0);
+  const [ball, setBall] = useState<Phaser.Physics.Arcade.Sprite>();
+  const [player1, setPlayer1] = useState<Phaser.Physics.Arcade.Sprite>();
+  const [player2, setPlayer2] = useState<Phaser.Physics.Arcade.Sprite>();
+  const [keys, setKeys] = useState<Phaser.Input.Keyboard.KeyboardPlugin>();
+  const [cursors, setCursors] =
+    useState<Phaser.Types.Input.Keyboard.CursorKeys>();
+  const [gameStarted, setGameStarted] = useState<boolean>();
 
   const Removeplayer = (UserId: string) => {
     if (lobby) {
@@ -45,8 +71,18 @@ function GameProvider(props: any) {
         lobby,
         setLobby,
         Removeplayer,
-        playerTwoPosition,
-        setPlayerTwoPosition,
+        ball,
+        player1,
+        player2,
+        keys,
+        cursors,
+        gameStarted,
+        setBall,
+        setPlayer1,
+        setPlayer2,
+        setKeys,
+        setCursors,
+        setGameStarted,
       }}
       {...props}
     />

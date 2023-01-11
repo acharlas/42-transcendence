@@ -8,16 +8,29 @@ import {
 import Phaser from "phaser";
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
-import { PressStart2P } from "./consts/Fonts";
-import ballImage from "../public/logo192.png";
-import { Int8Attribute } from "three";
+import { GameMode } from "./game-type";
 // import paddleImage from "./assets/paddle.png"
 
 export interface IGameComponentProps {}
 
 const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
-  const { inQueue, lobby, playerTwoPosition, setPlayerTwoPosition } = useGame();
+  const {
+    inQueue,
+    lobby,
+    setBall,
+    setPlayer1,
+    setPlayer2,
+    setKeys,
+    setCursors,
+    setGameStarted,
+    ball,
+    player1,
+    player2,
+    keys,
+    cursors,
+    gameStarted,
+  } = useGame();
   const [score, setScore] = useState([0, 0]);
   const gameRef = useRef<HTMLDivElement>(null);
 
@@ -52,9 +65,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     let player1: Phaser.Physics.Arcade.Sprite;
     let player2: Phaser.Physics.Arcade.Sprite;
     let keys: Phaser.Input.Keyboard.KeyboardPlugin;
-    let cursors;
-    let gameStarted = false;
-
+    let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     function init() {
       if (socket == undefined) game.destroy(true);
     }
@@ -66,8 +77,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     function create() {
-      console.log("Socket ", socket);
-
       // Create game objects here
       ball = this.physics.add.sprite(
         this.physics.world.bounds.width / 2, // x position
@@ -75,24 +84,30 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         "ball" // key of image for the sprite
       );
       ball.setBounce(1, 1).setCollideWorldBounds(true);
-
+      setBall(ball);
       player1 = this.physics.add.sprite(
         this.physics.world.bounds.width - (ball.width / 2 + 1), // x position
         this.physics.world.bounds.height / 2, // y position
         "paddle" // key of image for the sprite
       );
+      console.log(this.physics.world.bounds.width - (ball.width / 2 + 1));
       player1.setCollideWorldBounds(true);
-
+      setPlayer1(player1);
       player2 = this.physics.add.sprite(
         ball.width / 2 + 1, // x position
         this.physics.world.bounds.height / 2, // y position
         "paddle" // key of image for the sprite
       );
       player2.setCollideWorldBounds(true);
-
+      setPlayer2(player1);
+      console.log(
+        "afd",
+        this.physics.world.bounds.width - (ball.width / 2 + 1)
+      );
       cursors = this.input.keyboard.createCursorKeys();
+      setCursors(cursors);
       keys = this.input.keyboard.addKeys("W,S,Z");
-
+      setKeys(keys);
       this.physics.add.collider(ball, player1, null, null, this);
       this.physics.add.collider(ball, player2, null, null, this);
 
@@ -100,6 +115,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       player2.setImmovable(true);
 
       // gestion socket
+
       //	socket.on(playermovement, )
     }
 
@@ -116,7 +132,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         return;
       }
 
-      player1.setVelocityY(0);
       player2.setVelocityY(0);
 
       //PLAYER DROITE
@@ -135,13 +150,13 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         } else if (keys.S.isDown) {
           player2.setVelocityY(350);
         }
-        //EMIT POSITION
+        socket.emit("UpdatePlayerPosition", { pos: player2.body.position.y });
       }
 
       if (!gameStarted) {
         if (cursors.space.isDown) {
           ball.setVisible(true);
-          gameStarted = true;
+          setGameStarted(true);
           const initialXSpeed = Math.random() * 20 + 50;
           const initialYSpeed = Math.random() * 20 + 50;
           ball.setVelocityX(initialXSpeed);
@@ -162,7 +177,63 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
   }, [socket]);
 
-  return <div ref={gameRef} />;
+  const handleClick = () => {
+    socket.emit("JoiningQueue");
+  };
+
+  const handleCreateLobbyClick = () => {
+    socket.emit("CreateLobby");
+  };
+
+  const handleLeavingLobbyClick = () => {
+    socket.emit("LeavingLobby");
+  };
+
+  const handleSendHistoryClick = () => {
+    const playerOne = {
+      id: "2ce6e635-f65c-4150-ae8c-4293a4227bdb",
+      score: 3,
+      placement: 1,
+    };
+    const playerTwo = {
+      id: "afc89610-96e7-4ef5-bd9c-2dd279936c2c",
+      score: 0,
+      placement: 2,
+    };
+    const newHistory = {
+      mode: GameMode.classic,
+      score: [playerOne, playerTwo],
+    };
+    socket.emit("NewHistory", { newHistory: newHistory });
+  };
+
+  return (
+    <>
+      <div>
+        {socket ? <>salut: {socket.id}</> : <></>}
+        {lobby ? (
+          <>
+            <button>{lobby.playerOne}</button>{" "}
+            <button>{lobby.playerTwo}</button>
+            <button onClick={handleLeavingLobbyClick}>Leave lobby</button>
+          </>
+        ) : (
+          <>
+            {inQueue ? (
+              <button>waiting for player</button>
+            ) : (
+              <>
+                <button onClick={handleClick}>join matchmaking</button>
+                <button onClick={handleCreateLobbyClick}>create lobby</button>
+                <button onClick={handleSendHistoryClick}>send history</button>
+              </>
+            )}
+          </>
+        )}
+      </div>
+      <div ref={gameRef} />
+    </>
+  );
 };
 
 export default GameComponent;

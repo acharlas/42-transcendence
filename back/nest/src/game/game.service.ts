@@ -119,6 +119,16 @@ export class GameService {
       else return resolve(null);
     });
   }
+
+  async FindPLayerLobby(userId: string): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      return resolve(
+        this.LobbyList.find((lobby) => {
+          return PlayerIsInLobby(userId, lobby);
+        }),
+      );
+    });
+  }
   /*=============================================*/
 
   /*==================matchmaking===========================*/

@@ -8,7 +8,9 @@ export interface IGameIndexProps {}
 const GameIndex: FunctionComponent<IGameIndexProps> = (props) => {
   return (
     <GameProvider>
-      <GameComponent />
+      <SocketGameContextComponent>
+        <GameComponent />
+      </SocketGameContextComponent>
     </GameProvider>
   );
 };

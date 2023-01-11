@@ -232,11 +232,82 @@ export class GameGateway
   @SubscribeMessage('UpdatePlayerPosition')
   UpdatePlayerPosition(
     @ConnectedSocket() client: SocketWithAuth,
-    @MessageBody('lobby') lobby: Lobby,
     @MessageBody('pos') position: number,
-  ): void {
-    console.log('UpdatePlayerPosition:', position);
-    client.broadcast.to(lobby.id).emit('NewPlayerPos', position);
+  ): Promise<void> {
+    console.log('UpdatePlayrPosition:', position);
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .FindPLayerLobby(client.userID)
+        .then((lobby) => {
+          if (lobby)
+            client.broadcast.to(lobby.id).emit('NewPlayerPos', position);
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+    //client.broadcast.to(lobby.id).emit('NewPlayerPos', position);
+  }
+  /*==========================================*/
+  /*==========================================*/
+  /*new Player position*/
+  @SubscribeMessage('PlayerPressKeyUp')
+  PlayerPressKeyUp(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    console.log('PlayerPressKey');
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .FindPLayerLobby(client.userID)
+        .then((lobby) => {
+          if (lobby) client.broadcast.to(lobby.id).emit('PlayerPressKeyUp');
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+    //client.broadcast.to(lobby.id).emit('NewPlayerPos', position);
+  }
+  /*==========================================*/
+  /*new Player position*/
+  @SubscribeMessage('PlayerPressKeyDown')
+  PlayerPressKeyDown(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    console.log('PlayerPressKey');
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .FindPLayerLobby(client.userID)
+        .then((lobby) => {
+          if (lobby) client.broadcast.to(lobby.id).emit('PlayerPressKeyDown');
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+    //client.broadcast.to(lobby.id).emit('NewPlayerPos', position);
+  }
+  /*==========================================*/
+  /*==========================================*/
+  /*new Player position*/
+  @SubscribeMessage('PlayerUnPressKey')
+  PlayerUnPressKey(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    console.log('PlayerUnPressKey');
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .FindPLayerLobby(client.userID)
+        .then((lobby) => {
+          if (lobby) client.broadcast.to(lobby.id).emit('PlayerUnPressKey');
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+    //client.broadcast.to(lobby.id).emit('NewPlayerPos', position);
   }
   /*==========================================*/
 }
