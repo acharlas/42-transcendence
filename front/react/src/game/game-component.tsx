@@ -144,13 +144,10 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       // }
 
       //PLAYER GAUCHE
-      if (keys.W.isDown || keys.Z.isDown || keys.S.isDown) {
-        if (keys.W.isDown || keys.Z.isDown) {
-          player2.setVelocityY(-350);
-        } else if (keys.S.isDown) {
-          player2.setVelocityY(350);
-        }
-        socket.emit("UpdatePlayerPosition", { pos: player2.body.position.y });
+      if (keys.W.isDown || keys.Z.isDown) {
+        movePlayerDown(player2);
+      } else if (keys.S.isDown) {
+        movePlayerUp(player2);
       }
 
       if (!gameStarted) {
@@ -166,7 +163,14 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       }
     }
 
-    function playerMovement() {}
+    function movePlayerDown(player: Phaser.Physics.Arcade.Sprite) {
+      player.setVelocityY(-350);
+      socket.emit("UpdatePlayerPosition", { pos: player.body.position.y });
+    }
+    function movePlayerUp(player: Phaser.Physics.Arcade.Sprite) {
+      player.setVelocityY(350);
+      socket.emit("UpdatePlayerPosition", { pos: player.body.position.y });
+    }
 
     function isPlayer1Point() {
       return ball.body.x < player2.body.x;
