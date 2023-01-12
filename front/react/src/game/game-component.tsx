@@ -38,11 +38,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     // Create a new Phaser 3 game
     const game = new Phaser.Game({
       type: Phaser.AUTO,
-      // parent: gameRef.current,
-      // scale: {
-        //   mode: Phaser.Scale.RESIZE,
-        //   autoCenter: Phaser.Scale.CENTER_BOTH
-        // },
       scale: {
         width: 800,
         height: 600,
