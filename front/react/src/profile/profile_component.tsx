@@ -20,7 +20,7 @@ interface User {
 //preliminary checks before using the display component
 export default function Profile() {
   // State
-  var { id } = useParams();
+  const id = window.sessionStorage.getItem("userid");
 
   const [userData, setUserData] = useState<User>({
     nickname: "",

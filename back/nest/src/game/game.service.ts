@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ThisMonthInstance } from 'twilio/lib/rest/api/v2010/account/usage/record/thisMonth';
 import PlayerIsInLobby from './game.utils';
 import { Lobby, Player } from './types_game';
 
@@ -19,7 +20,7 @@ export class GameService {
         if (player.id === newPlayer.id) return true;
         return false;
       });
-      if (!find) this.Queue = [...this.Queue, newPlayer];
+      if (!find) this.Queue.push(newPlayer); //this.Queue = [...this.Queue, newPlayer]
       return resolve();
     });
   }
@@ -44,7 +45,7 @@ export class GameService {
         playerTwo: null,
         score: [0, 0],
       };
-      this.LobbyList = [...this.LobbyList, lobby];
+      this.LobbyList.push(lobby); //this.LobbyList = [...this.LobbyList, lobby];
       return resolve(lobby);
     });
   }
@@ -52,13 +53,14 @@ export class GameService {
   async LeaveLobby(userId: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const lobbyId = this.LobbyList.find((lobby) => {
-        console.log({ lobby });
+        console.log('LeaveLobby :', { lobby });
         if (lobby && (lobby.playerOne === userId || lobby.playerTwo === userId))
           return true;
         return false;
       }).id;
       if (!lobbyId)
         return reject(new ForbiddenException("user isn't in a lobby"));
+
       this.LobbyList = this.LobbyList.map((lobby) => {
         if (lobby.playerTwo === null) return;
         if (lobby.playerOne === userId) {
