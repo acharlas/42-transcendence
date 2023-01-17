@@ -9,7 +9,7 @@ const AppHeaderComponent: React.FunctionComponent = () => {
   const pathToGame = "/app/game";
   const pathToLeaderboard = "/app/leaderboard";
   const pathToProfile = () => {
-    return "/app/profile";
+    return "/app/profile/" + window.sessionStorage.getItem("userid");
   };
   const pathToSettings = "/app/settings";
 

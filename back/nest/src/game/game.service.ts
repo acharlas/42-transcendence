@@ -52,32 +52,29 @@ export class GameService {
 
   async LeaveLobby(userId: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      const lobbyId = this.LobbyList.find((lobby) => {
+      const lobby = this.LobbyList.find((lobby) => {
         console.log('LeaveLobby :', { lobby });
         if (lobby && (lobby.playerOne === userId || lobby.playerTwo === userId))
           return true;
         return false;
-      }).id;
-      if (!lobbyId)
+      });
+      if (!lobby)
         return reject(new ForbiddenException("user isn't in a lobby"));
 
-      this.LobbyList = this.LobbyList.map((lobby) => {
-        if (lobby.playerTwo === null) return;
-        if (lobby.playerOne === userId) {
-          return {
-            ...lobby,
-            playerOne: lobby.playerTwo,
-            playerTwo: null,
-          };
-        } else if (lobby.playerTwo === userId) {
-          if (lobby.playerOne === null) return;
-          return {
-            ...lobby,
-            playerTwo: null,
-          };
-        } else return lobby;
-      });
-      return resolve(lobbyId);
+      if (lobby.playerOne === userId) {
+        if (lobby.playerTwo === null)
+          this.LobbyList = this.LobbyList.filter((lobby) => {
+            if (lobby.playerOne === userId) return false;
+            return true;
+          });
+        else {
+          lobby.playerOne = lobby.playerTwo;
+          lobby.playerTwo = null;
+        }
+      } else if (lobby.playerTwo === userId) {
+        lobby.playerTwo === null;
+      }
+      return resolve(lobby.id);
     });
   }
 

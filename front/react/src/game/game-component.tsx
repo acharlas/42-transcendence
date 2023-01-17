@@ -24,12 +24,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     setKeys,
     setCursors,
     setGameStarted,
-    ball,
-    player1,
-    player2,
-    keys,
-    cursors,
     gameStarted,
+    setGame,
   } = useGame();
   const [score, setScore] = useState([0, 0]);
   const gameRef = useRef<HTMLDivElement>(null);
@@ -150,8 +146,12 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         } else if (keys.S.isDown) {
           player2.setVelocityY(350);
         }
-        socket.emit("UpdatePlayerPosition", { pos: player2.body.position.y });
+        console.log("emit: ", player2.body.position.y);
+        socket.emit("UpdatePlayerPosition", {
+          pos: player2.body.position.y,
+        });
       }
+      setGame(this.physics.world.bounds.height);
 
       if (!gameStarted) {
         if (cursors.space.isDown) {
