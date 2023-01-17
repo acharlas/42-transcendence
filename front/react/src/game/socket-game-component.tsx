@@ -54,10 +54,7 @@ const SocketGameContextComponent: React.FunctionComponent<
         let x: number;
 
         x = 783;
-        player1.setPosition(
-          gameBounds.x - player1.body.width / 2 + 1,
-          position + player1.body.height / 2
-        );
+        player1.setPosition(gameBounds.x, position + player1.body.height / 2);
       });
       /**disconnect */
       socket.on("Disconnect", () => {

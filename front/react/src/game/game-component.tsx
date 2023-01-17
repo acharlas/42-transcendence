@@ -80,7 +80,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         "ball" // key of image for the sprite
       );
       setGameBounds({
-        x: this.physics.world.bounds.width,
+        x: this.physics.world.bounds.width - (ball.width / 2 + 1),
         y: this.physics.world.bounds.height,
       });
       ball.setBounce(1, 1).setCollideWorldBounds(true);
