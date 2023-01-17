@@ -19,6 +19,8 @@ export interface IoGameContextState {
   setKeys: Function;
   setCursors: Function;
   setGameStarted: Function;
+  gameBounds: { x: number; y: number };
+  setGameBounds: Function;
 }
 
 const GameContext = createContext<IoGameContextState>({
@@ -39,6 +41,8 @@ const GameContext = createContext<IoGameContextState>({
   setKeys: () => {},
   setCursors: () => {},
   setGameStarted: () => {},
+  gameBounds: undefined,
+  setGameBounds: () => {},
 });
 
 function GameProvider(props: any) {
@@ -51,6 +55,10 @@ function GameProvider(props: any) {
   const [cursors, setCursors] =
     useState<Phaser.Types.Input.Keyboard.CursorKeys>();
   const [gameStarted, setGameStarted] = useState<boolean>();
+  const [gameBounds, setGameBounds] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
 
   const Removeplayer = (UserId: string) => {
     if (lobby) {
@@ -83,6 +91,8 @@ function GameProvider(props: any) {
         setKeys,
         setCursors,
         setGameStarted,
+        gameBounds,
+        setGameBounds,
       }}
       {...props}
     />

@@ -60,15 +60,15 @@ export class GameService {
       if (!lobbyId)
         return reject(new ForbiddenException("user isn't in a lobby"));
       this.LobbyList = this.LobbyList.map((lobby) => {
-        if (lobby.playerTwo === null) return;
-        if (lobby.playerOne === userId) {
+        if (lobby && lobby.playerTwo === null) return;
+        if (lobby && lobby.playerOne === userId) {
           return {
             ...lobby,
             playerOne: lobby.playerTwo,
             playerTwo: null,
           };
-        } else if (lobby.playerTwo === userId) {
-          if (lobby.playerOne === null) return;
+        } else if (lobby && lobby.playerTwo === userId) {
+          if (lobby && lobby.playerOne === null) return;
           return {
             ...lobby,
             playerTwo: null,

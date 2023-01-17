@@ -24,12 +24,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     setKeys,
     setCursors,
     setGameStarted,
-    ball,
-    player1,
-    player2,
-    keys,
-    cursors,
     gameStarted,
+    setGameBounds,
   } = useGame();
   const [score, setScore] = useState([0, 0]);
   const gameRef = useRef<HTMLDivElement>(null);
@@ -83,6 +79,10 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         this.physics.world.bounds.height / 2, // y position
         "ball" // key of image for the sprite
       );
+      setGameBounds({
+        x: this.physics.world.bounds.width,
+        y: this.physics.world.bounds.height,
+      });
       ball.setBounce(1, 1).setCollideWorldBounds(true);
       setBall(ball);
       player1 = this.physics.add.sprite(
@@ -90,7 +90,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         this.physics.world.bounds.height / 2, // y position
         "paddle" // key of image for the sprite
       );
-      console.log(this.physics.world.bounds.width - (ball.width / 2 + 1));
       player1.setCollideWorldBounds(true);
       setPlayer1(player1);
       player2 = this.physics.add.sprite(
@@ -99,11 +98,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         "paddle" // key of image for the sprite
       );
       player2.setCollideWorldBounds(true);
-      setPlayer2(player1);
-      console.log(
-        "afd",
-        this.physics.world.bounds.width - (ball.width / 2 + 1)
-      );
+      setPlayer2(player2);
       cursors = this.input.keyboard.createCursorKeys();
       setCursors(cursors);
       keys = this.input.keyboard.addKeys("W,S,Z");
@@ -113,10 +108,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
       player1.setImmovable(true);
       player2.setImmovable(true);
-
-      // gestion socket
-
-      //	socket.on(playermovement, )
     }
 
     function update() {
