@@ -18,7 +18,7 @@ const SocketGameContextComponent: React.FunctionComponent<
     SocketReducer,
     defaultSocketContextState
   );
-  const { setInQueue, setLobby, lobby, inQueue, Removeplayer, player1 } =
+  const { game, setInQueue, setLobby, lobby, inQueue, Removeplayer, player1 } =
     useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
