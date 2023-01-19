@@ -37,6 +37,11 @@ const AppHeaderComponent: React.FunctionComponent = () => {
     navigate("/");
   };
 
+  const isGame = (path: string) => {
+    if (path.includes(pathToGame)) return true;
+    return false;
+  };
+
   return (
     <>
       <button
@@ -49,7 +54,7 @@ const AppHeaderComponent: React.FunctionComponent = () => {
       <button
         onClick={goGame}
         className="headers-button"
-        disabled={window.location.pathname === pathToGame}
+        disabled={isGame(window.location.pathname)}
       >
         play
       </button>

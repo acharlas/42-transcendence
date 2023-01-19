@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { Lobby } from "../game/game-type";
+import { Lobby, Position } from "../game/game-type";
 
 export interface IoGameContextState {
   inQueue: Boolean;
@@ -12,14 +12,14 @@ export interface IoGameContextState {
   player2: Phaser.Physics.Arcade.Sprite;
   keys: Phaser.Input.Keyboard.KeyboardPlugin;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-  gameStarted: boolean;
+  game: Phaser.Game;
   setBall: Function;
   setPlayer1: Function;
   setPlayer2: Function;
   setKeys: Function;
   setCursors: Function;
-  setGameStarted: Function;
-  gameBounds: { x: number; y: number };
+  setGame: Function;
+  gameBounds: Position;
   setGameBounds: Function;
 }
 
@@ -34,13 +34,13 @@ const GameContext = createContext<IoGameContextState>({
   player2: undefined,
   keys: undefined,
   cursors: undefined,
-  gameStarted: false,
+  game: undefined,
   setBall: () => {},
   setPlayer1: () => {},
   setPlayer2: () => {},
   setKeys: () => {},
   setCursors: () => {},
-  setGameStarted: () => {},
+  setGame: () => {},
   gameBounds: undefined,
   setGameBounds: () => {},
 });
@@ -54,8 +54,8 @@ function GameProvider(props: any) {
   const [keys, setKeys] = useState<Phaser.Input.Keyboard.KeyboardPlugin>();
   const [cursors, setCursors] =
     useState<Phaser.Types.Input.Keyboard.CursorKeys>();
-  const [gameStarted, setGameStarted] = useState<boolean>();
-  const [gameBounds, setGameBounds] = useState<{ x: number; y: number }>({
+  const [game, setGame] = useState<boolean>();
+  const [gameBounds, setGameBounds] = useState<Position>({
     x: 0,
     y: 0,
   });
@@ -84,13 +84,13 @@ function GameProvider(props: any) {
         player2,
         keys,
         cursors,
-        gameStarted,
+        game,
         setBall,
         setPlayer1,
         setPlayer2,
         setKeys,
         setCursors,
-        setGameStarted,
+        setGame,
         gameBounds,
         setGameBounds,
       }}

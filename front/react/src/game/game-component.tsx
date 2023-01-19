@@ -9,6 +9,7 @@ import Phaser from "phaser";
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
 import { GameMode } from "./game-type";
+import { useNavigate } from "react-router-dom";
 // import paddleImage from "./assets/paddle.png"
 
 export interface IGameComponentProps {}
@@ -16,19 +17,21 @@ export interface IGameComponentProps {}
 const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
   const {
-    inQueue,
-    lobby,
     setBall,
     setPlayer1,
     setPlayer2,
     setKeys,
     setCursors,
-    setGameStarted,
-    gameStarted,
+    setGame,
+    game,
     setGameBounds,
+    lobby,
   } = useGame();
   const [score, setScore] = useState([0, 0]);
   const gameRef = useRef<HTMLDivElement>(null);
+  let navigate = useNavigate();
+
+  if (!socket) navigate("/app/game");
 
   useEffect(() => {
     // Create a new Phaser 3 game
@@ -56,12 +59,14 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       },
     });
 
+    setGame(game);
     // Game variables
     let ball: Phaser.Physics.Arcade.Sprite;
     let player1: Phaser.Physics.Arcade.Sprite;
     let player2: Phaser.Physics.Arcade.Sprite;
     let keys: Phaser.Input.Keyboard.KeyboardPlugin;
     let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+    let gameStarted: boolean;
     function init() {
       if (socket == undefined) game.destroy(true);
     }
@@ -84,7 +89,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         y: this.physics.world.bounds.height,
       });
       ball.setBounce(1, 1).setCollideWorldBounds(true);
-      setBall(ball);
       player1 = this.physics.add.sprite(
         this.physics.world.bounds.width - (ball.width / 2 + 1), // x position
         this.physics.world.bounds.height / 2, // y position
@@ -108,11 +112,20 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
       player1.setImmovable(true);
       player2.setImmovable(true);
+      console.log(
+        "salut: ",
+        player1.body.height / this.physics.world.bounds.height,
+        " ",
+        player1.body.width / this.physics.world.bounds.width,
+        " ",
+        ball.body.height / this.physics.world.bounds.height
+      );
+      setBall(ball);
     }
 
     function update() {
-      // Update game objects here
       if (isPlayer1Point()) {
+        // Update game objects here
         // player1VictoryText.setVisible(true);
         ball.disableBody(true, true);
         return;
@@ -124,6 +137,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       }
 
       player2.setVelocityY(0);
+      player1.setVelocityY(0);
 
       //PLAYER DROITE
       //If statement to get player position from server
@@ -134,28 +148,53 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       //   player1.body.position = new Phaser.Math.Vector2(player1.body.position.x, y) // y = nouvelle valeur
       // }
 
-      //PLAYER GAUCHE
-      if (keys.W.isDown || keys.Z.isDown || keys.S.isDown) {
-        if (keys.W.isDown || keys.Z.isDown) {
-          player2.setVelocityY(-350);
-        } else if (keys.S.isDown) {
-          player2.setVelocityY(350);
-        }
-        console.log("emit: ", player2.body.position.y);
-        socket.emit("UpdatePlayerPosition", {
-          pos: player2.body.position.y,
-        });
+      if (!lobby) {
+        navigate("/app/game");
+        return;
       }
 
-      if (!gameStarted) {
-        if (cursors.space.isDown) {
-          ball.setVisible(true);
-          setGameStarted(true);
-          const initialXSpeed = Math.random() * 20 + 50;
-          const initialYSpeed = Math.random() * 20 + 50;
-          ball.setVelocityX(initialXSpeed);
-          ball.setVelocityY(initialYSpeed);
-          // openingText.setVisible(false);
+      //PLAYER DROITE
+      if (lobby.playerTwo === window.sessionStorage.getItem("userid")) {
+        if (keys.W.isDown || keys.Z.isDown || keys.S.isDown) {
+          if (keys.W.isDown || keys.Z.isDown) {
+            player1.setVelocityY(-350);
+          } else if (keys.S.isDown) {
+            player1.setVelocityY(350);
+          }
+          socket.emit("UpdatePlayerPosition", {
+            pos: player1.body.position.y / this.physics.world.bounds.height,
+          });
+        }
+      }
+
+      //PLAYER GAUCHE
+      if (lobby.playerOne === window.sessionStorage.getItem("userid")) {
+        if (keys.W.isDown || keys.Z.isDown || keys.S.isDown) {
+          if (keys.W.isDown || keys.Z.isDown) {
+            player2.setVelocityY(-350);
+          } else if (keys.S.isDown) {
+            player2.setVelocityY(350);
+          }
+          socket.emit("UpdatePlayerPosition", {
+            pos: player2.body.position.y / this.physics.world.bounds.height,
+          });
+        }
+        {
+          if (!gameStarted) {
+            ball.setVisible(true);
+            gameStarted = true;
+            const initialXSpeed = Math.random() * 20 + 50;
+            const initialYSpeed = Math.random() * 20 + 50;
+            ball.setVelocityX(initialXSpeed);
+            ball.setVelocityY(initialYSpeed);
+            // openingText.setVisible(false);
+          }
+          socket.emit("UpdateBallPosition", {
+            pos: {
+              x: ball.body.position.x / this.physics.world.bounds.width,
+              y: ball.body.position.y / this.physics.world.bounds.height,
+            },
+          });
         }
       }
     }
@@ -176,62 +215,24 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     function isPlayer2Point() {
       return ball.body.x > player1.body.x;
     }
+
+    if (socket) socket.emit("GameReaddy");
+    //else navigate("/app/game");
   }, [socket]);
 
-  const handleClick = () => {
-    socket.emit("JoiningQueue");
+  const click = () => {
+    game.scene.resume("default");
+  };
+  const clickpa = () => {
+    game.scene.pause("default");
   };
 
-  const handleCreateLobbyClick = () => {
-    socket.emit("CreateLobby");
-  };
-
-  const handleLeavingLobbyClick = () => {
-    socket.emit("LeavingLobby");
-  };
-
-  const handleSendHistoryClick = () => {
-    const playerOne = {
-      id: "2ce6e635-f65c-4150-ae8c-4293a4227bdb",
-      score: 3,
-      placement: 1,
-    };
-    const playerTwo = {
-      id: "afc89610-96e7-4ef5-bd9c-2dd279936c2c",
-      score: 0,
-      placement: 2,
-    };
-    const newHistory = {
-      mode: GameMode.classic,
-      score: [playerOne, playerTwo],
-    };
-    socket.emit("NewHistory", { newHistory: newHistory });
-  };
+  if (game) game.scene.pause("default");
 
   return (
     <>
-      <div>
-        {socket ? <>salut: {socket.id}</> : <></>}
-        {lobby ? (
-          <>
-            <button>{lobby.playerOne}</button>{" "}
-            <button>{lobby.playerTwo}</button>
-            <button onClick={handleLeavingLobbyClick}>Leave lobby</button>
-          </>
-        ) : (
-          <>
-            {inQueue ? (
-              <button>waiting for player</button>
-            ) : (
-              <>
-                <button onClick={handleClick}>join matchmaking</button>
-                <button onClick={handleCreateLobbyClick}>create lobby</button>
-                <button onClick={handleSendHistoryClick}>send history</button>
-              </>
-            )}
-          </>
-        )}
-      </div>
+      <button onClick={clickpa}>buttonvvv</button>
+      <button onClick={click}>button</button>
       <div ref={gameRef} />
     </>
   );

@@ -2,8 +2,13 @@ export interface Lobby {
   id: string;
   playerOne: string;
   playerTwo: string;
-  score: number[];
+  game: Game;
 }
+
+export type Game = {
+  player: { id: string; readdy: boolean }[];
+  score: number[];
+};
 
 export enum GameMode {
   classic = "CLASSIC",
@@ -32,4 +37,9 @@ export type HistoryMatch = {
   date: Date;
   gameMode: GameMode;
   player: UserScore[];
+};
+
+export type Position = {
+  x: number;
+  y: number;
 };

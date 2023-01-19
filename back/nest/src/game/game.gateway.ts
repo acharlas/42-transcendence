@@ -14,7 +14,7 @@ import { CreateHistoryDto } from 'src/history/dto/create-history.dto';
 import { HistoryService } from 'src/history/history.service';
 import { socketTab, SocketWithAuth } from '../message/types_message';
 import { GameService } from './game.service';
-import { Lobby } from './types_game';
+import { Position } from './types_game';
 
 @WebSocketGateway({
   namespace: 'game',
@@ -247,7 +247,61 @@ export class GameGateway
           return reject();
         });
     });
-    //client.broadcast.to(lobby.id).emit('NewPlayerPos', position);
+  }
+
+  /*create the game*/
+  @SubscribeMessage('StartGame')
+  StartGame(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .StartGame(client.userID)
+        .then((lobby) => {
+          client.broadcast.to(lobby.id).emit('GameStart', lobby);
+          client.emit('GameStart', lobby);
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+      // this.gameService
+      //   .FindPLayerLobby(client.userID)
+      //   .then((lobby) => {
+      //     if (lobby)
+      //     client.broadcast.to(lobby.id).emit('NewPlayerPos', position);
+      //     return resolve();
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //     return reject();
+      //   });
+    });
+  }
+
+  /*Start the game*/
+  @SubscribeMessage('GameReaddy')
+  GameReaddy(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    return new Promise<void>((resolve, reject) => {});
+  }
+
+  /*Start the game*/
+  @SubscribeMessage('UpdateBallPosition')
+  UpdateBallPosition(
+    @ConnectedSocket() client: SocketWithAuth,
+    @MessageBody('pos') position: Position,
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .FindPLayerLobby(client.userID)
+        .then((lobby) => {
+          if (lobby) client.broadcast.to(lobby.id).emit('NewBallPos', position);
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
   }
   /*==========================================*/
 }

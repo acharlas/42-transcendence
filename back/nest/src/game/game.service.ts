@@ -1,8 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ThisMonthInstance } from 'twilio/lib/rest/api/v2010/account/usage/record/thisMonth';
 import PlayerIsInLobby from './game.utils';
-import { Lobby, Player } from './types_game';
+import { Game, Lobby, Player } from './types_game';
 
 @Injectable()
 export class GameService {
@@ -43,7 +42,7 @@ export class GameService {
         id: userId,
         playerOne: userId,
         playerTwo: null,
-        score: [0, 0],
+        game: null,
       };
       this.LobbyList.push(lobby); //this.LobbyList = [...this.LobbyList, lobby];
       return resolve(lobby);
@@ -149,7 +148,7 @@ export class GameService {
             id: playerOne.id + playerTwo.id,
             playerOne: playerOne.id,
             playerTwo: playerTwo.id,
-            score: [0, 0],
+            game: null,
           };
           this.LobbyList = [...this.LobbyList, lobby];
           this.Queue = this.Queue.filter((player) => {
@@ -161,6 +160,40 @@ export class GameService {
         } else n++;
       }
       return resolve(newLobby);
+    });
+  }
+  /*=============================================*/
+
+  /*==================Game===========================*/
+  async UpdatePlayerPos(userId: string, position: number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const lobby = this.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userId, lobby);
+      });
+      if (!lobby)
+        return reject(new ForbiddenException("user isn't in a lobby"));
+
+      return resolve();
+    });
+  }
+
+  async StartGame(userId: string): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      const lobby = this.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userId, lobby);
+      });
+      if (!lobby)
+        return reject(new ForbiddenException("user isn't in a lobby"));
+      if (!lobby.playerOne || !lobby.playerTwo)
+        return reject(new ForbiddenException('missing player'));
+      lobby.game = {
+        player: [
+          { id: lobby.playerOne, readdy: false },
+          { id: lobby.playerTwo, readdy: false },
+        ],
+        score: [0, 0],
+      };
+      return resolve(lobby);
     });
   }
   /*=============================================*/

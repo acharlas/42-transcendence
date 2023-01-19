@@ -1,4 +1,5 @@
 import { PropsWithChildren, useEffect, useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 import { useGame } from "../context/game.context";
 import {
   defaultSocketContextState,
@@ -6,7 +7,7 @@ import {
   SocketReducer,
 } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
-import { Lobby } from "./game-type";
+import { Lobby, Position } from "./game-type";
 
 export interface ISocketGameContextComponentProps extends PropsWithChildren {}
 
@@ -25,7 +26,9 @@ const SocketGameContextComponent: React.FunctionComponent<
     inQueue,
     Removeplayer,
     player1,
+    player2,
     gameBounds,
+    ball,
   } = useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
@@ -36,6 +39,7 @@ const SocketGameContextComponent: React.FunctionComponent<
       token: sessionStorage.getItem("RefreshToken"),
     },
   });
+  let navigate = useNavigate();
 
   useEffect(() => {
     /** connect to the web socket */
@@ -50,11 +54,33 @@ const SocketGameContextComponent: React.FunctionComponent<
     socket.removeAllListeners();
     const StartListener = () => {
       /**setPlayerPosition */
+      socket.on("GameStart", (lobby: Lobby) => {
+        if (lobby) {
+          setLobby(lobby);
+          navigate("/app/game/" + lobby.id);
+        }
+      });
+      /**setBallPosition */
+      socket.on("NewBallPos", (position: Position) => {
+        console.log("ball: ", { position });
+        if (ball)
+          ball.setPosition(
+            position.x * gameBounds.x + ball.body.width / 2,
+            position.y * gameBounds.y + ball.body.height / 2
+          );
+      });
+      /**setPlayerPosition */
       socket.on("NewPlayerPos", (position: number) => {
-        let x: number;
-
-        x = 783;
-        player1.setPosition(gameBounds.x, position + player1.body.height / 2);
+        if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
+          player1.setPosition(
+            gameBounds.x,
+            position * gameBounds.y + player1.body.height / 2
+          );
+        if (lobby.playerOne === window.sessionStorage.getItem("userid"))
+          player2.setPosition(
+            gameBounds.x,
+            position * gameBounds.y + player1.body.height / 2
+          );
       });
       /**disconnect */
       socket.on("Disconnect", () => {
@@ -82,6 +108,7 @@ const SocketGameContextComponent: React.FunctionComponent<
       socket.on("PlayerLeave", (uid: string) => {
         console.log("user: ", uid, " leave the lobby");
         Removeplayer(uid);
+        navigate("/app/game");
       });
       /** you leave the lobby */
       socket.on("LeaveLobby", (lobbyId: string) => {
@@ -116,7 +143,7 @@ const SocketGameContextComponent: React.FunctionComponent<
       });
     };
     StartListener();
-  }, [socket, lobby, setLobby, setInQueue, inQueue]);
+  }, [socket, lobby, setLobby, setInQueue, inQueue, ball, player1, player2]);
 
   return (
     <SocketContextProvider value={{ SocketState, SocketDispatch }}>

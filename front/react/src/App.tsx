@@ -44,7 +44,7 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/profile/:id" element={<Profile />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
-                  <Route path="/game" element={<GameIndex />} />
+                  <Route path="/game/*" element={<GameIndex />} />
                 </Routes>
               </div>
             </div>
