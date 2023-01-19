@@ -196,5 +196,16 @@ export class GameService {
       return resolve(lobby);
     });
   }
+
+  async PlayerReaddy(userId: string): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      const lobby = this.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userId, lobby);
+      });
+      if (lobby.playerOne === userId) lobby.game.player[0].readdy = true;
+      if (lobby.playerTwo === userId) lobby.game.player[1].readdy = true;
+      return resolve(lobby);
+    });
+  }
   /*=============================================*/
 }

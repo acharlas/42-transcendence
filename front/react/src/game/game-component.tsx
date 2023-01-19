@@ -26,6 +26,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     game,
     setGameBounds,
     lobby,
+    timer,
   } = useGame();
   const [score, setScore] = useState([0, 0]);
   const gameRef = useRef<HTMLDivElement>(null);
@@ -59,7 +60,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       },
     });
 
-    setGame(game);
     // Game variables
     let ball: Phaser.Physics.Arcade.Sprite;
     let player1: Phaser.Physics.Arcade.Sprite;
@@ -121,6 +121,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         ball.body.height / this.physics.world.bounds.height
       );
       setBall(ball);
+      setGame(game);
     }
 
     function update() {
@@ -214,25 +215,30 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     function isPlayer2Point() {
       return ball.body.x > player1.body.x;
     }
-
-    if (socket) socket.emit("GameReaddy");
     //else navigate("/app/game");
   }, [socket]);
 
   const click = () => {
-    game.scene.resume("default");
-    socket.emit("StartGame");
+    setGame(game);
+    socket.emit("PlayerReaddy");
   };
   const clickpa = () => {
     game.scene.pause("default");
   };
 
-  if (game) game.scene.pause("default");
+  useEffect(() => {
+    if (game) {
+      console.log("PAUSE");
+      socket.emit("PlayerReaddy");
+      game.scene.pause("default");
+    }
+  }, [game]);
 
   return (
     <>
       <button onClick={clickpa}>buttonvvv</button>
       <button onClick={click}>button</button>
+      <button>timer: {timer}</button>
       <div ref={gameRef} />
     </>
   );

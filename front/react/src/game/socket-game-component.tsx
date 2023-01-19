@@ -30,6 +30,7 @@ const SocketGameContextComponent: React.FunctionComponent<
     gameBounds,
     ball,
     game,
+    setTimer,
   } = useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
@@ -56,6 +57,10 @@ const SocketGameContextComponent: React.FunctionComponent<
     const StartListener = () => {
       /**start the game */
       socket.on("StartGame", (lobby: Lobby) => {
+        console.log("everyone readdy: ", lobby);
+
+        setLobby(lobby);
+        console.log({ game });
         if (game) game.scene.resume("default");
       });
       /**game create */

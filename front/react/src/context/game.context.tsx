@@ -1,3 +1,4 @@
+import { Time } from "phaser";
 import { createContext, useContext, useState } from "react";
 import { Lobby, Position } from "../game/game-type";
 
@@ -21,6 +22,8 @@ export interface IoGameContextState {
   setGame: Function;
   gameBounds: Position;
   setGameBounds: Function;
+  timer: number;
+  setTimer: Function;
 }
 
 const GameContext = createContext<IoGameContextState>({
@@ -43,6 +46,8 @@ const GameContext = createContext<IoGameContextState>({
   setGame: () => {},
   gameBounds: undefined,
   setGameBounds: () => {},
+  timer: 0,
+  setTimer: () => {},
 });
 
 function GameProvider(props: any) {
@@ -59,6 +64,7 @@ function GameProvider(props: any) {
     x: 0,
     y: 0,
   });
+  const [timer, setTimer] = useState<number>(0);
 
   const Removeplayer = (UserId: string) => {
     if (lobby) {
@@ -93,6 +99,8 @@ function GameProvider(props: any) {
         setGame,
         gameBounds,
         setGameBounds,
+        timer,
+        setTimer,
       }}
       {...props}
     />
