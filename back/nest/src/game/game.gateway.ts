@@ -250,14 +250,14 @@ export class GameGateway
   }
 
   /*create the game*/
-  @SubscribeMessage('StartGame')
-  StartGame(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  @SubscribeMessage('CreateGame')
+  CreateGame(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.gameService
-        .StartGame(client.userID)
+        .CreateGame(client.userID)
         .then((lobby) => {
-          client.broadcast.to(lobby.id).emit('GameStart', lobby);
-          client.emit('GameStart', lobby);
+          client.broadcast.to(lobby.id).emit('GameCreate', lobby);
+          client.emit('GameCreate', lobby);
           return resolve();
         })
         .catch((err) => {
@@ -295,6 +295,24 @@ export class GameGateway
         .FindPLayerLobby(client.userID)
         .then((lobby) => {
           if (lobby) client.broadcast.to(lobby.id).emit('NewBallPos', position);
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
+  /*Start the game*/
+  @SubscribeMessage('StartGame')
+  StartGame(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .FindPLayerLobby(client.userID)
+        .then((lobby) => {
+          client.broadcast.to(lobby.id).emit('StartGame');
+          client.emit('StartGame');
           return resolve();
         })
         .catch((err) => {

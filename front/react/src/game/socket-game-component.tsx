@@ -29,6 +29,7 @@ const SocketGameContextComponent: React.FunctionComponent<
     player2,
     gameBounds,
     ball,
+    game,
   } = useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
@@ -53,8 +54,12 @@ const SocketGameContextComponent: React.FunctionComponent<
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
-      /**setPlayerPosition */
-      socket.on("GameStart", (lobby: Lobby) => {
+      /**start the game */
+      socket.on("StartGame", (lobby: Lobby) => {
+        if (game) game.scene.resume("default");
+      });
+      /**game create */
+      socket.on("GameCreate", (lobby: Lobby) => {
         if (lobby) {
           setLobby(lobby);
           navigate("/app/game/" + lobby.id);
@@ -72,12 +77,12 @@ const SocketGameContextComponent: React.FunctionComponent<
       /**setPlayerPosition */
       socket.on("NewPlayerPos", (position: number) => {
         if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
-          player1.setPosition(
-            gameBounds.x,
+          player2.setPosition(
+            ball.width / 2 + 1,
             position * gameBounds.y + player1.body.height / 2
           );
         if (lobby.playerOne === window.sessionStorage.getItem("userid"))
-          player2.setPosition(
+          player1.setPosition(
             gameBounds.x,
             position * gameBounds.y + player1.body.height / 2
           );
@@ -143,7 +148,17 @@ const SocketGameContextComponent: React.FunctionComponent<
       });
     };
     StartListener();
-  }, [socket, lobby, setLobby, setInQueue, inQueue, ball, player1, player2]);
+  }, [
+    socket,
+    lobby,
+    setLobby,
+    setInQueue,
+    inQueue,
+    ball,
+    player1,
+    player2,
+    game,
+  ]);
 
   return (
     <SocketContextProvider value={{ SocketState, SocketDispatch }}>

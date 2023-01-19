@@ -177,7 +177,7 @@ export class GameService {
     });
   }
 
-  async StartGame(userId: string): Promise<Lobby> {
+  async CreateGame(userId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const lobby = this.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);

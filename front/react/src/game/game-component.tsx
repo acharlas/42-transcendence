@@ -153,32 +153,31 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         return;
       }
 
-      //PLAYER DROITE
-      if (lobby.playerTwo === window.sessionStorage.getItem("userid")) {
-        if (keys.W.isDown || keys.Z.isDown || keys.S.isDown) {
-          if (keys.W.isDown || keys.Z.isDown) {
+      //move player
+      if (keys.W.isDown || keys.Z.isDown || keys.S.isDown) {
+        if (keys.W.isDown || keys.Z.isDown) {
+          if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
             player1.setVelocityY(-350);
-          } else if (keys.S.isDown) {
+          if (lobby.playerOne === window.sessionStorage.getItem("userid"))
+            player2.setVelocityY(-350);
+        } else if (keys.S.isDown) {
+          if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
             player1.setVelocityY(350);
-          }
+          if (lobby.playerOne === window.sessionStorage.getItem("userid"))
+            player2.setVelocityY(350);
+        }
+        if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
           socket.emit("UpdatePlayerPosition", {
             pos: player1.body.position.y / this.physics.world.bounds.height,
           });
-        }
-      }
-
-      //PLAYER GAUCHE
-      if (lobby.playerOne === window.sessionStorage.getItem("userid")) {
-        if (keys.W.isDown || keys.Z.isDown || keys.S.isDown) {
-          if (keys.W.isDown || keys.Z.isDown) {
-            player2.setVelocityY(-350);
-          } else if (keys.S.isDown) {
-            player2.setVelocityY(350);
-          }
+        if (lobby.playerOne === window.sessionStorage.getItem("userid"))
           socket.emit("UpdatePlayerPosition", {
             pos: player2.body.position.y / this.physics.world.bounds.height,
           });
-        }
+      }
+
+      //if host
+      if (lobby.playerOne === window.sessionStorage.getItem("userid")) {
         {
           if (!gameStarted) {
             ball.setVisible(true);
@@ -222,6 +221,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
   const click = () => {
     game.scene.resume("default");
+    socket.emit("StartGame");
   };
   const clickpa = () => {
     game.scene.pause("default");

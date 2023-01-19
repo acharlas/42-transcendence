@@ -41,7 +41,7 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
   };
 
   const handleStartGameClick = () => {
-    socket.emit("StartGame");
+    socket.emit("CreateGame");
   };
 
   return (
