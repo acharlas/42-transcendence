@@ -236,8 +236,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
   return (
     <>
-      <button onClick={clickpa}>buttonvvv</button>
-      <button onClick={click}>button</button>
+      <button onClick={clickpa}>Pause</button>
+      <button onClick={click}>PlayerReady</button>
       <button>timer: {timer}</button>
       <div ref={gameRef} />
     </>
