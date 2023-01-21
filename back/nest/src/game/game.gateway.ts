@@ -84,7 +84,7 @@ export class GameGateway
         return;
       });
   }
-  /*==========================================*/
+
   @Cron('*/10 * * * * *')
   sync() {
     // console.log('cron');
@@ -116,7 +116,7 @@ export class GameGateway
         console.log(err);
       });
   }
-  /*==========================================*/
+
   /*HandShake*/
   @SubscribeMessage('handshake')
   handshake(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
@@ -124,8 +124,7 @@ export class GameGateway
     client.emit('handshake', client.id);
     return;
   }
-  /*==========================================*/
-  /*==========================================*/
+
   /*Join queue*/
   @SubscribeMessage('JoiningQueue')
   JoiningQueue(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
@@ -143,8 +142,7 @@ export class GameGateway
         });
     });
   }
-  /*==========================================*/
-  /*==========================================*/
+
   /*Leaving queue*/
   @SubscribeMessage('LeavingQueue')
   LeavingQueue(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
@@ -163,8 +161,7 @@ export class GameGateway
       return resolve();
     });
   }
-  /*==========================================*/
-  /*==========================================*/
+
   /*Create lobby*/
   @SubscribeMessage('CreateLobby')
   CreateLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
@@ -184,8 +181,7 @@ export class GameGateway
         });
     });
   }
-  /*==========================================*/
-  /*==========================================*/
+
   /*Leaving lobby*/
   @SubscribeMessage('LeavingLobby')
   LeavingLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
@@ -205,8 +201,7 @@ export class GameGateway
         });
     });
   }
-  /*==========================================*/
-  /*==========================================*/
+
   /*new history*/
   @SubscribeMessage('NewHistory')
   NewHistory(
@@ -226,8 +221,7 @@ export class GameGateway
         });
     });
   }
-  /*==========================================*/
-  /*==========================================*/
+
   /*new Player position*/
   @SubscribeMessage('UpdatePlayerPosition')
   UpdatePlayerPosition(
@@ -278,13 +272,13 @@ export class GameGateway
     });
   }
 
-  /*Start the game*/
+  /*GameReady*/
   @SubscribeMessage('GameReady')
   GameReady(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
     return new Promise<void>((resolve, reject) => {});
   }
 
-  /*Start the game*/
+  /*UpdateBallPosition*/
   @SubscribeMessage('UpdateBallPosition')
   UpdateBallPosition(
     @ConnectedSocket() client: SocketWithAuth,
@@ -322,7 +316,7 @@ export class GameGateway
     });
   }
 
-  /*Start the game*/
+  /*PlayerReady*/
   @SubscribeMessage('PlayerReady')
   PlayerReady(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
     return new Promise<void>((resolve, reject) => {
@@ -345,5 +339,4 @@ export class GameGateway
         });
     });
   }
-  /*==========================================*/
 }

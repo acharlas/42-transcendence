@@ -106,7 +106,7 @@ export class MessageGateway
     });
     //Inform frontend clients
     this.io.emit('OnlineList', this.SocketList.map(function(a) {return a.userId}));
-    
+
     console.log(`Client disconnected: ${client.id} | name: ${client.username}`);
     console.log('Socket list after disconnection: ', this.SocketList);
     console.log(`Number of sockets connected: ${socket.size}`);
