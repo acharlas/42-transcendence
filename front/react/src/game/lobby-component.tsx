@@ -4,14 +4,18 @@ import SocketContext from "../context/socket.context";
 import { GameMode } from "./game-type";
 // import paddleImage from "./assets/paddle.png"
 
-export interface ILobbyComponentProps {}
+export interface ILobbyComponentProps { }
 
 const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
   const { inQueue, lobby } = useGame();
 
-  const handleClick = () => {
+  const handleJoiningQueueClick = () => {
     socket.emit("JoiningQueue");
+  };
+
+  const handleLeaveQueueClick = () => {
+    console.log("TODO");
   };
 
   const handleCreateLobbyClick = () => {
@@ -44,33 +48,35 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
     socket.emit("CreateGame");
   };
 
-  return (
-    <>
-      <div>
-        {socket ? <>saluto: {socket.id}</> : <></>}
-        {lobby ? (
-          <>
-            <button>{lobby.playerOne}</button>{" "}
-            <button>{lobby.playerTwo}</button>
-            <button onClick={handleLeavingLobbyClick}>Leave lobby</button>
-            <button onClick={handleStartGameClick}>Start Game</button>
-          </>
-        ) : (
-          <>
-            {inQueue ? (
-              <button>waiting for player</button>
-            ) : (
-              <>
-                <button onClick={handleClick}>join matchmaking</button>
-                <button onClick={handleCreateLobbyClick}>create lobby</button>
-                <button onClick={handleSendHistoryClick}>send history</button>
-              </>
-            )}
-          </>
-        )}
-      </div>
-    </>
-  );
+  return (<>
+    <div className="profile__panel__top">
+      Game lobby
+    </div>
+    <div className="profile__panel__bottom">
+      {lobby ? (<>
+        <div>{`player 1: ${lobby.playerOne}`}</div>
+        <div>{`player 2: ${lobby.playerTwo}`}</div>
+        <button onClick={handleStartGameClick}>Ready</button>
+        <button onClick={handleLeavingLobbyClick}>Cancel</button>
+      </>) : (<>
+        {inQueue ? (<>
+          <div>Looking for an opponent...</div>
+          <button onClick={handleLeaveQueueClick}>Leave matchmaking</button>
+        </>) : (<>
+          <button onClick={handleJoiningQueueClick}>Join matchmaking</button>
+        </>)}
+      </>)}
+    </div>
+
+    <div className="profile__panel__top">
+      Debug stuff
+    </div>
+    <div className="profile__panel__bottom">
+      <div>Socket id: {socket?.id}</div>
+      <button onClick={handleCreateLobbyClick}>create lobby</button>
+      <button onClick={handleSendHistoryClick}>send history</button>
+    </div>
+  </>);
 };
 
 export default LobbyComponent;
