@@ -44,7 +44,7 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
     socket.emit("NewHistory", { newHistory: newHistory });
   };
 
-  const handleStartGameClick = () => {
+  const handleCreateGameClick = () => {
     socket.emit("CreateGame");
   };
 
@@ -56,7 +56,7 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
       {lobby ? (<>
         <div>{`player 1: ${lobby.playerOne}`}</div>
         <div>{`player 2: ${lobby.playerTwo}`}</div>
-        <button onClick={handleStartGameClick}>Ready</button>
+        <button onClick={handleCreateGameClick}>CreateGame</button>
         <button onClick={handleLeavingLobbyClick}>Cancel</button>
       </>) : (<>
         {inQueue ? (<>
