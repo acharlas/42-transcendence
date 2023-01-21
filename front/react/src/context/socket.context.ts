@@ -26,7 +26,7 @@ export const SocketReducer = (
   action: ISocketContextAction
 ) => {
   console.log(
-    `message receive - Action: ${action.type} - payload: `,
+    `Message received - Action: ${action.type} - payload: `,
     action.payload
   );
 

@@ -128,17 +128,17 @@ const SocketGameContextComponent: React.FunctionComponent<
       });
       /** receive new id */
       socket.on("new_user", (uid: string) => {
-        console.log("User connected, new user receive", uid, "last uid");
+        console.log("User connected, new user received", uid, "last uid");
         SocketDispatch({ type: "update_uid", payload: uid });
       });
       /** reconnect event*/
       socket.io.on("reconnect", (attempt) => {
-        console.log("reconnect on attempt: " + attempt);
+        console.log("Reconnection attempt: " + attempt);
       });
 
       /**reconnect attempt event */
       socket.io.on("reconnect_attempt", (attempt) => {
-        console.log("reconnect on attempt: " + attempt);
+        console.log("Reconnection attempt: " + attempt);
       });
 
       /**Reconnection error */

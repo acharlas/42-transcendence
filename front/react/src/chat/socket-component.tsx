@@ -65,12 +65,12 @@ const SocketContextComponent: React.FunctionComponent<
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
-      /**error receive */
+      /**error received */
       socket.on("ErrMessage", ({ code }: { code: string }) => {
         console.log(
-          "error received: ",
+          "Error code:",
           code,
-          "err message: ",
+          "\nError message:",
           ErrMessage[code]
         );
         if (code.search("err1") >= 0) {
@@ -85,18 +85,18 @@ const SocketContextComponent: React.FunctionComponent<
       });
       /**disconnect */
       socket.on("Disconnect", () => {
-        console.log("disconnect");
+        console.log("Disconnected");
         window.sessionStorage.clear();
         socket.disconnect();
         navigate("/");
       });
       /**user is banned from chan */
       socket.on("UserBan", (roomId) => {
-        console.log("you have been banned from: ", roomId);
+        console.log("You have been banned from: ", roomId);
       });
       /**remove a room */
       socket.on("RemoveRoom", (channelId) => {
-        console.log("remove room: ", channelId);
+        console.log("Remove room: ", channelId);
         const newRooms = rooms.filter((room) => {
           if (room.channel.id === channelId) return false;
           return true;
@@ -109,7 +109,7 @@ const SocketContextComponent: React.FunctionComponent<
       });
       /**update an existing channel */
       socket.on("UpdateRoom", (updateChan: Channel) => {
-        console.log("update channel: ", { updateChan });
+        console.log("Update channel: ", { updateChan });
         const newRoom = rooms.map((room) => {
           if (room.channel.id === updateChan.id)
             return {
@@ -124,12 +124,12 @@ const SocketContextComponent: React.FunctionComponent<
       /**receive a friend list */
       socket.on("FriendList", (friendList: User[]) => {
         setFriendList(friendList);
-        console.log("receive friendlist:", { friendList });
+        console.log("Received friendlist:", { friendList });
       });
       /**receive the bloqued user list */
       socket.on("BloquedList", (bloquedList: User[]) => {
         setBloquedList(bloquedList);
-        console.log("receive bloquelist: ", { bloquedList });
+        console.log("Received blocklist:", { bloquedList });
       });
       /** A new User join a room*/
       socket.on("JoinRoom", ({ id, user }: { id: string; user: User }) => {
@@ -160,7 +160,7 @@ const SocketContextComponent: React.FunctionComponent<
       socket.on(
         "RoomMessage",
         ({ roomId, message }: { roomId: string; message: Message }) => {
-          console.log("message receive on: ", roomId, " message: ", {
+          console.log("Message received on: ", roomId, "\nmessage: ", {
             message,
           });
           const newRooms = [...rooms];
@@ -176,7 +176,7 @@ const SocketContextComponent: React.FunctionComponent<
       );
       /**add a new room */
       socket.on("NewRoom", ({ room, itch }: { room: Room; itch: Boolean }) => {
-        console.log("new room receive: ", room, "try to create: ", [
+        console.log("New room received: ", room, "try to create: ", [
           ...rooms,
           room,
         ]);
@@ -200,7 +200,7 @@ const SocketContextComponent: React.FunctionComponent<
       });
       /**room list */
       socket.on("Rooms", (res: Room[]) => {
-        console.log("room receive:", res);
+        console.log("Room list received:", res);
         res.forEach((room) => {
           room.newMessage = false;
         });
@@ -210,7 +210,7 @@ const SocketContextComponent: React.FunctionComponent<
       socket.on(
         "UpdateUserList",
         ({ user, roomId }: { user: User[]; roomId: string }) => {
-          console.log("updateUserList", user);
+          console.log("Updated user list", user);
           const newRooms = rooms.map((room) => {
             if (room.channel.id === roomId) {
               room.user = [...user];
@@ -242,7 +242,7 @@ const SocketContextComponent: React.FunctionComponent<
       socket.on(
         "RemoveUser",
         ({ username, roomId }: { username: string; roomId: string }) => {
-          console.log("user: ", username, "disconnect from: ", roomId);
+          console.log("User: ", username, "disconnect from: ", roomId);
           const newRooms = rooms.map((room) => {
             if (room.channel.id === roomId)
               return {
@@ -274,43 +274,34 @@ const SocketContextComponent: React.FunctionComponent<
       );
       /**receive new id */
       socket.on("new_user", (uid: string) => {
-        console.log("User connected, new user receive", uid, "last uid");
+        console.log("User connected, new user received", uid, "last uid");
         SocketDispatch({ type: "update_uid", payload: uid });
       });
       /**reconnect event*/
       socket.io.on("reconnect", (attempt) => {
-        console.log("reconnect on attempt: " + attempt);
+        console.log("Reconnection attempt: " + attempt);
       });
 
       /**reconnect attempt event */
       socket.io.on("reconnect_attempt", (attempt) => {
-        console.log("reconnect on attempt: " + attempt);
+        console.log("Reconnection attempt: " + attempt);
       });
 
       /**Reconnection error */
       socket.io.on("reconnect_error", (error) => {
-        console.log("reconnect error: " + error);
+        console.log("Reconnection error: " + error);
       });
 
       /**Reconnection failed */
       socket.io.on("reconnect_failed", () => {
-        console.log("reconnection failed ");
+        console.log("Reconnection failed");
         alert("Connection to chat lost. Please refresh the page.");
       });
 
-      /**user online status*/
-      // /**online */
-      // socket.on("Online", (userId) => {
-      //   console.log(userId + " is now online.");
-      // });
-      // /**offine */
-      // socket.on("Offline", (userId) => {
-      //   console.log(userId + " is now offline.");
-      // });
       /**receive list of online users */
       socket.on("OnlineList", (newOnlineList: User[]) => {
         setOnlineList(newOnlineList);
-        console.log("receive onlineList: ", { newOnlineList });
+        console.log("Received onlineList: ", { newOnlineList });
       });
     };
     StartListener();

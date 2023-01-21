@@ -36,12 +36,8 @@ function RoomComponent() {
   function handleSendMessage() {
     const message = newMessageRef.current.value;
     newMessageRef.current.value = "";
-
-    console.log("actual channel send message: ", actChannel);
-
-    if (!String(message).trim()) {
-      return;
-    }
+    if (!String(message).trim()) {return;} //Not sending empty messages
+    console.log("Sending message: ", actChannel);
     if (message[0] != null) {
       userList.find((user) => {
         if (user.username === window.sessionStorage.getItem("username"))
