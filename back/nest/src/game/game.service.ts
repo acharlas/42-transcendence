@@ -85,7 +85,7 @@ export class GameService {
         return false;
       });
       if (actLobby) {
-        reject(new ForbiddenException('alreaddy in a room'));
+        reject(new ForbiddenException('already in a room'));
       }
       const joinLobby = this.LobbyList.find((lobby) => {
         if (lobby.id === lobbyId) return true;
