@@ -61,13 +61,13 @@ export class MessageGateway
     //Inform frontend clients
     this.io.emit('OnlineList', this.SocketList.map(function(a) {return a.userId}));
 
-    console.log('socket list after connection: ', this.SocketList);
-    console.log(`number of sockets connected: ${socket.size}`);
+    console.log('Socket list after connection: ', this.SocketList);
+    console.log(`Number of sockets connected: ${socket.size}`);
 
     this.channelService
     .getUserRoom(client.userID)
     .then((res) => {
-      console.log('room on connection:', { res });
+      console.log('Rooms on connection:', { res });
       client.emit('Rooms', res);
         res.forEach((room) => {
           client.join(room.channel.id);
@@ -108,8 +108,8 @@ export class MessageGateway
     this.io.emit('OnlineList', this.SocketList.map(function(a) {return a.userId}));
     
     console.log(`Client disconnected: ${client.id} | name: ${client.username}`);
-    console.log('socket list after disconnection: ', this.SocketList);
-    console.log(`number of sockets connected: ${socket.size}`);
+    console.log('Socket list after disconnection: ', this.SocketList);
+    console.log(`Number of sockets connected: ${socket.size}`);
   }
 
   /*==========================================*/
