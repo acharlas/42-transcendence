@@ -54,6 +54,15 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
             <button>{lobby.playerTwo}</button>
             <button onClick={handleLeavingLobbyClick}>Leave lobby</button>
             <button onClick={handleStartGameClick}>Start Game</button>
+            <table>
+              <tbody>
+                <tr>
+                  {lobby.invited.map((user, i) => {
+                    return <th key={i}>{user}</th>;
+                  })}
+                </tr>
+              </tbody>
+            </table>
           </>
         ) : (
           <>

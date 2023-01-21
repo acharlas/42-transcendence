@@ -15,6 +15,7 @@ import { HistoryService } from 'src/history/history.service';
 import { socketTab, SocketWithAuth } from '../message/types_message';
 import { GameService } from './game.service';
 import { Position } from './types_game';
+import PlayerIsInLobby from './game.utils';
 
 @WebSocketGateway({
   namespace: 'game',
@@ -57,6 +58,11 @@ export class GameGateway
       }
     }
     this.SocketList.push({ userId: client.userID, socket: client });
+    const lobby = this.gameService.LobbyList.find((lobby) => {
+      return PlayerIsInLobby(client.userID, lobby);
+    });
+    console.log('lobby find: ', lobby);
+    if (lobby) client.emit('JoinLobby', lobby);
     console.log(
       `Client connected to game: ${client.id} | userid: ${client.userID} | name: ${client.username}`,
     );

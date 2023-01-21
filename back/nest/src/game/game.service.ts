@@ -36,15 +36,99 @@ export class GameService {
   /*=============================================*/
 
   /*==================Lobby===========================*/
-  async CreateLobby(userId: string): Promise<Lobby> {
+
+  async CreateLobby(userId: string, inviteId?: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const lobby = {
         id: userId,
         playerOne: userId,
         playerTwo: null,
         game: null,
+        invited: [],
       };
+
+      const find = this.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userId, lobby);
+      });
+      if (find)
+        return resolve(
+          new Promise<Lobby>((resolve, reject) => {
+            this.LeaveLobby(userId)
+              .then(() => {
+                if (
+                  this.LobbyList.find((lobbyL) => {
+                    if (lobbyL.id === lobby.id) return true;
+                    return false;
+                  })
+                )
+                  return reject(
+                    new ForbiddenException('lobby alreaddy create'),
+                  );
+                this.LobbyList.push(lobby); //this.LobbyList = [...this.LobbyList, lobby];
+                if (inviteId)
+                  return resolve(
+                    new Promise<Lobby>((resolve, reject) => {
+                      this.AddInvite(lobby.id, inviteId)
+                        .then((lobby) => {
+                          return resolve(lobby);
+                        })
+                        .catch((err) => {
+                          return reject(err);
+                        });
+                    }),
+                  );
+                else {
+                  return resolve(lobby);
+                }
+              })
+              .catch((err) => {
+                return reject(err);
+              });
+          }),
+        );
+      if (
+        this.LobbyList.find((lobbyL) => {
+          if (lobbyL.id === lobby.id) return true;
+          return false;
+        })
+      )
+        return reject(new ForbiddenException('lobby alreaddy create'));
+      console.log('add lobby: ', lobby);
       this.LobbyList.push(lobby); //this.LobbyList = [...this.LobbyList, lobby];
+      if (inviteId)
+        return resolve(
+          new Promise<Lobby>((resolve, reject) => {
+            this.AddInvite(lobby.id, inviteId)
+              .then((lobby) => {
+                console.log('add invited :', lobby);
+                return resolve(lobby);
+              })
+              .catch((err) => {
+                return reject(err);
+              });
+          }),
+        );
+      else {
+        return resolve(lobby);
+      }
+    });
+  }
+
+  async AddInvite(lobbyId: string, inviteId: string): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      const lobby = this.LobbyList.find((lobby) => {
+        if (lobby.id === lobbyId) return true;
+        return false;
+      });
+      if (!lobby) return reject(new ForbiddenException('no such lobby'));
+      if (
+        lobby.invited.find((user) => {
+          if (user === inviteId) return true;
+          return false;
+        })
+      )
+        return reject(new ForbiddenException('user alreaddy invite'));
+      lobby.invited.push(inviteId);
       return resolve(lobby);
     });
   }
@@ -149,6 +233,7 @@ export class GameService {
             playerOne: playerOne.id,
             playerTwo: playerTwo.id,
             game: null,
+            invited: [],
           };
           this.LobbyList = [...this.LobbyList, lobby];
           this.Queue = this.Queue.filter((player) => {

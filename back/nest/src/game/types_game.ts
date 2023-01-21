@@ -3,6 +3,7 @@ export type Lobby = {
   playerOne: string;
   playerTwo: string;
   game: Game;
+  invited: string[];
 };
 
 export type Player = {

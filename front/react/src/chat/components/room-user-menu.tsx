@@ -71,8 +71,7 @@ function UserMenuComponent() {
   };
 
   const handleInviteToPlay = () => {
-    navigate("/app/game");
-    socket.emit("CreateLobby");
+    socket.emit("InviteUserInGame", { inviteId: selectUser.id });
   };
 
   const handleShowUserProfile = () => {

@@ -13,6 +13,8 @@ import { Server, Socket, Namespace } from 'socket.io';
 import { BlockService } from 'src/block/block.service';
 import { CreateChannelDto, EditChannelDto } from 'src/channel/dto';
 import { FriendService } from 'src/friend/friend.service';
+import { GameGateway } from 'src/game/game.gateway';
+import { GameService } from 'src/game/game.service';
 import { UserService } from 'src/user/user.service';
 import { ChannelService } from '../channel/channel.service';
 import { socketTab, SocketWithAuth } from './types_message';
@@ -28,6 +30,8 @@ export class MessageGateway
     private friendService: FriendService,
     private blockService: BlockService,
     private userService: UserService,
+    private gameGateWay: GameGateway,
+    private gameService: GameService,
   ) {}
 
   SocketList: socketTab[] = [];
@@ -59,16 +63,21 @@ export class MessageGateway
     }
     this.SocketList.push({ userId: client.userID, socket: client });
     //Inform frontend clients
-    this.io.emit('OnlineList', this.SocketList.map(function(a) {return a.userId}));
+    this.io.emit(
+      'OnlineList',
+      this.SocketList.map(function (a) {
+        return a.userId;
+      }),
+    );
 
     console.log('socket list after connection: ', this.SocketList);
     console.log(`number of sockets connected: ${socket.size}`);
 
     this.channelService
-    .getUserRoom(client.userID)
-    .then((res) => {
-      console.log('room on connection:', { res });
-      client.emit('Rooms', res);
+      .getUserRoom(client.userID)
+      .then((res) => {
+        console.log('room on connection:', { res });
+        client.emit('Rooms', res);
         res.forEach((room) => {
           client.join(room.channel.id);
         });
@@ -76,7 +85,7 @@ export class MessageGateway
       .catch((err) => {
         console.log(err);
       });
-      this.friendService
+    this.friendService
       .getFriendList(client.userID)
       .then((friendList) => {
         console.log('send friend list: ', friendList);
@@ -85,7 +94,7 @@ export class MessageGateway
       .catch((err) => {
         console.log(err);
       });
-      this.blockService
+    this.blockService
       .getBlockList(client.userID)
       .then((bloquedList) => {
         client.emit('BloquedList', bloquedList);
@@ -105,8 +114,13 @@ export class MessageGateway
       return true;
     });
     //Inform frontend clients
-    this.io.emit('OnlineList', this.SocketList.map(function(a) {return a.userId}));
-    
+    this.io.emit(
+      'OnlineList',
+      this.SocketList.map(function (a) {
+        return a.userId;
+      }),
+    );
+
     console.log(`Client disconnected: ${client.id} | name: ${client.username}`);
     console.log('socket list after disconnection: ', this.SocketList);
     console.log(`number of sockets connected: ${socket.size}`);
@@ -592,4 +606,55 @@ export class MessageGateway
         });
     });
   }
+  /*============================================*/
+  /*invite a player to a lobby*/
+  @SubscribeMessage('InviteUserInGame')
+  InviteUserInGame(
+    @MessageBody('inviteId') inviteId: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('InviteUserInGame: ', inviteId);
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .CreateLobby(client.userID, inviteId)
+        .then((lobby) => {
+          console.log('lobby create: ', lobby);
+          const gameSocket = this.gameGateWay.SocketList.find((socket) => {
+            if (socket.userId === client.userID) return true;
+            return false;
+          });
+          if (gameSocket) gameSocket.socket.emit('JoinLobby', lobby);
+          else client.emit('JoinGame');
+          const inviteSocket = this.SocketList.find((socket) => {
+            if (socket.userId === inviteId) return true;
+            return false;
+          });
+          if (inviteSocket)
+            return resolve(
+              new Promise<void>((resolve, reject) => {
+                this.userService
+                  .getUserUsername(client.userID)
+                  .then((user) => {
+                    inviteSocket.socket.emit('GameInvite', {
+                      id: user.id,
+                      username: user.username,
+                    });
+                    return resolve();
+                  })
+                  .catch((err) => {
+                    return reject(err);
+                  });
+              }),
+            );
+          return resolve();
+        })
+        .catch((err) => {
+          console.log('error create lobby: ', err);
+          return reject();
+        });
+      return resolve();
+    });
+  }
+
+  /*============================================*/
 }
