@@ -41,6 +41,8 @@ const SocketContextComponent: React.FunctionComponent<
     setFriendErrMsg,
     setCreateErrMsg,
     ShowRoomSetting,
+    setInviteList,
+    inviteList,
   } = useChat();
 
   const socket = useSocket("http://localhost:3333/chat", {
@@ -82,6 +84,15 @@ const SocketContextComponent: React.FunctionComponent<
         } else if (code.search("err4") >= 0) {
           setJoinErrMsg(ErrMessage[code]);
         }
+      });
+      /**join a game lobby */
+      socket.on("JoinGame", () => {
+        navigate("/app/game");
+      });
+      /**receive a invite */
+      socket.on("GameInvite", (invite: { id: string; username: string }) => {
+        console.log("invite receive: ", invite);
+        setInviteList([...inviteList, invite]);
       });
       /**disconnect */
       socket.on("Disconnect", () => {

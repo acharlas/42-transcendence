@@ -48,6 +48,10 @@ function UserMenuComponent() {
     socket.emit("RemoveFriend", { username: selectUser.username });
   };
 
+  const watchUser = () => {
+    socket.emit("WatchPartie", { userId: selectUser.id });
+  };
+
   const AdminUser = () => {
     console.log("set as admin");
     socket.emit("UpdateUserPrivilege", {
@@ -71,8 +75,7 @@ function UserMenuComponent() {
   };
 
   const handleInviteToPlay = () => {
-    navigate("/app/game");
-    socket.emit("CreateLobby");
+    socket.emit("InviteUserInGame", { inviteId: selectUser.id });
   };
 
   const handleShowUserProfile = () => {
@@ -186,6 +189,9 @@ function UserMenuComponent() {
               )}
             </>
           )}
+        <button onClick={watchUser} className="fullwidth-button">
+          regarder la partie
+        </button>
         {showTimeSelector && <ChannelTimeSelectorComponent />}
       </div>
     </>

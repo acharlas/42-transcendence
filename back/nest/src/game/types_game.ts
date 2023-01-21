@@ -3,6 +3,8 @@ export type Lobby = {
   playerOne: string;
   playerTwo: string;
   game: Game;
+  invited: string[];
+  viewer: string[];
 };
 
 export type Player = {
@@ -11,7 +13,8 @@ export type Player = {
 };
 
 export type Game = {
-  player: { id: string; ready: boolean }[];
+  start: boolean;
+  player: { id: string; readdy: boolean }[];
   score: number[];
 };
 

@@ -18,7 +18,7 @@ export class UserService {
     return user;
   }
 
-  async getUserUsername(userId: string, id: string): Promise<User> {
+  async getUserUsername(id: string): Promise<User> {
     const user = await this.prisma.user.findFirst({ where: { id: id } });
     if (user === null) throw new ForbiddenException('no such user');
     return user;

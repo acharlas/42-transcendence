@@ -9,7 +9,7 @@ import {
 import { useSocket } from "../context/use-socket";
 import { Lobby, Position } from "./game-type";
 
-export interface ISocketGameContextComponentProps extends PropsWithChildren { }
+export interface ISocketGameContextComponentProps extends PropsWithChildren {}
 
 const SocketGameContextComponent: React.FunctionComponent<
   ISocketGameContextComponentProps
@@ -55,7 +55,6 @@ const SocketGameContextComponent: React.FunctionComponent<
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
-
       /**** Game-related listeners ****/
       /** Game start */
       socket.on("StartGame", (lobby: Lobby) => {
@@ -81,17 +80,17 @@ const SocketGameContextComponent: React.FunctionComponent<
             position.y * gameBounds.y + ball.body.height / 2
           );
       });
-      /** setPlayerPosition */
-      socket.on("NewPlayerPos", (position: number) => {
-        if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
+      /**setPlayerPosition */
+      socket.on("NewPlayerPos", (position: { player: boolean; y: number }) => {
+        if (!position.player)
           player2.setPosition(
             ball.width / 2 + 1,
-            position * gameBounds.y + player1.body.height / 2
+            position.y * gameBounds.y + player1.body.height / 2
           );
-        if (lobby.playerOne === window.sessionStorage.getItem("userid"))
+        if (position.player)
           player1.setPosition(
             gameBounds.x,
-            position * gameBounds.y + player1.body.height / 2
+            position.y * gameBounds.y + player1.body.height / 2
           );
       });
 
@@ -107,7 +106,14 @@ const SocketGameContextComponent: React.FunctionComponent<
         setInQueue(false);
         setLobby(lobby);
       });
-      /** Player leaves the lobby */
+      /**JoinSpectate*/
+      socket.on("JoinSpectate", (lobby: Lobby) => {
+        console.log("JoinSpectate: ", { lobby });
+
+        setLobby(lobby);
+        if (lobby.game) navigate("/app/game/" + lobby.id);
+      });
+      /** Player leave the lobby */
       socket.on("PlayerLeave", (uid: string) => {
         console.log("user: ", uid, " leave the lobby");
         Removeplayer(uid);

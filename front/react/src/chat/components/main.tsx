@@ -28,6 +28,8 @@ function ChatMainComponent() {
     FriendErrMsg,
     BlockErrMsg,
     resetErrMsg,
+    inviteList,
+    setInviteList,
   } = useChat();
 
   function handleJoinRoom(key: string) {
@@ -70,6 +72,16 @@ function ChatMainComponent() {
 
   const handleRemoveBlock = (username: string) => {
     socket.emit("RemoveBlock", { username });
+  };
+
+  const handleAcceptInvite = (userid: string) => {
+    setInviteList(
+      inviteList.filter((invite) => {
+        if (invite.id === userid) return false;
+        return true;
+      })
+    );
+    socket.emit("AccepteGameInvite", { userid });
   };
 
   const handleSendDm = (username: string) => {
@@ -117,7 +129,7 @@ function ChatMainComponent() {
             {friendList.map((friend, id) => {
               return (
                 <li className="line-with-indicator" key={id}>
-                  <OnlineIndicatorComponent id={friend.id}/>
+                  <OnlineIndicatorComponent id={friend.id} />
                   <button
                     className="room-menu-button-user-block-friend"
                     onClick={() => {
@@ -198,9 +210,7 @@ function ChatMainComponent() {
         <div className="profile__panel__bottom">
           <ChannelJoinComponent />
         </div>
-        <div className="profile__panel__top">
-          Create channel
-        </div>
+        <div className="profile__panel__top">Create channel</div>
         <div className="profile__panel__bottom">
           <ChannelCreationComponent />
         </div>
@@ -278,6 +288,22 @@ function ChatMainComponent() {
             );
           })}
           {messageListIsEmpty && <>Your private chats will show here!</>}
+        </div>
+        <div className="profile__panel__top">Invitation</div>
+        <div className="profile__panel__bottom">
+          {inviteList.map((invite, id) => {
+            console.log(invite.username);
+            return (
+              <div key={id}>
+                <button
+                  onClick={() => handleAcceptInvite(invite.id)}
+                  className="room-menu-button-dm"
+                >
+                  {invite.username}
+                </button>
+              </div>
+            );
+          })}
         </div>
       </>
     );
