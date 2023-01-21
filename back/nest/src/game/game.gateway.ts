@@ -279,8 +279,8 @@ export class GameGateway
   }
 
   /*Start the game*/
-  @SubscribeMessage('GameReaddy')
-  GameReaddy(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  @SubscribeMessage('GameReady')
+  GameReady(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
     return new Promise<void>((resolve, reject) => {});
   }
 
@@ -331,7 +331,7 @@ export class GameGateway
         .PlayerReady(client.userID)
         .then((lobby) => {
           console.log({ lobby }, lobby.game);
-          if (lobby.game.player[0].readdy && lobby.game.player[1].readdy) {
+          if (lobby.game.player[0].ready && lobby.game.player[1].ready) {
             const startAt = new Date();
             startAt.setSeconds(startAt.getSeconds() + 10);
             client.broadcast.to(lobby.id).emit('StartGame', lobby);

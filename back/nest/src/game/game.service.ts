@@ -188,8 +188,8 @@ export class GameService {
         return reject(new ForbiddenException('missing player'));
       lobby.game = {
         player: [
-          { id: lobby.playerOne, readdy: false },
-          { id: lobby.playerTwo, readdy: false },
+          { id: lobby.playerOne, ready: false },
+          { id: lobby.playerTwo, ready: false },
         ],
         score: [0, 0],
       };
@@ -202,8 +202,8 @@ export class GameService {
       const lobby = this.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);
       });
-      if (lobby.playerOne === userId) lobby.game.player[0].readdy = true;
-      if (lobby.playerTwo === userId) lobby.game.player[1].readdy = true;
+      if (lobby.playerOne === userId) lobby.game.player[0].ready = true;
+      if (lobby.playerTwo === userId) lobby.game.player[1].ready = true;
       return resolve(lobby);
     });
   }

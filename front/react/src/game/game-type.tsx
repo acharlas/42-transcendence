@@ -6,7 +6,7 @@ export interface Lobby {
 }
 
 export type Game = {
-  player: { id: string; readdy: boolean }[];
+  player: { id: string; ready: boolean }[];
   score: number[];
 };
 

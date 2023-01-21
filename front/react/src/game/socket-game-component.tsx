@@ -57,7 +57,7 @@ const SocketGameContextComponent: React.FunctionComponent<
     const StartListener = () => {
       /**start the game */
       socket.on("StartGame", (lobby: Lobby) => {
-        console.log("everyone readdy: ", lobby);
+        console.log("everyone ready: ", lobby);
 
         setLobby(lobby);
         console.log({ game });
