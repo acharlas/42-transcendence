@@ -15,6 +15,7 @@ import { CreateChannelDto, EditChannelDto } from 'src/channel/dto';
 import { FriendService } from 'src/friend/friend.service';
 import { GameGateway } from 'src/game/game.gateway';
 import { GameService } from 'src/game/game.service';
+import PlayerIsInLobby from 'src/game/game.utils';
 import { UserService } from 'src/user/user.service';
 import { ChannelService } from '../channel/channel.service';
 import { socketTab, SocketWithAuth } from './types_message';
@@ -655,6 +656,41 @@ export class MessageGateway
       return resolve();
     });
   }
-
+  /*============================================*/
+  /*============================================*/
+  /*invite a player to a lobby*/
+  @SubscribeMessage('AccepteGameInvite')
+  AccepteGameInvite(
+    @MessageBody('userid') userid: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('AccepteGameInvite: ', userid);
+    return new Promise<void>((resolve, reject) => {
+      const lobby = this.gameService.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userid, lobby);
+      });
+      if (!lobby) return reject();
+      this.gameService
+        .JoinLobby(client.userID, lobby.id)
+        .then((lobby) => {
+          const gameSocket = this.gameGateWay.SocketList.find((socket) => {
+            if (socket.userId === client.userID) return true;
+            return false;
+          });
+          if (gameSocket) gameSocket.socket.emit('JoinLobby', lobby);
+          else client.emit('JoinGame');
+          const gameHostSocket = this.gameGateWay.SocketList.find((socket) => {
+            if (socket.userId === userid) return true;
+            return false;
+          });
+          if (gameHostSocket) gameHostSocket.socket.emit('JoinLobby', lobby);
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+      return resolve();
+    });
+  }
   /*============================================*/
 }

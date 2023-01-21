@@ -81,6 +81,7 @@ function ChatMainComponent() {
         return true;
       })
     );
+    socket.emit("AccepteGameInvite", { userid });
   };
 
   const handleSendDm = (username: string) => {

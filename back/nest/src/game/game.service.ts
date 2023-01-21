@@ -177,11 +177,12 @@ export class GameService {
       });
       if (!joinLobby) reject(new ForbiddenException('no such lobby'));
       if (joinLobby.playerTwo) reject(new ForbiddenException('lobby is full'));
-      this.LobbyList = this.LobbyList.map((lobby) => {
-        if (lobby.id === lobbyId) return { ...lobby, playerTwo: userId };
-        return lobby;
+      joinLobby.playerTwo = userId;
+      joinLobby.invited = joinLobby.invited.filter((user) => {
+        if (user === userId) return false;
+        return true;
       });
-      return resolve({ ...joinLobby, playerTwo: userId });
+      return resolve(joinLobby);
     });
   }
 
