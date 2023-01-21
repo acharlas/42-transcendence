@@ -356,7 +356,7 @@ export class GameGateway
         .PlayerReady(client.userID)
         .then((lobby) => {
           console.log({ lobby }, lobby.game);
-          if (lobby.game.player[0].readdy && lobby.game.player[1].readdy) {
+          if (lobby.game.player[0].ready && lobby.game.player[1].ready) {
             this.gameService
               .SetGameStart(lobby.id)
               .then((lobby) => {

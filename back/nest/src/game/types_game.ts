@@ -14,7 +14,7 @@ export type Player = {
 
 export type Game = {
   start: boolean;
-  player: { id: string; readdy: boolean }[];
+  player: { id: string; ready: boolean }[];
   score: number[];
 };
 

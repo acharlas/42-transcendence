@@ -63,7 +63,7 @@ export class GameService {
                   })
                 )
                   return reject(
-                    new ForbiddenException('lobby alreaddy create'),
+                    new ForbiddenException('lobby already create'),
                   );
                 this.LobbyList.push(lobby); //this.LobbyList = [...this.LobbyList, lobby];
                 if (inviteId)
@@ -93,7 +93,7 @@ export class GameService {
           return false;
         })
       )
-        return reject(new ForbiddenException('lobby alreaddy create'));
+        return reject(new ForbiddenException('lobby already create'));
       console.log('add lobby: ', lobby);
       this.LobbyList.push(lobby); //this.LobbyList = [...this.LobbyList, lobby];
       if (inviteId)
@@ -128,7 +128,7 @@ export class GameService {
           return false;
         })
       )
-        return reject(new ForbiddenException('user alreaddy invite'));
+        return reject(new ForbiddenException('user already invite'));
       lobby.invited.push(inviteId);
       return resolve(lobby);
     });
@@ -188,7 +188,7 @@ export class GameService {
         return false;
       });
       if (actLobby) {
-        return reject(new ForbiddenException('alreaddy in a room'));
+        return reject(new ForbiddenException('already in a room'));
       }
       const joinLobby = this.LobbyList.find((lobby) => {
         if (lobby.id === lobbyId) return true;
@@ -246,7 +246,7 @@ export class GameService {
           return false;
         })
       )
-        return reject(new ForbiddenException('alreaddy in the lobby'));
+        return reject(new ForbiddenException('already in the lobby'));
       if (
         this.LobbyList.find((lobby) => {
           return PlayerIsInLobby(userId, lobby);
@@ -353,7 +353,7 @@ export class GameService {
     });
   }
 
-  async PlayerReaddy(userId: string): Promise<Lobby> {
+  async PlayerReady(userId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const lobby = this.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);

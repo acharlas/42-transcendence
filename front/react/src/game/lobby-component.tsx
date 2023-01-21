@@ -10,12 +10,8 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
   const { inQueue, lobby } = useGame();
 
-  const handleJoiningQueueClick = () => {
+  const handleClick = () => {
     socket.emit("JoiningQueue");
-  };
-
-  const handleLeaveQueueClick = () => {
-    console.log("TODO");
   };
 
   const handleCreateLobbyClick = () => {
@@ -44,7 +40,7 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
     socket.emit("NewHistory", { newHistory: newHistory });
   };
 
-  const handleCreateGameClick = () => {
+  const handleStartGameClick = () => {
     socket.emit("CreateGame");
   };
 
