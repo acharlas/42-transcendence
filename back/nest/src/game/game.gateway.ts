@@ -323,12 +323,12 @@ export class GameGateway
   }
 
   /*Start the game*/
-  @SubscribeMessage('PlayerReaddy')
-  PlayerReaddy(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  @SubscribeMessage('PlayerReady')
+  PlayerReady(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      console.log('playerReaddy');
+      console.log('PlayerReady');
       this.gameService
-        .PlayerReaddy(client.userID)
+        .PlayerReady(client.userID)
         .then((lobby) => {
           console.log({ lobby }, lobby.game);
           if (lobby.game.player[0].readdy && lobby.game.player[1].readdy) {

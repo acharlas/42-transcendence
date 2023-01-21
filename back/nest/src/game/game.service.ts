@@ -197,7 +197,7 @@ export class GameService {
     });
   }
 
-  async PlayerReaddy(userId: string): Promise<Lobby> {
+  async PlayerReady(userId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const lobby = this.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);

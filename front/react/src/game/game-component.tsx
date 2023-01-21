@@ -220,7 +220,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
   const click = () => {
     setGame(game);
-    socket.emit("PlayerReaddy");
+    socket.emit("PlayerReady");
   };
   const clickpa = () => {
     game.scene.pause("default");
@@ -229,7 +229,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   useEffect(() => {
     if (game) {
       console.log("PAUSE");
-      socket.emit("PlayerReaddy");
+      socket.emit("PlayerReady");
       game.scene.pause("default");
     }
   }, [game]);
