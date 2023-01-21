@@ -60,7 +60,7 @@ export class GameGateway
     console.log(
       `Client connected to game: ${client.id} | userid: ${client.userID} | name: ${client.username}`,
     );
-    console.log(`number of soket connected to game: ${socket.size}`);
+    console.log(`Number of sockets connected to game: ${socket.size}`);
   }
 
   handleDisconnect(client: SocketWithAuth): void {
@@ -72,7 +72,7 @@ export class GameGateway
     console.log(
       `Client disconnected of game: ${client.id} | name: ${client.username}`,
     );
-    console.log(`number of soket connected to game: ${socket.size}`);
+    console.log(`Number of sockets connected to game: ${socket.size}`);
     this.gameService
       .PlayerDisconnect(client.userID)
       .then((lobbyId) => {
@@ -148,7 +148,7 @@ export class GameGateway
   /*Leaving queue*/
   @SubscribeMessage('LeavingQueue')
   LeavingQueue(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, ' Living the queue');
+    console.log('User:', client.userID, ' Leaving the queue');
 
     return new Promise<void>((resolve, reject) => {
       this.gameService
@@ -168,7 +168,7 @@ export class GameGateway
   /*Create lobby*/
   @SubscribeMessage('CreateLobby')
   CreateLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, ' Leaving the queue');
+    console.log('User:', client.userID, ' Leaving queue');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .CreateLobby(client.userID)
@@ -189,7 +189,7 @@ export class GameGateway
   /*Leaving lobby*/
   @SubscribeMessage('LeavingLobby')
   LeavingLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, ' Living the queue');
+    console.log('User:', client.userID, ' Leaving queue');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .LeaveLobby(client.userID)
