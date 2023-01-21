@@ -80,16 +80,17 @@ const SocketGameContextComponent: React.FunctionComponent<
           );
       });
       /**setPlayerPosition */
-      socket.on("NewPlayerPos", (position: number) => {
-        if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
+      socket.on("NewPlayerPos", (position: { player: boolean; y: number }) => {
+        console.log("new player pos: ", position);
+        if (!position.player)
           player2.setPosition(
             ball.width / 2 + 1,
-            position * gameBounds.y + player1.body.height / 2
+            position.y * gameBounds.y + player1.body.height / 2
           );
-        if (lobby.playerOne === window.sessionStorage.getItem("userid"))
+        if (position.player)
           player1.setPosition(
             gameBounds.x,
-            position * gameBounds.y + player1.body.height / 2
+            position.y * gameBounds.y + player1.body.height / 2
           );
       });
       /**disconnect */
@@ -113,6 +114,13 @@ const SocketGameContextComponent: React.FunctionComponent<
 
         setInQueue(false);
         setLobby(lobby);
+      });
+      /**JoinSpectate*/
+      socket.on("JoinSpectate", (lobby: Lobby) => {
+        console.log("JoinSpectate: ", { lobby });
+
+        setLobby(lobby);
+        if (lobby.game) navigate("/app/game/" + lobby.id);
       });
       /** Player leave the lobby */
       socket.on("PlayerLeave", (uid: string) => {

@@ -62,7 +62,26 @@ export class GameGateway
       return PlayerIsInLobby(client.userID, lobby);
     });
     console.log('lobby find: ', lobby);
-    if (lobby) client.emit('JoinLobby', lobby);
+    if (lobby) {
+      client.join(lobby.id);
+      client.emit('JoinLobby', lobby);
+    }
+    this.SocketList.push({ userId: client.userID, socket: client });
+    const lobbyWatch = this.gameService.LobbyList.find((lobby) => {
+      if (
+        lobby.viewer.find((viewer) => {
+          if (viewer === client.userID) return true;
+          return false;
+        })
+      )
+        return true;
+      return false;
+    });
+    console.log('lobby watch find: ', lobbyWatch);
+    if (lobbyWatch) {
+      client.join(lobbyWatch.id);
+      client.emit('JoinSpectate', lobbyWatch);
+    }
     console.log(
       `Client connected to game: ${client.id} | userid: ${client.userID} | name: ${client.username}`,
     );
@@ -83,7 +102,10 @@ export class GameGateway
       .PlayerDisconnect(client.userID)
       .then((lobbyId) => {
         console.log('lobby found');
-        if (lobbyId) client.to(lobbyId).emit('PlayerLeave', client.userID);
+        if (lobbyId) {
+          client.to(lobbyId).emit('PlayerLeave', client.userID);
+          client.leave(lobbyId);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -245,7 +267,10 @@ export class GameGateway
         .FindPLayerLobby(client.userID)
         .then((lobby) => {
           if (lobby)
-            client.broadcast.to(lobby.id).emit('NewPlayerPos', position);
+            client.broadcast.to(lobby.id).emit('NewPlayerPos', {
+              player: lobby.playerTwo === client.userID,
+              y: position,
+            });
           return resolve();
         })
         .catch((err) => {
@@ -338,10 +363,16 @@ export class GameGateway
         .then((lobby) => {
           console.log({ lobby }, lobby.game);
           if (lobby.game.player[0].readdy && lobby.game.player[1].readdy) {
-            const startAt = new Date();
-            startAt.setSeconds(startAt.getSeconds() + 10);
-            client.broadcast.to(lobby.id).emit('StartGame', lobby);
-            client.emit('StartGame', lobby);
+            this.gameService
+              .SetGameStart(lobby.id)
+              .then((lobby) => {
+                client.broadcast.to(lobby.id).emit('StartGame', lobby);
+                client.emit('StartGame', lobby);
+              })
+              .catch((err) => {
+                console.log(err);
+                return reject();
+              });
           }
           return resolve();
         })

@@ -624,8 +624,10 @@ export class MessageGateway
             if (socket.userId === client.userID) return true;
             return false;
           });
-          if (gameSocket) gameSocket.socket.emit('JoinLobby', lobby);
-          else client.emit('JoinGame');
+          if (gameSocket) {
+            gameSocket.socket.join(lobby.id);
+            gameSocket.socket.emit('JoinLobby', lobby);
+          } else client.emit('JoinGame');
           const inviteSocket = this.SocketList.find((socket) => {
             if (socket.userId === inviteId) return true;
             return false;
@@ -677,13 +679,48 @@ export class MessageGateway
             if (socket.userId === client.userID) return true;
             return false;
           });
-          if (gameSocket) gameSocket.socket.emit('JoinLobby', lobby);
-          else client.emit('JoinGame');
+          if (gameSocket) {
+            gameSocket.socket.emit('JoinLobby', lobby);
+            gameSocket.socket.join(lobby.id);
+          } else client.emit('JoinGame');
           const gameHostSocket = this.gameGateWay.SocketList.find((socket) => {
             if (socket.userId === userid) return true;
             return false;
           });
           if (gameHostSocket) gameHostSocket.socket.emit('JoinLobby', lobby);
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+      return resolve();
+    });
+  }
+  /*============================================*/
+  /*============================================*/
+  /*invite a player to a lobby*/
+  @SubscribeMessage('WatchPartie')
+  WatchPartie(
+    @MessageBody('userId') userId: string,
+    @ConnectedSocket() client: SocketWithAuth,
+  ): Promise<void> {
+    console.log('watch: ', userId);
+    return new Promise<void>((resolve, reject) => {
+      const lobby = this.gameService.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userId, lobby);
+      });
+      if (!lobby) return reject();
+      this.gameService
+        .JoinViewer(client.userID, lobby.id)
+        .then((lobby) => {
+          const gameSocket = this.gameGateWay.SocketList.find((socket) => {
+            if (socket.userId === client.userID) return true;
+            return false;
+          });
+          if (gameSocket) {
+            gameSocket.socket.join(lobby.id);
+            gameSocket.socket.emit('JoinSpectate', lobby);
+          } else client.emit('JoinGame');
         })
         .catch((err) => {
           console.log(err);

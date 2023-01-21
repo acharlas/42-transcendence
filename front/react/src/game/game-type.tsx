@@ -4,9 +4,11 @@ export interface Lobby {
   playerTwo: string;
   game: Game;
   invited: string[];
+  viewer: string[];
 }
 
 export type Game = {
+  start: boolean;
   player: { id: string; readdy: boolean }[];
   score: number[];
 };
