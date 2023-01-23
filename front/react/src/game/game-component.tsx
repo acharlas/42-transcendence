@@ -10,7 +10,6 @@ import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
 import { GameMode } from "./game-type";
 import { useNavigate } from "react-router-dom";
-// import paddleImage from "./assets/paddle.png"
 
 export interface IGameComponentProps {}
 
@@ -35,7 +34,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   if (!socket) navigate("/app/game");
 
   useEffect(() => {
-    // Create a new Phaser 3 game
     const game = new Phaser.Game({
       type: Phaser.AUTO,
       scale: {
@@ -55,7 +53,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         default: "arcade",
         arcade: {
           gravity: { y: 0 },
-          //   debug: true
+          debug: true
         },
       },
     });
@@ -72,17 +70,15 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     function preload() {
-      // Preload assets here
       this.load.image("ball", "http://localhost:3001/assets/ball.png");
       this.load.image("paddle", "http://localhost:3001/assets/paddle.png");
     }
 
     function create() {
-      // Create game objects here
       ball = this.physics.add.sprite(
-        this.physics.world.bounds.width / 2, // x position
-        this.physics.world.bounds.height / 2, // y position
-        "ball" // key of image for the sprite
+        this.physics.world.bounds.width / 2,
+        this.physics.world.bounds.height / 2,
+        "ball"
       );
       setGameBounds({
         x: this.physics.world.bounds.width - (ball.width / 2 + 1),
@@ -90,16 +86,16 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       });
       ball.setBounce(1, 1).setCollideWorldBounds(true);
       player1 = this.physics.add.sprite(
-        this.physics.world.bounds.width - (ball.width / 2 + 1), // x position
-        this.physics.world.bounds.height / 2, // y position
-        "paddle" // key of image for the sprite
+        this.physics.world.bounds.width - (ball.width / 2 + 1),
+        this.physics.world.bounds.height / 2,
+        "paddle"
       );
       player1.setCollideWorldBounds(true);
       setPlayer1(player1);
       player2 = this.physics.add.sprite(
-        ball.width / 2 + 1, // x position
-        this.physics.world.bounds.height / 2, // y position
-        "paddle" // key of image for the sprite
+        ball.width / 2 + 1,
+        this.physics.world.bounds.height / 2,
+        "paddle"
       );
       player2.setCollideWorldBounds(true);
       setPlayer2(player2);
@@ -126,13 +122,10 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
     function update() {
       if (isPlayer1Point()) {
-        // Update game objects here
-        // player1VictoryText.setVisible(true);
         ball.disableBody(true, true);
         return;
       }
       if (isPlayer2Point()) {
-        // player2VictoryText.setVisible(true);
         ball.disableBody(true, true);
         return;
       }
@@ -179,34 +172,31 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
       //if host
       if (lobby.playerOne === window.sessionStorage.getItem("userid")) {
-        {
-          if (!gameStarted) {
-            ball.setVisible(true);
-            gameStarted = true;
-            const initialXSpeed = Math.random() * 20 + 50;
-            const initialYSpeed = Math.random() * 20 + 50;
-            ball.setVelocityX(initialXSpeed);
-            ball.setVelocityY(initialYSpeed);
-            // openingText.setVisible(false);
-          }
-          socket.emit("UpdateBallPosition", {
-            pos: {
-              x: ball.body.position.x / this.physics.world.bounds.width,
-              y: ball.body.position.y / this.physics.world.bounds.height,
-            },
-          });
+        if (!gameStarted) {
+          ball.setVisible(true);
+          gameStarted = true;
+          const initialXSpeed = Math.random() * 20 + 50;
+          const initialYSpeed = Math.random() * 20 + 50;
+          ball.setVelocityX(initialXSpeed);
+          ball.setVelocityY(initialYSpeed);
         }
+        socket.emit("UpdateBallPosition", {
+          pos: {
+            x: ball.body.position.x / this.physics.world.bounds.width,
+            y: ball.body.position.y / this.physics.world.bounds.height,
+          },
+        });
       }
     }
 
-    function movePlayerDown(player: Phaser.Physics.Arcade.Sprite) {
-      player.setVelocityY(-350);
-      socket.emit("UpdatePlayerPosition", { pos: player.body.position.y });
-    }
-    function movePlayerUp(player: Phaser.Physics.Arcade.Sprite) {
-      player.setVelocityY(350);
-      socket.emit("UpdatePlayerPosition", { pos: player.body.position.y });
-    }
+    // function movePlayerDown(player: Phaser.Physics.Arcade.Sprite) {
+    //   player.setVelocityY(-350);
+    //   socket.emit("UpdatePlayerPosition", { pos: player.body.position.y });
+    // }
+    // function movePlayerUp(player: Phaser.Physics.Arcade.Sprite) {
+    //   player.setVelocityY(350);
+    //   socket.emit("UpdatePlayerPosition", { pos: player.body.position.y });
+    // }
 
     function isPlayer1Point() {
       return ball.body.x < player2.body.x;
