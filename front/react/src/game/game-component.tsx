@@ -101,7 +101,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       setPlayer2(player2);
       cursors = this.input.keyboard.createCursorKeys();
       setCursors(cursors);
-      keys = this.input.keyboard.addKeys("W,S,Z");
+      keys = this.input.keyboard.addKeys("W,S,Z", false);
       setKeys(keys);
       this.physics.add.collider(ball, player1, null, null, this);
       this.physics.add.collider(ball, player2, null, null, this);
