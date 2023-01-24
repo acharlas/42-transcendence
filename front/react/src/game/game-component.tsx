@@ -66,7 +66,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     let gameStarted: boolean;
     function init() {
-      if (socket == undefined) game.destroy(true);
+      if (socket === undefined) game.destroy(true);
     }
 
     function preload() {

@@ -97,7 +97,7 @@ const SocketContextComponent: React.FunctionComponent<
       socket.on("GameInvite", (invite: { id: string; username: string }) => {
         console.log("invite receive: ", invite);
         setInviteList([...inviteList, invite]);
-        if (selectedChatWindow != SelectedChatWindow.INVITES)
+        if (selectedChatWindow !== SelectedChatWindow.INVITES)
           setHasNewInvite(true);
       });
       /**disconnect */
@@ -193,12 +193,12 @@ const SocketContextComponent: React.FunctionComponent<
             setMessages(room.message);
           }
           else if (room.channel.type === ChannelType.dm) {
-            if (selectedChatWindow != SelectedChatWindow.MESSAGES) {
+            if (selectedChatWindow !== SelectedChatWindow.MESSAGES) {
               setHasNewChatMessage(true);
             }
           }
           else { //channel msg
-            if (selectedChatWindow != SelectedChatWindow.CHANNELS) {
+            if (selectedChatWindow !== SelectedChatWindow.CHANNELS) {
               setHasNewChannelMessage(true);
             }
           }
