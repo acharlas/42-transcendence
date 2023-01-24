@@ -1,36 +1,16 @@
 import { PropsWithChildren, useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../context/game.context";
-import {
-  defaultSocketContextState,
-  SocketContextProvider,
-  SocketReducer,
-} from "../context/socket.context";
+import { defaultSocketContextState, SocketContextProvider, SocketReducer } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
 import { Lobby, Position } from "./game-type";
 
 export interface ISocketGameContextComponentProps extends PropsWithChildren {}
 
-const SocketGameContextComponent: React.FunctionComponent<
-  ISocketGameContextComponentProps
-> = (props) => {
+const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComponentProps> = (props) => {
   const { children } = props;
-  const [SocketState, SocketDispatch] = useReducer(
-    SocketReducer,
-    defaultSocketContextState
-  );
-  const {
-    setInQueue,
-    setLobby,
-    lobby,
-    inQueue,
-    Removeplayer,
-    player1,
-    player2,
-    gameBounds,
-    ball,
-    game,
-  } = useGame();
+  const [SocketState, SocketDispatch] = useReducer(SocketReducer, defaultSocketContextState);
+  const { setInQueue, setLobby, lobby, inQueue, Removeplayer, player1, player2, gameBounds, ball, game } = useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
     reconnectionAttempts: 5,
@@ -82,15 +62,8 @@ const SocketGameContextComponent: React.FunctionComponent<
       /**setPlayerPosition */
       socket.on("NewPlayerPos", (position: { player: boolean; y: number }) => {
         if (!position.player)
-          player2.setPosition(
-            ball.width / 2 + 1,
-            position.y * gameBounds.y + player1.body.height / 2
-          );
-        if (position.player)
-          player1.setPosition(
-            gameBounds.x,
-            position.y * gameBounds.y + player1.body.height / 2
-          );
+          player2.setPosition(ball.width / 2 + 1, position.y * gameBounds.y + player1.body.height / 2);
+        if (position.player) player1.setPosition(gameBounds.x, position.y * gameBounds.y + player1.body.height / 2);
       });
 
       /**** Matchmaking-related listeners ****/
@@ -123,6 +96,11 @@ const SocketGameContextComponent: React.FunctionComponent<
         console.log("you leave the lobby: ", lobbyId);
         setInQueue(false);
         setLobby(null);
+      });
+      /** update the lobby */
+      socket.on("UpdateLobby", (lobby: Lobby) => {
+        console.log("UpdateLobby: ", lobby);
+        setLobby(lobby);
       });
       /** Receive new id */
       socket.on("new_user", (uid: string) => {
@@ -159,23 +137,9 @@ const SocketGameContextComponent: React.FunctionComponent<
       });
     };
     StartListener();
-  }, [
-    socket,
-    lobby,
-    setLobby,
-    setInQueue,
-    inQueue,
-    ball,
-    player1,
-    player2,
-    game,
-  ]);
+  }, [socket, lobby, setLobby, setInQueue, inQueue, ball, player1, player2, game]);
 
-  return (
-    <SocketContextProvider value={{ SocketState, SocketDispatch }}>
-      {children}
-    </SocketContextProvider>
-  );
+  return <SocketContextProvider value={{ SocketState, SocketDispatch }}>{children}</SocketContextProvider>;
 };
 
 export default SocketGameContextComponent;

@@ -15,14 +15,12 @@ import { HistoryService } from 'src/history/history.service';
 import { socketTab, SocketWithAuth } from '../message/types_message';
 import { GameService } from './game.service';
 import { Position } from './types_game';
-import PlayerIsInLobby from './game.utils';
+import { PlayerIsInLobby } from './game.utils';
 
 @WebSocketGateway({
   namespace: 'game',
 })
-export class GameGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private gameService: GameService,
     private historyService: HistoryService, //private schedulerRegistry: SchedulerRegistry,
@@ -82,9 +80,7 @@ export class GameGateway
       client.join(lobbyWatch.id);
       client.emit('JoinSpectate', lobbyWatch);
     }
-    console.log(
-      `Client connected to game: ${client.id} | userid: ${client.userID} | name: ${client.username}`,
-    );
+    console.log(`Client connected to game: ${client.id} | userid: ${client.userID} | name: ${client.username}`);
     console.log(`Number of sockets connected to game: ${socket.size}`);
   }
 
@@ -94,9 +90,7 @@ export class GameGateway
       if (sock.userId === client.userID) return false;
       return true;
     });
-    console.log(
-      `Client disconnected of game: ${client.id} | name: ${client.username}`,
-    );
+    console.log(`Client disconnected of game: ${client.id} | name: ${client.username}`);
     console.log(`Number of sockets connected to game: ${socket.size}`);
     this.gameService
       .PlayerDisconnect(client.userID)
@@ -213,14 +207,16 @@ export class GameGateway
   /*Leaving lobby*/
   @SubscribeMessage('LeavingLobby')
   LeavingLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, ' Leaving queue');
+    console.log('User:', client.userID, ' Leaving lobby');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .LeaveLobby(client.userID)
-        .then((lobbyId) => {
-          client.broadcast.to(lobbyId).emit('PlayerLeave', client.userID);
-          client.emit('LeaveLobby');
-          client.leave(lobbyId);
+        .then((lobby) => {
+          if (lobby) {
+            client.broadcast.to(lobby.id).emit('UpdateLobby', lobby);
+            client.emit('LeaveLobby');
+            client.leave(lobby.id);
+          }
           return resolve();
         })
         .catch((err) => {
@@ -252,10 +248,7 @@ export class GameGateway
 
   /*new Player position*/
   @SubscribeMessage('UpdatePlayerPosition')
-  UpdatePlayerPosition(
-    @ConnectedSocket() client: SocketWithAuth,
-    @MessageBody('pos') position: number,
-  ): Promise<void> {
+  UpdatePlayerPosition(@ConnectedSocket() client: SocketWithAuth, @MessageBody('pos') position: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .FindPLayerLobby(client.userID)
@@ -311,10 +304,7 @@ export class GameGateway
 
   /*UpdateBallPosition*/
   @SubscribeMessage('UpdateBallPosition')
-  UpdateBallPosition(
-    @ConnectedSocket() client: SocketWithAuth,
-    @MessageBody('pos') position: Position,
-  ): Promise<void> {
+  UpdateBallPosition(@ConnectedSocket() client: SocketWithAuth, @MessageBody('pos') position: Position): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .FindPLayerLobby(client.userID)
