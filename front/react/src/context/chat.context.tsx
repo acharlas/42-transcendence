@@ -48,6 +48,12 @@ export interface IoChatContextState {
   resetErrMsg: Function;
   inviteList: { id: string; username: string }[];
   setInviteList: Function;
+  hasNewInvite: boolean;
+  hasNewChatMessage: boolean;
+  hasNewChannelMessage: boolean;
+  setHasNewInvite: Function;
+  setHasNewChatMessage: Function;
+  setHasNewChannelMessage: Function;
 }
 
 const ChatContext = createContext<IoChatContextState>({
@@ -88,6 +94,12 @@ const ChatContext = createContext<IoChatContextState>({
   resetErrMsg: () => { },
   inviteList: [],
   setInviteList: () => { },
+  hasNewInvite: false,
+  setHasNewInvite: () => { },
+  hasNewChatMessage: false,
+  setHasNewChatMessage: () => { },
+  hasNewChannelMessage: false,
+  setHasNewChannelMessage: () => { },
 });
 
 function ChatProvider(props: any) {
@@ -114,6 +126,9 @@ function ChatProvider(props: any) {
       username: string;
     }[]
   >([]);
+  const [hasNewInvite, setHasNewInvite] = useState<boolean>(false);
+  const [hasNewChatMessage, setHasNewChatMessage] = useState<boolean>(false);
+  const [hasNewChannelMessage, setHasNewChannelMessage] = useState<boolean>(false);
 
   const closeChatBox = () => {
     setMessages([]);
@@ -187,6 +202,12 @@ function ChatProvider(props: any) {
         resetErrMsg,
         inviteList,
         setInviteList,
+        hasNewInvite,
+        setHasNewInvite,
+        hasNewChatMessage,
+        setHasNewChatMessage,
+        hasNewChannelMessage,
+        setHasNewChannelMessage,
       }}
       {...props}
     />

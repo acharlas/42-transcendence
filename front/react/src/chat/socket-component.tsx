@@ -1,7 +1,7 @@
 import { PropsWithChildren, useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useChat } from "../context/chat.context";
+import { SelectedChatWindow, useChat } from "../context/chat.context";
 import {
   defaultSocketContextState,
   SocketContextProvider,
@@ -9,9 +9,9 @@ import {
 } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
 import { ErrMessage } from "./chat-error-msg";
-import { Channel, Message, Room, User, UserStatus } from "./type";
+import { Channel, ChannelType, Message, Room, User, UserStatus } from "./type";
 
-export interface ISocketContextComponentProps extends PropsWithChildren {}
+export interface ISocketContextComponentProps extends PropsWithChildren { }
 
 const SocketContextComponent: React.FunctionComponent<
   ISocketContextComponentProps
@@ -43,6 +43,10 @@ const SocketContextComponent: React.FunctionComponent<
     ShowRoomSetting,
     setInviteList,
     inviteList,
+    setHasNewInvite,
+    setHasNewChatMessage,
+    setHasNewChannelMessage,
+    selectedChatWindow,
   } = useChat();
 
   const socket = useSocket("http://localhost:3333/chat", {
@@ -93,6 +97,8 @@ const SocketContextComponent: React.FunctionComponent<
       socket.on("GameInvite", (invite: { id: string; username: string }) => {
         console.log("invite receive: ", invite);
         setInviteList([...inviteList, invite]);
+        if (selectedChatWindow != SelectedChatWindow.INVITES)
+          setHasNewInvite(true);
       });
       /**disconnect */
       socket.on("Disconnect", () => {
@@ -164,7 +170,8 @@ const SocketContextComponent: React.FunctionComponent<
         } else {
           room.user.push(user);
         }
-        if (actChannel === id) setUserList(room.user);
+        if (actChannel === id)
+          setUserList(room.user);
         setRooms(newRooms);
       });
       /**receive Room message */
@@ -176,13 +183,25 @@ const SocketContextComponent: React.FunctionComponent<
           });
           const newRooms = [...rooms];
           const room = newRooms.find((room) => {
-            if (room.channel.id === roomId) return true;
-            return false;
+            return (room.channel.id === roomId);
           });
           room.message.push(message);
-          if (room.channel.id !== actChannel) room.newMessage = true;
+          if (room.channel.id !== actChannel)
+            room.newMessage = true;
           setRooms(newRooms);
-          if (roomId === actChannel) setMessages(room.message);
+          if (roomId === actChannel) {
+            setMessages(room.message);
+          }
+          else if (room.channel.type === ChannelType.dm) {
+            if (selectedChatWindow != SelectedChatWindow.MESSAGES) {
+              setHasNewChatMessage(true);
+            }
+          }
+          else { //channel msg
+            if (selectedChatWindow != SelectedChatWindow.CHANNELS) {
+              setHasNewChannelMessage(true);
+            }
+          }
         }
       );
       /**add a new room */
@@ -192,21 +211,17 @@ const SocketContextComponent: React.FunctionComponent<
           room,
         ]);
         setRooms([...rooms, room]);
-        // if (itch) {
         setMessages(room.message);
         setUserList(room.user);
         setActChannel(room.channel.id);
-        // }
         const user = room.user.find((user) => {
           if (user.username === window.sessionStorage.getItem("username"))
             return true;
           return false;
         });
-        // if (itch) {
         setUser(user);
         setSelectUser(null);
         setShowRoomSetting(room);
-        // }
         setActChannel(room.channel.id);
       });
       /**room list */
