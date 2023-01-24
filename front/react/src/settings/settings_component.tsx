@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FaPen } from 'react-icons/fa';
 import { BsShieldFillMinus, BsShieldFillPlus } from 'react-icons/bs';
 import { ImCheckmark, ImCross } from 'react-icons/im';

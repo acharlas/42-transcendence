@@ -3,12 +3,11 @@ import {
   useContext,
   useEffect,
   useRef,
-  useState,
+  // useState,
 } from "react";
 import Phaser from "phaser";
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
-import { GameMode } from "./game-type";
 import { useNavigate } from "react-router-dom";
 
 export interface IGameComponentProps {}
@@ -27,7 +26,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     lobby,
     timer,
   } = useGame();
-  const [score, setScore] = useState([0, 0]);
+  // const [score, setScore] = useState([0, 0]);
   const gameRef = useRef<HTMLDivElement>(null);
   let navigate = useNavigate();
 
