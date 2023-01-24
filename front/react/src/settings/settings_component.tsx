@@ -10,8 +10,6 @@ import {
   requestMfaSetupFinish,
   requestMfaSetupInit,
 } from '../api/mfa-api';
-import { getBlock } from '../api/block-api';
-import { getFriend } from '../api/friend-api';
 import { deleteAvatar, postAvatar } from '../api/avatar-api';
 import { MfaStatus } from './constants/mfa-status';
 import { AvatarStatus } from './constants/avatar-status';
@@ -23,11 +21,6 @@ import './settings.css';
 
 export default function Profile() {
   //utils
-  const navigate = useNavigate();
-  const goSignIn = () => {
-    navigate('/');
-  };
-
   function displayError(msg: string) {
     return <p className="error-msg">{msg}</p>;
   }
@@ -36,8 +29,6 @@ export default function Profile() {
   const [nickname, setNickname] = useState('');
   const [newNickname, setNewNickname] = useState('');
   const [editingNickname, setEditingNickname] = useState(false);
-  const [blocklist, setBlocklist] = useState([]);
-  const [friendlist, setFriendlist] = useState([]);
   const [mfaStatus, setMfaStatus] = useState<MfaStatus>(MfaStatus.LOADING);
   const [avatarStatus, setAvatarStatus] = useState<AvatarStatus>(
     AvatarStatus.LOADING,
@@ -61,36 +52,10 @@ export default function Profile() {
         })
         .catch((e) => {
           console.log('Settings: Error in fetchUserData', e);
-          // redirect to auth page if auth failed
-          if (e.response.status === 401) {
-            goSignIn();
-          }
-        });
-    };
-
-    const fetchBlocklist = async () => {
-      await getBlock({ id: window.sessionStorage.getItem('userid') })
-        .then((res) => {
-          setBlocklist(res.data.myblock);
-        })
-        .catch((e) => {
-          console.log('Error while fetching blocklist', e);
-        });
-    };
-
-    const fetchFriendlist = async () => {
-      await getFriend({ id: window.sessionStorage.getItem('userid') })
-        .then((res) => {
-          setFriendlist(res.data.myfriend);
-        })
-        .catch((e) => {
-          console.log('Error while fetching friendlist', e);
         });
     };
 
     fetchUserData();
-    fetchBlocklist();
-    fetchFriendlist();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -417,67 +382,11 @@ export default function Profile() {
     );
   }
 
-  // FRIENDS
-
-  function friendSettings() {
-    return (
-      <>
-        <div className="profile__panel__top">
-          <div className="profile__panel__title">Friends</div>
-        </div>
-        <div className="profile__panel__bottom">
-          <table>
-            <tbody>
-              {friendlist.map((n, index) => (
-                <tr key={n.nickname}>
-                  <td>
-                    <a href={'/profile/' + n.id}>{n.nickname}</a>
-                  </td>
-                  <td>unfriend</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </>
-    );
-  }
-
-  function blockSettings() {
-    return (
-      <>
-        <div className="profile__panel__top">
-          <div className="profile__panel__title">Blocked users</div>
-        </div>
-        <div className="profile__panel__bottom">
-          <table>
-            <tbody>
-              {blocklist.map((n, index) => (
-                <tr key={n.nickname}>
-                  <td>
-                    <a href={'/profile/' + n.id}>{n.nickname}</a>
-                  </td>
-                  <td>unblock</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </>
-    );
-  }
-
-  return (
-    <>
-      {avatarSettings()}
-      <br></br>
-      {nicknameSettings()}
-      <br></br>
-      {mfaSettings()}
-      <br></br>
-      {friendSettings()}
-      <br></br>
-      {blockSettings()}
-    </>
-  );
+  return (<>
+    {avatarSettings()}
+    <br></br>
+    {nicknameSettings()}
+    <br></br>
+    {mfaSettings()}
+  </>);
 }
