@@ -17,21 +17,21 @@ model User {
 
   hash  String
 
-  username String @unique
+  username String  @unique
   nickname String
   wins     Int     @default(0)
   losses   Int     @default(0)
-  mmr Int @default(1000)
+  mmr      Int     @default(1000)
 
   Channels ChannelUser[]
 
-  myfriend User[]   @relation("friends")
-  arefriend  User[]  @relation("friends")
+  myfriend  User[]  @relation("friends")
+  arefriend User[]  @relation("friends")
   
-  myblock User[]   @relation("blocks")
-  areblock  User[]  @relation("blocks")
+  myblock  User[]   @relation("blocks")
+  areblock User[]   @relation("blocks")
   
-  history UserHistory[]
+  history  UserHistory[]
   messages Message[]
   
   userType UserType
