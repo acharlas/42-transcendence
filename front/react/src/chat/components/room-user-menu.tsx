@@ -111,14 +111,17 @@ function UserMenuComponent() {
     <>
       <div className="profile__panel__top">{selectUser.username}</div>
       <div className="profile__panel__bottom">
-        <button onClick={handleInviteToPlay} className="fullwidth-button">
-          Invite to play
-        </button>
         <button onClick={handleShowUserProfile} className="fullwidth-button">
-          Go to profile
+          Show profile
         </button>
         <button onClick={handleSendDm} className="fullwidth-button">
           Send message
+        </button>
+        <button onClick={handleInviteToPlay} className="fullwidth-button">
+          Send game invite
+        </button>
+        <button onClick={watchUser} className="fullwidth-button">
+          Spectate game
         </button>
 
         {/* friend/unfriend */}
@@ -189,9 +192,6 @@ function UserMenuComponent() {
               )}
             </>
           )}
-        <button onClick={watchUser} className="fullwidth-button">
-          regarder la partie
-        </button>
         {showTimeSelector && <ChannelTimeSelectorComponent />}
       </div>
     </>
