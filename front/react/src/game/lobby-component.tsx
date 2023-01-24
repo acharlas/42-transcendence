@@ -4,7 +4,7 @@ import SocketContext from "../context/socket.context";
 import { GameMode } from "./game-type";
 // import paddleImage from "./assets/paddle.png"
 
-export interface ILobbyComponentProps {}
+export interface ILobbyComponentProps { }
 
 const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -44,42 +44,41 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
     socket.emit("CreateGame");
   };
 
-  return (
-    <>
-      <div>
-        {socket ? <>saluto: {socket.id}</> : <></>}
-        {lobby ? (
-          <>
-            <button>{lobby.playerOne}</button>{" "}
-            <button>{lobby.playerTwo}</button>
-            <button onClick={handleLeavingLobbyClick}>Leave lobby</button>
-            <button onClick={handleStartGameClick}>Start Game</button>
-            <table>
-              <tbody>
-                <tr>
-                  {lobby.invited.map((user, i) => {
-                    return <th key={i}>{user}</th>;
-                  })}
-                </tr>
-              </tbody>
-            </table>
-          </>
+  return (<>
+    <div className="profile__panel__top">Debug stuff?</div>
+    <div className="profile__panel__bottom">
+      socket: {socket?.id}
+      <tr></tr>
+      <button onClick={handleSendHistoryClick}>Send history</button>
+      <button onClick={handleCreateLobbyClick}>Create lobby</button>
+    </div>
+
+    <div className="profile__panel__top">Game lobby</div>
+    <div className="profile__panel__bottom">
+      {lobby ? (<>
+        Player 1: {lobby.playerOne}
+        Player 2: {lobby.playerTwo}
+        <button onClick={handleLeavingLobbyClick}>Leave lobby</button>
+        <button onClick={handleStartGameClick}>Start Game</button>
+        <table>
+          <tbody>
+            <tr>
+              {lobby.invited.map((user, i) => {
+                return <th key={i}>{user}</th>;
+              })}
+            </tr>
+          </tbody>
+        </table>
+      </>) : (<>
+        {inQueue ? (
+          "Looking for an opponent..."
         ) : (
-          <>
-            {inQueue ? (
-              <button>waiting for player</button>
-            ) : (
-              <>
-                <button onClick={handleClick}>join matchmaking</button>
-                <button onClick={handleCreateLobbyClick}>create lobby</button>
-                <button onClick={handleSendHistoryClick}>send history</button>
-              </>
-            )}
-          </>
+          <button onClick={handleClick}>Join matchmaking</button>
         )}
-      </div>
-    </>
-  );
+      </>
+      )}
+    </div>
+  </>);
 };
 
 export default LobbyComponent;
