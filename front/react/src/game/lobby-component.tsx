@@ -48,7 +48,7 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
     <div className="profile__panel__top">Debug stuff?</div>
     <div className="profile__panel__bottom">
       socket: {socket?.id}
-      <tr></tr>
+      <br />
       <button onClick={handleSendHistoryClick}>Send history</button>
       <button onClick={handleCreateLobbyClick}>Create lobby</button>
     </div>
