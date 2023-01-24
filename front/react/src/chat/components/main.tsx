@@ -200,7 +200,6 @@ function ChatMainComponent() {
   }
 
   var chanListIsEmpty: boolean = true;
-
   function menuElemChannels() {
     return (
       <>
@@ -247,64 +246,69 @@ function ChatMainComponent() {
   }
 
   var messageListIsEmpty: boolean = true;
-
   function menuElemMessages() {
-    return (
-      <>
-        <div className="profile__panel__top">Contacts</div>
-        <div className="profile__panel__bottom">
-          {rooms.map((room, id) => {
-            const usr = room.user.find((usr) => {
-              return usr.username !== window.sessionStorage.getItem("username");
-            });
-            if (
-              room.channel.type !== ChannelType.dm ||
-              bloquedList.find((block) => {
-                return block.username === usr.username;
-              })
-            )
-              return null;
-            messageListIsEmpty = false;
-            return (
-              <div key={id}>
-                <button
-                  onClick={() => handleJoinRoom(room.channel.id)}
-                  className="room-menu-button-dm"
-                  disabled={room.channel.id === actChannel}
-                >
-                  {
-                    room.user.find((usr) => {
-                      return (
-                        usr.username !==
-                        window.sessionStorage.getItem("username")
-                      );
-                    }).username
-                  }
-                  {room.newMessage && <BiMessageAltAdd />}
-                </button>
-              </div>
-            );
-          })}
-          {messageListIsEmpty && <>Your private chats will show here!</>}
-        </div>
-        <div className="profile__panel__top">Game invites</div>
-        <div className="profile__panel__bottom">
-          {inviteList.map((invite, id) => {
-            console.log(invite.username);
-            return (
-              <div key={id}>
-                <button
-                  onClick={() => handleAcceptInvite(invite.id)}
-                  className="room-menu-button-dm"
-                >
-                  {invite.username}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      </>
-    );
+    return (<>
+      <div className="profile__panel__top">Contacts</div>
+      <div className="profile__panel__bottom">
+        {rooms.map((room, id) => {
+          const usr = room.user.find((usr) => {
+            return usr.username !== window.sessionStorage.getItem("username");
+          });
+          if (
+            room.channel.type !== ChannelType.dm ||
+            bloquedList.find((block) => {
+              return block.username === usr.username;
+            })
+          )
+            return null;
+          messageListIsEmpty = false;
+          return (
+            <div key={id}>
+              <button
+                onClick={() => handleJoinRoom(room.channel.id)}
+                className="room-menu-button-dm"
+                disabled={room.channel.id === actChannel}
+              >
+                {
+                  room.user.find((usr) => {
+                    return (
+                      usr.username !==
+                      window.sessionStorage.getItem("username")
+                    );
+                  }).username
+                }
+                {room.newMessage && <BiMessageAltAdd />}
+              </button>
+            </div>
+          );
+        })}
+        {messageListIsEmpty && <>No private chats for now... chat with someone!</>}
+      </div>
+    </>);
+  }
+
+  var inviteListIsEmpty: boolean = true;
+  function menuElemInvites() {
+    return (<>
+      <div className="profile__panel__top">Game invites</div>
+      <div className="profile__panel__bottom">
+        {inviteList.map((invite, id) => {
+          console.log("Game invite from:" + invite.username);
+          inviteListIsEmpty = false;
+          return (
+            <div key={id}>
+              <button
+                onClick={() => handleAcceptInvite(invite.id)}
+                className="room-menu-button-dm"
+              >
+                {"Play with " + invite.username}
+              </button>
+            </div>
+          );
+        })}
+        {inviteListIsEmpty && <>No game invite at the moment.</>}
+      </div>
+    </>);
   }
 
   if (actChannel) return <RoomComponent />;
@@ -312,10 +316,9 @@ function ChatMainComponent() {
     <>
       {selectedChatWindow === SelectedChatWindow.CHANNELS && menuElemChannels()}
       {selectedChatWindow === SelectedChatWindow.MESSAGES && menuElemMessages()}
-      {selectedChatWindow === SelectedChatWindow.FRIENDLIST &&
-        menuElemFriendlist()}
-      {selectedChatWindow === SelectedChatWindow.BLOCKLIST &&
-        menuElemBlocklist()}
+      {selectedChatWindow === SelectedChatWindow.INVITES && menuElemInvites()}
+      {selectedChatWindow === SelectedChatWindow.FRIENDLIST && menuElemFriendlist()}
+      {selectedChatWindow === SelectedChatWindow.BLOCKLIST && menuElemBlocklist()}
     </>
   );
 }

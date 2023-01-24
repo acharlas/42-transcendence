@@ -19,6 +19,11 @@ const ChatHeaderComponent: React.FunctionComponent = () => {
     setSelectedChatWindow(SelectedChatWindow.MESSAGES);
   };
 
+  const selectInvites = () => {
+    closeChatBox();
+    setSelectedChatWindow(SelectedChatWindow.INVITES);
+  };
+
   const selectFriendlist = () => {
     closeChatBox();
     setSelectedChatWindow(SelectedChatWindow.FRIENDLIST);
@@ -42,6 +47,12 @@ const ChatHeaderComponent: React.FunctionComponent = () => {
         disabled={!actChannel && selectedChatWindow === SelectedChatWindow.MESSAGES}
       >
         messages
+      </button>
+      <button onClick={selectInvites}
+        className="headers-button"
+        disabled={!actChannel && selectedChatWindow === SelectedChatWindow.INVITES}
+      >
+        invites
       </button>
       <button onClick={selectFriendlist}
         className="headers-button"
