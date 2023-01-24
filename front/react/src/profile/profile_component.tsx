@@ -15,7 +15,6 @@ interface User {
   mmr: number;
 }
 
-//preliminary checks before using the display component
 export default function Profile() {
   // Navigation
   const navigate = useNavigate();
@@ -73,50 +72,33 @@ export default function Profile() {
   }, [id]);
 
   return (<>
-    <div className="profile__panel">
-      <div className="profile__panel__top">
-        <div className="profile__nickname">{userData.nickname}</div>
-      </div>
-
-      <div className="profile__panel__bottom">
-        <div className="profile__avatar__container">
-          {Avatar(id)}
+    <div className="panel__row">
+      <div className="profile__panel avatar__width">
+        <div className="profile__panel__top">{userData.nickname}</div>
+        <div className="profile__panel__bottom rm__avatar__padding">
+          <div className="profile__avatar__container">{Avatar(id)}</div>
         </div>
       </div>
-    </div>
 
-    <br></br>
-
-    <div className="profile__stats__container">
-      <div className="profile__panel">
-        <div className="profile__panel__top">WINS</div>
-        <div className="profile__panel__bottom">{userData.wins}</div>
-      </div>
-
-      <div className="profile__panel">
-        <div className="profile__panel__top">LOSSES</div>
-        <div className="profile__panel__bottom">{userData.losses}</div>
-      </div>
-
-      <div className="profile__panel">
+      <div className="profile__panel stats__width">
         <div className="profile__panel__top">MMR</div>
-        <div className="profile__panel__bottom">{userData.mmr}</div>
+        <div className="profile__panel__bottom center__txt">{userData.mmr}</div>
+        <div className="profile__panel__top">Wins</div>
+        <div className="profile__panel__bottom center__txt">{userData.wins}</div>
+        <div className="profile__panel__top">Losses</div>
+        <div className="profile__panel__bottom center__txt">{userData.losses}</div>
       </div>
     </div>
-
-    <br></br>
 
     <div className="profile__panel">
       <div className="profile__panel__top">
-        <div className="profile__panel__title">MATCH HISTORY</div>
+        <div className="profile__panel__title">Match History</div>
       </div>
-      <div className="profile__panel__bottom">
-        <table className="profile__hist__table">
+      <div className="profile__panel__bottom rm__table__padding">
+        <table className="profile__hist__table dotted__table">
           <tbody>
             <tr className="profile__hist__head">
-              <th>W/L</th>
-              <th>SCORE</th>
-              <th>MODE</th>
+              <th>W/L</th><th>SCORE</th><th>MODE</th>
             </tr>
             {history.map((history, i) => {
               const me = history.player.find((player) => {
@@ -127,24 +109,20 @@ export default function Profile() {
                 if (player.id !== id) return true;
                 return false;
               });
-              if (me.placement === 1)
+              if (me?.placement === 1)
                 return (
                   <tr key={i} className="profile__hist__w">
-                    <th>W</th>
-                    <th>
-                      {me.score}-{add.score}
-                    </th>
-                    <th>{history.gameMode}</th>
+                    <td>W</td>
+                    <td>{me?.score}-{add?.score}</td>
+                    <td>{history.gameMode}</td>
                   </tr>
                 );
               else
                 return (
                   <tr key={i} className="profile__hist__l">
-                    <th>L</th>
-                    <th>
-                      {me.score}-{add.score}
-                    </th>
-                    <th>{history.gameMode}</th>
+                    <td>L</td>
+                    <td>{me?.score}-{add?.score}</td>
+                    <td>{history.gameMode}</td>
                   </tr>
                 );
             })}
@@ -153,14 +131,9 @@ export default function Profile() {
       </div>
     </div>
 
-    <br></br>
-
     <div className="profile__panel">
-      <div className="profile__panel__top">
-        <div className="profile__panel__title">ACHIEVEMENTS</div>
-      </div>
+      <div className="profile__panel__top">Achievements</div>
       <div className="profile__panel__bottom profile__achiev__list">
-        {/*TODO: achievements */}
         <div className="profile__achiev profile__bubble">on a roll</div>
         <div className="profile__achiev profile__bubble">close call</div>
         <div className="profile__achiev profile__bubble">reverse sweep</div>

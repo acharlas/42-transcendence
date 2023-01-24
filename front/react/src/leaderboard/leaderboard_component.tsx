@@ -35,13 +35,13 @@ export default function Userlist() {
         <div className="profile__content ">
           <div className="profile__panel__top">Astropong leaderboard</div>
 
-          <div className="profile__panel__bottom">
-            <table className="lb__table">
+          <div className="profile__panel__bottom rm__table__padding">
+            <table className="profile__hist__table lb__row__color">
               <tbody>
-                <tr>
-                  <th>rank</th>
+                <tr className="profile__hist__head">
+                  <th>Rank</th>
                   <th>MMR</th>
-                  <th>player</th>
+                  <th>Player</th>
                 </tr>
                 {userlist.map((n, index) => (
                   <tr

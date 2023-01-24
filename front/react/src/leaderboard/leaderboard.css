@@ -2,14 +2,12 @@ a {
   color: black;
 }
 
-.lb__table {
-  width: 100%;
+.lb__row__color tr:nth-child(odd):hover {
+  background-color: rgb(230, 230, 230);
 }
-
-.lb__clickable__line {
-  background-color: rgb(171, 206, 43);
+.lb__row__color tr:nth-child(even) {
+  background-color: rgb(190, 190, 190);
 }
-
-.lb__clickable__line:hover {
-  background-color: blueviolet;
+.lb__row__color tr:nth-child(even):hover {
+  background-color: rgb(180, 180, 180);
 }

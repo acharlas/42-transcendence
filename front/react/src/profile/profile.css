@@ -1,5 +1,4 @@
 /* panels */
-
 .profile__panel {
   width: 100%;
 }
@@ -7,7 +6,6 @@
 .profile__panel__title {
   padding-top: 0.5em;
   padding-bottom: 0.5em;
-
   font-weight: bold;
   text-align: center;
 }
@@ -17,7 +15,6 @@
   border-radius: 10px;
   padding: 10px;
   margin: 10px;
-
   text-align: center;
 }
 
@@ -26,7 +23,6 @@
   border-radius: 10px 10px 0 0;
   padding: 10px;
   margin: 10px 10px 0;
-
   font-weight: bold;
   text-align: center;
 }
@@ -36,7 +32,6 @@
   border-radius: 0 0 10px 10px;
   padding: 10px;
   margin: 0 10px 10px;
-
   text-align: left;
 }
 
@@ -44,19 +39,50 @@
   width: 100%
 }
 
-/* header (avatar + nickname + friend/block) */
+/* avatar + stats */
+.avatar__width {
+  width: 60%;
+}
 
-.profile__nickname {
+.stats__width {
+  width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.stats__width .profile__panel__top {width: 100%;}
+.stats__width .profile__panel__bottom {width: 100%;}
+
+.center__txt {
   text-align: center;
-  margin: auto;
+  font-weight: bold;
+}
+
+.panel__row {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.panel__col {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* avatar */
+.rm__avatar__padding {
+  padding: 0px;
 }
 
 .profile__avatar {
-  max-width: 40%;
+  width: 100%;
   height: auto;
-
-  border-radius: 10px;
-  border: 2px solid rgb(0, 0, 0);
+  border-radius: 0 0 10px 10px;
   margin: auto;
 }
 
@@ -66,59 +92,44 @@
   flex-wrap: wrap;
 }
 
-.profile__button__container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 40%;
-  margin: auto;
-}
-
-.profile__button {
-  display: inline-flex;
-}
-
-/* stats */
-
-.profile__stats__container {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  justify-content: center;
-}
-
 /* match history */
-
 .profile__hist__table {
   border-collapse: collapse;
   border-spacing: 0;
   width: 100%;
 }
 
-.profile__hist__head {
-  background-color: rgb(198, 228, 198);
-}
-
-.profile__hist__w {
-  background-color: rgb(55, 116, 55);
-}
-
-.profile__hist__l {
-  background-color: rgb(230, 75, 75);
-}
-
-.profile__hist__table th {
-  padding-top: 0.1em;
-  padding-bottom: 0.1em;
-  font-weight: normal;
-}
+.profile__hist__w {background-color: rgb(55, 116, 55);}
+.profile__hist__l {background-color: rgb(230, 75, 75);}
 
 .profile__hist__head th {
   font-weight: bold;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+}
+
+.profile__hist__table td {
+  font-weight: normal;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+}
+
+.profile__hist__table tr {
+  /* vertical-align: center; */
+  text-align: center;
+}
+
+.dotted__table tr:nth-child(n+3) {
+  border-top: 1px dotted black;
+}
+
+.rm__table__padding {
+  padding-top: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
 }
 
 /* achievements */
-
 .profile__achiev__list {
   display: flex;
   flex-direction: column;
