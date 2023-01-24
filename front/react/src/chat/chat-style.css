@@ -177,6 +177,10 @@ ul {
   outline: none;
 }
 
+.margin-before {
+  margin-top: 0.5em;
+}
+
 .chan-list-button {
   width: 100%;
   background: #fff;

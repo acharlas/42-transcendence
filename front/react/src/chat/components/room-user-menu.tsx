@@ -117,7 +117,8 @@ function UserMenuComponent() {
         <button onClick={handleSendDm} className="fullwidth-button">
           Send message
         </button>
-        <button onClick={handleInviteToPlay} className="fullwidth-button">
+
+        <button onClick={handleInviteToPlay} className="fullwidth-button margin-before">
           Send game invite
         </button>
         <button onClick={watchUser} className="fullwidth-button">
@@ -129,11 +130,11 @@ function UserMenuComponent() {
           if (selectUser.username === user.username) return true;
           return false;
         }) ? (
-          <button onClick={handleAddFriend} className="fullwidth-button">
+          <button onClick={handleAddFriend} className="fullwidth-button margin-before">
             Friend
           </button>
         ) : (
-          <button onClick={handleRemoveFriend} className="fullwidth-button">
+          <button onClick={handleRemoveFriend} className="fullwidth-button margin-before">
             Unfriend
           </button>
         )}
@@ -155,11 +156,11 @@ function UserMenuComponent() {
         {/* Owner can give/remove admin rights */}
         {user.privilege === "owner" &&
           (selectUser.privilege === "admin" ? (
-            <button onClick={setToDefault} className="fullwidth-button">
+            <button onClick={setToDefault} className="fullwidth-button margin-before">
               Revoke moderator rights
             </button>
           ) : (
-            <button onClick={AdminUser} className="fullwidth-button">
+            <button onClick={AdminUser} className="fullwidth-button margin-before">
               Make moderator
             </button>
           ))}
@@ -170,12 +171,12 @@ function UserMenuComponent() {
           selectUser.privilege !== "admin" && (
             <>
               {selectUser.privilege === UserPrivilege.ban ? (
-                <button onClick={setToDefault} className="fullwidth-button">
+                <button onClick={setToDefault} className="fullwidth-button margin-before">
                   Unban
                 </button>
               ) : (
                 <>
-                  <button onClick={banUser} className="fullwidth-button">
+                  <button onClick={banUser} className="fullwidth-button margin-before">
                     Ban
                   </button>
                   {/* Only show mute option if user isn't banned */}
