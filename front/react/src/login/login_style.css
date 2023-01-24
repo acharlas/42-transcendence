@@ -161,12 +161,6 @@
   outline: none;
 }
 
-.button__icon {
-  font-size: 24px;
-  margin-left: auto;
-  color: #2c385e;
-}
-
 .login__input___show-button {
   background-color: #91a1e0;
   height: 39px;

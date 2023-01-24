@@ -113,7 +113,6 @@ function ChatMainComponent() {
               value={newFriend}
               onChange={handleChangeNewFriend}
               placeholder="Nickname..."
-              className="room-menu-input-search-friend-block"
             />
             <button onClick={handleAddFriend} className="fullwidth-button">
               <IoIosAddCircle />
@@ -165,7 +164,6 @@ function ChatMainComponent() {
               value={newBlock}
               onChange={handleChangeNewBlock}
               placeholder="Nickname..."
-              className="room-menu-input-search-friend-block"
             />
             <button onClick={handleAddBlock} className="fullwidth-button">
               <IoIosAddCircle />
