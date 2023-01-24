@@ -1,8 +1,8 @@
 import { FunctionComponent, useContext } from "react";
+
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
 import { GameMode } from "./game-type";
-// import paddleImage from "./assets/paddle.png"
 
 export interface ILobbyComponentProps { }
 
