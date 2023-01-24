@@ -287,7 +287,7 @@ function ChatMainComponent() {
           })}
           {messageListIsEmpty && <>Your private chats will show here!</>}
         </div>
-        <div className="profile__panel__top">Invitation</div>
+        <div className="profile__panel__top">Game invites</div>
         <div className="profile__panel__bottom">
           {inviteList.map((invite, id) => {
             console.log(invite.username);
