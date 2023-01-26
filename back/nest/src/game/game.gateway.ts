@@ -236,7 +236,8 @@ export class GameGateway
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody('newHistory') history: CreateHistoryDto,
   ): Promise<void> {
-    console.log('historyAdd:', history);
+    console.log('Received newHistory message:', history);
+    this.historyService.updateRankings({winnerId: "c7a689d2-e9db-4469-9607-2a4dc47e311e", loserId: "ee5f9533-0de0-44fe-ac05-8e774d6af6bc"});
     return new Promise<void>((resolve, reject) => {
       this.historyService
         .createhistory(history)
