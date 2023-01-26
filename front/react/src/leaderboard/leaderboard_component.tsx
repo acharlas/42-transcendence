@@ -26,8 +26,8 @@ export default function Userlist() {
 
   const handleProfileClick = async (event: React.MouseEvent<HTMLTableRowElement>, id: string) => {
     event.preventDefault();
-    navigate('/app/profile/' + id);
-  }
+    navigate("/app/profile/" + id);
+  };
 
   return (
     <>
@@ -43,17 +43,17 @@ export default function Userlist() {
                   <th>MMR</th>
                   <th>Player</th>
                 </tr>
-                {userlist.map((n, index) => (
-                  <tr
-                    className="lb__clickable__line"
-                    key={n.id}
-                    onClick={event => handleProfileClick(event, n.id)}
-                  >
-                    <td>{index + 1}</td>
-                    <td>{n.mmr}</td>
-                    <td>{n.nickname}</td>
-                  </tr>
-                ))}
+                {userlist
+                  .sort(function (a, b) {
+                    return b.mmr - a.mmr;
+                  })
+                  .map((n, index) => (
+                    <tr className="lb__clickable__line" key={n.id} onClick={(event) => handleProfileClick(event, n.id)}>
+                      <td>{index + 1}</td>
+                      <td>{n.mmr}</td>
+                      <td>{n.nickname}</td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
