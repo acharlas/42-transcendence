@@ -21,7 +21,7 @@ export interface IoGameContextState {
   setGame: Function;
   gameBounds: Position;
   setGameBounds: Function;
-  timer: number;
+  timer: Phaser.Time.TimerEvent;
   setTimer: Function;
 }
 
@@ -45,7 +45,7 @@ const GameContext = createContext<IoGameContextState>({
   setGame: () => {},
   gameBounds: undefined,
   setGameBounds: () => {},
-  timer: 0,
+  timer: undefined,
   setTimer: () => {},
 });
 
@@ -56,14 +56,13 @@ function GameProvider(props: any) {
   const [player1, setPlayer1] = useState<Phaser.Physics.Arcade.Sprite>();
   const [player2, setPlayer2] = useState<Phaser.Physics.Arcade.Sprite>();
   const [keys, setKeys] = useState<Phaser.Input.Keyboard.KeyboardPlugin>();
-  const [cursors, setCursors] =
-    useState<Phaser.Types.Input.Keyboard.CursorKeys>();
+  const [cursors, setCursors] = useState<Phaser.Types.Input.Keyboard.CursorKeys>();
   const [game, setGame] = useState<boolean>();
   const [gameBounds, setGameBounds] = useState<Position>({
     x: 0,
     y: 0,
   });
-  const [timer, setTimer] = useState<number>(0);
+  const [timer, setTimer] = useState<Phaser.Time.TimerEvent>();
 
   const Removeplayer = (UserId: string) => {
     if (lobby) {

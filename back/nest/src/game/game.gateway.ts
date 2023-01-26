@@ -187,7 +187,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   /*Create lobby*/
   @SubscribeMessage('CreateLobby')
   CreateLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, ' Leaving queue');
+    console.log('User:', client.userID, 'create lobby');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .CreateLobby(client.userID)
@@ -214,9 +214,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         .then((lobby) => {
           if (lobby) {
             client.broadcast.to(lobby.id).emit('UpdateLobby', lobby);
-            client.emit('LeaveLobby');
-            client.leave(lobby.id);
           }
+          client.emit('LeaveLobby');
+          client.leave(lobby.id);
           return resolve();
         })
         .catch((err) => {

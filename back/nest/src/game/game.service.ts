@@ -87,7 +87,6 @@ export class GameService {
       const lobby = this.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);
       });
-      console.log('lobby leave: ', lobby);
       if (lobby) {
         if (lobby.playerOne === userId) {
           if (lobby.playerTwo === null) {
@@ -95,14 +94,13 @@ export class GameService {
               if (lobby.playerOne === userId) return false;
               return true;
             });
-            return resolve(null);
+            return resolve(lobby);
           } else {
             lobby.playerOne = lobby.playerTwo;
             lobby.playerTwo = null;
             return resolve(lobby);
           }
         } else {
-          console.log('is player two');
           lobby.playerTwo = null;
           return resolve(lobby);
         }

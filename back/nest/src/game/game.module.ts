@@ -9,6 +9,6 @@ import { GameService } from './game.service';
 @Module({
   controllers: [GameController],
   imports: [JwtModule, ScheduleModule.forRoot()],
-  providers: [GameGateway, GameService, HistoryService],
+  providers: [GameService, HistoryService],
 })
 export class GameModule {}

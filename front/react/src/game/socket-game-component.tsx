@@ -10,7 +10,8 @@ export interface ISocketGameContextComponentProps extends PropsWithChildren {}
 const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComponentProps> = (props) => {
   const { children } = props;
   const [SocketState, SocketDispatch] = useReducer(SocketReducer, defaultSocketContextState);
-  const { setInQueue, setLobby, lobby, inQueue, Removeplayer, player1, player2, gameBounds, ball, game } = useGame();
+  const { timer, setInQueue, setLobby, lobby, inQueue, Removeplayer, player1, player2, gameBounds, ball, game } =
+    useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
     reconnectionAttempts: 5,
@@ -41,6 +42,7 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
 
         setLobby(lobby);
         console.log({ game });
+        if (timer) timer.paused = !timer.paused;
         if (game) game.scene.resume("default");
       });
       /** Game creation */
@@ -137,7 +139,7 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       });
     };
     StartListener();
-  }, [socket, lobby, setLobby, setInQueue, inQueue, ball, player1, player2, game]);
+  }, [socket, timer, lobby, setLobby, setInQueue, inQueue, ball, player1, player2, game]);
 
   return <SocketContextProvider value={{ SocketState, SocketDispatch }}>{children}</SocketContextProvider>;
 };
