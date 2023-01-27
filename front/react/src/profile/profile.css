@@ -86,7 +86,13 @@
 .profile__avatar__container {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.profile__avatar__container img {
+  aspect-ratio: 1;
+  overflow: hidden;
 }
 
 /* match history */

@@ -1,0 +1,53 @@
+.half-width {
+  width: 50%;
+}
+
+.game-recap-top {
+  background-color: rgb(158, 158, 199);
+  border-radius: 10px 10px 0 0;
+  padding: 10px;
+  margin: 10px 10px 0;
+}
+
+.game-recap-middle {
+  background-color: aliceblue;
+  margin: 0 10px 0 10px;
+}
+
+.game-recap-bottom {
+  background-color: aliceblue;
+  border-radius: 0 0 10px 10px;
+  padding: 10px;
+  margin: 0 10px 10px;
+}
+
+.game-recap-win {
+  background-color: rgb(100, 255, 100);
+}
+
+.game-recap-loss {
+  background-color: rgb(250, 100, 100);
+}
+
+.game-recap-name {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  text-align: center;
+  align-items: center;
+  font-size: large;
+  font-weight: bold;
+}
+
+.game-recap-score {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  text-align: center;
+  align-items: center;
+  font-size: xx-large;
+}
+
+.game-recap-avatar {
+  border-radius: 0;
+}
