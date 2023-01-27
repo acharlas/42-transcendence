@@ -9,7 +9,7 @@ export interface Lobby {
 
 export type Game = {
   start: boolean;
-  player: { id: string; ready: boolean }[];
+  player: Player[];
   score: number[];
 };
 
@@ -28,6 +28,13 @@ export class CreateHistoryDto {
     }
   ];
 }
+
+export type Player = {
+  id: string;
+  ready: boolean;
+  Timer: number;
+  pauseAt: Date;
+};
 
 export type UserScore = {
   id: string;

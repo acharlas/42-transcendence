@@ -1,4 +1,4 @@
-import { Cron } from '@nestjs/schedule';
+import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import {
   ConnectedSocket,
   MessageBody,
@@ -357,6 +357,69 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 console.log(err);
                 return reject();
               });
+          }
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
+  /*GamePause*/
+  @SubscribeMessage('GamePause')
+  GamePause(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      console.log('GamePause');
+      this.gameService
+        .FindPLayerLobby(client.userID)
+        .then((lobby) => {
+          const callback = () => {
+            console.log('call back');
+            client.emit('Surrender', { ...lobby, game: null });
+            this.gameService.EndGame(client.userID);
+            client.broadcast.to(lobby.id).emit('EnnemySurrender', { ...lobby, game: null });
+          };
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              this.gameService
+                .SetLobbyPause(client.userID, callback)
+                .then((lobby) => {
+                  client.broadcast.to(lobby.id).emit('GamePause');
+                  client.emit('GamePause');
+                  return resolve();
+                })
+                .catch((err) => {
+                  console.log(err);
+                  return reject(err);
+                });
+            }),
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
+  /*GameResume*/
+  @SubscribeMessage('GameResume')
+  GameResume(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      console.log('GameResume');
+      this.gameService
+        .SetLobbyResume(client.userID)
+        .then((lobby) => {
+          if (
+            !lobby.game.player.find((player) => {
+              if (player.pauseAt) return true;
+              return false;
+            })
+          ) {
+            client.broadcast.to(lobby.id).emit('GameResume');
+            client.emit('GameResume');
           }
           return resolve();
         })

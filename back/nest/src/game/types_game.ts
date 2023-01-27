@@ -12,9 +12,16 @@ export type Player = {
   mmr: number;
 };
 
+export type Playertab = {
+  id: string;
+  ready: boolean;
+  timer: number;
+  pauseAt: Date;
+};
+
 export type Game = {
   start: boolean;
-  player: { id: string; ready: boolean }[];
+  player: Playertab[];
   score: number[];
 };
 

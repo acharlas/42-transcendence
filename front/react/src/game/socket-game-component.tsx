@@ -36,6 +36,30 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
     socket.removeAllListeners();
     const StartListener = () => {
       /**** Game-related listeners ****/
+      /** Game Pause */
+      socket.on("GameResume", () => {
+        console.log("GameResume: ");
+
+        //switch scene game un truc dans le genre
+        if (game) game.scene.resume("default");
+      });
+      /** Surrender */
+      socket.on("Surrender", () => {
+        console.log("Surrender: ");
+        navigate("/app/game/");
+      });
+      /** EnnemySurrender */
+      socket.on("EnnemySurrender", () => {
+        console.log("EnnemySurrender: ");
+        navigate("/app/game/");
+      });
+      /** Game Pause */
+      socket.on("GamePause", () => {
+        console.log("GamePause: ");
+
+        if (game) game.scene.pause("default");
+        //switch scene timer un truc dans le genre
+      });
       /** Game start */
       socket.on("StartGame", (lobby: Lobby) => {
         console.log("everyone ready: ", lobby);

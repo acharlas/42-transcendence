@@ -22,7 +22,18 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
   if (!socket) navigate("/app/game");
 
+  const onFocus = () => {
+    socket.emit("GameResume");
+  };
+
+  const unFocus = () => {
+    socket.emit("GamePause");
+  };
+
   useEffect(() => {
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("blur", unFocus);
+
     const game = new Phaser.Game({
       type: Phaser.AUTO,
       scale: {
@@ -198,6 +209,9 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       return ball.body.x > player1.body.x;
     }
     //else navigate("/app/game");
+    return function cleanup() {
+      window.removeEventListener("focus", onFocus);
+    };
   }, [socket]);
 
   const click = () => {
