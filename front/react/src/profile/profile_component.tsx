@@ -74,14 +74,14 @@ export default function Profile() {
   return (
     <>
       <div className="panel__row">
-        <div className="profile__panel avatar__width">
+        <div className="avatar__width">
           <div className="profile__panel__top">{userData.nickname}</div>
           <div className="profile__panel__bottom rm__avatar__padding">
             <div className="profile__avatar__container">{Avatar(id)}</div>
           </div>
         </div>
 
-        <div className="profile__panel stats__width">
+        <div className="stats__width">
           <div className="profile__panel__top">MMR</div>
           <div className="profile__panel__bottom center__txt">{userData.mmr}</div>
           <div className="profile__panel__top">Wins</div>
