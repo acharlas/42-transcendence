@@ -152,7 +152,7 @@ ul {
 .room-menu-button-remove-user:active,
 .room-menu-button-remove-user:focus,
 .room-menu-button-remove-user:hover {
-  border-color: #2c385e;
+  border-color: #95aeff;
   outline: none;
 }
 
@@ -173,8 +173,21 @@ ul {
 .fullwidth-button:active,
 .fullwidth-button:focus,
 .fullwidth-button:hover {
-  border-color: #2c385e;
+  border-color: #95aeff;
   outline: none;
+}
+
+input[type="file"]::file-selector-button {
+  width: 30%;
+  border: none;
+  border-right: 1px solid #d4d3e8;
+  background: #fff;
+  text-transform: uppercase;
+  font-weight: 700;
+  align-items: center;
+  color: #2c385e;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .margin-before {
@@ -199,7 +212,7 @@ ul {
 .chan-list-button:active,
 .chan-list-button:focus,
 .chan-list-button:hover {
-  border-color: #2c385e;
+  border-color: #95aeff;
   outline: none;
 }
 
@@ -209,7 +222,7 @@ ul {
 }
 
 .online {
-  background:rgb(165, 120, 120)
+  background: rgb(165, 120, 120);
 }
 .offline {
   background: #fdfdfd;
@@ -218,7 +231,7 @@ ul {
   background: #000000;
 }
 
-.indicator { 
+.indicator {
   position: relative;
   display: block;
   width: 1em;

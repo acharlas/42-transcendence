@@ -1,10 +1,6 @@
-import defaultPicture from "../image/defaultPicture.png"
+import defaultPicture from "../image/defaultPicture.png";
 
-export default function ReloadAvatar(
-  id: string,
-  reload: number,
-  classname: string = "profile_avatar",
-) {
+export default function ReloadAvatar(id: string, reload: number, classname: string = "profile__avatar") {
   return (
     <img
       className={classname}
@@ -15,5 +11,5 @@ export default function ReloadAvatar(
       }}
       alt=""
     />
-  )
+  );
 }

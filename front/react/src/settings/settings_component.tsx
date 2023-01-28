@@ -97,12 +97,12 @@ export default function Profile() {
                 ? DefaultAvatar("settings__avatar")
                 : ReloadAvatar(window.sessionStorage.getItem("userid"), avatarReload, "settings__avatar")}
             </div>
-            <input type="file" onChange={selectFile} />
-            <button className="settings__button__texticon" onClick={uploadAvatar}>
-              Upload a new avatar
+            <input className="fullwidth-button margin-before" type="file" onChange={selectFile} />
+            <button className="fullwidth-button margin-before" onClick={uploadAvatar}>
+              Upload
             </button>
-            <button className="settings__button__texticon" onClick={removeAvatar}>
-              Delete current avatar
+            <button className="fullwidth-button margin-before" onClick={removeAvatar}>
+              Delete
             </button>
             {displayError(avatarError)}
           </div>
