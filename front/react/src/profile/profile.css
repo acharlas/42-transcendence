@@ -84,6 +84,7 @@
 }
 
 .profile__avatar__container {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,6 +92,7 @@
 }
 
 .profile__avatar__container img {
+  width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
 }
