@@ -201,9 +201,9 @@ export default function Profile() {
     event.preventDefault();
     setMfaError("");
     try {
-      await requestMfaSetupFinish({ codeToCheck: smsCode });
+      const response = await requestMfaSetupFinish({ codeToCheck: smsCode });
       setSmsCode("");
-      setMfaStatus(MfaStatus.ENABLED);
+      if (response?.status === 201) setMfaStatus(MfaStatus.ENABLED);
     } catch (e) {
       console.log("Settings: error in validateCode", e);
       setMfaError(e?.response?.data?.message);
@@ -215,7 +215,7 @@ export default function Profile() {
     setMfaError("");
     try {
       const response = await requestMfaDisable();
-      if (response.status === 204) {
+      if (response?.status === 204) {
         setMfaStatus(MfaStatus.DISABLED);
       } else {
         setMfaError("Disabling mfa failed.");
