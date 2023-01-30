@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
-import { BsShieldFillMinus, BsShieldFillPlus } from "react-icons/bs";
 import { ImCheckmark, ImCross } from "react-icons/im";
 
 import { getUsersMe, patchNickname } from "../api/user-api";
