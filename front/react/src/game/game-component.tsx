@@ -9,6 +9,8 @@ import Phaser from "phaser";
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
 import { useNavigate } from "react-router-dom";
+import "./game-div.css"
+import { CanvasHeight, CanvasWidth } from "./consts/const";
 
 export interface IGameComponentProps {}
 
@@ -36,8 +38,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     const game = new Phaser.Game({
       type: Phaser.AUTO,
       scale: {
-        width: 800,
-        height: 600,
+        width: CanvasWidth,
+        height: CanvasHeight,
         mode: Phaser.Scale.FIT,
         parent: gameRef.current,
         autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -51,19 +53,18 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       physics: {
         default: "arcade",
         arcade: {
-          gravity: { y: 0 },
-          debug: true
+          gravity: { y: 0 }
         },
       },
     });
 
     // Game variables
+    let player: Phaser.Physics.Arcade.Sprite;
+    let opponent: Phaser.Physics.Arcade.Sprite;
     let ball: Phaser.Physics.Arcade.Sprite;
-    let player1: Phaser.Physics.Arcade.Sprite;
-    let player2: Phaser.Physics.Arcade.Sprite;
-    let keys: Phaser.Input.Keyboard.KeyboardPlugin;
     let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     let gameStarted: boolean;
+
     function init() {
       if (socket === undefined) game.destroy(true);
     }
@@ -74,72 +75,61 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     function create() {
+
+      setGameBounds({
+        x: this.physics.world.bounds.width,
+        y: this.physics.world.bounds.height,
+      });
+
+      // CREATE OBJECT //
       ball = this.physics.add.sprite(
         this.physics.world.bounds.width / 2,
         this.physics.world.bounds.height / 2,
         "ball"
-      );
-      setGameBounds({
-        x: this.physics.world.bounds.width - (ball.width / 2 + 1),
-        y: this.physics.world.bounds.height,
-      });
-      ball.setBounce(1, 1).setCollideWorldBounds(true);
-      player1 = this.physics.add.sprite(
+      ).setBounce(1, 1)
+        .setCollideWorldBounds(true);
+
+      player = this.physics.add.sprite(
         this.physics.world.bounds.width - (ball.width / 2 + 1),
         this.physics.world.bounds.height / 2,
         "paddle"
-      );
-      player1.setCollideWorldBounds(true);
-      setPlayer1(player1);
-      player2 = this.physics.add.sprite(
+      ).setCollideWorldBounds(true);
+
+      opponent = this.physics.add.sprite(
         ball.width / 2 + 1,
         this.physics.world.bounds.height / 2,
         "paddle"
-      );
-      player2.setCollideWorldBounds(true);
-      setPlayer2(player2);
+      ).setCollideWorldBounds(true);
+
+      /************************************/
+
       cursors = this.input.keyboard.createCursorKeys();
       setCursors(cursors);
-      keys = this.input.keyboard.addKeys("W,S,Z", false);
-      setKeys(keys);
-      this.physics.add.collider(ball, player1, null, null, this);
-      this.physics.add.collider(ball, player2, null, null, this);
+    
+      this.physics.add.collider(ball, player, null, null, this);
+      this.physics.add.collider(ball, opponent, null, null, this);
 
-      player1.setImmovable(true);
-      player2.setImmovable(true);
-      console.log(
-        "salut: ",
-        player1.body.height / this.physics.world.bounds.height,
-        " ",
-        player1.body.width / this.physics.world.bounds.width,
-        " ",
-        ball.body.height / this.physics.world.bounds.height
-      );
+      player.setImmovable(true);
+      opponent.setImmovable(true);
+
+      setPlayer1(player)
+      setPlayer2(opponent)
       setBall(ball);
       setGame(game);
     }
 
     function update() {
-      if (isPlayer1Point()) {
-        ball.disableBody(true, true);
-        return;
-      }
-      if (isPlayer2Point()) {
-        ball.disableBody(true, true);
-        return;
-      }
-
-      player2.setVelocityY(0);
-      player1.setVelocityY(0);
-
-      //PLAYER DROITE
-      //If statement to get player position from server
-      //
-
-      // if(cursors.up.isDown)
-      // {
-      //   player1.body.position = new Phaser.Math.Vector2(player1.body.position.x, y) // y = nouvelle valeur
+      // if (isPlayer1Point()) {
+      //   ball.disableBody(true, true);
+      //   return;
       // }
+      // if (isPlayer2Point()) {
+      //   ball.disableBody(true, true);
+      //   return;
+      // }
+
+      player.setVelocityY(0);
+      opponent.setVelocityY(0);
 
       if (!lobby) {
         navigate("/app/game");
@@ -147,27 +137,27 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       }
 
       //move player
-      if (keys.W.isDown || keys.Z.isDown || keys.S.isDown) {
-        if (keys.W.isDown || keys.Z.isDown) {
+
+        if (cursors.up.isDown) {
           if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
-            player1.setVelocityY(-350);
+            opponent.setVelocityY(-350);
           if (lobby.playerOne === window.sessionStorage.getItem("userid"))
-            player2.setVelocityY(-350);
-        } else if (keys.S.isDown) {
+            player.setVelocityY(-350);
+        } else if (cursors.down.isDown) {
           if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
-            player1.setVelocityY(350);
+            opponent.setVelocityY(350);
           if (lobby.playerOne === window.sessionStorage.getItem("userid"))
-            player2.setVelocityY(350);
+            player.setVelocityY(350);
         }
+
         if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
           socket.emit("UpdatePlayerPosition", {
-            pos: player1.body.position.y / this.physics.world.bounds.height,
+            pos: opponent.body.position.y / this.physics.world.bounds.height,
           });
         if (lobby.playerOne === window.sessionStorage.getItem("userid"))
           socket.emit("UpdatePlayerPosition", {
-            pos: player2.body.position.y / this.physics.world.bounds.height,
+            pos: player.body.position.y / this.physics.world.bounds.height,
           });
-      }
 
       //if host
       if (lobby.playerOne === window.sessionStorage.getItem("userid")) {
@@ -188,48 +178,11 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       }
     }
 
-    // function movePlayerDown(player: Phaser.Physics.Arcade.Sprite) {
-    //   player.setVelocityY(-350);
-    //   socket.emit("UpdatePlayerPosition", { pos: player.body.position.y });
-    // }
-    // function movePlayerUp(player: Phaser.Physics.Arcade.Sprite) {
-    //   player.setVelocityY(350);
-    //   socket.emit("UpdatePlayerPosition", { pos: player.body.position.y });
-    // }
 
-    function isPlayer1Point() {
-      return ball.body.x < player2.body.x;
-    }
-
-    function isPlayer2Point() {
-      return ball.body.x > player1.body.x;
-    }
-    //else navigate("/app/game");
   }, [socket]);
 
-  const click = () => {
-    setGame(game);
-    socket.emit("PlayerReady");
-  };
-  const clickpa = () => {
-    game.scene.pause("default");
-  };
-
-  useEffect(() => {
-    if (game) {
-      console.log("PAUSE");
-      socket.emit("PlayerReady");
-      game.scene.pause("default");
-    }
-  }, [game]);
-
   return (
-    <>
-      <button onClick={clickpa}>Pause</button>
-      <button onClick={click}>PlayerReady</button>
-      <button>timer: {timer}</button>
-      <div ref={gameRef} />
-    </>
+      <div className="game-div" ref={gameRef} />
   );
 };
 
