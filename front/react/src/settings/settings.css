@@ -18,16 +18,24 @@
 }
 
 .settings__button__texticon {
-  display: flex;
+  background: #fff;
+  border-radius: 2px;
+  border: 1px solid #d4d3e8;
+  text-transform: uppercase;
+  font-weight: 700;
+  align-items: center;
+  color: #2c385e;
+  box-shadow: 0px 1px 1px #2c385e;
   cursor: pointer;
-  border-radius: 5%;
+  transition: 0.2s;
   padding: 0.4em;
+}
 
-  background-color: rgb(255, 255, 255);
-  color: #0a1330;
-
-  vertical-align: baseline;
-  text-align: center;
+.settings__button__texticon:active,
+.settings__button__texticon:focus,
+.settings__button__texticon:hover {
+  border-color: #95aeff;
+  outline: none;
 }
 
 .settings__icon {
@@ -53,13 +61,14 @@
 .settings__avatar {
   max-width: 100%;
   height: auto;
-
+  aspect-ratio: 1;
   border-radius: 5%;
   border: 2px solid rgb(0, 0, 0);
   margin: auto;
 }
 
 .settings__avatar__container {
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
 }

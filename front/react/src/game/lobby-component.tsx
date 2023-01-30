@@ -3,6 +3,7 @@ import { FunctionComponent, useContext } from "react";
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
 import { GameMode } from "./game-type";
+import GameRecap from "./game-recap-component";
 
 export interface ILobbyComponentProps {}
 
@@ -77,6 +78,7 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
           <>{inQueue ? "Looking for an opponent..." : <button onClick={handleClick}>Join matchmaking</button>}</>
         )}
       </div>
+      {/* <GameRecap /> */}
     </>
   );
 };

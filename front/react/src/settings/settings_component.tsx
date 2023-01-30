@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { FaPen } from 'react-icons/fa';
-import { BsShieldFillMinus, BsShieldFillPlus } from 'react-icons/bs';
-import { ImCheckmark, ImCross } from 'react-icons/im';
+import React, { useEffect, useState } from "react";
+import { FaPen } from "react-icons/fa";
+import { BsShieldFillMinus, BsShieldFillPlus } from "react-icons/bs";
+import { ImCheckmark, ImCross } from "react-icons/im";
 
-import { getUsersMe, patchNickname } from '../api/user-api';
-import {
-  requestMfaDisable,
-  requestMfaSetupFinish,
-  requestMfaSetupInit,
-} from '../api/mfa-api';
-import { deleteAvatar, postAvatar } from '../api/avatar-api';
-import { MfaStatus } from './constants/mfa-status';
-import { AvatarStatus } from './constants/avatar-status';
-import DefaultAvatar from '../avatar/default_avatar_component';
-import ReloadAvatar from '../avatar/reload_avatar_component';
-import '../style.css';
-import '../profile/profile.css';
-import './settings.css';
+import { getUsersMe, patchNickname } from "../api/user-api";
+import { requestMfaDisable, requestMfaSetupFinish, requestMfaSetupInit } from "../api/mfa-api";
+import { deleteAvatar, postAvatar } from "../api/avatar-api";
+import { MfaStatus } from "./constants/mfa-status";
+import { AvatarStatus } from "./constants/avatar-status";
+import DefaultAvatar from "../avatar/default_avatar_component";
+import ReloadAvatar from "../avatar/reload_avatar_component";
+import "../style.css";
+import "../profile/profile.css";
+import "./settings.css";
 
 export default function Profile() {
   //utils
@@ -25,32 +21,28 @@ export default function Profile() {
   }
 
   // State variables
-  const [nickname, setNickname] = useState('');
-  const [newNickname, setNewNickname] = useState('');
+  const [nickname, setNickname] = useState("");
+  const [newNickname, setNewNickname] = useState("");
   const [editingNickname, setEditingNickname] = useState(false);
   const [mfaStatus, setMfaStatus] = useState<MfaStatus>(MfaStatus.LOADING);
-  const [avatarStatus, setAvatarStatus] = useState<AvatarStatus>(
-    AvatarStatus.LOADING,
-  );
+  const [avatarStatus, setAvatarStatus] = useState<AvatarStatus>(AvatarStatus.LOADING);
   const [avatarToUpload, setAvatarToUpload] = useState<File>(null);
   const [avatarReload, setAvatarReload] = useState<number>(0);
-  const [smsCode, setSmsCode] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [avatarError, setAvatarError] = useState('');
-  const [mfaError, setMfaError] = useState('');
-  const [nicknameError, setNicknameError] = useState('');
+  const [smsCode, setSmsCode] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [avatarError, setAvatarError] = useState("");
+  const [mfaError, setMfaError] = useState("");
+  const [nicknameError, setNicknameError] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
       await getUsersMe()
         .then((res) => {
           setNickname(res.data.nickname);
-          setMfaStatus(
-            res.data.mfaEnabled ? MfaStatus.ENABLED : MfaStatus.DISABLED,
-          );
+          setMfaStatus(res.data.mfaEnabled ? MfaStatus.ENABLED : MfaStatus.DISABLED);
         })
         .catch((e) => {
-          console.log('Settings: Error in fetchUserData', e);
+          console.log("Settings: Error in fetchUserData", e);
         });
     };
 
@@ -63,7 +55,7 @@ export default function Profile() {
   const uploadAvatar = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     if (avatarToUpload) {
-      setAvatarError('');
+      setAvatarError("");
       try {
         await postAvatar(avatarToUpload);
         setAvatarStatus(AvatarStatus.UPLOADED);
@@ -72,16 +64,16 @@ export default function Profile() {
         }, 100);
       } catch (e) {
         setAvatarError(e?.response?.data?.message);
-        console.log('failed to upload avatar');
+        console.log("failed to upload avatar");
       }
     } else {
-      setAvatarError('please select a file to upload');
+      setAvatarError("please select a file to upload");
     }
   };
 
   const removeAvatar = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setAvatarError('');
+    setAvatarError("");
     try {
       await deleteAvatar();
       setAvatarStatus(AvatarStatus.DELETED);
@@ -97,32 +89,20 @@ export default function Profile() {
   function avatarSettings() {
     return (
       <>
-        <div className="profile__panel__top">
-          <div className="profile__panel__title">Avatar</div>
-        </div>
+        <div className="profile__panel__top">Avatar</div>
         <div className="profile__panel__bottom profile__panel__avatar">
           <div className="settings__avatar__div">
             <div className="settings__avatar__container">
               {avatarStatus === AvatarStatus.DELETED
-                ? DefaultAvatar('settings__avatar')
-                : ReloadAvatar(
-                  window.sessionStorage.getItem('userid'),
-                  avatarReload,
-                  'settings__avatar',
-                )}
+                ? DefaultAvatar("settings__avatar")
+                : ReloadAvatar(window.sessionStorage.getItem("userid"), avatarReload, "settings__avatar")}
             </div>
-            <input type="file" onChange={selectFile} />
-            <button
-              className="settings__button__texticon"
-              onClick={uploadAvatar}
-            >
-              Upload a new avatar
+            <input className="fullwidth-button margin-before" type="file" onChange={selectFile} />
+            <button className="fullwidth-button margin-before" onClick={uploadAvatar}>
+              Upload
             </button>
-            <button
-              className="settings__button__texticon"
-              onClick={removeAvatar}
-            >
-              Delete current avatar
+            <button className="fullwidth-button margin-before" onClick={removeAvatar}>
+              Delete
             </button>
             {displayError(avatarError)}
           </div>
@@ -135,33 +115,27 @@ export default function Profile() {
 
   const editNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setNicknameError('');
+    setNicknameError("");
     try {
       await patchNickname({ nickname: newNickname });
       setEditingNickname(false);
       setNickname(newNickname);
-      setNewNickname('');
+      setNewNickname("");
     } catch (e) {
       setNicknameError(e?.response?.data?.message);
     }
   };
 
-  const startEditingNickname = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
+  const startEditingNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
     setEditingNickname(true);
   };
 
-  const stopEditingNickname = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
+  const stopEditingNickname = async (event: React.MouseEvent<HTMLButtonElement>) => {
     setEditingNickname(false);
-    setNewNickname('');
+    setNewNickname("");
   };
 
-  const handleNewNicknameChange = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleNewNicknameChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewNickname(event.target.value);
   };
   const HandleSmsCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -171,9 +145,7 @@ export default function Profile() {
   function nicknameSettings() {
     return (
       <>
-        <div className="profile__panel__top">
-          <div className="profile__panel__title">Nickname</div>
-        </div>
+        <div className="profile__panel__top">Nickname</div>
         <div className="profile__panel__bottom">
           {editingNickname ? (
             <div className="settings__line">
@@ -185,16 +157,10 @@ export default function Profile() {
                 type="text"
               />
               <div className="settings__line__elem settings__group__two__buttons">
-                <button
-                  className="settings__button__texticon"
-                  onClick={editNickname}
-                >
+                <button className="settings__button__texticon" onClick={editNickname}>
                   <ImCheckmark className="settings__icon" />
                 </button>
-                <button
-                  className="settings__button__texticon"
-                  onClick={stopEditingNickname}
-                >
+                <button className="settings__button__texticon" onClick={stopEditingNickname}>
                   <ImCross className="settings__icon" />
                 </button>
               </div>
@@ -202,10 +168,7 @@ export default function Profile() {
           ) : (
             <div className="settings__line">
               <div className="settings__line__elem">{nickname}</div>
-              <button
-                className="settings__line__elem settings__button__texticon"
-                onClick={startEditingNickname}
-              >
+              <button className="settings__line__elem settings__button__texticon" onClick={startEditingNickname}>
                 <FaPen className="settings__icon" />
               </button>
             </div>
@@ -220,13 +183,13 @@ export default function Profile() {
 
   const beginFlow = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError('');
+    setMfaError("");
     setMfaStatus(MfaStatus.INIT);
   };
 
   const sendCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError('');
+    setMfaError("");
     try {
       await requestMfaSetupInit({ phoneNumber: phoneNumber });
       setMfaStatus(MfaStatus.VALIDATE);
@@ -237,26 +200,26 @@ export default function Profile() {
 
   const validateCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError('');
+    setMfaError("");
     try {
       await requestMfaSetupFinish({ codeToCheck: smsCode });
-      setSmsCode('');
+      setSmsCode("");
       setMfaStatus(MfaStatus.ENABLED);
     } catch (e) {
-      console.log('Settings: error in validateCode', e);
+      console.log("Settings: error in validateCode", e);
       setMfaError(e?.response?.data?.message);
     }
   };
 
   const disable = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError('');
+    setMfaError("");
     try {
       const response = await requestMfaDisable();
       if (response.status === 204) {
         setMfaStatus(MfaStatus.DISABLED);
       } else {
-        setMfaError('Disabling mfa failed.');
+        setMfaError("Disabling mfa failed.");
       }
     } catch (e) {
       setMfaError(e?.response?.data?.message);
@@ -265,41 +228,33 @@ export default function Profile() {
 
   const cancelInit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError('');
-    setPhoneNumber('');
+    setMfaError("");
+    setPhoneNumber("");
     setMfaStatus(MfaStatus.DISABLED);
   };
 
   const cancelValidate = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setMfaError('');
-    setSmsCode('');
+    setMfaError("");
+    setSmsCode("");
     setMfaStatus(MfaStatus.INIT);
   };
 
-  const HandlePhoneNumberChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const HandlePhoneNumberChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPhoneNumber(event.target.value);
   };
 
   function mfaSettings() {
     return (
       <>
-        <div className="profile__panel__top">
-          <div className="profile__panel__title">Two-factor authentication</div>
-        </div>
+        <div className="profile__panel__top">Two-factor authentication</div>
         <div className="profile__panel__bottom">
           {mfaStatus === MfaStatus.ENABLED && (
             <>
               <div className="settings__line">
                 <div className="settings__line__elem">2FA is enabled</div>
-                <button
-                  className="settings__button__texticon"
-                  onClick={disable}
-                >
+                <button className="settings__button__texticon" onClick={disable}>
                   disable
-                  <BsShieldFillMinus className="settings__icon" />
                 </button>
               </div>
             </>
@@ -308,12 +263,8 @@ export default function Profile() {
             <>
               <div className="settings__line">
                 <div className="settings__line__elem">2FA is disabled</div>
-                <button
-                  className="settings__button__texticon"
-                  onClick={beginFlow}
-                >
+                <button className="settings__button__texticon" onClick={beginFlow}>
                   enable
-                  <BsShieldFillPlus className="settings__icon" />
                 </button>
               </div>
             </>
@@ -328,16 +279,10 @@ export default function Profile() {
                   value={phoneNumber}
                   onChange={HandlePhoneNumberChange}
                 />
-                <button
-                  className="settings__button__texticon"
-                  onClick={sendCode}
-                >
+                <button className="settings__button__texticon" onClick={sendCode}>
                   <ImCheckmark className="settings__icon" />
                 </button>
-                <button
-                  className="settings__button__texticon"
-                  onClick={cancelInit}
-                >
+                <button className="settings__button__texticon" onClick={cancelInit}>
                   <ImCross className="settings__icon" />
                 </button>
               </div>
@@ -360,16 +305,10 @@ export default function Profile() {
                   }}
                   onChange={HandleSmsCodeChange}
                 />
-                <button
-                  className="settings__button__texticon"
-                  onClick={validateCode}
-                >
+                <button className="settings__button__texticon" onClick={validateCode}>
                   <ImCheckmark className="settings__icon" />
                 </button>
-                <button
-                  className="settings__button__texticon"
-                  onClick={cancelValidate}
-                >
+                <button className="settings__button__texticon" onClick={cancelValidate}>
                   <ImCross className="settings__icon" />
                 </button>
               </div>
@@ -381,11 +320,11 @@ export default function Profile() {
     );
   }
 
-  return (<>
-    {avatarSettings()}
-    <br></br>
-    {nicknameSettings()}
-    <br></br>
-    {mfaSettings()}
-  </>);
+  return (
+    <>
+      {avatarSettings()}
+      {nicknameSettings()}
+      {mfaSettings()}
+    </>
+  );
 }
