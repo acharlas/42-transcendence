@@ -255,7 +255,6 @@ export default function Profile() {
                 <div className="settings__line__elem">2FA is enabled</div>
                 <button className="settings__button__texticon" onClick={disable}>
                   disable
-                  <BsShieldFillMinus className="settings__icon" />
                 </button>
               </div>
             </>
@@ -266,7 +265,6 @@ export default function Profile() {
                 <div className="settings__line__elem">2FA is disabled</div>
                 <button className="settings__button__texticon" onClick={beginFlow}>
                   enable
-                  <BsShieldFillPlus className="settings__icon" />
                 </button>
               </div>
             </>
