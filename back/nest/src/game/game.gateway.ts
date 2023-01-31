@@ -376,4 +376,70 @@ export class GameGateway
         });
     });
   }
+
+  @SubscribeMessage('UpdatePaddle')
+  UpdatePaddle(@ConnectedSocket() client: SocketWithAuth,
+  @MessageBody() data: {y: number},
+  ): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    this.gameService
+      .FindPLayerLobby(client.userID)
+      .then((lobby) => {
+        if (lobby) client.broadcast.to(lobby.id).emit('UpdatePaddle', data);
+        return resolve();
+      })
+      .catch((err) => {
+        console.log(err);
+        return reject();
+      });
+  });
+}
+
+@SubscribeMessage('UpdateBallVelocity')
+UpdateBallVelocity(@ConnectedSocket() client: SocketWithAuth,
+  @MessageBody() data: {x: number, y:number},
+  ): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    this.gameService
+      .FindPLayerLobby(client.userID)
+      .then((lobby) => {
+        if (lobby) client.broadcast.to(lobby.id).emit('UpdateBallVelocity', {x: -data.x, y: data.y});
+        return resolve();
+      })
+      .catch((err) => {
+        console.log(err);
+        return reject();
+      });
+  });
+}
+
+@SubscribeMessage('LaunchGame')
+LaunchGame(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    this.gameService
+      .FindPLayerLobby(client.userID)
+      .then((lobby) => {
+        if (lobby) 
+        {
+          const startVelocity = {x: (Math.random() + 1) * 100 , y: (Math.random() + 1) * 100}
+          const socketPlayerOne = this.SocketList.find((socket) => {
+            if(socket.userId === lobby.playerOne)
+              return socket
+          })
+          const socketPlayerTwo = this.SocketList.find((socket) => {
+            if(socket.userId === lobby.playerTwo)
+              return socket
+          })
+ 
+          socketPlayerOne.socket.emit('LaunchGame', {x: startVelocity.x, y:startVelocity.y});
+          socketPlayerTwo.socket.emit('LaunchGame', {x: -startVelocity.x, y: startVelocity.y});
+        }
+        return resolve();
+      })
+      .catch((err) => {
+        console.log(err);
+        return reject();
+      });
+  });
+}
 }
