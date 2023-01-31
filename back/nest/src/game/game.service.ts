@@ -2,8 +2,8 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GameGateway } from './game.gateway';
-import { PlayerIsInWatching, PlayerIsInLobby } from './game.utils';
-import { Game, Lobby, Player, playerHeight } from './types_game';
+import { PlayerIsInWatching, PlayerIsInLobby, BallOnPaddle, BallScore, bounceAngle, WitchPlayer } from './game.utils';
+import { Game, Lobby, Player, playerHeight, Position } from './types_game';
 
 @Injectable()
 export class GameService {
@@ -11,6 +11,7 @@ export class GameService {
 
   LobbyList: Lobby[] = [];
   Queue: Player[] = [];
+  Speed: number = 0.00003333333;
 
   /*==================Queue===========================*/
   async JoiningQueue(userId: string): Promise<void> {
@@ -115,6 +116,7 @@ export class GameService {
           if (user === userId) return false;
           return true;
         });
+        if (lobby.game) this.schedulerRegistry.deleteInterval(lobby.id);
         return resolve(lobbyViewer);
       }
       return resolve(null);
@@ -247,7 +249,7 @@ export class GameService {
         return PlayerIsInLobby(userId, lobby);
       });
       if (!lobby) return reject(new ForbiddenException("user isn't in a lobby"));
-
+      lobby.game.player[WitchPlayer(userId, lobby)].position.x = position;
       return resolve();
     });
   }
@@ -262,10 +264,14 @@ export class GameService {
       lobby.game = {
         start: false,
         player: [
-          { id: lobby.playerOne, ready: false, pauseAt: null, timer: 60000 },
-          { id: lobby.playerTwo, ready: false, pauseAt: null, timer: 60000 },
+          { id: lobby.playerOne, ready: false, pauseAt: null, timer: 60000, position: { x: 0, y: 0.5 } },
+          { id: lobby.playerTwo, ready: false, pauseAt: null, timer: 60000, position: { x: 0, y: 0.5 } },
         ],
+        paddleHeight: 0,
+        paddleWidth: 0,
+        ballRadius: 0,
         score: [0, 0],
+        ball: { position: { x: 0.5, y: 0.5 }, vector: { x: this.Speed, y: 0 } },
       };
       return resolve(lobby);
     });
@@ -278,18 +284,27 @@ export class GameService {
         return false;
       });
       if (!lobby) return reject(new ForbiddenException("lobby doesn't exist"));
-      lobby.game = { ...lobby.game, start: false };
+      lobby.game = { ...lobby.game, start: true };
       return resolve(lobby);
     });
   }
 
-  async PlayerReady(userId: string): Promise<Lobby> {
+  async PlayerReady(
+    userId: string,
+    paddleHeight: number,
+    paddleWidth: number,
+    ballRadius: number,
+    position: number,
+  ): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const lobby = this.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);
       });
-      if (lobby.playerOne === userId) lobby.game.player[0].ready = true;
-      if (lobby.playerTwo === userId) lobby.game.player[1].ready = true;
+      lobby.game.paddleHeight = paddleHeight;
+      lobby.game.paddleWidth = paddleWidth;
+      lobby.game.ballRadius = ballRadius;
+      lobby.game.player[WitchPlayer(userId, lobby)].position.x = position;
+      lobby.game.player[WitchPlayer(userId, lobby)].ready = true;
       return resolve(lobby);
     });
   }
@@ -301,15 +316,16 @@ export class GameService {
       });
       if (!lobby) return reject(new ForbiddenException('no lobby'));
 
-      if (lobby.playerOne === userId) {
+      if (lobby.playerOne === userId && !lobby.game.player[0].pauseAt) {
         const timeout = setTimeout(callback, lobby.game.player[0].timer);
-        console.log(lobby.game.player[0].timer);
+        console.log('userId: ', userId, '  ', lobby.game.player[0].timer);
         lobby.game.player[0].pauseAt = new Date();
         this.schedulerRegistry.addTimeout(lobby.game.player[0].id, timeout);
         // lobby.game.player[0].pauseAt.setSeconds(lobby.game.player[0].pauseAt.getSeconds() + lobby.game.player[0].timer);
       }
-      if (lobby.playerTwo === userId) {
+      if (lobby.playerTwo === userId && !lobby.game.player[0].pauseAt) {
         const timeout = setTimeout(callback, lobby.game.player[1].timer);
+        console.log('userId: ', userId, '  ', lobby.game.player[1].timer);
         lobby.game.player[1].pauseAt = new Date();
         this.schedulerRegistry.addTimeout(lobby.game.player[1].id, timeout);
         // lobby.game.player[0].pauseAt.setSeconds(lobby.game.player[0].pauseAt.getSeconds() + lobby.game.player[0].timer);
@@ -367,6 +383,26 @@ export class GameService {
         return PlayerIsInLobby(userId, lobby);
       });
       lobby.game = null;
+      return resolve(lobby);
+    });
+  }
+
+  async UpdateBall(lobbyId: string): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      const lobby = this.LobbyList.find((lobby) => {
+        return lobby.id === lobbyId;
+      });
+      if (!lobby) return reject(new ForbiddenException('no lobby'));
+      const bounce = BallOnPaddle(lobby);
+      if (bounce >= 0) {
+        console.log('bounce!!!!!!!!!!!!!!!!!!!!!!!', bounce, lobby.game.player[bounce].position.x);
+        const angle = bounceAngle(lobby, lobby.game.player[bounce].position.y);
+        lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
+        lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
+      } else if (BallScore(lobby)) {
+      }
+      lobby.game.ball.position.x += lobby.game.ball.vector.x * 60;
+      lobby.game.ball.position.y += lobby.game.ball.vector.y * 60;
       return resolve(lobby);
     });
   }

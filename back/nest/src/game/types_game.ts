@@ -14,6 +14,7 @@ export type Player = {
 
 export type Playertab = {
   id: string;
+  position: Position;
   ready: boolean;
   timer: number;
   pauseAt: Date;
@@ -23,6 +24,15 @@ export type Game = {
   start: boolean;
   player: Playertab[];
   score: number[];
+  ball: Ball;
+  paddleHeight: number;
+  paddleWidth: number;
+  ballRadius: number;
+};
+
+export type Ball = {
+  position: Position;
+  vector: Position;
 };
 
 export type Position = {

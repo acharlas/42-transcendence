@@ -14,8 +14,21 @@ export interface IGameComponentProps {}
 
 const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
-  const { setTimer, setBall, setPlayer1, setPlayer2, setKeys, setCursors, setGame, game, setGameBounds, lobby, timer } =
-    useGame();
+  const {
+    gameBounds,
+    player1,
+    player2,
+    setBall,
+    setPlayer1,
+    setPlayer2,
+    setKeys,
+    setCursors,
+    setGame,
+    game,
+    setGameBounds,
+    lobby,
+    ball,
+  } = useGame();
   // const [score, setScore] = useState([0, 0]);
   const gameRef = useRef<HTMLDivElement>(null);
   let navigate = useNavigate();
@@ -31,8 +44,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   };
 
   useEffect(() => {
-    window.addEventListener("focus", onFocus);
-    window.addEventListener("blur", unFocus);
+    // window.addEventListener("focus", onFocus);
+    // window.addEventListener("blur", unFocus);
 
     const game = new Phaser.Game({
       type: Phaser.AUTO,
@@ -119,15 +132,17 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         ball.body.height / this.physics.world.bounds.height
       );
 
-      timer = this.time.addEvent({ delay: 5000, callback: onEvent, callbackScope: this });
-      timer.paused = !timer.paused;
-      setTimer(timer);
+      // timer = this.time.addEvent({ delay: 5000, callback: onEvent, callbackScope: this });
+      // timer.paused = !timer.paused;
+      // setTimer(timer);
       setBall(ball);
       setGame(game);
+      console.log("paddle width: ", player1.body.width);
+      console.log("paddle height: ", player2.body.height);
     }
 
     function update() {
-      text.setText("Event.progress: " + timer.getProgress().toString().substr(0, 4));
+      // text.setText("Event.progress: " + timer.getProgress().toString().substr(0, 4));
       if (isPlayer1Point()) {
         ball.disableBody(true, true);
         return;
@@ -165,31 +180,31 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         }
         if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
           socket.emit("UpdatePlayerPosition", {
-            pos: player1.body.position.y / this.physics.world.bounds.height,
+            pos: (player1.body.position.y + player1.body.height / 2) / this.physics.world.bounds.height,
           });
         if (lobby.playerOne === window.sessionStorage.getItem("userid"))
           socket.emit("UpdatePlayerPosition", {
-            pos: player2.body.position.y / this.physics.world.bounds.height,
+            pos: (player2.body.position.y + player2.body.height / 2) / this.physics.world.bounds.height,
           });
       }
 
       //if host
-      if (lobby.playerOne === window.sessionStorage.getItem("userid")) {
-        if (!gameStarted) {
-          ball.setVisible(true);
-          gameStarted = true;
-          const initialXSpeed = Math.random() * 20 + 50;
-          const initialYSpeed = Math.random() * 20 + 50;
-          ball.setVelocityX(initialXSpeed);
-          ball.setVelocityY(initialYSpeed);
-        }
-        socket.emit("UpdateBallPosition", {
-          pos: {
-            x: ball.body.position.x / this.physics.world.bounds.width,
-            y: ball.body.position.y / this.physics.world.bounds.height,
-          },
-        });
-      }
+      // if (lobby.playerOne === window.sessionStorage.getItem("userid")) {
+      //   if (!gameStarted) {
+      //     ball.setVisible(true);
+      //     gameStarted = true;
+      //     const initialXSpeed = Math.random() * 20 + 50;
+      //     const initialYSpeed = Math.random() * 20 + 50;
+      //     ball.setVelocityX(initialXSpeed);
+      //     ball.setVelocityY(initialYSpeed);
+      //   }
+      //   socket.emit("UpdateBallPosition", {
+      //     pos: {
+      //       x: ball.body.position.x / this.physics.world.bounds.width,
+      //       y: ball.body.position.y / this.physics.world.bounds.height,
+      //     },
+      //   });
+      // }
     }
 
     // function movePlayerDown(player: Phaser.Physics.Arcade.Sprite) {
@@ -210,7 +225,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
     //else navigate("/app/game");
     return function cleanup() {
-      window.removeEventListener("focus", onFocus);
+      // window.removeEventListener("focus", onFocus);
+      // window.removeEventListener("blur", unFocus);
     };
   }, [socket]);
 
@@ -224,7 +240,16 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
   useEffect(() => {
     if (game) {
-      socket.emit("PlayerReady");
+      let position =
+        lobby.playerOne === window.sessionStorage.getItem("userid")
+          ? (player1.body.position.x + player1.body.width / 2) / gameBounds.x
+          : (player2.body.position.x + player2.body.width / 2) / gameBounds.x;
+      socket.emit("PlayerReady", {
+        paddleHeight: player1.body.height / gameBounds.x,
+        paddleWitdh: player1.body.width / gameBounds.y,
+        ballRadius: ball.body.height / gameBounds.x,
+        position,
+      });
       game.scene.pause("default");
     }
   }, [game]);

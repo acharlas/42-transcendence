@@ -78,18 +78,13 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       });
       /** setBallPosition */
       socket.on("NewBallPos", (position: Position) => {
-        // console.log("ball: ", { position }); //spammy
-        if (ball)
-          ball.setPosition(
-            position.x * gameBounds.x + ball.body.width / 2,
-            position.y * gameBounds.y + ball.body.height / 2
-          );
+        // console.log("ball: ", { position });
+        if (ball) ball.setPosition(position.x * gameBounds.x, position.y * gameBounds.y);
       });
       /**setPlayerPosition */
       socket.on("NewPlayerPos", (position: { player: boolean; y: number }) => {
-        if (!position.player)
-          player2.setPosition(ball.width / 2 + 1, position.y * gameBounds.y + player1.body.height / 2);
-        if (position.player) player1.setPosition(gameBounds.x, position.y * gameBounds.y + player1.body.height / 2);
+        if (!position.player) player2.setPosition(ball.width / 2 + 1, position.y * gameBounds.y);
+        if (position.player) player1.setPosition(gameBounds.x, position.y * gameBounds.y);
       });
 
       /**** Matchmaking-related listeners ****/
