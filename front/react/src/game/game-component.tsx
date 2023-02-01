@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   FunctionComponent,
   useContext,
@@ -28,6 +29,12 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
    let opponent: Phaser.Physics.Arcade.Sprite;
    let ball: Phaser.Physics.Arcade.Sprite;
    let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+   let playerGoal
+   let opponentGoal
+   let scorePlayer:number = 0;
+   let scoreOpponent:number = 0;
+   let textScorePlayer;
+   let textScoreOpponent;
    let gameStarted: boolean;
 
   useEffect(() => {
@@ -48,7 +55,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       physics: {
         default: "arcade",
         arcade: {
-          gravity: { y: 0 }
+          gravity: { y: 0 },
+          debug: true
         },
       }
     });
@@ -93,6 +101,38 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     player.setImmovable(true);
     opponent.setImmovable(true);
 
+    /* GOAL Bounds */
+
+    playerGoal = this.add.rectangle(0, CanvasHeight / 2, 20, CanvasHeight) 
+    opponentGoal = this.add.rectangle(CanvasWidth, CanvasHeight / 2, 20, CanvasHeight) 
+
+    this.physics.world.enable(playerGoal, Phaser.Physics.Arcade.STATIC_BODY) 
+    this.physics.world.enable(opponentGoal, Phaser.Physics.Arcade.STATIC_BODY)
+
+    this.physics.add.collider(ball, playerGoal, hitPlayerGoal, null, this);
+    this.physics.add.collider(ball, opponentGoal, hitOpponentGoal, null, this);
+
+
+    /****/
+
+    /*SCORE */
+
+    textScorePlayer = this.add.text(CanvasWidth * 1 / 4 ,CanvasHeight / 5, scorePlayer, {
+      fontSize: "100px"
+    }
+    ).setOrigin(0.5,0.5)
+
+    textScoreOpponent = this.add.text(CanvasWidth * 3 / 4 ,CanvasHeight / 5, scoreOpponent, {
+      fontSize: "100px"
+    }
+    ).setOrigin(0.5,0.5)
+
+
+      
+    /* */
+
+    /* SOCKET */
+
     socket.on('UpdatePaddle', (data) => {
       opponent.y = data.y
     });
@@ -102,19 +142,15 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     socket.on('LaunchGame', (data) => {
       ball.setVelocity(data.x, data.y)
     })
+    /***************/
   }
 
   function update() {
-
-    console.log(ball.body.position )
-
     socket.emit('UpdatePaddle', {y: player.y})
-
     player.setVelocityY(0);
     opponent.setVelocityY(0);
 
     //move player
-
     if(cursors.up.isDown)
     {
       player.setVelocityY(-PaddleSpeed)  
@@ -126,9 +162,11 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     else if (cursors.left.isDown)
     {
       //temporary to start the game
-      socket.emit("LaunchGame")
-      
+      socket.emit("LaunchGame") 
     }
+
+
+
   } 
 
   function hitPaddle(ball, paddle)
@@ -142,13 +180,23 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     })
   }
 
+  function hitOpponentGoal(ball, goal)
+  {
+    scorePlayer+=1
+    textScorePlayer.text = scorePlayer
+  }
+
+  function hitPlayerGoal(ball, goal)
+  {
+    scoreOpponent+=1
+    textScoreOpponent.text = scoreOpponent
+
+  }
+
     return () => {
-      console.log("game destroy")
       game.destroy(true)
     }
   }, [socket]); 
-
-  console.groupEnd()
 
   return (
       <div className="game-div" ref={gameRef} />

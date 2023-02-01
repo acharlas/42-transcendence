@@ -113,7 +113,7 @@ export class GameGateway
       });
   }
 
-  @Cron('*/10 * * * * *')
+  @Cron('*/1 * * * * *')
   sync() {
     // console.log('cron');
     this.gameService
