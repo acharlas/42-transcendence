@@ -442,4 +442,65 @@ LaunchGame(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
       });
   });
 }
+
+@SubscribeMessage('Goal')
+Goal(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    this.gameService
+      .FindPLayerLobby(client.userID)
+      .then((lobby) => {
+        if (lobby) 
+        {
+          console.log(client.userID, lobby.game.player[0].id)
+          const socketPlayerOne = this.SocketList.find((socket) => {
+            if(socket.userId === lobby.playerOne)
+              return socket
+          })
+          const socketPlayerTwo = this.SocketList.find((socket) => {
+            if(socket.userId === lobby.playerTwo)
+              return socket
+          })
+          if(client.userID === lobby.game.player[0].id)
+          {
+            lobby.game.score[0]+= 1
+            socketPlayerOne.socket.emit('ScoreUpdate', {id: lobby.game.player[0].id,});
+            socketPlayerTwo.socket.emit('ScoreUpdate', {id: lobby.game.player[0].id,});
+            
+          }
+          else
+          {
+            lobby.game.score[1]+= 1
+            socketPlayerOne.socket.emit('ScoreUpdate', {id: lobby.game.player[1].id,});
+            socketPlayerTwo.socket.emit('ScoreUpdate', {id: lobby.game.player[1].id,});
+          }
+
+          if (lobby.game.score[0] === 2)
+          {
+            socketPlayerOne.socket.emit('PlayerWin', {id: lobby.game.player[0].id,});
+            socketPlayerTwo.socket.emit('PlayerWin', {id: lobby.game.player[0].id,});
+          }
+          else if (lobby.game.score[1] === 2)
+          {
+            socketPlayerOne.socket.emit('PlayerWin', {id: lobby.game.player[1].id,});
+            socketPlayerTwo.socket.emit('PlayerWin', {id: lobby.game.player[1].id,});
+          }
+          
+          
+          var startVelocity = {x: (Math.random() + 1) * 100 , y: (Math.random() + 1) * 100}
+ 
+          socketPlayerOne.socket.emit('LaunchGame', {x: startVelocity.x, y:startVelocity.y});
+          socketPlayerTwo.socket.emit('LaunchGame', {x: -startVelocity.x, y: startVelocity.y});
+          
+        }
+        return resolve();
+      })
+      .catch((err) => {
+        console.log(err);
+        return reject();
+      });
+  });
+}
+
+
+
 }

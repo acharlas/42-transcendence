@@ -35,6 +35,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
    let scoreOpponent:number = 0;
    let textScorePlayer;
    let textScoreOpponent;
+   let textVictory
    let gameStarted: boolean;
 
   useEffect(() => {
@@ -109,7 +110,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     this.physics.world.enable(playerGoal, Phaser.Physics.Arcade.STATIC_BODY) 
     this.physics.world.enable(opponentGoal, Phaser.Physics.Arcade.STATIC_BODY)
 
-    this.physics.add.collider(ball, playerGoal, hitPlayerGoal, null, this);
+    // this.physics.add.collider(ball, playerGoal, hitPlayerGoal, null, this);
     this.physics.add.collider(ball, opponentGoal, hitOpponentGoal, null, this);
 
 
@@ -127,6 +128,11 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
     ).setOrigin(0.5,0.5)
 
+    textVictory = this.add.text(CanvasWidth * 1 / 2 ,CanvasHeight / 2, scoreOpponent, {
+      fontSize: "100px"
+    }
+    ).setOrigin(0.5,0.5)
+
 
       
     /* */
@@ -140,7 +146,29 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       ball.setVelocity(data.x, data.y)
     })
     socket.on('LaunchGame', (data) => {
+      ball.setPosition(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2,)
       ball.setVelocity(data.x, data.y)
+    })
+
+    socket.on("ScoreUpdate", (data) => {
+      console.log(sessionStorage.getItem('userid'));
+      
+      if(data.id === sessionStorage.getItem('userid'))
+      {
+        ++scorePlayer;
+        textScorePlayer.text = scorePlayer;
+      }
+      else {
+        ++scoreOpponent;
+        textScoreOpponent.text = scoreOpponent;
+      }
+    })
+
+    socket.on("PlayerWin", (data) => {
+      if(data.id === sessionStorage.getItem('userid'))
+      {
+
+      }
     })
     /***************/
   }
@@ -182,16 +210,18 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
   function hitOpponentGoal(ball, goal)
   {
-    scorePlayer+=1
-    textScorePlayer.text = scorePlayer
+    // textScorePlayer.text = scorePlayer
+    socket.emit("Goal", {
+      scorePlayer, 
+      scoreOpponent
+    })
   }
 
-  function hitPlayerGoal(ball, goal)
-  {
-    scoreOpponent+=1
-    textScoreOpponent.text = scoreOpponent
+  // function hitPlayerGoal(ball, goal)
+  // {
+  //   textScoreOpponent.text = scoreOpponent
 
-  }
+  // }
 
     return () => {
       game.destroy(true)
