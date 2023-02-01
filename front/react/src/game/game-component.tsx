@@ -178,6 +178,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
           if (lobby.playerTwo === window.sessionStorage.getItem("userid")) player1.setVelocityY(350);
           if (lobby.playerOne === window.sessionStorage.getItem("userid")) player2.setVelocityY(350);
         }
+
         if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
           socket.emit("UpdatePlayerPosition", {
             pos: (player1.body.position.y + player1.body.height / 2) / this.physics.world.bounds.height,
@@ -242,12 +243,12 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     if (game) {
       let position =
         lobby.playerOne === window.sessionStorage.getItem("userid")
-          ? (player1.body.position.x + player1.body.width / 2) / gameBounds.x
-          : (player2.body.position.x + player2.body.width / 2) / gameBounds.x;
+          ? (player2.body.position.x + player2.body.width / 2) / gameBounds.x
+          : (player1.body.position.x + player1.body.width / 2) / gameBounds.x;
       socket.emit("PlayerReady", {
-        paddleHeight: player1.body.height / gameBounds.x,
-        paddleWitdh: player1.body.width / gameBounds.y,
-        ballRadius: ball.body.height / gameBounds.x,
+        paddleHeight: player1.body.height / gameBounds.y,
+        paddleWitdh: player1.body.width / gameBounds.x,
+        ballRadius: ball.body.height / gameBounds.y,
         position,
       });
       game.scene.pause("default");

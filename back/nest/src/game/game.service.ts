@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { NumberContext } from 'twilio/lib/rest/pricing/v1/voice/number';
 import { GameGateway } from './game.gateway';
 import {
   PlayerIsInWatching,
@@ -12,6 +13,7 @@ import {
   ballHitWall,
   RandSpeed,
   NormPos,
+  NoOOB,
 } from './game.utils';
 import { Game, Lobby, Player, playerHeight, Position } from './types_game';
 
@@ -253,14 +255,14 @@ export class GameService {
   /*=============================================*/
 
   /*==================Game===========================*/
-  async UpdatePlayerPos(userId: string, position: number): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  async UpdatePlayerPos(userId: string, position: number): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
       const lobby = this.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);
       });
       if (!lobby) return reject(new ForbiddenException("user isn't in a lobby"));
-      lobby.game.player[WitchPlayer(userId, lobby)].position.x = position;
-      return resolve();
+      lobby.game.player[WitchPlayer(userId, lobby)].position.y = position;
+      return resolve(lobby);
     });
   }
 
@@ -403,49 +405,68 @@ export class GameService {
         return lobby.id === lobbyId;
       });
       if (!lobby) return reject(new ForbiddenException('no lobby'));
-      let state: boolean;
       let nextPos: Position;
-      let count: number;
 
-      state = true;
-      count = 0;
-      while (state) {
-        if (count > 6) {
-          this.schedulerRegistry.deleteInterval(lobby.id);
-          return resolve(lobby);
-        }
-        count = count + 1;
-        nextPos = {
-          x: lobby.game.ball.position.x + lobby.game.ball.vector.x * 60,
-          y: lobby.game.ball.position.y + lobby.game.ball.vector.y * 60,
-        };
-        nextPos = NormPos(nextPos);
-        const bounce = BallOnPaddle(lobby, nextPos);
-        if (bounce >= 0) {
-          // console.log(
-          //   'bounce!!!!!!!!!!!!!!!!!!!!!!!',
-          //   bounce,
-          //   lobby.game.player[bounce].position.x,
-          //   lobby.game.ball.position.x,
-          //   lobby.game.ballRadius,
-          // );
-          //const angle = bounceAngle(lobby, lobby.game.player[bounce].position.y);
-          // lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
-          // lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
-          console.log('bounce');
-          lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
-        } else if (BallScore(nextPos)) {
-          console.log('ball score');
-          //lobby.game.ball.position = { x: 0.5, y: 0.5 };
-          lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
-        } else if (ballHitWall(nextPos)) {
-          console.log('ball hit the wall');
-          lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
-        } else {
-          state = false;
-          lobby.game.ball.position = { ...nextPos };
-        }
+      nextPos = {
+        x: lobby.game.ball.position.x + lobby.game.ball.vector.x * 60,
+        y: lobby.game.ball.position.y + lobby.game.ball.vector.y * 60,
+      };
+      nextPos = NormPos(nextPos);
+      const bounce = BallOnPaddle(lobby, nextPos);
+      if (bounce >= 0) {
+        // console.log(
+        //   'bounce!!!!!!!!!!!!!!!!!!!!!!!',
+        //   bounce,
+        //   lobby.game.player[bounce].position.x,
+        //   lobby.game.ball.position.x,
+        //   lobby.game.ballRadius,
+        // );
+        //const angle = bounceAngle(lobby, lobby.game.player[bounce].position.y);
+        // lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
+        // lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
+        console.log('bounce');
+        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
+        if (bounce === 1)
+          lobby.game.ball.position.x =
+            lobby.game.player[1].position.x - lobby.game.paddleWidth / 2 - lobby.game.ballRadius / 2;
+        else
+          lobby.game.ball.position.x =
+            lobby.game.player[0].position.x + lobby.game.paddleWidth / 2 + lobby.game.ballRadius / 2;
+        lobby.game.ball.position.y = nextPos.y;
+        // lobby.game.ball.position.x =
+        //   bounce === 1
+        //     ? lobby.game.player[bounce].position.x + lobby.game.paddleWidth / 2 + lobby.game.ballRadius
+        //     : lobby.game.player[bounce].position.x - lobby.game.paddleWidth / 2 - lobby.game.ballRadius;
+        // lobby.game.ball.position.y = nextPos.y;
+      } else if (BallScore(lobby, nextPos)) {
+        // console.log(
+        //   'ball score',
+        //   lobby.game.player[0].position,
+        //   lobby.game.player[1].position,
+        //   lobby.game.ball.position,
+        // );
+        //lobby.game.ball.position = { x: 0.5, y: 0.5 };
+        //nextPos = NoOOB(nextPos, lobby);
+        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
+        lobby.game.ball.position = { x: 0.5, y: 0.5 };
+        //lobby.game.ball.position = { ...nextPos };
+        console.log('vitesse score', lobby.game.ball.vector.x);
+      } else if (ballHitWall(lobby, nextPos)) {
+        // console.log(
+        //   'ball hit the wall',
+        //   lobby.game.player[0].position,
+        //   lobby.game.player[1].position,
+        //   lobby.game.ball.position,
+        // );
+        //nextPos = NoOOB(nextPos, lobby);
+        lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
+        //lobby.game.ball.position = { ...nextPos };
+        console.log('vitesse', lobby.game.ball.vector.y);
+      } else {
+        //nextPos = NoOOB(nextPos, lobby);
+        lobby.game.ball.position = { ...nextPos };
       }
+
       return resolve(lobby);
     });
   }

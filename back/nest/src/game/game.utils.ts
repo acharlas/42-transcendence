@@ -43,12 +43,38 @@ export const BallOnPaddleOne = (lobby: Lobby, ballPos: Position): boolean => {
   const ballRadius = lobby.game.ballRadius;
 
   if (
-    ballPos.x - ballRadius / 2 >= paddlePos.x - paddleWidth &&
-    ballPos.y - ballRadius / 2 < paddlePos.y + paddleHeight &&
-    ballPos.y + ballRadius / 2 > paddlePos.y - paddleHeight
+    ballPos.x - ballRadius / 2 <= paddlePos.x + paddleWidth / 2 &&
+    ballPos.y - ballRadius / 2 < paddlePos.y + paddleHeight / 2 &&
+    ballPos.y + ballRadius / 2 > paddlePos.y - paddleHeight / 2
   )
     return true;
   return false;
+};
+
+export const BallOnPaddleTwo = (lobby: Lobby, ballPos: Position): boolean => {
+  const paddlePos = lobby.game.player[1].position;
+  const paddleHeight = lobby.game.paddleHeight;
+  const paddleWidth = lobby.game.paddleWidth;
+  const ballRadius = lobby.game.ballRadius;
+
+  if (
+    ballPos.x + ballRadius / 2 >= paddlePos.x - paddleWidth / 2 &&
+    ballPos.y - ballRadius / 2 <= paddlePos.y + paddleHeight / 2 &&
+    ballPos.y + ballRadius / 2 >= paddlePos.y - paddleHeight / 2
+  )
+    return true;
+  return false;
+};
+
+export const NoOOB = (pos: Position, lobby: Lobby): Position => {
+  const ballRadius = lobby.game.ballRadius;
+
+  if (pos.x + ballRadius >= 1) pos.x = 0.999999 - ballRadius;
+  if (pos.x - ballRadius <= 0) pos.x = 0.000001 + ballRadius;
+  if (pos.y + ballRadius >= 1) pos.y = 0.999999 - ballRadius;
+  if (pos.y - ballRadius <= 0) pos.y = 0.000001 + ballRadius;
+
+  return pos;
 };
 
 export const NormPos = (pos: Position): Position => {
@@ -60,34 +86,23 @@ export const NormPos = (pos: Position): Position => {
   return pos;
 };
 
-export const BallOnPaddleTwo = (lobby: Lobby, ballPos: Position): boolean => {
-  const paddlePos = lobby.game.player[1].position;
-  const paddleHeight = lobby.game.paddleHeight;
-  const paddleWidth = lobby.game.paddleWidth;
+export const BallScore = (lobby: Lobby, ballPos: Position) => {
   const ballRadius = lobby.game.ballRadius;
 
-  if (
-    ballPos.x + ballRadius / 2 <= paddlePos.x + paddleWidth &&
-    ballPos.y - ballRadius / 2 <= paddlePos.y + paddleHeight &&
-    ballPos.y + ballRadius / 2 >= paddlePos.y - paddleHeight
-  )
-    return true;
+  if (ballPos.x + ballRadius / 2 >= 1 || ballPos.x - ballRadius / 2 <= 0) return true;
   return false;
 };
 
-export const BallScore = (ballPos: Position) => {
-  if (ballPos.x >= 0.98 || ballPos.x <= 0.03) return true;
-  return false;
-};
+export const ballHitWall = (lobby: Lobby, ballPos: Position): boolean => {
+  const ballRadius = lobby.game.ballRadius;
 
-export const ballHitWall = (ballPos: Position): boolean => {
-  if (ballPos.y >= 0.975 || ballPos.y <= 0.025) return true;
+  if (ballPos.y + ballRadius / 2 >= 1 || ballPos.y - ballRadius / 2 <= 0) return true;
   return false;
 };
 
 export const RandSpeed = (speed: number): Position => {
-  const speedX = Math.random() * (speed / 1.5 - -speed / 4) + -speed / 4;
-  const speedY = Math.random() > 0.5 ? speed - speedX : (speed - speedX) * -1;
+  const speedY = Math.random() * ((2 * speed) / 3 - -speed / 3) + -speed / 3;
+  const speedX = Math.random() > 0.5 ? speed - speedY : (speed - speedY) * -1;
   return { x: speedX, y: speedY };
 };
 

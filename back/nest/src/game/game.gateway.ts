@@ -252,7 +252,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   UpdatePlayerPosition(@ConnectedSocket() client: SocketWithAuth, @MessageBody('pos') position: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.gameService
-        .FindPLayerLobby(client.userID)
+        .UpdatePlayerPos(client.userID, position)
         .then((lobby) => {
           if (lobby)
             client.broadcast.to(lobby.id).emit('NewPlayerPos', {
