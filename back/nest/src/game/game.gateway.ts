@@ -285,13 +285,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                     .then((lobby) => {
                       client.emit('StartGame', lobby);
                       client.broadcast.to(lobby.id).emit('StartGame', lobby);
-                      return;
+                      return resolve();
                     })
                     .catch((err) => {
                       console.log(err);
-                      return;
+                      return resolve();
                     });
-                } else {
+                } else if (lobby.game.start) {
                   this.gameService
                     .UpdateBall(lobby.id)
                     .then((lobby) => {
@@ -300,17 +300,19 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                     })
                     .catch((err) => {
                       console.log(err);
-                      return;
+                      return resolve();
                     });
                 }
+                return resolve();
               })
               .catch((err) => {
+                this.scheduleRegistry.deleteInterval(lobby.id);
                 console.log(err);
                 return;
               });
           };
 
-          const interval = setInterval(callback, 33);
+          const interval = setInterval(callback, 15);
           this.scheduleRegistry.addInterval(lobby.id, interval);
           client.broadcast.to(lobby.id).emit('GameCreate', lobby);
           client.emit('GameCreate', lobby);

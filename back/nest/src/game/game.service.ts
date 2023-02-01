@@ -2,7 +2,17 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GameGateway } from './game.gateway';
-import { PlayerIsInWatching, PlayerIsInLobby, BallOnPaddle, BallScore, bounceAngle, WitchPlayer } from './game.utils';
+import {
+  PlayerIsInWatching,
+  PlayerIsInLobby,
+  BallOnPaddle,
+  BallScore,
+  bounceAngle,
+  WitchPlayer,
+  ballHitWall,
+  RandSpeed,
+  NormPos,
+} from './game.utils';
 import { Game, Lobby, Player, playerHeight, Position } from './types_game';
 
 @Injectable()
@@ -271,7 +281,7 @@ export class GameService {
         paddleWidth: 0,
         ballRadius: 0,
         score: [0, 0],
-        ball: { position: { x: 0.5, y: 0.5 }, vector: { x: this.Speed, y: 0 } },
+        ball: { position: { x: 0.5, y: 0.5 }, vector: RandSpeed(this.Speed) },
       };
       return resolve(lobby);
     });
@@ -393,16 +403,49 @@ export class GameService {
         return lobby.id === lobbyId;
       });
       if (!lobby) return reject(new ForbiddenException('no lobby'));
-      const bounce = BallOnPaddle(lobby);
-      if (bounce >= 0) {
-        console.log('bounce!!!!!!!!!!!!!!!!!!!!!!!', bounce, lobby.game.player[bounce].position.x);
-        const angle = bounceAngle(lobby, lobby.game.player[bounce].position.y);
-        lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
-        lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
-      } else if (BallScore(lobby)) {
+      let state: boolean;
+      let nextPos: Position;
+      let count: number;
+
+      state = true;
+      count = 0;
+      while (state) {
+        if (count > 6) {
+          this.schedulerRegistry.deleteInterval(lobby.id);
+          return resolve(lobby);
+        }
+        count = count + 1;
+        nextPos = {
+          x: lobby.game.ball.position.x + lobby.game.ball.vector.x * 60,
+          y: lobby.game.ball.position.y + lobby.game.ball.vector.y * 60,
+        };
+        nextPos = NormPos(nextPos);
+        const bounce = BallOnPaddle(lobby, nextPos);
+        if (bounce >= 0) {
+          // console.log(
+          //   'bounce!!!!!!!!!!!!!!!!!!!!!!!',
+          //   bounce,
+          //   lobby.game.player[bounce].position.x,
+          //   lobby.game.ball.position.x,
+          //   lobby.game.ballRadius,
+          // );
+          //const angle = bounceAngle(lobby, lobby.game.player[bounce].position.y);
+          // lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
+          // lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
+          console.log('bounce');
+          lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
+        } else if (BallScore(nextPos)) {
+          console.log('ball score');
+          //lobby.game.ball.position = { x: 0.5, y: 0.5 };
+          lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
+        } else if (ballHitWall(nextPos)) {
+          console.log('ball hit the wall');
+          lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
+        } else {
+          state = false;
+          lobby.game.ball.position = { ...nextPos };
+        }
       }
-      lobby.game.ball.position.x += lobby.game.ball.vector.x * 60;
-      lobby.game.ball.position.y += lobby.game.ball.vector.y * 60;
       return resolve(lobby);
     });
   }

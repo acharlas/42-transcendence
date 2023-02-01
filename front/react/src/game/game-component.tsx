@@ -103,7 +103,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         x: this.physics.world.bounds.width - (ball.width / 2 + 1),
         y: this.physics.world.bounds.height,
       });
-      ball.setBounce(1, 1).setCollideWorldBounds(true);
+      //ball.setBounce(1, 1).setCollideWorldBounds(true);
       player1 = this.physics.add.sprite(
         this.physics.world.bounds.width - (ball.width / 2 + 1),
         this.physics.world.bounds.height / 2,
