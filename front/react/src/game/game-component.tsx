@@ -115,7 +115,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       setPlayer2(player2);
       cursors = this.input.keyboard.createCursorKeys();
       setCursors(cursors);
-      keys = this.input.keyboard.addKeys("W,S,Z", false);
+      keys = this.input.keyboard.addKeys("up,down", false);
       setKeys(keys);
       player1.setImmovable(true);
       player2.setImmovable(true);
@@ -166,11 +166,11 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       }
 
       //move player
-      if (keys.W.isDown || keys.Z.isDown || keys.S.isDown) {
-        if (keys.W.isDown || keys.Z.isDown) {
+      if (keys.up.isDown || keys.down.isDown) {
+        if (keys.up.isDown) {
           if (lobby.playerTwo === window.sessionStorage.getItem("userid")) player1.setVelocityY(-350);
           if (lobby.playerOne === window.sessionStorage.getItem("userid")) player2.setVelocityY(-350);
-        } else if (keys.S.isDown) {
+        } else if (keys.down.isDown) {
           if (lobby.playerTwo === window.sessionStorage.getItem("userid")) player1.setVelocityY(350);
           if (lobby.playerOne === window.sessionStorage.getItem("userid")) player2.setVelocityY(350);
         }
