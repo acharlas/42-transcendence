@@ -3,7 +3,6 @@ import {
   useContext,
   useEffect,
   useRef,
-  // useState,
 } from "react";
 import Phaser from "phaser";
 import { useGame } from "../context/game.context";
@@ -13,7 +12,9 @@ import { useNavigate } from "react-router-dom";
 export interface IGameComponentProps {}
 
 const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
+  let navigate = useNavigate();
   const { socket } = useContext(SocketContext).SocketState;
+  if (!socket) navigate("/app/game");
   const {
     gameBounds,
     player1,
@@ -29,24 +30,9 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     lobby,
     ball,
   } = useGame();
-  // const [score, setScore] = useState([0, 0]);
   const gameRef = useRef<HTMLDivElement>(null);
-  let navigate = useNavigate();
-
-  if (!socket) navigate("/app/game");
-
-  const onFocus = () => {
-    socket.emit("GameResume");
-  };
-
-  const unFocus = () => {
-    socket.emit("GamePause");
-  };
 
   useEffect(() => {
-    // window.addEventListener("focus", onFocus);
-    // window.addEventListener("blur", unFocus);
-
     const game = new Phaser.Game({
       type: Phaser.AUTO,
       scale: {
@@ -84,7 +70,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     function onEvent() {
       console.log("event lunch");
       if (game) game.scene.resume("default");
-      //this.game.scene.resume("default");
     }
 
     function init() {
@@ -98,27 +83,39 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
     function create() {
       text = this.add.text(32, 32);
-      ball = this.physics.add.sprite(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, "ball");
       setGameBounds({
         x: this.physics.world.bounds.width - (ball.width / 2 + 1),
         y: this.physics.world.bounds.height,
       });
+
+      //ball
+      ball = this.physics.add.sprite(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, "ball");
+
+      //players
       player1 = this.physics.add.sprite(
         this.physics.world.bounds.width - (ball.width / 2 + 1),
         this.physics.world.bounds.height / 2,
         "paddle"
       );
       player1.setCollideWorldBounds(true);
-      setPlayer1(player1);
+      player1.setImmovable(true);
       player2 = this.physics.add.sprite(ball.width / 2 + 1, this.physics.world.bounds.height / 2, "paddle");
       player2.setCollideWorldBounds(true);
-      setPlayer2(player2);
       cursors = this.input.keyboard.createCursorKeys();
-      setCursors(cursors);
-      keys = this.input.keyboard.addKeys("up,down", false);
-      setKeys(keys);
-      player1.setImmovable(true);
       player2.setImmovable(true);
+
+      //input
+      keys = this.input.keyboard.addKeys("up,down", false);
+
+      //react vars
+      setCursors(cursors);
+      setKeys(keys);
+      setPlayer1(player1);
+      setPlayer2(player2);
+      setBall(ball);
+      setGame(game);
+
+      //dbg
       console.log(
         "salut: ",
         player1.body.height / this.physics.world.bounds.height,
@@ -127,45 +124,18 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         " ",
         ball.body.height / this.physics.world.bounds.height
       );
-
-      // timer = this.time.addEvent({ delay: 5000, callback: onEvent, callbackScope: this });
-      // timer.paused = !timer.paused;
-      // setTimer(timer);
-      setBall(ball);
-      setGame(game);
       console.log("paddle width: ", player1.body.width);
       console.log("paddle height: ", player2.body.height);
     }
 
     function update() {
-      // text.setText("Event.progress: " + timer.getProgress().toString().substr(0, 4));
-      if (isPlayer1Point()) {
-        ball.disableBody(true, true);
-        return;
-      }
-      if (isPlayer2Point()) {
-        ball.disableBody(true, true);
-        return;
-      }
-
-      player2.setVelocityY(0);
-      player1.setVelocityY(0);
-
-      //PLAYER DROITE
-      //If statement to get player position from server
-      //
-
-      // if(cursors.up.isDown)
-      // {
-      //   player1.body.position = new Phaser.Math.Vector2(player1.body.position.x, y) // y = nouvelle valeur
-      // }
-
       if (!lobby) {
         navigate("/app/game");
         return;
       }
+      player2.setVelocityY(0);
+      player1.setVelocityY(0);
 
-      //move player
       if (keys.up.isDown || keys.down.isDown) {
         if (keys.up.isDown) {
           if (lobby.playerTwo === window.sessionStorage.getItem("userid")) player1.setVelocityY(-350);
@@ -184,47 +154,9 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
             pos: (player2.body.position.y + player2.body.height / 2) / this.physics.world.bounds.height,
           });
       }
-
-      //if host
-      // if (lobby.playerOne === window.sessionStorage.getItem("userid")) {
-      //   if (!gameStarted) {
-      //     ball.setVisible(true);
-      //     gameStarted = true;
-      //     const initialXSpeed = Math.random() * 20 + 50;
-      //     const initialYSpeed = Math.random() * 20 + 50;
-      //     ball.setVelocityX(initialXSpeed);
-      //     ball.setVelocityY(initialYSpeed);
-      //   }
-      //   socket.emit("UpdateBallPosition", {
-      //     pos: {
-      //       x: ball.body.position.x / this.physics.world.bounds.width,
-      //       y: ball.body.position.y / this.physics.world.bounds.height,
-      //     },
-      //   });
-      // }
     }
 
-    // function movePlayerDown(player: Phaser.Physics.Arcade.Sprite) {
-    //   player.setVelocityY(-350);
-    //   socket.emit("UpdatePlayerPosition", { pos: player.body.position.y });
-    // }
-    // function movePlayerUp(player: Phaser.Physics.Arcade.Sprite) {
-    //   player.setVelocityY(350);
-    //   socket.emit("UpdatePlayerPosition", { pos: player.body.position.y });
-    // }
-
-    function isPlayer1Point() {
-      return ball.body.x < player2.body.x;
-    }
-
-    function isPlayer2Point() {
-      return ball.body.x > player1.body.x;
-    }
-    //else navigate("/app/game");
-    return function cleanup() {
-      // window.removeEventListener("focus", onFocus);
-      // window.removeEventListener("blur", unFocus);
-    };
+    return function cleanup() {};
   }, [socket]);
 
   const click = () => {
