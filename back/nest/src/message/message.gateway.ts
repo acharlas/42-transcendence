@@ -695,7 +695,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       const lobby = this.gameService.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);
       });
-      if (!lobby) return reject();
+      if (!lobby) return reject("No lobby to spectate");
       this.gameService
         .JoinViewer(client.userID, lobby.id)
         .then((lobby) => {
