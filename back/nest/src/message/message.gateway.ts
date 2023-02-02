@@ -8,14 +8,15 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { UserPrivilege } from '@prisma/client';
+import { User, UserPrivilege, UserType } from '@prisma/client';
 import { Server, Socket, Namespace } from 'socket.io';
 import { BlockService } from 'src/block/block.service';
 import { CreateChannelDto, EditChannelDto } from 'src/channel/dto';
 import { FriendService } from 'src/friend/friend.service';
 import { GameGateway } from 'src/game/game.gateway';
 import { GameService } from 'src/game/game.service';
-import PlayerIsInLobby from 'src/game/game.utils';
+import { PlayerIsInLobby, PlayerIsInWatching } from 'src/game/game.utils';
+import { Lobby } from 'src/game/types_game';
 import { UserService } from 'src/user/user.service';
 import { ChannelService } from '../channel/channel.service';
 import { socketTab, SocketWithAuth } from './types_message';
@@ -23,9 +24,7 @@ import { socketTab, SocketWithAuth } from './types_message';
 @WebSocketGateway({
   namespace: 'chat',
 })
-export class MessageGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private channelService: ChannelService,
     private friendService: FriendService,
@@ -103,9 +102,7 @@ export class MessageGateway
       .catch((err) => {
         console.log(err);
       });
-    console.log(
-      `Client connected: ${client.id} | userid: ${client.userID} | name: ${client.username}`,
-    );
+    console.log(`Client connected: ${client.id} | userid: ${client.userID} | name: ${client.username}`);
   }
 
   handleDisconnect(client: SocketWithAuth): void {
@@ -176,9 +173,7 @@ export class MessageGateway
         .addChannelMessage(client.userID, roomId, client.username, message)
         .then((ret) => {
           console.log('message resend:', ret, 'roomid: ', roomId);
-          client.broadcast
-            .to(roomId)
-            .emit('RoomMessage', { roomId: roomId, message: ret });
+          client.broadcast.to(roomId).emit('RoomMessage', { roomId: roomId, message: ret });
           client.emit('RoomMessage', { roomId: roomId, message: ret });
           return resolve();
         })
@@ -223,10 +218,7 @@ export class MessageGateway
   /*=====================================*/
   /* USER LEAVES A ROOM*/
   @SubscribeMessage('LeaveRoom')
-  LeaveRoom(
-    @MessageBody('roomId') roomId: string,
-    @ConnectedSocket() client: SocketWithAuth,
-  ): Promise<void> {
+  LeaveRoom(@MessageBody('roomId') roomId: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('leave room: ', roomId);
     return new Promise<void>((resolve, reject) => {
       this.channelService
@@ -269,9 +261,7 @@ export class MessageGateway
                 .getChannelUser(roomId)
                 .then((user) => {
                   console.log('send msg back');
-                  client
-                    .to(roomId)
-                    .emit('UpdateUserList', { roomId: roomId, user: user });
+                  client.to(roomId).emit('UpdateUserList', { roomId: roomId, user: user });
                   client.emit('UpdateUserList', { roomId: roomId, user: user });
                   if (privilege === UserPrivilege.ban) {
                     const sock = this.SocketList.find((sock) => {
@@ -315,10 +305,7 @@ export class MessageGateway
   /*============================================*/
   /*ADD FRIEND*/
   @SubscribeMessage('AddFriend')
-  addFriend(
-    @MessageBody('newFriend') friend: string,
-    @ConnectedSocket() client: SocketWithAuth,
-  ): Promise<void> {
+  addFriend(@MessageBody('newFriend') friend: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('newFriend', friend);
     return new Promise<void>((resolve, reject) => {
       this.userService
@@ -367,10 +354,7 @@ export class MessageGateway
   /*============================================*/
   /*ADD BLOCK*/
   @SubscribeMessage('AddBlock')
-  addBlock(
-    @MessageBody('newBlock') Block: string,
-    @ConnectedSocket() client: SocketWithAuth,
-  ): Promise<void> {
+  addBlock(@MessageBody('newBlock') Block: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('newBlock', Block);
     return new Promise<void>((resolve, reject) => {
       this.userService
@@ -418,10 +402,7 @@ export class MessageGateway
   /*============================================*/
   /*REMOVE FRIEND*/
   @SubscribeMessage('RemoveFriend')
-  RemoveFriend(
-    @MessageBody('username') remove: string,
-    @ConnectedSocket() client: SocketWithAuth,
-  ): Promise<void> {
+  RemoveFriend(@MessageBody('username') remove: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('remove friend: ', remove);
     return new Promise<void>((resolve, reject) => {
       this.userService
@@ -464,10 +445,7 @@ export class MessageGateway
   /*============================================*/
   /*REMOVE BLOCK*/
   @SubscribeMessage('RemoveBlock')
-  RemoveBlock(
-    @MessageBody('username') remove: string,
-    @ConnectedSocket() client: SocketWithAuth,
-  ): Promise<void> {
+  RemoveBlock(@MessageBody('username') remove: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('remove block: ', remove);
     return new Promise<void>((resolve, reject) => {
       this.userService
@@ -545,10 +523,7 @@ export class MessageGateway
   /*============================================*/
   /*DM USER*/
   @SubscribeMessage('Dm')
-  Dm(
-    @MessageBody('sendTo') sendTo: string,
-    @ConnectedSocket() client: SocketWithAuth,
-  ): Promise<void> {
+  Dm(@MessageBody('sendTo') sendTo: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('create dm room: ', sendTo);
     return new Promise<void>((resolve, reject) => {
       this.userService
@@ -615,57 +590,71 @@ export class MessageGateway
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
     console.log('InviteUserInGame: ', inviteId);
+    const addPlayerToRoom = (lobby: Lobby, user: User): void => {
+      const gameSocket = this.gameGateWay.SocketList.find((socket) => {
+        if (socket.userId === client.userID) return true;
+        return false;
+      });
+      if (gameSocket) {
+        gameSocket.socket.join(lobby.id);
+        gameSocket.socket.emit('JoinLobby', lobby);
+      } else client.emit('JoinGame');
+      const inviteSocket = this.SocketList.find((socket) => {
+        if (socket.userId === inviteId) return true;
+        return false;
+      });
+      if (inviteSocket)
+        inviteSocket.socket.emit('GameInvite', {
+          id: user.id,
+          username: user.username,
+        });
+      return;
+    };
+
     return new Promise<void>((resolve, reject) => {
-      this.gameService
-        .CreateLobby(client.userID, inviteId)
-        .then((lobby) => {
-          console.log('lobby create: ', lobby);
-          const gameSocket = this.gameGateWay.SocketList.find((socket) => {
-            if (socket.userId === client.userID) return true;
-            return false;
-          });
-          if (gameSocket) {
-            gameSocket.socket.join(lobby.id);
-            gameSocket.socket.emit('JoinLobby', lobby);
-          } else client.emit('JoinGame');
-          const inviteSocket = this.SocketList.find((socket) => {
-            if (socket.userId === inviteId) return true;
-            return false;
-          });
-          if (inviteSocket)
-            return resolve(
-              new Promise<void>((resolve, reject) => {
-                this.userService
-                  .getUserUsername(client.userID)
-                  .then((user) => {
-                    inviteSocket.socket.emit('GameInvite', {
-                      id: user.id,
-                      username: user.username,
-                    });
-                    return resolve();
-                  })
-                  .catch((err) => {
-                    return reject(err);
-                  });
-              }),
-            );
-          return resolve();
+      this.userService
+        .getUserUsername(client.userID)
+        .then((user) => {
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              this.gameService
+                .FindPLayerLobby(client.userID)
+                .then((lobby) => {
+                  if (!lobby || PlayerIsInWatching(client.userID, lobby)) {
+                    return resolve(
+                      new Promise<void>((resolve, reject) => {
+                        this.gameService
+                          .CreateLobby(client.userID)
+                          .then((lobby) => {
+                            return resolve(addPlayerToRoom(lobby, user));
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                            return reject(err);
+                          });
+                      }),
+                    );
+                  } else {
+                    return resolve(addPlayerToRoom(lobby, user));
+                  }
+                })
+                .catch((err) => {
+                  console.log(err);
+                  return reject;
+                });
+            }),
+          );
         })
         .catch((err) => {
-          console.log('error create lobby: ', err);
-          return reject();
+          return reject(err);
         });
-      return resolve();
     });
   }
   /*============================================*/
   /*============================================*/
   /*invite a player to a lobby*/
   @SubscribeMessage('AccepteGameInvite')
-  AccepteGameInvite(
-    @MessageBody('userid') userid: string,
-    @ConnectedSocket() client: SocketWithAuth,
-  ): Promise<void> {
+  AccepteGameInvite(@MessageBody('userid') userid: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('AccepteGameInvite: ', userid);
     return new Promise<void>((resolve, reject) => {
       const lobby = this.gameService.LobbyList.find((lobby) => {
@@ -700,10 +689,7 @@ export class MessageGateway
   /*============================================*/
   /*invite a player to a lobby*/
   @SubscribeMessage('WatchPartie')
-  WatchPartie(
-    @MessageBody('userId') userId: string,
-    @ConnectedSocket() client: SocketWithAuth,
-  ): Promise<void> {
+  WatchPartie(@MessageBody('userId') userId: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('watch: ', userId);
     return new Promise<void>((resolve, reject) => {
       const lobby = this.gameService.LobbyList.find((lobby) => {

@@ -16,6 +16,7 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
   };
 
   const handleCreateLobbyClick = () => {
+    console.log("send create lobby");
     socket.emit("CreateLobby");
   };
 

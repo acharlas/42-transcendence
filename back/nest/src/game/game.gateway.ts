@@ -1,4 +1,4 @@
-import { Cron } from '@nestjs/schedule';
+import { Cron, SchedulerRegistry } from '@nestjs/schedule';
 import {
   ConnectedSocket,
   MessageBody,
@@ -15,17 +15,16 @@ import { HistoryService } from 'src/history/history.service';
 import { socketTab, SocketWithAuth } from '../message/types_message';
 import { GameService } from './game.service';
 import { Position } from './types_game';
-import PlayerIsInLobby from './game.utils';
+import { PlayerIsInLobby, PlayerIsReaddy } from './game.utils';
 
 @WebSocketGateway({
   namespace: 'game',
 })
-export class GameGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private gameService: GameService,
     private historyService: HistoryService, //private schedulerRegistry: SchedulerRegistry,
+    private scheduleRegistry: SchedulerRegistry,
   ) {}
 
   SocketList: socketTab[] = [];
@@ -82,9 +81,7 @@ export class GameGateway
       client.join(lobbyWatch.id);
       client.emit('JoinSpectate', lobbyWatch);
     }
-    console.log(
-      `Client connected to game: ${client.id} | userid: ${client.userID} | name: ${client.username}`,
-    );
+    console.log(`Client connected to game: ${client.id} | userid: ${client.userID} | name: ${client.username}`);
     console.log(`Number of sockets connected to game: ${socket.size}`);
   }
 
@@ -94,9 +91,7 @@ export class GameGateway
       if (sock.userId === client.userID) return false;
       return true;
     });
-    console.log(
-      `Client disconnected of game: ${client.id} | name: ${client.username}`,
-    );
+    console.log(`Client disconnected of game: ${client.id} | name: ${client.username}`);
     console.log(`Number of sockets connected to game: ${socket.size}`);
     this.gameService
       .PlayerDisconnect(client.userID)
@@ -193,7 +188,7 @@ export class GameGateway
   /*Create lobby*/
   @SubscribeMessage('CreateLobby')
   CreateLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, ' Leaving queue');
+    console.log('User:', client.userID, 'create lobby');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .CreateLobby(client.userID)
@@ -213,14 +208,16 @@ export class GameGateway
   /*Leaving lobby*/
   @SubscribeMessage('LeavingLobby')
   LeavingLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, ' Leaving queue');
+    console.log('User:', client.userID, ' Leaving lobby');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .LeaveLobby(client.userID)
-        .then((lobbyId) => {
-          client.broadcast.to(lobbyId).emit('PlayerLeave', client.userID);
+        .then((lobby) => {
+          if (lobby) {
+            client.broadcast.to(lobby.id).emit('UpdateLobby', lobby);
+          }
           client.emit('LeaveLobby');
-          client.leave(lobbyId);
+          client.leave(lobby.id);
           return resolve();
         })
         .catch((err) => {
@@ -252,13 +249,10 @@ export class GameGateway
 
   /*new Player position*/
   @SubscribeMessage('UpdatePlayerPosition')
-  UpdatePlayerPosition(
-    @ConnectedSocket() client: SocketWithAuth,
-    @MessageBody('pos') position: number,
-  ): Promise<void> {
+  UpdatePlayerPosition(@ConnectedSocket() client: SocketWithAuth, @MessageBody('pos') position: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.gameService
-        .FindPLayerLobby(client.userID)
+        .UpdatePlayerPos(client.userID, position)
         .then((lobby) => {
           if (lobby)
             client.broadcast.to(lobby.id).emit('NewPlayerPos', {
@@ -281,6 +275,45 @@ export class GameGateway
       this.gameService
         .CreateGame(client.userID)
         .then((lobby) => {
+          const callback = (): void => {
+            this.gameService
+              .FindPLayerLobby(client.userID)
+              .then((lobby) => {
+                if (!lobby.game.start && PlayerIsReaddy(lobby)) {
+                  this.gameService
+                    .SetGameStart(lobby.id)
+                    .then((lobby) => {
+                      client.emit('StartGame', lobby);
+                      client.broadcast.to(lobby.id).emit('StartGame', lobby);
+                      return resolve();
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                      return resolve();
+                    });
+                } else if (lobby.game.start) {
+                  this.gameService
+                    .UpdateBall(lobby.id)
+                    .then((lobby) => {
+                      client.broadcast.to(lobby.id).emit('NewBallPos', lobby.game.ball.position);
+                      client.emit('NewBallPos', lobby.game.ball.position);
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                      return resolve();
+                    });
+                }
+                return resolve();
+              })
+              .catch((err) => {
+                this.scheduleRegistry.deleteInterval(lobby.id);
+                console.log(err);
+                return;
+              });
+          };
+
+          const interval = setInterval(callback, 15);
+          this.scheduleRegistry.addInterval(lobby.id, interval);
           client.broadcast.to(lobby.id).emit('GameCreate', lobby);
           client.emit('GameCreate', lobby);
           return resolve();
@@ -289,17 +322,6 @@ export class GameGateway
           console.log(err);
           return reject();
         });
-      // this.gameService
-      //   .FindPLayerLobby(client.userID)
-      //   .then((lobby) => {
-      //     if (lobby)
-      //     client.broadcast.to(lobby.id).emit('NewPlayerPos', position);
-      //     return resolve();
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //     return reject();
-      //   });
     });
   }
 
@@ -311,10 +333,7 @@ export class GameGateway
 
   /*UpdateBallPosition*/
   @SubscribeMessage('UpdateBallPosition')
-  UpdateBallPosition(
-    @ConnectedSocket() client: SocketWithAuth,
-    @MessageBody('pos') position: Position,
-  ): Promise<void> {
+  UpdateBallPosition(@ConnectedSocket() client: SocketWithAuth, @MessageBody('pos') position: Position): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .FindPLayerLobby(client.userID)
@@ -349,24 +368,81 @@ export class GameGateway
 
   /*PlayerReady*/
   @SubscribeMessage('PlayerReady')
-  PlayerReady(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  PlayerReady(
+    @ConnectedSocket() client: SocketWithAuth,
+    @MessageBody('paddleHeight') paddleHeight: number,
+    @MessageBody('paddleWitdh') paddleWitdh: number,
+    @MessageBody('ballRadius') ballRadius: number,
+    @MessageBody('position') position: number,
+  ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      console.log('PlayerReady');
+      console.log('PlayerReady', position);
       this.gameService
-        .PlayerReady(client.userID)
+        .PlayerReady(client.userID, paddleHeight, paddleWitdh, ballRadius, position)
         .then((lobby) => {
-          console.log({ lobby }, lobby.game);
-          if (lobby.game.player[0].ready && lobby.game.player[1].ready) {
-            this.gameService
-              .SetGameStart(lobby.id)
-              .then((lobby) => {
-                client.broadcast.to(lobby.id).emit('StartGame', lobby);
-                client.emit('StartGame', lobby);
-              })
-              .catch((err) => {
-                console.log(err);
-                return reject();
-              });
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
+  /*GamePause*/
+  @SubscribeMessage('GamePause')
+  GamePause(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      console.log('GamePause: ', client.userID);
+      this.gameService
+        .FindPLayerLobby(client.userID)
+        .then((lobby) => {
+          const callback = () => {
+            console.log('call back');
+            client.emit('Surrender', { ...lobby, game: null });
+            this.gameService.EndGame(client.userID);
+            this.scheduleRegistry.deleteTimeout(client.userID);
+            client.broadcast.to(lobby.id).emit('EnnemySurrender', { ...lobby, game: null });
+          };
+          return resolve(
+            new Promise<void>((resolve, reject) => {
+              this.gameService
+                .SetLobbyPause(client.userID, callback)
+                .then((lobby) => {
+                  client.broadcast.to(lobby.id).emit('GamePause');
+                  client.emit('GamePause');
+                  return resolve();
+                })
+                .catch((err) => {
+                  console.log(err);
+                  return reject(err);
+                });
+            }),
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
+  /*GameResume*/
+  @SubscribeMessage('GameResume')
+  GameResume(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      console.log('GameResume: ', client.userID);
+      this.gameService
+        .SetLobbyResume(client.userID)
+        .then((lobby) => {
+          if (
+            !lobby.game.player.find((player) => {
+              if (player.pauseAt) return true;
+              return false;
+            })
+          ) {
+            client.broadcast.to(lobby.id).emit('GameResume');
+            client.emit('GameResume');
           }
           return resolve();
         })
