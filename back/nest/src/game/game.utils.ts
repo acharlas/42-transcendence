@@ -88,8 +88,14 @@ export const NormPos = (pos: Position): Position => {
 
 export const BallScore = (lobby: Lobby, ballPos: Position) => {
   const ballRadius = lobby.game.ballRadius;
-
-  if (ballPos.x + ballRadius / 2 >= 1 || ballPos.x - ballRadius / 2 <= 0) return true;
+  if(ballPos.x - ballRadius / 2 <= 0) {
+    lobby.game.score[0]++;
+    return true;
+  } 
+  if (ballPos.x + ballRadius / 2 >= 1) {
+    lobby.game.score[1]++;
+    return true;
+  }
   return false;
 };
 
