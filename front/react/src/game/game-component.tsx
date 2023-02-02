@@ -103,7 +103,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         x: this.physics.world.bounds.width - (ball.width / 2 + 1),
         y: this.physics.world.bounds.height,
       });
-      //ball.setBounce(1, 1).setCollideWorldBounds(true);
       player1 = this.physics.add.sprite(
         this.physics.world.bounds.width - (ball.width / 2 + 1),
         this.physics.world.bounds.height / 2,
@@ -118,9 +117,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       setCursors(cursors);
       keys = this.input.keyboard.addKeys("W,S,Z", false);
       setKeys(keys);
-      this.physics.add.collider(ball, player1, null, null, this);
-      this.physics.add.collider(ball, player2, null, null, this);
-
       player1.setImmovable(true);
       player2.setImmovable(true);
       console.log(
