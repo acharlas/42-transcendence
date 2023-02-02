@@ -30,7 +30,7 @@ export const PlayerIsReaddy = (lobby: Lobby) => {
 };
 
 export const WitchPlayer = (userId: string, lobby: Lobby): number => {
-  if (lobby.playerOne.id === userId) return 0;
+  if (lobby && lobby.playerOne && lobby.playerOne.id === userId) return 0;
   else return 1;
 };
 
