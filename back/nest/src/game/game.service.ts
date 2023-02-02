@@ -1,9 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
-import { NumberContext } from 'twilio/lib/rest/pricing/v1/voice/number';
-import { GameGateway } from './game.gateway';
 import {
   PlayerIsInWatching,
   PlayerIsInLobby,
