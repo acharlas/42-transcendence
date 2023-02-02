@@ -236,6 +236,10 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   };
 
   useEffect(() => {
+    if (!lobby) {
+      navigate("/app/game");
+      return;
+    }
     if (game) {
       let position =
         lobby.playerOne === window.sessionStorage.getItem("userid")
