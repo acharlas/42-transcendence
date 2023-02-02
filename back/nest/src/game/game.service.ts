@@ -424,7 +424,7 @@ export class GameService {
         //const angle = bounceAngle(lobby, lobby.game.player[bounce].position.y);
         // lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
         // lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
-        console.log('bounce');
+        //console.log('bounce');
         lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
         if (bounce === 1)
           lobby.game.ball.position.x =
@@ -450,7 +450,7 @@ export class GameService {
         lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
         lobby.game.ball.position = { x: 0.5, y: 0.5 };
         //lobby.game.ball.position = { ...nextPos };
-        console.log('vitesse score', lobby.game.ball.vector.x);
+        //console.log('vitesse score', lobby.game.ball.vector.x);
       } else if (ballHitWall(lobby, nextPos)) {
         // console.log(
         //   'ball hit the wall',
@@ -461,7 +461,7 @@ export class GameService {
         //nextPos = NoOOB(nextPos, lobby);
         lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
         //lobby.game.ball.position = { ...nextPos };
-        console.log('vitesse', lobby.game.ball.vector.y);
+        //console.log('vitesse', lobby.game.ball.vector.y);
       } else {
         //nextPos = NoOOB(nextPos, lobby);
         lobby.game.ball.position = { ...nextPos };
