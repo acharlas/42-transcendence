@@ -295,8 +295,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                   this.gameService
                     .UpdateBall(lobby.id)
                     .then((lobby) => {
-                      client.broadcast.to(lobby.id).emit('NewBallPos', lobby.game.ball.position);
-                      client.emit('NewBallPos', lobby.game.ball.position);
+                      if (lobby.game.score[0] < 2 || lobby.game.score[1] < 2) {
+                        client.broadcast.to(lobby.id).emit('NewBallPos', lobby.game.ball.position);
+                        client.emit('NewBallPos', lobby.game.ball.position);
+                      } else {
+                        client.broadcast.to(lobby.id).emit('EndGame', lobby);
+                        client.emit('EndGame', lobby);
+                      }
                     })
                     .catch((err) => {
                       console.log(err);

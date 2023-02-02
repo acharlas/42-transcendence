@@ -37,6 +37,13 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
     const StartListener = () => {
       /**** Game-related listeners ****/
       /** Game Pause */
+      socket.on("EndGame", (lobby: Lobby) => {
+        console.log("EndGame: ");
+
+        //switch scene game un truc dans le genre
+        setLobby(lobby);
+      });
+      /** Game Pause */
       socket.on("GameResume", () => {
         console.log("GameResume: ");
 

@@ -421,11 +421,17 @@ export class GameService {
         //   lobby.game.ball.position.x,
         //   lobby.game.ballRadius,
         // );
-        //const angle = bounceAngle(lobby, lobby.game.player[bounce].position.y);
-        // lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
-        // lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
+        if (bounce === 0) {
+          const angle = bounceAngle(lobby, lobby.game.player[bounce].position.y);
+          lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
+          lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
+        } else {
+          const angle = bounceAngle(lobby, lobby.game.player[bounce].position.y);
+          lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
+          lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
+        }
+        //lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
         //console.log('bounce');
-        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
         if (bounce === 1)
           lobby.game.ball.position.x =
             lobby.game.player[1].position.x - lobby.game.paddleWidth / 2 - lobby.game.ballRadius / 2;
