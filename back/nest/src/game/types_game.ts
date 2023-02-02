@@ -1,7 +1,7 @@
 export type Lobby = {
   id: string;
-  playerOne: string;
-  playerTwo: string;
+  playerOne: Player;
+  playerTwo: Player;
   game: Game;
   invited: string[];
   viewer: string[];
@@ -10,6 +10,7 @@ export type Lobby = {
 export type Player = {
   id: string;
   mmr: number;
+  nickname: string;
 };
 
 export type Playertab = {

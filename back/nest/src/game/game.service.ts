@@ -1,6 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserService } from 'src/user/user.service';
 import { NumberContext } from 'twilio/lib/rest/pricing/v1/voice/number';
 import { GameGateway } from './game.gateway';
 import {
@@ -19,7 +20,7 @@ import { Game, Lobby, Player, playerHeight, Position } from './types_game';
 
 @Injectable()
 export class GameService {
-  constructor(private prisma: PrismaService, private schedulerRegistry: SchedulerRegistry) {}
+  constructor(private schedulerRegistry: SchedulerRegistry, private userService: UserService) {}
 
   LobbyList: Lobby[] = [];
   Queue: Player[] = [];
@@ -29,13 +30,18 @@ export class GameService {
   async JoiningQueue(userId: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       console.log('actual queue: ', this.Queue);
-      const newPlayer = { id: userId, mmr: 0 };
-      const find = this.Queue.find((player) => {
-        if (player.id === newPlayer.id) return true;
-        return false;
-      });
-      if (!find) this.Queue.push(newPlayer); //this.Queue = [...this.Queue, newPlayer]
-      return resolve();
+      this.CreatePlayer(userId)
+        .then((newPlayer) => {
+          const find = this.Queue.find((player) => {
+            if (player.id === newPlayer.id) return true;
+            return false;
+          });
+          if (!find) this.Queue.push(newPlayer);
+          return resolve();
+        })
+        .catch((err) => {
+          return reject(err);
+        });
     });
   }
 
@@ -54,23 +60,34 @@ export class GameService {
 
   async CreateLobby(userId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
-      const lobby = {
-        id: userId,
-        playerOne: userId,
-        playerTwo: null,
-        game: null,
-        invited: [],
-        viewer: [],
-      };
-      this.LeaveLobby(userId)
-        .then(() => {
-          const find = this.LobbyList.find((lobbyL) => {
-            if (lobbyL.id === lobby.id) return true;
-            return false;
-          });
-          if (find) return reject(new ForbiddenException('lobby already create'));
-          this.LobbyList.push(lobby); //this.LobbyList = [...this.LobbyList, lobby];
-          return resolve(lobby);
+      this.userService
+        .getUserId(userId, userId)
+        .then((user) => {
+          return resolve(
+            new Promise<Lobby>((resolve, reject) => {
+              const lobby = {
+                id: userId,
+                playerOne: { id: userId, mmr: user.mmr, nickname: user.nickname },
+                playerTwo: null,
+                game: null,
+                invited: [],
+                viewer: [],
+              };
+              this.LeaveLobby(userId)
+                .then(() => {
+                  const find = this.LobbyList.find((lobbyL) => {
+                    if (lobbyL.id === lobby.id) return true;
+                    return false;
+                  });
+                  if (find) return reject(new ForbiddenException('lobby already create'));
+                  this.LobbyList.push(lobby); //this.LobbyList = [...this.LobbyList, lobby];
+                  return resolve(lobby);
+                })
+                .catch((err) => {
+                  return reject(err);
+                });
+            }),
+          );
         })
         .catch((err) => {
           return reject(err);
@@ -103,10 +120,10 @@ export class GameService {
         return PlayerIsInLobby(userId, lobby);
       });
       if (lobby) {
-        if (lobby.playerOne === userId) {
+        if (lobby.playerOne.id === userId) {
           if (lobby.playerTwo === null) {
             this.LobbyList = this.LobbyList.filter((lobby) => {
-              if (lobby.playerOne === userId) return false;
+              if (lobby.playerOne.id === userId) return false;
               return true;
             });
             return resolve(lobby);
@@ -135,10 +152,23 @@ export class GameService {
     });
   }
 
+  async CreatePlayer(userId: string): Promise<Player> {
+    return new Promise<Player>((resolve, reject) => {
+      this.userService
+        .getUserId(userId, userId)
+        .then((user) => {
+          return resolve({ id: userId, mmr: user.mmr, nickname: user.nickname });
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
   async JoinLobby(userId: string, lobbyId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const actLobby = this.LobbyList.find((lobby) => {
-        if (lobby.playerOne === userId || lobby.playerTwo === userId) return true;
+        if (lobby.playerOne.id === userId || lobby.playerTwo.id === userId) return true;
         return false;
       });
       if (actLobby) {
@@ -150,12 +180,22 @@ export class GameService {
       });
       if (!joinLobby) return reject(new ForbiddenException('no such lobby'));
       if (joinLobby.playerTwo) return reject(new ForbiddenException('lobby is full'));
-      joinLobby.playerTwo = userId;
-      joinLobby.invited = joinLobby.invited.filter((user) => {
-        if (user === userId) return false;
-        return true;
-      });
-      return resolve(joinLobby);
+      return resolve(
+        new Promise<Lobby>((resolve, reject) => {
+          this.CreatePlayer(userId)
+            .then((player) => {
+              joinLobby.playerTwo = player;
+              joinLobby.invited = joinLobby.invited.filter((user) => {
+                if (user === userId) return false;
+                return true;
+              });
+              return resolve(joinLobby);
+            })
+            .catch((err) => {
+              return reject(err);
+            });
+        }),
+      );
     });
   }
 
@@ -235,8 +275,8 @@ export class GameService {
         if (playerTwo) {
           const lobby = {
             id: playerOne.id + playerTwo.id,
-            playerOne: playerOne.id,
-            playerTwo: playerTwo.id,
+            playerOne: playerOne,
+            playerTwo: playerTwo,
             game: null,
             invited: [],
             viewer: [],
@@ -276,8 +316,8 @@ export class GameService {
       lobby.game = {
         start: false,
         player: [
-          { id: lobby.playerOne, ready: false, pauseAt: null, timer: 60000, position: { x: 0, y: 0.5 } },
-          { id: lobby.playerTwo, ready: false, pauseAt: null, timer: 60000, position: { x: 0, y: 0.5 } },
+          { id: lobby.playerOne.id, ready: false, pauseAt: null, timer: 60000, position: { x: 0, y: 0.5 } },
+          { id: lobby.playerTwo.id, ready: false, pauseAt: null, timer: 60000, position: { x: 0, y: 0.5 } },
         ],
         paddleHeight: 0,
         paddleWidth: 0,
@@ -321,73 +361,73 @@ export class GameService {
     });
   }
 
-  async SetLobbyPause(userId: string, callback: () => void): Promise<Lobby> {
-    return new Promise<Lobby>((resolve, reject) => {
-      const lobby = this.LobbyList.find((lobby) => {
-        return PlayerIsInLobby(userId, lobby);
-      });
-      if (!lobby) return reject(new ForbiddenException('no lobby'));
+  // async SetLobbyPause(userId: string, callback: () => void): Promise<Lobby> {
+  //   return new Promise<Lobby>((resolve, reject) => {
+  //     const lobby = this.LobbyList.find((lobby) => {
+  //       return PlayerIsInLobby(userId, lobby);
+  //     });
+  //     if (!lobby) return reject(new ForbiddenException('no lobby'));
 
-      if (lobby.playerOne === userId && !lobby.game.player[0].pauseAt) {
-        const timeout = setTimeout(callback, lobby.game.player[0].timer);
-        console.log('userId: ', userId, '  ', lobby.game.player[0].timer);
-        lobby.game.player[0].pauseAt = new Date();
-        this.schedulerRegistry.addTimeout(lobby.game.player[0].id, timeout);
-        // lobby.game.player[0].pauseAt.setSeconds(lobby.game.player[0].pauseAt.getSeconds() + lobby.game.player[0].timer);
-      }
-      if (lobby.playerTwo === userId && !lobby.game.player[0].pauseAt) {
-        const timeout = setTimeout(callback, lobby.game.player[1].timer);
-        console.log('userId: ', userId, '  ', lobby.game.player[1].timer);
-        lobby.game.player[1].pauseAt = new Date();
-        this.schedulerRegistry.addTimeout(lobby.game.player[1].id, timeout);
-        // lobby.game.player[0].pauseAt.setSeconds(lobby.game.player[0].pauseAt.getSeconds() + lobby.game.player[0].timer);
-      }
-      return resolve(lobby);
-    });
-  }
+  //     if (lobby.playerOne === userId && !lobby.game.player[0].pauseAt) {
+  //       const timeout = setTimeout(callback, lobby.game.player[0].timer);
+  //       console.log('userId: ', userId, '  ', lobby.game.player[0].timer);
+  //       lobby.game.player[0].pauseAt = new Date();
+  //       this.schedulerRegistry.addTimeout(lobby.game.player[0].id, timeout);
+  //       // lobby.game.player[0].pauseAt.setSeconds(lobby.game.player[0].pauseAt.getSeconds() + lobby.game.player[0].timer);
+  //     }
+  //     if (lobby.playerTwo === userId && !lobby.game.player[0].pauseAt) {
+  //       const timeout = setTimeout(callback, lobby.game.player[1].timer);
+  //       console.log('userId: ', userId, '  ', lobby.game.player[1].timer);
+  //       lobby.game.player[1].pauseAt = new Date();
+  //       this.schedulerRegistry.addTimeout(lobby.game.player[1].id, timeout);
+  //       // lobby.game.player[0].pauseAt.setSeconds(lobby.game.player[0].pauseAt.getSeconds() + lobby.game.player[0].timer);
+  //     }
+  //     return resolve(lobby);
+  //   });
+  // }
 
-  async SetLobbyResume(userId: string): Promise<Lobby> {
-    return new Promise<Lobby>((resolve, reject) => {
-      const lobby = this.LobbyList.find((lobby) => {
-        return PlayerIsInLobby(userId, lobby);
-      });
-      if (!lobby) return reject(new ForbiddenException('no lobby'));
-      if (lobby.playerOne === userId && lobby.game.player[0].pauseAt) {
-        this.schedulerRegistry.deleteTimeout(lobby.game.player[0].id);
-        const date = new Date();
-        console.log(
-          'time: ',
-          'time: ',
-          lobby.game.player[0].timer,
-          '  ',
-          lobby.game.player[0].pauseAt.getTime(),
-          '  ',
-          date.getTime(),
-          '  ',
-          date.getTime() - lobby.game.player[0].pauseAt.getTime(),
-        );
-        lobby.game.player[0].timer =
-          lobby.game.player[0].timer - (date.getTime() - lobby.game.player[0].pauseAt.getTime());
-        lobby.game.player[0].pauseAt = null;
-      }
-      if (lobby.playerTwo === userId && lobby.game.player[1].pauseAt) {
-        const date = new Date();
-        this.schedulerRegistry.deleteTimeout(lobby.game.player[1].id);
-        console.log(
-          'time: ',
-          lobby.game.player[1].timer,
-          '  ',
-          lobby.game.player[1].pauseAt.getTime(),
-          '  ',
-          date.getTime(),
-        );
-        lobby.game.player[1].timer =
-          lobby.game.player[1].timer - date.getTime() - lobby.game.player[1].pauseAt.getTime();
-        lobby.game.player[1].pauseAt = null;
-      }
-      return resolve(lobby);
-    });
-  }
+  // async SetLobbyResume(userId: string): Promise<Lobby> {
+  //   return new Promise<Lobby>((resolve, reject) => {
+  //     const lobby = this.LobbyList.find((lobby) => {
+  //       return PlayerIsInLobby(userId, lobby);
+  //     });
+  //     if (!lobby) return reject(new ForbiddenException('no lobby'));
+  //     if (lobby.playerOne === userId && lobby.game.player[0].pauseAt) {
+  //       this.schedulerRegistry.deleteTimeout(lobby.game.player[0].id);
+  //       const date = new Date();
+  //       console.log(
+  //         'time: ',
+  //         'time: ',
+  //         lobby.game.player[0].timer,
+  //         '  ',
+  //         lobby.game.player[0].pauseAt.getTime(),
+  //         '  ',
+  //         date.getTime(),
+  //         '  ',
+  //         date.getTime() - lobby.game.player[0].pauseAt.getTime(),
+  //       );
+  //       lobby.game.player[0].timer =
+  //         lobby.game.player[0].timer - (date.getTime() - lobby.game.player[0].pauseAt.getTime());
+  //       lobby.game.player[0].pauseAt = null;
+  //     }
+  //     if (lobby.playerTwo === userId && lobby.game.player[1].pauseAt) {
+  //       const date = new Date();
+  //       this.schedulerRegistry.deleteTimeout(lobby.game.player[1].id);
+  //       console.log(
+  //         'time: ',
+  //         lobby.game.player[1].timer,
+  //         '  ',
+  //         lobby.game.player[1].pauseAt.getTime(),
+  //         '  ',
+  //         date.getTime(),
+  //       );
+  //       lobby.game.player[1].timer =
+  //         lobby.game.player[1].timer - date.getTime() - lobby.game.player[1].pauseAt.getTime();
+  //       lobby.game.player[1].pauseAt = null;
+  //     }
+  //     return resolve(lobby);
+  //   });
+  // }
 
   async EndGame(userId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {

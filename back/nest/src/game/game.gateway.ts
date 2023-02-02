@@ -117,11 +117,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         // console.log('lobby: ', { newLobby });
         newLobby.forEach((lobby) => {
           const socketPlayerOne = this.SocketList.find((socket) => {
-            if (socket.userId === lobby.playerOne) return true;
+            if (socket.userId === lobby.playerOne.id) return true;
             return false;
           });
           const socketPlayerTwo = this.SocketList.find((socket) => {
-            if (socket.userId === lobby.playerTwo) return true;
+            if (socket.userId === lobby.playerTwo.id) return true;
             return false;
           });
           // console.log('player one: ', { socketPlayerOne }, ' player two: ', {
@@ -256,7 +256,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         .then((lobby) => {
           if (lobby)
             client.broadcast.to(lobby.id).emit('NewPlayerPos', {
-              player: lobby.playerTwo === client.userID,
+              player: lobby.playerTwo.id === client.userID,
               y: position,
             });
           return resolve();
@@ -394,67 +394,67 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     });
   }
 
-  /*GamePause*/
-  @SubscribeMessage('GamePause')
-  GamePause(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      console.log('GamePause: ', client.userID);
-      this.gameService
-        .FindPLayerLobby(client.userID)
-        .then((lobby) => {
-          const callback = () => {
-            console.log('call back');
-            client.emit('Surrender', { ...lobby, game: null });
-            this.gameService.EndGame(client.userID);
-            this.scheduleRegistry.deleteTimeout(client.userID);
-            client.broadcast.to(lobby.id).emit('EnnemySurrender', { ...lobby, game: null });
-          };
-          return resolve(
-            new Promise<void>((resolve, reject) => {
-              this.gameService
-                .SetLobbyPause(client.userID, callback)
-                .then((lobby) => {
-                  client.broadcast.to(lobby.id).emit('GamePause');
-                  client.emit('GamePause');
-                  return resolve();
-                })
-                .catch((err) => {
-                  console.log(err);
-                  return reject(err);
-                });
-            }),
-          );
-        })
-        .catch((err) => {
-          console.log(err);
-          return reject();
-        });
-    });
-  }
+  // /*GamePause*/
+  // @SubscribeMessage('GamePause')
+  // GamePause(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  //   return new Promise<void>((resolve, reject) => {
+  //     console.log('GamePause: ', client.userID);
+  //     this.gameService
+  //       .FindPLayerLobby(client.userID)
+  //       .then((lobby) => {
+  //         const callback = () => {
+  //           console.log('call back');
+  //           client.emit('Surrender', { ...lobby, game: null });
+  //           this.gameService.EndGame(client.userID);
+  //           this.scheduleRegistry.deleteTimeout(client.userID);
+  //           client.broadcast.to(lobby.id).emit('EnnemySurrender', { ...lobby, game: null });
+  //         };
+  //         return resolve(
+  //           new Promise<void>((resolve, reject) => {
+  //             this.gameService
+  //               .SetLobbyPause(client.userID, callback)
+  //               .then((lobby) => {
+  //                 client.broadcast.to(lobby.id).emit('GamePause');
+  //                 client.emit('GamePause');
+  //                 return resolve();
+  //               })
+  //               .catch((err) => {
+  //                 console.log(err);
+  //                 return reject(err);
+  //               });
+  //           }),
+  //         );
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //         return reject();
+  //       });
+  //   });
+  // }
 
-  /*GameResume*/
-  @SubscribeMessage('GameResume')
-  GameResume(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      console.log('GameResume: ', client.userID);
-      this.gameService
-        .SetLobbyResume(client.userID)
-        .then((lobby) => {
-          if (
-            !lobby.game.player.find((player) => {
-              if (player.pauseAt) return true;
-              return false;
-            })
-          ) {
-            client.broadcast.to(lobby.id).emit('GameResume');
-            client.emit('GameResume');
-          }
-          return resolve();
-        })
-        .catch((err) => {
-          console.log(err);
-          return reject();
-        });
-    });
-  }
+  // /*GameResume*/
+  // @SubscribeMessage('GameResume')
+  // GameResume(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  //   return new Promise<void>((resolve, reject) => {
+  //     console.log('GameResume: ', client.userID);
+  //     this.gameService
+  //       .SetLobbyResume(client.userID)
+  //       .then((lobby) => {
+  //         if (
+  //           !lobby.game.player.find((player) => {
+  //             if (player.pauseAt) return true;
+  //             return false;
+  //           })
+  //         ) {
+  //           client.broadcast.to(lobby.id).emit('GameResume');
+  //           client.emit('GameResume');
+  //         }
+  //         return resolve();
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //         return reject();
+  //       });
+  //   });
+  // }
 }

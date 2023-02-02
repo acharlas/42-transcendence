@@ -4,14 +4,19 @@ import { HiTrendingUp } from "react-icons/hi";
 
 import "./game-recap.css";
 import Avatar from "../avatar/avatar_component";
+import { useContext } from "react";
+import { useGame } from "../context/game.context";
 
 export default function GameRecap() {
-  const wName: string = "wowsuchwinner";
-  const lName: string = "bAdPlaYer";
-  const wId: string = "c2f4b2d3-02e4-496d-aa3e-f68aa85a2300";
-  const lId: string = "9f0aba3a-ebe4-40ff-9417-1e2a5b92319e";
-  const wScore: number = 10;
-  const lScore: number = 0;
+  const { lobby } = useGame();
+
+  const wName: string = lobby.game.score[0] > lobby.game.score[1] ? lobby.playerOne.nickname : lobby.playerTwo.nickname;
+  const lName: string = lobby.game.score[0] < lobby.game.score[1] ? lobby.playerOne.nickname : lobby.playerTwo.nickname;
+  const wId: string = lobby.game.score[0] > lobby.game.score[1] ? lobby.playerOne.id : lobby.playerTwo.id;
+  const lId: string = lobby.game.score[0] < lobby.game.score[1] ? lobby.playerOne.id : lobby.playerTwo.id;
+  const wScore: number = lobby.game.score[0] > lobby.game.score[1] ? lobby.game.score[0] : lobby.game.score[1];
+  const lScore: number = lobby.game.score[0] > lobby.game.score[1] ? lobby.game.score[0] : lobby.game.score[1];
+
   return (
     <>
       <div className="panel__row">

@@ -1,9 +1,4 @@
-import {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useRef,
-} from "react";
+import { FunctionComponent, useContext, useEffect, useRef } from "react";
 import Phaser from "phaser";
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
@@ -84,7 +79,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     function create() {
       text = this.add.text(32, 32);
       setGameBounds({
-        x: this.physics.world.bounds.width - (ball.width / 2 + 1),
+        x: this.physics.world.bounds.width,
         y: this.physics.world.bounds.height,
       });
 
@@ -138,18 +133,18 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
       if (keys.up.isDown || keys.down.isDown) {
         if (keys.up.isDown) {
-          if (lobby.playerTwo === window.sessionStorage.getItem("userid")) player1.setVelocityY(-350);
-          if (lobby.playerOne === window.sessionStorage.getItem("userid")) player2.setVelocityY(-350);
+          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(-350);
+          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(-350);
         } else if (keys.down.isDown) {
-          if (lobby.playerTwo === window.sessionStorage.getItem("userid")) player1.setVelocityY(350);
-          if (lobby.playerOne === window.sessionStorage.getItem("userid")) player2.setVelocityY(350);
+          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(350);
+          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(350);
         }
 
-        if (lobby.playerTwo === window.sessionStorage.getItem("userid"))
+        if (lobby.playerTwo.id === window.sessionStorage.getItem("userid"))
           socket.emit("UpdatePlayerPosition", {
             pos: (player1.body.position.y + player1.body.height / 2) / this.physics.world.bounds.height,
           });
-        if (lobby.playerOne === window.sessionStorage.getItem("userid"))
+        if (lobby.playerOne.id === window.sessionStorage.getItem("userid"))
           socket.emit("UpdatePlayerPosition", {
             pos: (player2.body.position.y + player2.body.height / 2) / this.physics.world.bounds.height,
           });
@@ -174,7 +169,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
     if (game) {
       let position =
-        lobby.playerOne === window.sessionStorage.getItem("userid")
+        lobby.playerOne.id === window.sessionStorage.getItem("userid")
           ? (player2.body.position.x + player2.body.width / 2) / gameBounds.x
           : (player1.body.position.x + player1.body.width / 2) / gameBounds.x;
       socket.emit("PlayerReady", {

@@ -1,7 +1,8 @@
 import { Lobby, Position } from './types_game';
 
 export const PlayerIsInLobby = (userId: string, lobby: Lobby) => {
-  if (lobby && (lobby.playerOne === userId || lobby.playerTwo === userId)) return true;
+  if (lobby && lobby.playerOne && lobby.playerTwo && (lobby.playerOne.id === userId || lobby.playerTwo.id === userId))
+    return true;
   return false;
 };
 
@@ -26,7 +27,7 @@ export const PlayerIsReaddy = (lobby: Lobby) => {
 };
 
 export const WitchPlayer = (userId: string, lobby: Lobby): number => {
-  if (lobby.playerOne === userId) return 0;
+  if (lobby.playerOne.id === userId) return 0;
   else return 1;
 };
 
@@ -88,10 +89,10 @@ export const NormPos = (pos: Position): Position => {
 
 export const BallScore = (lobby: Lobby, ballPos: Position) => {
   const ballRadius = lobby.game.ballRadius;
-  if(ballPos.x - ballRadius / 2 <= 0) {
+  if (ballPos.x - ballRadius / 2 <= 0) {
     lobby.game.score[0]++;
     return true;
-  } 
+  }
   if (ballPos.x + ballRadius / 2 >= 1) {
     lobby.game.score[1]++;
     return true;

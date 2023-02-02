@@ -37,7 +37,7 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
     };
     const newHistory = {
       mode: GameMode.classic,
-      score: [playerOne, playerTwo],
+      score: [playerOne.id, playerTwo.id],
     };
     socket.emit("NewHistory", { newHistory: newHistory });
   };
@@ -60,8 +60,8 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
       <div className="profile__panel__bottom">
         {lobby ? (
           <>
-            Player 1: {lobby.playerOne}
-            Player 2: {lobby.playerTwo}
+            {lobby.playerOne && <>Player 1: {lobby.playerOne.nickname}</>}
+            {lobby.playerTwo && <>Player 2: {lobby.playerTwo.nickname}</>}
             <button onClick={handleLeavingLobbyClick}>Leave lobby</button>
             <button onClick={handleStartGameClick}>Start Game</button>
             <table>

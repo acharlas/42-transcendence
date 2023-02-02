@@ -66,8 +66,8 @@ function GameProvider(props: any) {
 
   const Removeplayer = (UserId: string) => {
     if (lobby) {
-      if (lobby.playerOne === UserId) setLobby({ ...lobby, playerTwo: null });
-      else if (lobby.playerTwo === UserId)
+      if (lobby.playerOne.id === UserId) setLobby({ ...lobby, playerTwo: null });
+      else if (lobby.playerTwo.id === UserId)
         setLobby({
           ...lobby,
           playerOne: lobby.playerTwo,

@@ -1,7 +1,7 @@
 export interface Lobby {
   id: string;
-  playerOne: string;
-  playerTwo: string;
+  playerOne: { id: string; mmr: number; nickname: string };
+  playerTwo: { id: string; mmr: number; nickname: string };
   game: Game;
   invited: string[];
   viewer: string[];
