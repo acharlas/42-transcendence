@@ -101,9 +101,9 @@ export const ballHitWall = (lobby: Lobby, ballPos: Position): boolean => {
 };
 
 export const RandSpeed = (speed: number): Position => {
-  const speedY = Math.random() * ((2 * speed) / 3 - -speed / 3) + -speed / 3;
+  const speedY = Math.random() * ((2 * speed) / 3 - speed / 3) + speed / 3;
   const speedX = Math.random() > 0.5 ? speed - speedY : (speed - speedY) * -1;
-  return { x: speedX, y: speedY };
+  return { x: speedX, y: Math.random() > 0.5 ? speedY : speedY * -1 };
 };
 
 export const RelativeIntersectionY = (lobby: Lobby, paddleY: number): number => {
