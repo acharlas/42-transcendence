@@ -1,7 +1,10 @@
 import { Lobby, Position } from './types_game';
 
 export const PlayerIsInLobby = (userId: string, lobby: Lobby) => {
-  if (lobby && lobby.playerOne && lobby.playerTwo && (lobby.playerOne.id === userId || lobby.playerTwo.id === userId))
+  if (
+    lobby &&
+    ((lobby.playerOne && lobby.playerOne.id === userId) || (lobby.playerTwo && lobby.playerTwo.id === userId))
+  )
     return true;
   return false;
 };

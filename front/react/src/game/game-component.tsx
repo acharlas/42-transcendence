@@ -58,9 +58,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     let player2: Phaser.Physics.Arcade.Sprite;
     let keys: Phaser.Input.Keyboard.KeyboardPlugin;
     let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-    let gameStarted: boolean;
     var text;
-    let timer: Phaser.Time.TimerEvent;
 
     function onEvent() {
       console.log("event lunch");

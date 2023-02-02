@@ -4,6 +4,7 @@ import GameProvider from "../context/game.context";
 import LobbyComponent from "./lobby-component";
 import GameComponent from "./game-component";
 import SocketGameContextComponent from "./socket-game-component";
+import GameRecap from "./game-recap-component";
 
 export interface IGameIndexProps {}
 const GameIndex: FunctionComponent<IGameIndexProps> = (props) => {
@@ -13,6 +14,7 @@ const GameIndex: FunctionComponent<IGameIndexProps> = (props) => {
         <Routes>
           <Route path="/" element={<LobbyComponent />} />
           <Route path="/:id" element={<GameComponent />} />
+          <Route path="/:id/Recap" element={<GameRecap />} />
         </Routes>
       </SocketGameContextComponent>
     </GameProvider>

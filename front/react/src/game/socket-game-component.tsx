@@ -41,6 +41,7 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
         console.log("EndGame: ");
 
         //switch scene game un truc dans le genre
+        navigate("/app/game/" + lobby.id + "/Recap");
         setLobby(lobby);
       });
       /** Game Pause */

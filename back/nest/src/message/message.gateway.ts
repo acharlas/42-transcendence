@@ -664,6 +664,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       this.gameService
         .JoinLobby(client.userID, lobby.id)
         .then((lobby) => {
+          console.log('has join');
           const gameSocket = this.gameGateWay.SocketList.find((socket) => {
             if (socket.userId === client.userID) return true;
             return false;
@@ -679,7 +680,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           if (gameHostSocket) gameHostSocket.socket.emit('JoinLobby', lobby);
         })
         .catch((err) => {
-          console.log(err);
+          console.log('join err:', err);
           return reject();
         });
       return resolve();
@@ -695,7 +696,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       const lobby = this.gameService.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);
       });
-      if (!lobby) return reject("No lobby to spectate");
+      if (!lobby) return reject('No lobby to spectate');
       this.gameService
         .JoinViewer(client.userID, lobby.id)
         .then((lobby) => {

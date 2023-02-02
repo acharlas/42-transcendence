@@ -168,8 +168,7 @@ export class GameService {
   async JoinLobby(userId: string, lobbyId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const actLobby = this.LobbyList.find((lobby) => {
-        if (lobby.playerOne.id === userId || lobby.playerTwo.id === userId) return true;
-        return false;
+        return PlayerIsInLobby(userId, lobby);
       });
       if (actLobby) {
         return reject(new ForbiddenException('already in a room'));
