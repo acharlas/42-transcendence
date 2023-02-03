@@ -101,7 +101,10 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         .setImmovable(true);
 
       //input
+<<<<<<< HEAD
       cursors = this.input.keyboard.createCursorKeys();
+=======
+>>>>>>> 734a6e3c61f8cfdb62eb74c09d17e5077492a991
 
       //react vars
       setCursors(cursors);
