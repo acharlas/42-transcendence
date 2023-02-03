@@ -39,8 +39,9 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       /** Game Pause */
       socket.on("EndGame", (lobby: Lobby) => {
         console.log("EndGame: ");
-
+        game.destroy(true) // destroy the game at the end to prevent leaks
         //switch scene game un truc dans le genre
+        
         navigate("/app/game/" + lobby.id + "/Recap");
         setLobby(lobby);
       });
