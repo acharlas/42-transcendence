@@ -1,6 +1,8 @@
 import { GoThumbsdown } from "react-icons/go";
 import { FaSadCry, FaTrophy } from "react-icons/fa";
 import { HiTrendingUp } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 import "./game-recap.css";
 import Avatar from "../avatar/avatar_component";
@@ -8,6 +10,14 @@ import { useGame } from "../context/game.context";
 
 export default function GameRecap() {
   const { lobby } = useGame();
+  let navigate = useNavigate();
+  useEffect(() => {
+    if(!lobby) {
+      navigate("/app");
+      return;
+    }
+  }, []);
+  if (!lobby) return;
 
   const wName: string = lobby.game.score[0] < lobby.game.score[1] ? lobby.playerOne.nickname : lobby.playerTwo.nickname;
   const lName: string = lobby.game.score[0] > lobby.game.score[1] ? lobby.playerOne.nickname : lobby.playerTwo.nickname;
