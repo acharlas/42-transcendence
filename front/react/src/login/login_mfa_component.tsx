@@ -44,10 +44,10 @@ export default function MfaSignin() {
       goHome();
     } catch (e) {
       console.log(e);
-      if (e.response?.status === 401) {
+      if (e?.response?.status === 401) {
         setErrorMessage('Session expired, please sign in again.');
       } else {
-        setErrorMessage(e.response?.data?.message);
+        setErrorMessage(e?.response?.data?.message);
       }
     }
   };

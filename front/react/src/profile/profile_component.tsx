@@ -18,7 +18,7 @@ interface User {
 export default function Profile() {
   // Navigation
   const navigate = useNavigate();
-  const goHome = () => {
+  const goRoot = () => {
     navigate("/app");
   };
 
@@ -37,14 +37,15 @@ export default function Profile() {
     const fetchUserData = async () => {
       await getUser({ id })
         .then((res) => {
+          if (!res?.data) {
+            throw new Error("No user data");
+          }
           setUserData(res.data);
         })
         .catch((e) => {
-          if (e.response.data.message === "no such user") {
-            console.log("no such user");
-            goHome();
-            return;
-          }
+          console.log(e);
+          goRoot();
+          return;
         });
     };
 
@@ -57,11 +58,12 @@ export default function Profile() {
       await getHistory()
         .then((res) => {
           console.log("history: ", res);
-          const hist = res.sort(comp);
+          const hist = res?.data?.sort(comp);
           setHistory(hist);
         })
         .catch((e) => {
           console.log(e);
+          goRoot();
           return;
         });
     };

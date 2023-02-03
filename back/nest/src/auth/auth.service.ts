@@ -53,7 +53,7 @@ export class AuthService {
     //TODO: 2 secrets
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(payload, {
-        expiresIn: '1h',
+        expiresIn: '2h',
         secret: this.config.get('JWT_SECRET'),
       }),
       this.jwt.signAsync(payload, {
@@ -247,12 +247,16 @@ export class AuthService {
     });
     if (!user) throw new ForbiddenException('no user');
     if (!user.refreshToken) throw new ForbiddenException('no refresher stored');
-    const refreshTokenMatches = await argon.verify(
-      user.refreshToken,
-      refreshToken,
-    );
-    if (!refreshTokenMatches)
-      throw new ForbiddenException('refresh token does not match');
+    try {
+      const refreshTokenMatches = await argon.verify(
+        user.refreshToken,
+        refreshToken,
+        );
+        if (!refreshTokenMatches)
+          throw new ForbiddenException('refresh token does not match');
+    } catch (e) {
+      throw new ForbiddenException("refresh token didn't verify");
+    }
     const tokens = await this.signTokens(user.id, false); //refresh authguard already denies if 2fa missing
     await this.updateRefreshToken(user.id, tokens.refresh_token);
     return tokens;

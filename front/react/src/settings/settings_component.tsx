@@ -34,18 +34,21 @@ export default function Profile() {
   const [nicknameError, setNicknameError] = useState("");
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchSettingsData = async () => {
       await getUsersMe()
         .then((res) => {
-          setNickname(res.data.nickname);
-          setMfaStatus(res.data.mfaEnabled ? MfaStatus.ENABLED : MfaStatus.DISABLED);
+          if (!res?.data) {
+            throw new Error("no data");
+          }
+          setNickname(res.data?.nickname);
+          setMfaStatus(res.data?.mfaEnabled ? MfaStatus.ENABLED : MfaStatus.DISABLED);
         })
         .catch((e) => {
-          console.log("Settings: Error in fetchUserData", e);
+          console.log("Settings: Error in fetchSettingsData", e);
         });
     };
 
-    fetchUserData();
+    fetchSettingsData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

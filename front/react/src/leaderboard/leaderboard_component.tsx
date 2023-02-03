@@ -12,6 +12,9 @@ export default function Userlist() {
     const fetchUserlist = async () => {
       await getUsers()
         .then((res) => {
+          if (!res?.data) {
+            throw new Error("no data");
+          }
           setUserlist(res.data);
         })
         .catch((e) => {
