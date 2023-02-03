@@ -298,6 +298,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                       if (lobby.game.score[0] < 2 || lobby.game.score[1] < 2) {
                         client.broadcast.to(lobby.id).emit('NewBallPos', lobby.game.ball.position);
                         client.emit('NewBallPos', lobby.game.ball.position);
+                        this.scheduleRegistry.deleteInterval(lobby.id);
                       } else {
                         client.broadcast.to(lobby.id).emit('EndGame', lobby);
                         client.emit('EndGame', lobby);
