@@ -62,11 +62,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     let textScorePlayer1;
     let textScorePlayer2;
 
-    function onEvent() {
-      console.log("event lunch");
-      if (game) game.scene.resume("default");
-    }
-
     function init() {
       if (socket === undefined) game.destroy(true);
     }
