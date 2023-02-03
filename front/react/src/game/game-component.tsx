@@ -56,7 +56,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     let ball: Phaser.Physics.Arcade.Sprite;
     let player1: Phaser.Physics.Arcade.Sprite;
     let player2: Phaser.Physics.Arcade.Sprite;
-    let keys: Phaser.Input.Keyboard.KeyboardPlugin;
     let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     var text;
 
@@ -98,11 +97,9 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       player2.setImmovable(true);
 
       //input
-      keys = this.input.keyboard.addKeys("up,down", false);
 
       //react vars
       setCursors(cursors);
-      setKeys(keys);
       setPlayer1(player1);
       setPlayer2(player2);
       setBall(ball);
@@ -129,11 +126,11 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       player2.setVelocityY(0);
       player1.setVelocityY(0);
 
-      if (keys.up.isDown || keys.down.isDown) {
-        if (keys.up.isDown) {
+      if (cursors.up.isDown || cursors.down.isDown) {
+        if (cursors.up.isDown) {
           if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(-350);
           if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(-350);
-        } else if (keys.down.isDown) {
+        } else if (cursors.down.isDown) {
           if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(350);
           if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(350);
         }
@@ -149,7 +146,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       }
     }
 
-    return function cleanup() {};
+    return function cleanup() {
+    };
   }, [socket]);
 
   const click = () => {
