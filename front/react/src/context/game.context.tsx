@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useRef } from "react";
 import { Lobby, Position } from "../game/game-type";
 
 export interface IoGameContextState {
@@ -23,10 +23,8 @@ export interface IoGameContextState {
   setGameBounds: Function;
   timer: Phaser.Time.TimerEvent;
   setTimer: Function;
-  player1Score:number;
-  player2Score:number;
-  setPlayer1Score: Function
-  setPlayer2Score: Function
+  player1Score:any;
+  player2Score:any;
 }
 
 const GameContext = createContext<IoGameContextState>({
@@ -53,15 +51,13 @@ const GameContext = createContext<IoGameContextState>({
   setTimer: () => {},
   player1Score:undefined,
   player2Score:undefined,
-  setPlayer1Score: () => {},
-  setPlayer2Score: ()=> {},
 });
 
 function GameProvider(props: any) {
   const [inQueue, setInQueue] = useState<boolean>(false);
   const [lobby, setLobby] = useState<Lobby>(null);
-  const [player1Score, setPlayer1Score] = useState<number>(0)
-  const [player2Score, setPlayer2Score] = useState<number>(0)
+  const player1Score = useRef<number>(0);
+  const player2Score = useRef<number>(0);
   const [ball, setBall] = useState<Phaser.Physics.Arcade.Sprite>();
   const [player1, setPlayer1] = useState<Phaser.Physics.Arcade.Sprite>();
   const [player2, setPlayer2] = useState<Phaser.Physics.Arcade.Sprite>();
@@ -111,8 +107,6 @@ function GameProvider(props: any) {
         setTimer,
         player1Score,
         player2Score,
-        setPlayer1Score,
-        setPlayer2Score,
       }}
       {...props}
     />

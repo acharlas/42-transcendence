@@ -10,7 +10,7 @@ export interface ISocketGameContextComponentProps extends PropsWithChildren {}
 const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComponentProps> = (props) => {
   const { children } = props;
   const [SocketState, SocketDispatch] = useReducer(SocketReducer, defaultSocketContextState);
-  const { timer, setInQueue, setLobby, lobby, inQueue, Removeplayer, player1, player2, gameBounds, ball, game, setPlayer1Score ,setPlayer2Score, player1Score, player2Score } =
+  const { timer, setInQueue, setLobby, lobby, inQueue, Removeplayer, player1, player2, gameBounds, ball, game, player1Score, player2Score } =
     useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
@@ -140,11 +140,9 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
 
       /* update score */
       socket.on("updateScore", (newScore: number[]) => {
-        
-        console.log(newScore);
-
-        setPlayer1Score(newScore[0]);
-        setPlayer2Score(newScore[1]);
+        // console.log("rec updateScore", newScore);
+        player1Score.current = newScore[1];
+        player2Score.current = newScore[0];
       })
 
       /**** Connection-related listeners ****/
@@ -176,7 +174,7 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       });
     };
     StartListener();
-  }, [socket, timer, lobby, setLobby, setInQueue, inQueue, ball, player1, player2, game, setPlayer1Score, setPlayer2Score, player1Score, player2Score]);
+  }, [socket, timer, lobby, setLobby, setInQueue, inQueue, ball, player1, player2, game, player1Score, player2Score]);
 
   return <SocketContextProvider value={{ SocketState, SocketDispatch }}>{children}</SocketContextProvider>;
 };

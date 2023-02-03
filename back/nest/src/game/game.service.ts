@@ -6,14 +6,12 @@ import {
   PlayerIsInLobby,
   BallOnPaddle,
   BallScore,
-  bounceAngle,
   WitchPlayer,
   ballHitWall,
   RandSpeed,
   NormPos,
-  NoOOB,
 } from './game.utils';
-import { Game, Lobby, Player, playerHeight, Position } from './types_game';
+import { Lobby, Player, Position } from './types_game';
 
 @Injectable()
 export class GameService {

@@ -26,8 +26,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     ball,
     player1Score,
     player2Score,
-    setPlayer1Score,
-    setPlayer2Score
   } = useGame();
   const gameRef = useRef<HTMLDivElement>(null);
 
@@ -61,6 +59,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     let player1: Phaser.Physics.Arcade.Sprite;
     let player2: Phaser.Physics.Arcade.Sprite;
     let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+    let textScorePlayer1;
+    let textScorePlayer2;
 
     function onEvent() {
       console.log("event lunch");
@@ -99,13 +99,23 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       //input
       cursors = this.input.keyboard.createCursorKeys();
 
+      //score
+      textScorePlayer1 = this.add.text(CanvasWidth * 1 / 4 ,CanvasHeight / 5, "0", {
+        fontSize: "100px"
+      }
+      ).setOrigin(0.5,0.5)
+
+      textScorePlayer2 = this.add.text(CanvasWidth * 3 / 4 ,CanvasHeight / 5, "0", {
+        fontSize: "100px"
+      }
+      ).setOrigin(0.5,0.5)
+
       //react vars
       setCursors(cursors);
       setPlayer1(player1);
       setPlayer2(player2);
       setBall(ball);
       setGame(game);
-
 
       //dbg
       console.log(
@@ -118,19 +128,18 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       );
       console.log("paddle width: ", player1.body.width);
       console.log("paddle height: ", player2.body.height);
-
-      socket.on("updateScore", data => {
-        console.log("DATA")
-      }) 
     }
 
     function update() {
-      console.log(player1Score, player2Score);
-
       if (!lobby) {
         navigate("/app/game");
         return;
       }
+
+      //TODO : not do that every frame?
+      textScorePlayer1.setText(player1Score.current);
+      textScorePlayer2.setText(player2Score.current);
+      
       player2.setVelocityY(0);
       player1.setVelocityY(0);
 
