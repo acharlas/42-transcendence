@@ -19,12 +19,7 @@ export interface fortyTwoLoginDto {
 export const getMe = async (): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     axiosWithAuth
-      .get('/users/me', {
-        headers: {
-          Authorization:
-            'Bearer ' + window.sessionStorage.getItem('AccessToken'),
-        },
-      })
+      .get('/users/me')
       .then((ret) => {
         sessionStorage.setItem('username', ret.data.username);
         sessionStorage.setItem('nickname', ret.data.nickname);
