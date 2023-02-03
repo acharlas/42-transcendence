@@ -3,6 +3,7 @@ import Phaser from "phaser";
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
 import { useNavigate } from "react-router-dom";
+import { CanvasHeight, CanvasWidth } from "./consts/const";
 
 export interface IGameComponentProps {}
 
@@ -17,7 +18,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     setBall,
     setPlayer1,
     setPlayer2,
-    setKeys,
     setCursors,
     setGame,
     game,
@@ -31,8 +31,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     const game = new Phaser.Game({
       type: Phaser.AUTO,
       scale: {
-        width: 800,
-        height: 600,
+        width: CanvasWidth,
+        height: CanvasHeight,
         mode: Phaser.Scale.FIT,
         parent: gameRef.current,
         autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -57,7 +57,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     let player1: Phaser.Physics.Arcade.Sprite;
     let player2: Phaser.Physics.Arcade.Sprite;
     let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-    var text;
 
     function onEvent() {
       console.log("event lunch");
@@ -74,29 +73,35 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     function create() {
-      text = this.add.text(32, 32);
       setGameBounds({
         x: this.physics.world.bounds.width,
         y: this.physics.world.bounds.height,
       });
 
       //ball
-      ball = this.physics.add.sprite(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, "ball");
+      ball = this.physics.add.sprite(
+        this.physics.world.bounds.width / 2, 
+        this.physics.world.bounds.height / 2, 
+        "ball"
+      );
 
       //players
       player1 = this.physics.add.sprite(
         this.physics.world.bounds.width - (ball.width / 2 + 1),
         this.physics.world.bounds.height / 2,
         "paddle"
-      );
-      player1.setCollideWorldBounds(true);
-      player1.setImmovable(true);
-      player2 = this.physics.add.sprite(ball.width / 2 + 1, this.physics.world.bounds.height / 2, "paddle");
-      player2.setCollideWorldBounds(true);
-      cursors = this.input.keyboard.createCursorKeys();
-      player2.setImmovable(true);
+      ) .setCollideWorldBounds(true)
+        .setImmovable(true);
+
+      player2 = this.physics.add.sprite(
+        ball.width / 2 + 1, 
+        this.physics.world.bounds.height / 2, 
+        "paddle"
+      ) .setCollideWorldBounds(true)
+        .setImmovable(true);
 
       //input
+      cursors = this.input.keyboard.createCursorKeys();
 
       //react vars
       setCursors(cursors);
