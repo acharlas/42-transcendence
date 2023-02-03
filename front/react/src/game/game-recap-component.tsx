@@ -4,18 +4,17 @@ import { HiTrendingUp } from "react-icons/hi";
 
 import "./game-recap.css";
 import Avatar from "../avatar/avatar_component";
-import { useContext } from "react";
 import { useGame } from "../context/game.context";
 
 export default function GameRecap() {
   const { lobby } = useGame();
 
-  const wName: string = lobby.game.score[0] > lobby.game.score[1] ? lobby.playerOne.nickname : lobby.playerTwo.nickname;
-  const lName: string = lobby.game.score[0] < lobby.game.score[1] ? lobby.playerOne.nickname : lobby.playerTwo.nickname;
-  const wId: string = lobby.game.score[0] > lobby.game.score[1] ? lobby.playerOne.id : lobby.playerTwo.id;
-  const lId: string = lobby.game.score[0] < lobby.game.score[1] ? lobby.playerOne.id : lobby.playerTwo.id;
-  const wScore: number = lobby.game.score[0] > lobby.game.score[1] ? lobby.game.score[0] : lobby.game.score[1];
-  const lScore: number = lobby.game.score[0] > lobby.game.score[1] ? lobby.game.score[0] : lobby.game.score[1];
+  const wName: string = lobby.game.score[0] < lobby.game.score[1] ? lobby.playerOne.nickname : lobby.playerTwo.nickname;
+  const lName: string = lobby.game.score[0] > lobby.game.score[1] ? lobby.playerOne.nickname : lobby.playerTwo.nickname;
+  const wId: string = lobby.game.score[0] < lobby.game.score[1] ? lobby.playerOne.id : lobby.playerTwo.id;
+  const lId: string = lobby.game.score[0] > lobby.game.score[1] ? lobby.playerOne.id : lobby.playerTwo.id;
+  const wScore: number = Math.max(lobby.game.score[0], lobby.game.score[1]);
+  const lScore: number = Math.min(lobby.game.score[0], lobby.game.score[1]);
 
   return (
     <>
