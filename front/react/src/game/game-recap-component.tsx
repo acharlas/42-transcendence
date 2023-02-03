@@ -12,10 +12,11 @@ export default function GameRecap() {
   const { lobby } = useGame();
   let navigate = useNavigate();
   useEffect(() => {
-    if(!lobby) {
+    if (!lobby) {
       navigate("/app");
       return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   if (!lobby) return;
 
