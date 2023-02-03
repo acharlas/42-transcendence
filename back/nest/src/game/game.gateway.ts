@@ -108,7 +108,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       });
   }
 
-  @Cron('*/10 * * * * *')
+  @Cron('*/1 * * * * *')
   sync() {
     // console.log('cron');
     this.gameService
@@ -303,6 +303,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         client.emit('EndGame', lobby);
                         this.scheduleRegistry.deleteInterval(lobby.id);
                       }
+                      client.broadcast.to(lobby.id).emit('updateScore', lobby.game.score);
+                      client.emit('updateScore', lobby.game.score);
                     })
                     .catch((err) => {
                       console.log(err);

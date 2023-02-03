@@ -10,7 +10,7 @@ export interface ISocketGameContextComponentProps extends PropsWithChildren {}
 const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComponentProps> = (props) => {
   const { children } = props;
   const [SocketState, SocketDispatch] = useReducer(SocketReducer, defaultSocketContextState);
-  const { timer, setInQueue, setLobby, lobby, inQueue, Removeplayer, player1, player2, gameBounds, ball, game } =
+  const { timer, setInQueue, setLobby, lobby, inQueue, Removeplayer, player1, player2, gameBounds, ball, game, setPlayer1Score ,setPlayer2Score, player1Score, player2Score } =
     useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
@@ -137,6 +137,18 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
         console.log("User connected, new user received", uid, "last uid");
         SocketDispatch({ type: "update_uid", payload: uid });
       });
+
+      /* update score */
+//       socket.on("updateScore", (newScore: number[]) => {
+        
+// console.log(newScore);
+// console.log(newScore[0]);
+// console.log(newScore[1]);
+
+//         setPlayer1Score(newScore[0]);
+//         setPlayer2Score(newScore[1]);
+//         // console.log("Score update",player1Score, player2Score)
+//       })
 
       /**** Connection-related listeners ****/
       /** Disconnect */

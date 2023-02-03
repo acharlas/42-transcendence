@@ -24,6 +24,10 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     setGameBounds,
     lobby,
     ball,
+    player1Score,
+    player2Score,
+    setPlayer1Score,
+    setPlayer2Score
   } = useGame();
   const gameRef = useRef<HTMLDivElement>(null);
 
@@ -79,32 +83,21 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       });
 
       //ball
-      ball = this.physics.add.sprite(
-        this.physics.world.bounds.width / 2, 
-        this.physics.world.bounds.height / 2, 
-        "ball"
-      );
+      ball = this.physics.add.sprite(this.physics.world.bounds.width / 2, this.physics.world.bounds.height / 2, "ball");
 
       //players
-      player1 = this.physics.add.sprite(
-        this.physics.world.bounds.width - (ball.width / 2 + 1),
-        this.physics.world.bounds.height / 2,
-        "paddle"
-      ) .setCollideWorldBounds(true)
+      player1 = this.physics.add
+        .sprite(this.physics.world.bounds.width - (ball.width / 2 + 1), this.physics.world.bounds.height / 2, "paddle")
+        .setCollideWorldBounds(true)
         .setImmovable(true);
 
-      player2 = this.physics.add.sprite(
-        ball.width / 2 + 1, 
-        this.physics.world.bounds.height / 2, 
-        "paddle"
-      ) .setCollideWorldBounds(true)
+      player2 = this.physics.add
+        .sprite(ball.width / 2 + 1, this.physics.world.bounds.height / 2, "paddle")
+        .setCollideWorldBounds(true)
         .setImmovable(true);
 
       //input
-<<<<<<< HEAD
       cursors = this.input.keyboard.createCursorKeys();
-=======
->>>>>>> 734a6e3c61f8cfdb62eb74c09d17e5077492a991
 
       //react vars
       setCursors(cursors);
@@ -112,6 +105,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       setPlayer2(player2);
       setBall(ball);
       setGame(game);
+
 
       //dbg
       console.log(
@@ -124,9 +118,15 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       );
       console.log("paddle width: ", player1.body.width);
       console.log("paddle height: ", player2.body.height);
+
+      socket.on("updateScore", data => {
+        console.log("DATA")
+      }) 
     }
 
     function update() {
+      console.log(player1Score, player2Score);
+
       if (!lobby) {
         navigate("/app/game");
         return;
@@ -154,9 +154,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       }
     }
 
-    return function cleanup() {
-    };
-  }, [socket]);
+    return function cleanup() {};
+  }, [socket, player1Score, player2Score]);
 
   const click = () => {
     setGame(game);
