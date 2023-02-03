@@ -34,8 +34,6 @@ axiosWithAuth.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const originalConfig = error.config;
-
     if (error?.response?.status === 401) {
       //we redirect to 2FA challenge if needed
       if (error?.response?.data?.message === '2FA required') {
@@ -45,9 +43,18 @@ axiosWithAuth.interceptors.response.use(
 
       //we request a refresh if needed
       else {
-        console.log('Trying to refresh token in case auth expired.');
-        await refreshTokens();
-        console.log('Auth expired: refresh token ok');
+        console.log('Auth expired: trying to refresh access token');
+        try {
+          await refreshTokens();
+        } catch (e) {
+          console.log('Auth expired: refresh FAILED: redirecting to home.');
+          window.location.href = '/';
+          return;
+        }
+        console.log('Auth expired: refresh SUCCESS');
+
+        //retry but only once to avoid inf loop
+        var originalConfig = error.config;
         originalConfig._retry = true;
         return axiosWithAuth(originalConfig);
       }
