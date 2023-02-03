@@ -139,16 +139,13 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       });
 
       /* update score */
-//       socket.on("updateScore", (newScore: number[]) => {
+      socket.on("updateScore", (newScore: number[]) => {
         
-// console.log(newScore);
-// console.log(newScore[0]);
-// console.log(newScore[1]);
+        console.log(newScore);
 
-//         setPlayer1Score(newScore[0]);
-//         setPlayer2Score(newScore[1]);
-//         // console.log("Score update",player1Score, player2Score)
-//       })
+        setPlayer1Score(newScore[0]);
+        setPlayer2Score(newScore[1]);
+      })
 
       /**** Connection-related listeners ****/
       /** Disconnect */
@@ -179,7 +176,7 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       });
     };
     StartListener();
-  }, [socket, timer, lobby, setLobby, setInQueue, inQueue, ball, player1, player2, game]);
+  }, [socket, timer, lobby, setLobby, setInQueue, inQueue, ball, player1, player2, game, setPlayer1Score, setPlayer2Score, player1Score, player2Score]);
 
   return <SocketContextProvider value={{ SocketState, SocketDispatch }}>{children}</SocketContextProvider>;
 };
