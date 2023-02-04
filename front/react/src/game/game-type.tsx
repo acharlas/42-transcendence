@@ -1,7 +1,7 @@
 export interface Lobby {
   id: string;
-  playerOne: { id: string; mmr: number; nickname: string };
-  playerTwo: { id: string; mmr: number; nickname: string };
+  playerOne: { id: string; mmr: number; nickname: string; readdy: boolean };
+  playerTwo: { id: string; mmr: number; nickname: string; readdy: boolean };
   game: Game;
   invited: string[];
   viewer: string[];
@@ -11,11 +11,13 @@ export type Game = {
   start: boolean;
   player: Player[];
   score: number[];
+  mode: GameMode;
 };
 
 export enum GameMode {
   classic = "CLASSIC",
   battleRoyal = "BATTLEROYAL",
+  ranked = "RANKED",
 }
 
 export class CreateHistoryDto {
@@ -28,6 +30,16 @@ export class CreateHistoryDto {
     }
   ];
 }
+
+export type history = {
+  mode: GameMode;
+  score: {
+    id: string;
+    nickName: string;
+    score: number;
+    placement: number;
+  }[];
+};
 
 export type Player = {
   id: string;
