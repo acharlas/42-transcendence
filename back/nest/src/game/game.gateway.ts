@@ -119,6 +119,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             this.scheduleRegistry.deleteInterval(lobby.id);
             if (lobby.game.mode === GameMode.RANKED) {
               //update mmr
+              if (player1.placement === 1) {
+                this.historyService.updateRankings({winnerId: player1.id, loserId: player2.id});
+              } else {
+                this.historyService.updateRankings({winnerId: player2.id, loserId: player1.id});
+              }
               client.broadcast.to(lobby.id).emit('EndGame', {
                 history: {
                   mode: lobby.game.mode,
@@ -378,9 +383,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         client.emit('NewBallPos', lobby.game.ball.position);
                       } else {
                         this.scheduleRegistry.deleteInterval(lobby.id);
-                        if (lobby.game.mode === GameMode.RANKED) {
-                          //update mmr
-                        }
                         const player1 = {
                           id: lobby.game.player[1].id,
                           score: lobby.game.score[0],
@@ -391,6 +393,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                           score: lobby.game.score[1],
                           placement: lobby.game.score[1] > lobby.game.score[0] ? 1 : 2,
                         };
+                        if (lobby.game.mode === GameMode.RANKED) {
+                          //update mmr
+                          if (player1.placement === 1) {
+                            this.historyService.updateRankings({winnerId: player1.id, loserId: player2.id});
+                          } else {
+                            this.historyService.updateRankings({winnerId: player2.id, loserId: player1.id});
+                          }
+                        }
                         const history = {
                           mode: lobby.game.mode,
                           score: [player1, player2],
