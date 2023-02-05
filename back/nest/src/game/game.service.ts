@@ -284,7 +284,8 @@ export class GameService {
       while (n < this.Queue.length) {
         const playerOne = this.Queue[n];
         const playerTwo = this.Queue.find((playerTwo) => {
-          if (playerTwo.mmr === playerOne.mmr && playerOne.id !== playerTwo.id) return true;
+          // if (playerTwo.mmr === playerOne.mmr && playerOne.id !== playerTwo.id) return true;
+          if (playerOne.id !== playerTwo.id) return true;
           return false;
         });
         if (playerTwo) {
