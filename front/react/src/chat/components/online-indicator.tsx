@@ -7,34 +7,36 @@ const Offline = <div className="indicator offline" title="offline"></div>;
 const Online = <div className="indicator online" title="online"></div>;
 const Ingame = <div className="indicator ingame" title="ingame"></div>;
 
-const OnlineIndicatorComponent = (props) => {
-  const { onlineList } = useChat();
+const IngameOrOnlineComponent = (id: string) => {
   const [ingame, setIngame] = useState<boolean>(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getStatus().then((data) => {
+        setIngame(data);
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   //periodically check user status
   const getStatus = async () => {
     try {
-      const userIsIngame = await axios.get("http://localhost:3333/status/ingame/" + props.id);
+      const userIsIngame = await axios.get("http://localhost:3333/status/ingame/" + id);
       console.log(userIsIngame?.data);
-      setIngame(userIsIngame?.data);
+      return userIsIngame?.data;
     } catch (err) {
       console.error(err?.message);
     }
   };
 
-  const OnlineOrIngame = () => {
-    useEffect(() => {
-      const interval = setInterval(() => {
-        getStatus();
-      }, 1000);
+  return ingame ? Ingame : Online;
+};
 
-      return () => clearInterval(interval);
-    }, []);
-
-    return ingame ? Ingame : Online;
-  };
-
-  if (onlineList?.includes(props.id)) return OnlineOrIngame();
+const OnlineIndicatorComponent = (props) => {
+  const { onlineList } = useChat();
+  if (onlineList?.includes(props.id)) return IngameOrOnlineComponent(props.id);
   return Offline;
 };
 
