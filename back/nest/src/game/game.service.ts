@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { GameMode } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
-import { ballMomentumStart, BallSpeed, MaxBallXVelocity } from './const';
+import { ballAlpha, ballMomentumStart, BallSpeed, MaxBallXVelocity } from './const';
 import {
   PlayerIsInWatching,
   PlayerIsInLobby,
@@ -456,7 +456,9 @@ export class GameService {
         //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
         // }
         lobby.game.ball.vector.x = Math.min(lobby.game.ball.vector.x * lobby.game.ballMomentum, MaxBallXVelocity) * -1;
-        
+        const temp = lobby.game.ball.vector.x
+        lobby.game.ball.vector.x = Math.cos(ballAlpha) * lobby.game.ball.vector.x - Math.sin(ballAlpha) * lobby.game.ball.vector.y
+        lobby.game.ball.vector.y =Math.sin(ballAlpha) * temp + Math.cos(ballAlpha) * lobby.game.ball.vector.y
         //console.log('bounce');
         if (bounce === 1)
           lobby.game.ball.position.x =
