@@ -16,14 +16,12 @@ RUN npm config set timeout 6000000
 
 # Install dependencies only first
 COPY ./nest/package.json ./
-RUN npm install -g npm@9.2.0
 RUN npm install
 
 # Install the rest
 COPY ./nest ./
 RUN npm install
 RUN npx prisma generate
-
 RUN nest build
 
 ENTRYPOINT ["/entrypoint.sh"]
