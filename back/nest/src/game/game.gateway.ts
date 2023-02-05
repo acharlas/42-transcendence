@@ -540,6 +540,24 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   /*PlayerReady*/
   @SubscribeMessage('PlayerReady')
   PlayerReady(
+    @ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      console.log('PlayerReady');
+      this.gameService
+        .PlayerReady(client.userID)
+        .then((lobby) => {
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
+  /*UpdatePlayer*/
+  @SubscribeMessage('UpdatePlayer')
+  UpdatePlayer(
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody('paddleHeight') paddleHeight: number,
     @MessageBody('paddleWitdh') paddleWitdh: number,
@@ -549,7 +567,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     return new Promise<void>((resolve, reject) => {
       console.log('PlayerReady', position);
       this.gameService
-        .PlayerReady(client.userID, paddleHeight, paddleWitdh, ballRadius, position)
+        .UpdatePlayer(client.userID, paddleHeight, paddleWitdh, ballRadius, position)
         .then((lobby) => {
           return resolve();
         })

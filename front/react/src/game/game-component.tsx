@@ -12,9 +12,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
   if (!socket) navigate("/app/game");
   const {
-    gameBounds,
-    player1,
-    player2,
     setBall,
     setPlayer1,
     setPlayer2,
@@ -23,11 +20,12 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     game,
     setGameBounds,
     lobby,
-    ball,
     player1Score,
     player2Score,
   } = useGame();
   const gameRef = useRef<HTMLDivElement>(null);
+  const playerOneId = useRef<string>(lobby.playerOne.id);
+  const playerTwoId = useRef<string>(lobby.playerTwo.id);
 
   useEffect(() => {
     console.log("USEEFFECT game-component new Phaser.Game");
@@ -126,14 +124,20 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       );
       console.log("paddle width: ", player1.body.width);
       console.log("paddle height: ", player2.body.height);
+
+      let position =
+        playerOneId.current === window.sessionStorage.getItem("userid")
+          ? (player2.body.position.x + player2.body.width / 2) / this.physics.world.bounds.width
+          : (player1.body.position.x + player1.body.width / 2) / this.physics.world.bounds.width;
+      socket.emit("UpdatePlayer", {
+        paddleHeight: player1.body.height / this.physics.world.bounds.height,
+        paddleWitdh: player1.body.width / this.physics.world.bounds.width,
+        ballRadius: ball.body.height / this.physics.world.bounds.height,
+        position,
+      });
     }
 
     function update() {
-      if (!lobby) {
-        navigate("/app/game");
-        return;
-      }
-
       //TODO : not do that every frame?
       textScorePlayer1.setText(player1Score.current);
       textScorePlayer2.setText(player2Score.current);
@@ -143,18 +147,18 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
       if (cursors.up.isDown || cursors.down.isDown) {
         if (cursors.up.isDown) {
-          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(-350);
-          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(-350);
+          if (playerTwoId.current === window.sessionStorage.getItem("userid")) player1.setVelocityY(-350);
+          if (playerOneId.current === window.sessionStorage.getItem("userid")) player2.setVelocityY(-350);
         } else if (cursors.down.isDown) {
-          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(350);
-          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(350);
+          if (playerTwoId.current === window.sessionStorage.getItem("userid")) player1.setVelocityY(350);
+          if (playerOneId.current === window.sessionStorage.getItem("userid")) player2.setVelocityY(350);
         }
 
-        if (lobby.playerTwo.id === window.sessionStorage.getItem("userid"))
+        if (playerTwoId.current === window.sessionStorage.getItem("userid"))
           socket.emit("UpdatePlayerPosition", {
             pos: (player1.body.position.y + player1.body.height / 2) / this.physics.world.bounds.height,
           });
-        if (lobby.playerOne.id === window.sessionStorage.getItem("userid"))
+        if (playerOneId.current === window.sessionStorage.getItem("userid"))
           socket.emit("UpdatePlayerPosition", {
             pos: (player2.body.position.y + player2.body.height / 2) / this.physics.world.bounds.height,
           });
@@ -162,7 +166,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     return function cleanup() {};
-  }, [socket, player1Score, player2Score]);
+  }, [socket, player1Score, player2Score, setBall, setCursors, setGame, setGameBounds, setPlayer1, setPlayer2]);
 
   const click = () => {
     setGame(game);
@@ -174,24 +178,12 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
   useEffect(() => {
     console.log("USEEFFECT game-component game init");
-    if (!lobby) {
-      navigate("/app/game");
-      return;
-    }
+
     if (game) {
-      let position =
-        lobby.playerOne.id === window.sessionStorage.getItem("userid")
-          ? (player2.body.position.x + player2.body.width / 2) / gameBounds.x
-          : (player1.body.position.x + player1.body.width / 2) / gameBounds.x;
-      socket.emit("PlayerReady", {
-        paddleHeight: player1.body.height / gameBounds.y,
-        paddleWitdh: player1.body.width / gameBounds.x,
-        ballRadius: ball.body.height / gameBounds.y,
-        position,
-      });
+      socket.emit("PlayerReady");
       game.scene.pause("default");
     }
-  }, [game]);
+  }, [game, socket]);
 
   return (
     <>

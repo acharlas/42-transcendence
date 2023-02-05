@@ -190,7 +190,24 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       });
     };
     StartListener();
-  }, [socket, timer, lobby, setLobby, setInQueue, inQueue, ball, player1, player2, game, player1Score, player2Score]);
+  }, [
+    socket,
+    timer,
+    lobby,
+    setLobby,
+    setInQueue,
+    inQueue,
+    ball,
+    player1,
+    player2,
+    game,
+    player1Score,
+    player2Score,
+    Removeplayer,
+    gameBounds,
+    navigate,
+    setHistory,
+  ]);
 
   return <SocketContextProvider value={{ SocketState, SocketDispatch }}>{children}</SocketContextProvider>;
 };

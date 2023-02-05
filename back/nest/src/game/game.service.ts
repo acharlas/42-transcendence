@@ -394,6 +394,18 @@ export class GameService {
 
   async PlayerReady(
     userId: string,
+  ): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      const lobby = this.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userId, lobby);
+      });
+      lobby.game.player[WitchPlayer(userId, lobby)].ready = true;
+      return resolve(lobby);
+    });
+  }
+
+  async UpdatePlayer(
+    userId: string,
     paddleHeight: number,
     paddleWidth: number,
     ballRadius: number,

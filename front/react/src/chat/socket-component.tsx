@@ -337,6 +337,14 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
     setSelectUser,
     setShowRoomSetting,
     setFriendList,
+    ShowRoomSetting,
+    bloquedList,
+    inviteList,
+    selectedChatWindow,
+    setHasNewChannelMessage,
+    setHasNewChatMessage,
+    setHasNewInvite,
+    setInviteList,
   ]);
 
   return <SocketContextProvider value={{ SocketState, SocketDispatch }}>{children}</SocketContextProvider>;
