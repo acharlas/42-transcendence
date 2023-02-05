@@ -23,26 +23,12 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
     socket.emit("LeavingLobby");
   };
 
-  const handleSendHistoryClick = () => {
-    const playerOne = {
-      id: "2ce6e635-f65c-4150-ae8c-4293a4227bdb",
-      score: 3,
-      placement: 1,
-    };
-    const playerTwo = {
-      id: "afc89610-96e7-4ef5-bd9c-2dd279936c2c",
-      score: 0,
-      placement: 2,
-    };
-    const newHistory = {
-      mode: GameMode.classic,
-      score: [playerOne.id, playerTwo.id],
-    };
-    socket.emit("NewHistory", { newHistory: newHistory });
+  const handleStartGameClick = () => {
+    socket.emit("CreateGame", { mode: GameMode.classic });
   };
 
-  const handleStartGameClick = () => {
-    socket.emit("CreateGame");
+  const handleReaddyClick = () => {
+    socket.emit("PlayerLobbyReaddy");
   };
 
   return (
@@ -51,7 +37,6 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
       <div className="profile__panel__bottom">
         socket: {socket?.id}
         <br />
-        <button onClick={handleSendHistoryClick}>Send history</button>
         <button onClick={handleCreateLobbyClick}>Create lobby</button>
       </div>
 
@@ -62,7 +47,17 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
             {lobby.playerOne && <>Player 1: {lobby.playerOne.nickname}</>}
             {lobby.playerTwo && <>Player 2: {lobby.playerTwo.nickname}</>}
             <button onClick={handleLeavingLobbyClick}>Leave lobby</button>
-            <button onClick={handleStartGameClick}>Start Game</button>
+            {lobby.playerOne && lobby.playerOne.id === sessionStorage.getItem("userid") && (
+              <button disabled={lobby.playerTwo && !lobby.playerTwo.readdy} onClick={handleStartGameClick}>
+                Start Game
+              </button>
+            )}
+            {lobby.playerTwo && lobby.playerTwo.id === sessionStorage.getItem("userid") && !lobby.playerTwo.readdy && (
+              <button onClick={handleReaddyClick}>not Readdy</button>
+            )}
+            {lobby.playerTwo && lobby.playerTwo.id === sessionStorage.getItem("userid") && lobby.playerTwo.readdy && (
+              <button onClick={handleReaddyClick}>readdy</button>
+            )}
             <table>
               <tbody>
                 <tr>

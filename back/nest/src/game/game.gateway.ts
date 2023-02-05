@@ -16,6 +16,7 @@ import { socketTab, SocketWithAuth } from '../message/types_message';
 import { GameService } from './game.service';
 import { Position } from './types_game';
 import { PlayerIsInLobby, PlayerIsReaddy } from './game.utils';
+import { GameMode } from '@prisma/client';
 
 @WebSocketGateway({
   namespace: 'game',
@@ -91,15 +92,75 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       if (sock.userId === client.userID) return false;
       return true;
     });
+
     console.log(`Client disconnected of game: ${client.id} | name: ${client.username}`);
     console.log(`Number of sockets connected to game: ${socket.size}`);
     this.gameService
       .PlayerDisconnect(client.userID)
-      .then((lobbyId) => {
+      .then((lobby) => {
         console.log('lobby found');
-        if (lobbyId) {
-          client.to(lobbyId).emit('PlayerLeave', client.userID);
-          client.leave(lobbyId);
+        if (lobby) {
+          const player1 = {
+            id: lobby.game.player[1].id,
+            score: lobby.game.score[0],
+            placement: lobby.game.player[1].id === client.userID ? 2 : 1,
+          };
+          const player2 = {
+            id: lobby.game.player[0].id,
+            score: lobby.game.score[1],
+            placement: lobby.game.player[0].id === client.userID ? 2 : 1,
+          };
+          const history = {
+            mode: lobby.game.mode,
+            score: [player1, player2],
+          };
+
+          if (lobby.game && lobby.game.start) {
+            this.scheduleRegistry.deleteInterval(lobby.id);
+            if (lobby.game.mode === GameMode.RANKED) {
+              //update mmr
+              if (player1.placement === 1) {
+                this.historyService.updateRankings({winnerId: player1.id, loserId: player2.id});
+              } else {
+                this.historyService.updateRankings({winnerId: player2.id, loserId: player1.id});
+              }
+              client.broadcast.to(lobby.id).emit('EndGame', {
+                history: {
+                  mode: lobby.game.mode,
+                  score: [
+                    { ...player1, nickName: lobby.playerTwo.nickname },
+                    { ...player2, nickName: lobby.playerOne.nickname },
+                  ],
+                },
+                lobby: null,
+              });
+            } else {
+              client.broadcast.to(lobby.id).emit('EndGame', {
+                history: {
+                  mode: lobby.game.mode,
+                  score: [
+                    { ...player1, nickName: lobby.playerTwo.nickname },
+                    { ...player2, nickName: lobby.playerOne.nickname },
+                  ],
+                },
+                lobby: { ...lobby, game: null },
+              });
+            }
+          }
+
+          client.to(lobby.id).emit('PlayerLeave', client.userID);
+          client.leave(lobby.id);
+          this.historyService.createhistory(history).then(() => {
+            this.gameService
+              .EndGame(lobby.game.player[0].id === client.userID ? lobby.game.player[1].id : lobby.game.player[0].id)
+              .then(() => {
+                return;
+              })
+              .catch((err) => {
+                console.log(err);
+                return;
+              });
+          });
         }
       })
       .catch((err) => {
@@ -129,8 +190,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           // });
           socketPlayerOne.socket.join(lobby.id);
           socketPlayerTwo.socket.join(lobby.id);
-          socketPlayerOne.socket.emit('JoinLobby', lobby);
-          socketPlayerTwo.socket.emit('JoinLobby', lobby);
+          socketPlayerOne.socket.emit('GameCreate', lobby);
+          socketPlayerTwo.socket.emit('GameCreate', lobby);
+          this.CreateGame(socketPlayerOne.socket, GameMode.RANKED);
           socketPlayerOne.socket.emit('QueueJoin');
           socketPlayerTwo.socket.emit('QueueJoin');
         });
@@ -227,13 +289,34 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     });
   }
 
+  /*Create lobby*/
+  @SubscribeMessage('PlayerLobbyReaddy')
+  PlayerLobbbyReaddy(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+    console.log('User:', client.userID, 'is readdy');
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .PlayerLobbyReaddy(client.userID)
+        .then((lobby) => {
+          console.log('end');
+          client.emit('UpdateLobby', lobby);
+          client.to(lobby.id).emit('UpdateLobby', lobby);
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
   /*new history*/
   @SubscribeMessage('NewHistory')
   NewHistory(
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody('newHistory') history: CreateHistoryDto,
   ): Promise<void> {
-    console.log('historyAdd:', history);
+    console.log('Received newHistory message:', history);
+    this.historyService.updateRankings({winnerId: "c7a689d2-e9db-4469-9607-2a4dc47e311e", loserId: "ee5f9533-0de0-44fe-ac05-8e774d6af6bc"});
     return new Promise<void>((resolve, reject) => {
       this.historyService
         .createhistory(history)
@@ -270,10 +353,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   /*create the game*/
   @SubscribeMessage('CreateGame')
-  CreateGame(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  CreateGame(@ConnectedSocket() client: SocketWithAuth, @MessageBody('mode') mode: GameMode): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.gameService
-        .CreateGame(client.userID)
+        .CreateGame(client.userID, mode)
         .then((lobby) => {
           const callback = (): void => {
             this.gameService
@@ -299,9 +382,89 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         client.broadcast.to(lobby.id).emit('NewBallPos', lobby.game.ball.position);
                         client.emit('NewBallPos', lobby.game.ball.position);
                       } else {
-                        client.broadcast.to(lobby.id).emit('EndGame', lobby);
-                        client.emit('EndGame', lobby);
                         this.scheduleRegistry.deleteInterval(lobby.id);
+                        const player1 = {
+                          id: lobby.game.player[1].id,
+                          score: lobby.game.score[0],
+                          placement: lobby.game.score[0] > lobby.game.score[1] ? 1 : 2,
+                        };
+                        const player2 = {
+                          id: lobby.game.player[0].id,
+                          score: lobby.game.score[1],
+                          placement: lobby.game.score[1] > lobby.game.score[0] ? 1 : 2,
+                        };
+                        if (lobby.game.mode === GameMode.RANKED) {
+                          //update mmr
+                          if (player1.placement === 1) {
+                            this.historyService.updateRankings({winnerId: player1.id, loserId: player2.id});
+                          } else {
+                            this.historyService.updateRankings({winnerId: player2.id, loserId: player1.id});
+                          }
+                        }
+                        const history = {
+                          mode: lobby.game.mode,
+                          score: [player1, player2],
+                        };
+                        if (lobby.game.mode === GameMode.RANKED) {
+                          client.broadcast.to(lobby.id).emit('EndGame', {
+                            history: {
+                              mode: lobby.game.mode,
+                              score: [
+                                { ...player1, nickName: lobby.playerTwo.nickname },
+                                { ...player2, nickName: lobby.playerOne.nickname },
+                              ],
+                            },
+                            lobby: null,
+                          });
+                          client.emit('EndGame', {
+                            history: {
+                              mode: lobby.game.mode,
+                              score: [
+                                { ...player1, nickName: lobby.playerTwo.nickname },
+                                { ...player2, nickName: lobby.playerOne.nickname },
+                              ],
+                            },
+                            lobby: null,
+                          });
+                        } else {
+                          client.broadcast.to(lobby.id).emit('EndGame', {
+                            history: {
+                              mode: lobby.game.mode,
+                              score: [
+                                { ...player1, nickName: lobby.playerTwo.nickname },
+                                { ...player2, nickName: lobby.playerOne.nickname },
+                              ],
+                            },
+                            lobby: { ...lobby, game: null },
+                          });
+                          client.emit('EndGame', {
+                            history: {
+                              mode: lobby.game.mode,
+                              score: [
+                                { ...player1, nickName: lobby.playerTwo.nickname },
+                                { ...player2, nickName: lobby.playerOne.nickname },
+                              ],
+                            },
+                            lobby: { ...lobby, game: null },
+                          });
+                        }
+                        this.historyService
+                          .createhistory(history)
+                          .then(() => {
+                            this.gameService
+                              .EndGame(lobby.playerOne.id)
+                              .then(() => {
+                                return resolve();
+                              })
+                              .catch((err) => {
+                                console.log(err);
+                                return reject();
+                              });
+                          })
+                          .catch((err) => {
+                            console.log(err);
+                            return reject();
+                          });
                       }
                       client.broadcast.to(lobby.id).emit('updateScore', lobby.game.score);
                       client.emit('updateScore', lobby.game.score);
@@ -331,12 +494,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return reject();
         });
     });
-  }
-
-  /*GameReady*/
-  @SubscribeMessage('GameReady')
-  GameReady(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    return new Promise<void>((resolve, reject) => {});
   }
 
   /*UpdateBallPosition*/

@@ -1,3 +1,5 @@
+import { GameMode } from '@prisma/client';
+
 export type Lobby = {
   id: string;
   playerOne: Player;
@@ -11,6 +13,7 @@ export type Player = {
   id: string;
   mmr: number;
   nickname: string;
+  readdy: boolean;
 };
 
 export type Playertab = {
@@ -23,6 +26,7 @@ export type Playertab = {
 
 export type Game = {
   start: boolean;
+  mode: GameMode;
   player: Playertab[];
   score: number[];
   ball: Ball;

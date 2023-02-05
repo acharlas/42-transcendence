@@ -24,6 +24,7 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
     game,
     player1Score,
     player2Score,
+    setHistory,
   } = useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
@@ -50,12 +51,13 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
     const StartListener = () => {
       /**** Game-related listeners ****/
       /** Game Pause */
-      socket.on("EndGame", (lobby: Lobby) => {
+      socket.on("EndGame", ({ history, lobby }: { history: History; lobby: Lobby }) => {
         console.log("EndGame: ");
         game.destroy(true); // destroy the game at the end to prevent leaks
         //switch scene game un truc dans le genre
 
-        navigate("/app/game/" + lobby.id + "/Recap");
+        navigate("/app/game/Recap");
+        setHistory(history);
         setLobby(lobby);
       });
       /** Game Pause */
@@ -132,7 +134,6 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       socket.on("PlayerLeave", (uid: string) => {
         console.log("user: ", uid, " leave the lobby");
         Removeplayer(uid);
-        navigate("/app/game");
       });
       /** You leave the lobby */
       socket.on("LeaveLobby", (lobbyId: string) => {

@@ -9,23 +9,35 @@ import Avatar from "../avatar/avatar_component";
 import { useGame } from "../context/game.context";
 
 export default function GameRecap() {
-  const { lobby } = useGame();
+  const { history } = useGame();
   let navigate = useNavigate();
   useEffect(() => {
-    if (!lobby) {
+    if (!history) {
       navigate("/app");
       return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  if (!lobby) return;
+  if (!history) return;
 
-  const wName: string = lobby.game.score[0] < lobby.game.score[1] ? lobby.playerOne.nickname : lobby.playerTwo.nickname;
-  const lName: string = lobby.game.score[0] > lobby.game.score[1] ? lobby.playerOne.nickname : lobby.playerTwo.nickname;
-  const wId: string = lobby.game.score[0] < lobby.game.score[1] ? lobby.playerOne.id : lobby.playerTwo.id;
-  const lId: string = lobby.game.score[0] > lobby.game.score[1] ? lobby.playerOne.id : lobby.playerTwo.id;
-  const wScore: number = Math.max(lobby.game.score[0], lobby.game.score[1]);
-  const lScore: number = Math.min(lobby.game.score[0], lobby.game.score[1]);
+  const wName: string = history.score.find((player) => {
+    return player.placement === 1;
+  }).nickName;
+  const lName: string = history.score.find((player) => {
+    return player.placement === 2;
+  }).nickName;
+  const wId: string = history.score.find((player) => {
+    return player.placement === 1;
+  }).id;
+  const lId: string = history.score.find((player) => {
+    return player.placement === 2;
+  }).id;
+  const wScore: number = history.score.find((player) => {
+    return player.placement === 1;
+  }).score;
+  const lScore: number = history.score.find((player) => {
+    return player.placement === 2;
+  }).score;
 
   return (
     <>

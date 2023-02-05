@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useRef } from "react";
-import { Lobby, Position } from "../game/game-type";
+import { history, Lobby, Position } from "../game/game-type";
 
 export interface IoGameContextState {
   inQueue: Boolean;
@@ -25,6 +25,8 @@ export interface IoGameContextState {
   setTimer: Function;
   player1Score: any;
   player2Score: any;
+  history: history;
+  setHistory: Function;
 }
 
 const GameContext = createContext<IoGameContextState>({
@@ -51,6 +53,8 @@ const GameContext = createContext<IoGameContextState>({
   setTimer: () => {},
   player1Score: undefined,
   player2Score: undefined,
+  history: undefined,
+  setHistory: () => {},
 });
 
 function GameProvider(props: any) {
@@ -69,6 +73,7 @@ function GameProvider(props: any) {
     y: 0,
   });
   const [timer, setTimer] = useState<Phaser.Time.TimerEvent>();
+  const [history, setHistory] = useState<History>();
 
   const Removeplayer = (UserId: string) => {
     if (lobby) {
@@ -107,6 +112,8 @@ function GameProvider(props: any) {
         setTimer,
         player1Score,
         player2Score,
+        history,
+        setHistory,
       }}
       {...props}
     />
