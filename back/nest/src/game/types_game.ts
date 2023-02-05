@@ -33,6 +33,7 @@ export type Game = {
   paddleHeight: number;
   paddleWidth: number;
   ballRadius: number;
+  ballMomentum: number;
 };
 
 export type Ball = {

@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { GameMode } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
+import { ballMomentumStart, BallSpeed, MaxBallXVelocity } from './const';
 import {
   PlayerIsInWatching,
   PlayerIsInLobby,
@@ -27,6 +28,7 @@ export class GameService {
   LobbyList: Lobby[] = [];
   Queue: Player[] = [];
   Speed: number = 0.0000666666;
+   
 
   /*==================Queue===========================*/
   async JoiningQueue(userId: string): Promise<void> {
@@ -374,6 +376,7 @@ export class GameService {
         ballRadius: 0,
         score: [0, 0],
         ball: { position: { x: 0.5, y: 0.5 }, vector: RandSpeed(this.Speed) },
+        ballMomentum: ballMomentumStart,
       };
       this.incIngameList(lobby);
       return resolve(lobby);
@@ -429,10 +432,9 @@ export class GameService {
       });
       if (!lobby) return reject(new ForbiddenException('no lobby'));
       let nextPos: Position;
-
       nextPos = {
-        x: lobby.game.ball.position.x + lobby.game.ball.vector.x * 60,
-        y: lobby.game.ball.position.y + lobby.game.ball.vector.y * 60,
+        x: lobby.game.ball.position.x + lobby.game.ball.vector.x * BallSpeed,
+        y: lobby.game.ball.position.y + lobby.game.ball.vector.y * BallSpeed,
       };
       nextPos = NormPos(nextPos);
       const bounce = BallOnPaddle(lobby, nextPos);
@@ -453,7 +455,8 @@ export class GameService {
         //   lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
         //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
         // }
-        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
+        lobby.game.ball.vector.x = Math.min(lobby.game.ball.vector.x * lobby.game.ballMomentum, MaxBallXVelocity) * -1;
+        
         //console.log('bounce');
         if (bounce === 1)
           lobby.game.ball.position.x =
@@ -468,6 +471,7 @@ export class GameService {
         //     : lobby.game.player[bounce].position.x - lobby.game.paddleWidth / 2 - lobby.game.ballRadius;
         // lobby.game.ball.position.y = nextPos.y;
       } else if (BallScore(lobby, nextPos)) {
+        console.log("SUPERSONIC",lobby.game.ball.vector.x)
         // console.log(
         //   'ball score',
         //   lobby.game.player[0].position,
@@ -488,7 +492,7 @@ export class GameService {
         //   lobby.game.ball.position,
         // );
         //nextPos = NoOOB(nextPos, lobby);
-        lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
+        lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1 ;    
         //lobby.game.ball.position = { ...nextPos };
         //console.log('vitesse', lobby.game.ball.vector.y);
       } else {

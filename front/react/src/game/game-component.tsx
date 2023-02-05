@@ -3,7 +3,7 @@ import Phaser from "phaser";
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
 import { useNavigate } from "react-router-dom";
-import { CanvasHeight, CanvasWidth } from "./consts/const";
+import { CanvasHeight, CanvasWidth, PaddleVelocity } from "./consts/const";
 
 export interface IGameComponentProps {}
 
@@ -143,11 +143,11 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
       if (cursors.up.isDown || cursors.down.isDown) {
         if (cursors.up.isDown) {
-          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(-350);
-          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(-350);
+          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(-PaddleVelocity);
+          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(-PaddleVelocity);
         } else if (cursors.down.isDown) {
-          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(350);
-          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(350);
+          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(PaddleVelocity);
+          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(PaddleVelocity);
         }
 
         if (lobby.playerTwo.id === window.sessionStorage.getItem("userid"))
