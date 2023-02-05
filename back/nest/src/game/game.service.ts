@@ -471,7 +471,6 @@ export class GameService {
         //     : lobby.game.player[bounce].position.x - lobby.game.paddleWidth / 2 - lobby.game.ballRadius;
         // lobby.game.ball.position.y = nextPos.y;
       } else if (BallScore(lobby, nextPos)) {
-        console.log("SUPERSONIC",lobby.game.ball.vector.x)
         // console.log(
         //   'ball score',
         //   lobby.game.player[0].position,
@@ -480,7 +479,7 @@ export class GameService {
         // );
         //lobby.game.ball.position = { x: 0.5, y: 0.5 };
         //nextPos = NoOOB(nextPos, lobby);
-        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
+        lobby.game.ball.vector.x = RandSpeed(this.Speed).x * -1;
         lobby.game.ball.position = { x: 0.5, y: 0.5 };
         //lobby.game.ball.position = { ...nextPos };
         //console.log('vitesse score', lobby.game.ball.vector.x);
