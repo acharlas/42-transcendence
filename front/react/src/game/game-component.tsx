@@ -30,6 +30,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   const gameRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    console.log("USEEFFECT game-component new Phaser.Game");
     const game = new Phaser.Game({
       type: Phaser.AUTO,
       scale: {
@@ -95,15 +96,17 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       cursors = this.input.keyboard.createCursorKeys();
 
       //score
-      textScorePlayer1 = this.add.text(CanvasWidth * 1 / 4 ,CanvasHeight / 5, "0", {
-        fontSize: "100px"
-      }
-      ).setOrigin(0.5,0.5)
+      textScorePlayer1 = this.add
+        .text((CanvasWidth * 1) / 4, CanvasHeight / 5, "0", {
+          fontSize: "100px",
+        })
+        .setOrigin(0.5, 0.5);
 
-      textScorePlayer2 = this.add.text(CanvasWidth * 3 / 4 ,CanvasHeight / 5, "0", {
-        fontSize: "100px"
-      }
-      ).setOrigin(0.5,0.5)
+      textScorePlayer2 = this.add
+        .text((CanvasWidth * 3) / 4, CanvasHeight / 5, "0", {
+          fontSize: "100px",
+        })
+        .setOrigin(0.5, 0.5);
 
       //react vars
       setCursors(cursors);
@@ -134,7 +137,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       //TODO : not do that every frame?
       textScorePlayer1.setText(player1Score.current);
       textScorePlayer2.setText(player2Score.current);
-      
+
       player2.setVelocityY(0);
       player1.setVelocityY(0);
 
@@ -170,6 +173,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   };
 
   useEffect(() => {
+    console.log("USEEFFECT game-component game init");
     if (!lobby) {
       navigate("/app/game");
       return;

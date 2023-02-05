@@ -51,6 +51,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
   let navigate = useNavigate();
 
   useEffect(() => {
+    console.log("USEEFFECT socket-component connect to the web socket");
     /** connect to the web socket */
     console.log("SOCKET CONNECT");
     socket.connect();
@@ -59,6 +60,8 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
   }, [socket]);
 
   useEffect(() => {
+    console.log("USEEFFECT socket-component StartListener");
+
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {

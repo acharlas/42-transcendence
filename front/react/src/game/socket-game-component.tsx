@@ -38,6 +38,7 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
   let navigate = useNavigate();
 
   useEffect(() => {
+    console.log("USEEFFECT socket-game-component SOCKET CONNECT");
     /** connect to the web socket */
     console.log("SOCKET CONNECT");
     socket.connect();
@@ -46,6 +47,7 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
   }, [socket]);
 
   useEffect(() => {
+    console.log("USEEFFECT socket-game-component StartListener");
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
