@@ -456,9 +456,7 @@ export class GameService {
         //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
         // }
         lobby.game.ball.vector.x = Math.min(lobby.game.ball.vector.x * lobby.game.ballMomentum, MaxBallXVelocity) * -1;
-        const temp = lobby.game.ball.vector.x
-        lobby.game.ball.vector.x = Math.cos(ballAlpha) * lobby.game.ball.vector.x - Math.sin(ballAlpha) * lobby.game.ball.vector.y
-        lobby.game.ball.vector.y =Math.sin(ballAlpha) * temp + Math.cos(ballAlpha) * lobby.game.ball.vector.y
+        
         //console.log('bounce');
         if (bounce === 1)
           lobby.game.ball.position.x =
@@ -493,6 +491,9 @@ export class GameService {
         //   lobby.game.ball.position,
         // );
         //nextPos = NoOOB(nextPos, lobby);
+        const temp = lobby.game.ball.vector.x
+        lobby.game.ball.vector.x = Math.cos(ballAlpha) * lobby.game.ball.vector.x - Math.sin(ballAlpha) * lobby.game.ball.vector.y
+        lobby.game.ball.vector.y = Math.sin(ballAlpha) * temp + Math.cos(ballAlpha) * lobby.game.ball.vector.y
         lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1 ;    
         //lobby.game.ball.position = { ...nextPos };
         //console.log('vitesse', lobby.game.ball.vector.y);
