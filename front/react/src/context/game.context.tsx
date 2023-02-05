@@ -23,8 +23,8 @@ export interface IoGameContextState {
   setGameBounds: Function;
   timer: Phaser.Time.TimerEvent;
   setTimer: Function;
-  player1Score:any;
-  player2Score:any;
+  player1Score: any;
+  player2Score: any;
 }
 
 const GameContext = createContext<IoGameContextState>({
@@ -49,8 +49,8 @@ const GameContext = createContext<IoGameContextState>({
   setGameBounds: () => {},
   timer: undefined,
   setTimer: () => {},
-  player1Score:undefined,
-  player2Score:undefined,
+  player1Score: undefined,
+  player2Score: undefined,
 });
 
 function GameProvider(props: any) {

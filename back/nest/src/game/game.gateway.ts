@@ -23,7 +23,7 @@ import { PlayerIsInLobby, PlayerIsReaddy } from './game.utils';
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private gameService: GameService,
-    private historyService: HistoryService, //private schedulerRegistry: SchedulerRegistry,
+    private historyService: HistoryService,
     private scheduleRegistry: SchedulerRegistry,
   ) {}
 
