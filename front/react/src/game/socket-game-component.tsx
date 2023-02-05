@@ -117,7 +117,7 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       /** Queue Join */
       socket.on("QueueJoin", () => {
         console.log("joining the queue");
-        setInQueue(true);
+        setInQueue(!inQueue);
       });
       /** New match found */
       socket.on("JoinLobby", (lobby: Lobby) => {

@@ -69,7 +69,13 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
             </table>
           </>
         ) : (
-          <>{inQueue ? "Looking for an opponent..." : <button onClick={handleClick}>Join matchmaking</button>}</>
+          <>
+            {inQueue ? (
+              <button onClick={handleClick}>Leave Queue</button>
+            ) : (
+              <button onClick={handleClick}>Join matchmaking</button>
+            )}
+          </>
         )}
       </div>
     </>

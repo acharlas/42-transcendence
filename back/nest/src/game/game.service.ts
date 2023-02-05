@@ -39,6 +39,10 @@ export class GameService {
             return false;
           });
           if (!find) this.Queue.push(newPlayer);
+          if (find)
+            this.Queue = this.Queue.filter(player => {
+              return !(player.id === userId)
+            })
           return resolve();
         })
         .catch((err) => {
