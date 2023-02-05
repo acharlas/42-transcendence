@@ -56,8 +56,8 @@ export function SignupForm() {
       setNewUsername('');
       goHome();
     } catch (e) {
-      console.log({ e });
-      setErrorMessage(e.response?.data?.message);
+      console.log(e);
+      setErrorMessage(e?.response?.data?.message);
     }
   };
 

@@ -1,26 +1,44 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import PlayerIsInLobby from './game.utils';
-import { Game, Lobby, Player } from './types_game';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { GameMode } from '@prisma/client';
+import { UserService } from 'src/user/user.service';
+import {
+  PlayerIsInWatching,
+  PlayerIsInLobby,
+  BallOnPaddle,
+  BallScore,
+  WitchPlayer,
+  ballHitWall,
+  RandSpeed,
+  NormPos,
+  LobbyIsReaddy,
+} from './game.utils';
+import { Lobby, Player, Position } from './types_game';
 
 @Injectable()
 export class GameService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private schedulerRegistry: SchedulerRegistry, private userService: UserService) {}
 
   LobbyList: Lobby[] = [];
   Queue: Player[] = [];
+  Speed: number = 0.0000666666;
 
   /*==================Queue===========================*/
   async JoiningQueue(userId: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       console.log('actual queue: ', this.Queue);
-      const newPlayer = { id: userId, mmr: 0 };
-      const find = this.Queue.find((player) => {
-        if (player.id === newPlayer.id) return true;
-        return false;
-      });
-      if (!find) this.Queue.push(newPlayer); //this.Queue = [...this.Queue, newPlayer]
-      return resolve();
+      this.CreatePlayer(userId)
+        .then((newPlayer) => {
+          const find = this.Queue.find((player) => {
+            if (player.id === newPlayer.id) return true;
+            return false;
+          });
+          if (!find) this.Queue.push(newPlayer);
+          return resolve();
+        })
+        .catch((err) => {
+          return reject(err);
+        });
     });
   }
 
@@ -37,81 +55,40 @@ export class GameService {
 
   /*==================Lobby===========================*/
 
-  async CreateLobby(userId: string, inviteId?: string): Promise<Lobby> {
+  async CreateLobby(userId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
-      const lobby = {
-        id: userId,
-        playerOne: userId,
-        playerTwo: null,
-        game: null,
-        invited: [],
-        viewer: [],
-      };
-
-      const find = this.LobbyList.find((lobby) => {
-        return PlayerIsInLobby(userId, lobby);
-      });
-      if (find)
-        return resolve(
-          new Promise<Lobby>((resolve, reject) => {
-            this.LeaveLobby(userId)
-              .then(() => {
-                if (
-                  this.LobbyList.find((lobbyL) => {
+      this.userService
+        .getUserId(userId, userId)
+        .then((user) => {
+          return resolve(
+            new Promise<Lobby>((resolve, reject) => {
+              const lobby = {
+                id: userId,
+                playerOne: { id: userId, mmr: user.mmr, nickname: user.nickname, readdy: true },
+                playerTwo: null,
+                game: null,
+                invited: [],
+                viewer: [],
+              };
+              this.LeaveLobby(userId)
+                .then(() => {
+                  const find = this.LobbyList.find((lobbyL) => {
                     if (lobbyL.id === lobby.id) return true;
                     return false;
-                  })
-                )
-                  return reject(
-                    new ForbiddenException('lobby already create'),
-                  );
-                this.LobbyList.push(lobby); //this.LobbyList = [...this.LobbyList, lobby];
-                if (inviteId)
-                  return resolve(
-                    new Promise<Lobby>((resolve, reject) => {
-                      this.AddInvite(lobby.id, inviteId)
-                        .then((lobby) => {
-                          return resolve(lobby);
-                        })
-                        .catch((err) => {
-                          return reject(err);
-                        });
-                    }),
-                  );
-                else {
+                  });
+                  if (find) return reject(new ForbiddenException('lobby already create'));
+                  this.LobbyList.push(lobby); //this.LobbyList = [...this.LobbyList, lobby];
                   return resolve(lobby);
-                }
-              })
-              .catch((err) => {
-                return reject(err);
-              });
-          }),
-        );
-      if (
-        this.LobbyList.find((lobbyL) => {
-          if (lobbyL.id === lobby.id) return true;
-          return false;
+                })
+                .catch((err) => {
+                  return reject(err);
+                });
+            }),
+          );
         })
-      )
-        return reject(new ForbiddenException('lobby already create'));
-      console.log('add lobby: ', lobby);
-      this.LobbyList.push(lobby); //this.LobbyList = [...this.LobbyList, lobby];
-      if (inviteId)
-        return resolve(
-          new Promise<Lobby>((resolve, reject) => {
-            this.AddInvite(lobby.id, inviteId)
-              .then((lobby) => {
-                console.log('add invited :', lobby);
-                return resolve(lobby);
-              })
-              .catch((err) => {
-                return reject(err);
-              });
-          }),
-        );
-      else {
-        return resolve(lobby);
-      }
+        .catch((err) => {
+          return reject(err);
+        });
     });
   }
 
@@ -134,58 +111,61 @@ export class GameService {
     });
   }
 
-  async LeaveLobby(userId: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
+  async LeaveLobby(userId: string): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
       const lobby = this.LobbyList.find((lobby) => {
-        console.log('LeaveLobby :', { lobby });
-        if (lobby && (lobby.playerOne === userId || lobby.playerTwo === userId))
-          return true;
-        return false;
+        return PlayerIsInLobby(userId, lobby);
       });
       if (lobby) {
-        if (lobby.playerOne === userId) {
-          if (lobby.playerTwo === null)
+        if (lobby.playerOne.id === userId) {
+          if (lobby.playerTwo === null) {
             this.LobbyList = this.LobbyList.filter((lobby) => {
-              if (lobby.playerOne === userId) return false;
+              if (lobby.playerOne.id === userId) return false;
               return true;
             });
-          else {
-            lobby.playerOne = lobby.playerTwo;
+            return resolve(lobby);
+          } else {
+            lobby.playerOne = { ...lobby.playerTwo, readdy: true };
             lobby.playerTwo = null;
+            return resolve(lobby);
           }
-        } else if (lobby.playerTwo === userId) {
-          lobby.playerTwo === null;
+        } else {
+          lobby.playerTwo = null;
+          return resolve(lobby);
         }
-        return resolve(lobby.id);
       }
       const lobbyViewer = this.LobbyList.find((lobby) => {
-        console.log('LeaveLobby :', { lobby });
-        if (
-          lobby &&
-          lobby.viewer.find((viewer) => {
-            if (viewer === userId) return true;
-            return false;
-          })
-        )
+        return PlayerIsInWatching(userId, lobby);
+      });
+      if (lobbyViewer) {
+        lobbyViewer.viewer = lobbyViewer.viewer.filter((user) => {
+          if (user === userId) return false;
           return true;
-        return false;
-      });
-      if (!lobbyViewer)
-        return reject(new ForbiddenException("user isn't in a lobby"));
-      lobbyViewer.viewer = lobbyViewer.viewer.filter((user) => {
-        if (user === userId) return false;
-        return true;
-      });
-      return resolve(lobbyViewer.id);
+        });
+        if (lobby.game) this.schedulerRegistry.deleteInterval(lobby.id);
+        return resolve(lobbyViewer);
+      }
+      return resolve(null);
+    });
+  }
+
+  async CreatePlayer(userId: string): Promise<Player> {
+    return new Promise<Player>((resolve, reject) => {
+      this.userService
+        .getUserId(userId, userId)
+        .then((user) => {
+          return resolve({ id: userId, mmr: user.mmr, nickname: user.nickname, readdy: false });
+        })
+        .catch((err) => {
+          return reject(err);
+        });
     });
   }
 
   async JoinLobby(userId: string, lobbyId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const actLobby = this.LobbyList.find((lobby) => {
-        if (lobby.playerOne === userId || lobby.playerTwo === userId)
-          return true;
-        return false;
+        return PlayerIsInLobby(userId, lobby);
       });
       if (actLobby) {
         return reject(new ForbiddenException('already in a room'));
@@ -195,31 +175,43 @@ export class GameService {
         return false;
       });
       if (!joinLobby) return reject(new ForbiddenException('no such lobby'));
-      if (joinLobby.playerTwo)
-        return reject(new ForbiddenException('lobby is full'));
-      joinLobby.playerTwo = userId;
-      joinLobby.invited = joinLobby.invited.filter((user) => {
-        if (user === userId) return false;
-        return true;
-      });
-      return resolve(joinLobby);
+      if (joinLobby.playerTwo) return reject(new ForbiddenException('lobby is full'));
+      return resolve(
+        new Promise<Lobby>((resolve, reject) => {
+          this.CreatePlayer(userId)
+            .then((player) => {
+              joinLobby.playerTwo = player;
+              joinLobby.invited = joinLobby.invited.filter((user) => {
+                if (user === userId) return false;
+                return true;
+              });
+              return resolve(joinLobby);
+            })
+            .catch((err) => {
+              return reject(err);
+            });
+        }),
+      );
     });
   }
 
-  async PlayerDisconnect(userId: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      const lobbyFind = this.LobbyList.find((lobby) => {
-        return PlayerIsInLobby(userId, lobby);
-      });
-      if (lobbyFind)
-        this.LeaveLobby(userId)
-          .then((lobbyId) => {
-            return resolve(lobbyId);
-          })
-          .catch((err) => {
-            return reject(err);
-          });
-      else return resolve(null);
+  async PlayerDisconnect(userId: string): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      const oldLobby = {
+        ...this.LobbyList.find((lobby) => {
+          return PlayerIsInLobby(userId, lobby);
+        }),
+      };
+      this.LeaveLobby(userId)
+        .then((lobby) => {
+          if (lobby) {
+            return resolve(oldLobby);
+          }
+          return resolve(null);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
     });
   }
 
@@ -227,7 +219,7 @@ export class GameService {
     return new Promise<Lobby>((resolve, reject) => {
       return resolve(
         this.LobbyList.find((lobby) => {
-          return PlayerIsInLobby(userId, lobby);
+          return PlayerIsInLobby(userId, lobby) || PlayerIsInWatching(userId, lobby);
         }),
       );
     });
@@ -268,6 +260,18 @@ export class GameService {
       return resolve(lobby);
     });
   }
+
+  async PlayerLobbyReaddy(userId: string): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      const lobby = this.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userId, lobby);
+      });
+      if (!lobby) return reject(new ForbiddenException('no lobby found'));
+      if (lobby.playerOne.id === userId) return reject(new ForbiddenException('player is player one'));
+      lobby.playerTwo.readdy = !lobby.playerTwo.readdy;
+      return resolve(lobby);
+    });
+  }
   /*=============================================*/
 
   /*==================matchmaking===========================*/
@@ -280,23 +284,21 @@ export class GameService {
       while (n < this.Queue.length) {
         const playerOne = this.Queue[n];
         const playerTwo = this.Queue.find((playerTwo) => {
-          if (playerTwo.mmr === playerOne.mmr && playerOne.id !== playerTwo.id)
-            return true;
+          if (playerTwo.mmr === playerOne.mmr && playerOne.id !== playerTwo.id) return true;
           return false;
         });
         if (playerTwo) {
           const lobby = {
             id: playerOne.id + playerTwo.id,
-            playerOne: playerOne.id,
-            playerTwo: playerTwo.id,
+            playerOne: { ...playerOne, readdy: true },
+            playerTwo: { ...playerTwo, readdy: true },
             game: null,
             invited: [],
             viewer: [],
           };
           this.LobbyList = [...this.LobbyList, lobby];
           this.Queue = this.Queue.filter((player) => {
-            if (player.id !== playerOne.id && player.id !== playerTwo.id)
-              return true;
+            if (player.id !== playerOne.id && player.id !== playerTwo.id) return true;
             return false;
           });
           newLobby.push(lobby);
@@ -308,34 +310,37 @@ export class GameService {
   /*=============================================*/
 
   /*==================Game===========================*/
-  async UpdatePlayerPos(userId: string, position: number): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      const lobby = this.LobbyList.find((lobby) => {
-        return PlayerIsInLobby(userId, lobby);
-      });
-      if (!lobby)
-        return reject(new ForbiddenException("user isn't in a lobby"));
-
-      return resolve();
-    });
-  }
-
-  async CreateGame(userId: string): Promise<Lobby> {
+  async UpdatePlayerPos(userId: string, position: number): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const lobby = this.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);
       });
-      if (!lobby)
-        return reject(new ForbiddenException("user isn't in a lobby"));
-      if (!lobby.playerOne || !lobby.playerTwo)
-        return reject(new ForbiddenException('missing player'));
+      if (!lobby) return reject(new ForbiddenException("user isn't in a lobby"));
+      lobby.game.player[WitchPlayer(userId, lobby)].position.y = position;
+      return resolve(lobby);
+    });
+  }
+
+  async CreateGame(userId: string, gameMode: GameMode): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      const lobby = this.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userId, lobby);
+      });
+      if (!lobby) return reject(new ForbiddenException("user isn't in a lobby"));
+      if (!lobby.playerOne || !lobby.playerTwo) return reject(new ForbiddenException('missing player'));
+      if (!LobbyIsReaddy(lobby)) return reject(new ForbiddenException('lobby is not readdy'));
       lobby.game = {
         start: false,
         player: [
-          { id: lobby.playerOne, ready: false },
-          { id: lobby.playerTwo, ready: false },
+          { id: lobby.playerOne.id, ready: false, pauseAt: null, timer: 60000, position: { x: 0, y: 0.5 } },
+          { id: lobby.playerTwo.id, ready: false, pauseAt: null, timer: 60000, position: { x: 0, y: 0.5 } },
         ],
+        mode: gameMode,
+        paddleHeight: 0,
+        paddleWidth: 0,
+        ballRadius: 0,
         score: [0, 0],
+        ball: { position: { x: 0.5, y: 0.5 }, vector: RandSpeed(this.Speed) },
       };
       return resolve(lobby);
     });
@@ -348,18 +353,183 @@ export class GameService {
         return false;
       });
       if (!lobby) return reject(new ForbiddenException("lobby doesn't exist"));
-      lobby.game = { ...lobby.game, start: false };
+      lobby.game = { ...lobby.game, start: true };
       return resolve(lobby);
     });
   }
 
-  async PlayerReady(userId: string): Promise<Lobby> {
+  async PlayerReady(
+    userId: string,
+    paddleHeight: number,
+    paddleWidth: number,
+    ballRadius: number,
+    position: number,
+  ): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const lobby = this.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);
       });
-      if (lobby.playerOne === userId) lobby.game.player[0].ready = true;
-      if (lobby.playerTwo === userId) lobby.game.player[1].ready = true;
+      lobby.game.paddleHeight = paddleHeight;
+      lobby.game.paddleWidth = paddleWidth;
+      lobby.game.ballRadius = ballRadius;
+      lobby.game.player[WitchPlayer(userId, lobby)].position.x = position;
+      lobby.game.player[WitchPlayer(userId, lobby)].ready = true;
+      return resolve(lobby);
+    });
+  }
+
+  // async SetLobbyPause(userId: string, callback: () => void): Promise<Lobby> {
+  //   return new Promise<Lobby>((resolve, reject) => {
+  //     const lobby = this.LobbyList.find((lobby) => {
+  //       return PlayerIsInLobby(userId, lobby);
+  //     });
+  //     if (!lobby) return reject(new ForbiddenException('no lobby'));
+
+  //     if (lobby.playerOne === userId && !lobby.game.player[0].pauseAt) {
+  //       const timeout = setTimeout(callback, lobby.game.player[0].timer);
+  //       console.log('userId: ', userId, '  ', lobby.game.player[0].timer);
+  //       lobby.game.player[0].pauseAt = new Date();
+  //       this.schedulerRegistry.addTimeout(lobby.game.player[0].id, timeout);
+  //       // lobby.game.player[0].pauseAt.setSeconds(lobby.game.player[0].pauseAt.getSeconds() + lobby.game.player[0].timer);
+  //     }
+  //     if (lobby.playerTwo === userId && !lobby.game.player[0].pauseAt) {
+  //       const timeout = setTimeout(callback, lobby.game.player[1].timer);
+  //       console.log('userId: ', userId, '  ', lobby.game.player[1].timer);
+  //       lobby.game.player[1].pauseAt = new Date();
+  //       this.schedulerRegistry.addTimeout(lobby.game.player[1].id, timeout);
+  //       // lobby.game.player[0].pauseAt.setSeconds(lobby.game.player[0].pauseAt.getSeconds() + lobby.game.player[0].timer);
+  //     }
+  //     return resolve(lobby);
+  //   });
+  // }
+
+  // async SetLobbyResume(userId: string): Promise<Lobby> {
+  //   return new Promise<Lobby>((resolve, reject) => {
+  //     const lobby = this.LobbyList.find((lobby) => {
+  //       return PlayerIsInLobby(userId, lobby);
+  //     });
+  //     if (!lobby) return reject(new ForbiddenException('no lobby'));
+  //     if (lobby.playerOne === userId && lobby.game.player[0].pauseAt) {
+  //       this.schedulerRegistry.deleteTimeout(lobby.game.player[0].id);
+  //       const date = new Date();
+  //       console.log(
+  //         'time: ',
+  //         'time: ',
+  //         lobby.game.player[0].timer,
+  //         '  ',
+  //         lobby.game.player[0].pauseAt.getTime(),
+  //         '  ',
+  //         date.getTime(),
+  //         '  ',
+  //         date.getTime() - lobby.game.player[0].pauseAt.getTime(),
+  //       );
+  //       lobby.game.player[0].timer =
+  //         lobby.game.player[0].timer - (date.getTime() - lobby.game.player[0].pauseAt.getTime());
+  //       lobby.game.player[0].pauseAt = null;
+  //     }
+  //     if (lobby.playerTwo === userId && lobby.game.player[1].pauseAt) {
+  //       const date = new Date();
+  //       this.schedulerRegistry.deleteTimeout(lobby.game.player[1].id);
+  //       console.log(
+  //         'time: ',
+  //         lobby.game.player[1].timer,
+  //         '  ',
+  //         lobby.game.player[1].pauseAt.getTime(),
+  //         '  ',
+  //         date.getTime(),
+  //       );
+  //       lobby.game.player[1].timer =
+  //         lobby.game.player[1].timer - date.getTime() - lobby.game.player[1].pauseAt.getTime();
+  //       lobby.game.player[1].pauseAt = null;
+  //     }
+  //     return resolve(lobby);
+  //   });
+  // }
+
+  async EndGame(userId: string): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      const lobby = this.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userId, lobby);
+      });
+      lobby.game = null;
+      return resolve(lobby);
+    });
+  }
+
+  async UpdateBall(lobbyId: string): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      const lobby = this.LobbyList.find((lobby) => {
+        return lobby.id === lobbyId;
+      });
+      if (!lobby) return reject(new ForbiddenException('no lobby'));
+      let nextPos: Position;
+
+      nextPos = {
+        x: lobby.game.ball.position.x + lobby.game.ball.vector.x * 60,
+        y: lobby.game.ball.position.y + lobby.game.ball.vector.y * 60,
+      };
+      nextPos = NormPos(nextPos);
+      const bounce = BallOnPaddle(lobby, nextPos);
+      if (bounce >= 0) {
+        // console.log(
+        //   'bounce!!!!!!!!!!!!!!!!!!!!!!!',
+        //   bounce,
+        //   lobby.game.player[bounce].position.x,
+        //   lobby.game.ball.position.x,
+        //   lobby.game.ballRadius,
+        // );
+        // if (bounce === 0) {
+        //   const angle = bounceAngle(lobby, lobby.game.player[bounce].position.y);
+        //   lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
+        //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
+        // } else {
+        //   const angle = bounceAngle(lobby, lobby.game.player[bounce].position.y);
+        //   lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
+        //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
+        // }
+        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
+        //console.log('bounce');
+        if (bounce === 1)
+          lobby.game.ball.position.x =
+            lobby.game.player[1].position.x - lobby.game.paddleWidth / 2 - lobby.game.ballRadius / 2;
+        else
+          lobby.game.ball.position.x =
+            lobby.game.player[0].position.x + lobby.game.paddleWidth / 2 + lobby.game.ballRadius / 2;
+        lobby.game.ball.position.y = nextPos.y;
+        // lobby.game.ball.position.x =
+        //   bounce === 1
+        //     ? lobby.game.player[bounce].position.x + lobby.game.paddleWidth / 2 + lobby.game.ballRadius
+        //     : lobby.game.player[bounce].position.x - lobby.game.paddleWidth / 2 - lobby.game.ballRadius;
+        // lobby.game.ball.position.y = nextPos.y;
+      } else if (BallScore(lobby, nextPos)) {
+        // console.log(
+        //   'ball score',
+        //   lobby.game.player[0].position,
+        //   lobby.game.player[1].position,
+        //   lobby.game.ball.position,
+        // );
+        //lobby.game.ball.position = { x: 0.5, y: 0.5 };
+        //nextPos = NoOOB(nextPos, lobby);
+        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
+        lobby.game.ball.position = { x: 0.5, y: 0.5 };
+        //lobby.game.ball.position = { ...nextPos };
+        //console.log('vitesse score', lobby.game.ball.vector.x);
+      } else if (ballHitWall(lobby, nextPos)) {
+        // console.log(
+        //   'ball hit the wall',
+        //   lobby.game.player[0].position,
+        //   lobby.game.player[1].position,
+        //   lobby.game.ball.position,
+        // );
+        //nextPos = NoOOB(nextPos, lobby);
+        lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
+        //lobby.game.ball.position = { ...nextPos };
+        //console.log('vitesse', lobby.game.ball.vector.y);
+      } else {
+        //nextPos = NoOOB(nextPos, lobby);
+        lobby.game.ball.position = { ...nextPos };
+      }
+
       return resolve(lobby);
     });
   }

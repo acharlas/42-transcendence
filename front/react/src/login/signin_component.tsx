@@ -1,20 +1,12 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import jwt_decode from 'jwt-decode';
-import {
-  FaUserAstronaut,
-  FaRocket,
-  FaSpaceShuttle,
-  FaLock,
-  FaEye,
-  FaEyeSlash,
-  FaFighterJet,
-} from 'react-icons/fa';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
+import { FaUserAstronaut, FaRocket, FaSpaceShuttle, FaLock, FaEye, FaEyeSlash, FaFighterJet } from "react-icons/fa";
 
-import './login_style.css';
-import '../style.css';
-import displayErrorMsgs from '../utils/displayErrMsgs';
-import { signin } from '../api/auth-api';
+import "./login_style.css";
+import "../style.css";
+import displayErrorMsgs from "../utils/displayErrMsgs";
+import { signin } from "../api/auth-api";
 
 interface DecodedToken {
   sub: string;
@@ -23,12 +15,12 @@ interface DecodedToken {
   exp: string;
 }
 
-export interface ISigninFormProps { }
+export interface ISigninFormProps {}
 
 const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
-  const [newUsername, setNewUsername] = useState('');
-  const [newPass, setNewPass] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [newUsername, setNewUsername] = useState("");
+  const [newPass, setNewPass] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [hidePassword, setHidePassword] = useState<boolean>(true);
   let navigate = useNavigate();
 
@@ -42,13 +34,13 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   };
 
   const goSignup = () => {
-    navigate('/signup');
+    navigate("/signup");
   };
   const goHome = () => {
-    navigate('/app');
+    navigate("/app");
   };
   const goSigninMfa = () => {
-    navigate('/mfa-signin');
+    navigate("/mfa-signin");
   };
 
   const ftShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -59,13 +51,13 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
   const signinClassic = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     try {
-      setErrorMessage('');
+      setErrorMessage("");
       const token = await signin({
         username: newUsername,
         password: newPass,
       });
-      setNewUsername('');
-      setNewPass('');
+      setNewUsername("");
+      setNewPass("");
       const tokenInfo: DecodedToken = jwt_decode(token); //can throw InvalidTokenError
       if (tokenInfo.fullyAuth) {
         goHome();
@@ -73,25 +65,28 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
         goSigninMfa();
       }
     } catch (e) {
-      setErrorMessage('Wrong username or password.');
+      setErrorMessage("Wrong username or password.");
     }
   };
 
+  function generateState() {
+    const validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let array = new Uint8Array(50);
+    window.crypto.getRandomValues(array);
+    array = array.map((x: number) => validChars.codePointAt(x % validChars.length));
+    const randomState = String.fromCharCode.apply(null, array);
+    return randomState;
+  }
+
   function fortyTwoOauthUrl(): string {
-    let url = `https://api.intra.42.fr/oauth/authorize
+    const url: string = `https://api.intra.42.fr/oauth/authorize
 ?client_id=${process.env.REACT_APP_42API_UID}
 &redirect_uri=${encodeURI(process.env.REACT_APP_42API_REDIRECT)}
 &response_type=code
 &state=`;
-    let secretState = '';
-    const possible =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const stringLength = Math.floor(Math.random() * 200 + 200);
-
-    for (let i = 0; i < stringLength; i++) {
-      secretState += possible.at(Math.floor(Math.random() * possible.length));
-    }
-    return url + secretState;
+    const state: string = generateState();
+    sessionStorage.setItem("oauth_state", state);
+    return url + state;
   }
 
   return (
@@ -114,13 +109,10 @@ const SigninForm: React.FunctionComponent<ISigninFormProps> = (props) => {
                 className="login__input"
                 placeholder="Password"
                 value={newPass}
-                type={hidePassword ? 'password' : 'text'}
+                type={hidePassword ? "password" : "text"}
                 onChange={HandlePassChange}
               />
-              <button
-                className="login__input___show-button"
-                onClick={ftShowPassword}
-              >
+              <button className="login__input___show-button" onClick={ftShowPassword}>
                 {hidePassword ? <FaEye /> : <FaEyeSlash />}
               </button>
             </div>

@@ -29,7 +29,7 @@
     "@nestjs/common": "^9.2.1",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.2.1",
-    "@nestjs/jwt": "^9.0.0",
+    "@nestjs/jwt": "^10.0.1",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.2.1",
     "@nestjs/platform-socket.io": "^9.2.1",
@@ -49,7 +49,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.6.0",
-    "twilio": "^3.83.4"
+    "twilio": "^4.1.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
@@ -64,11 +64,11 @@
     "@typescript-eslint/eslint-plugin": "^5.46.0",
     "@typescript-eslint/parser": "^5.46.0",
     "dotenv-cli": "^6.0.0",
-    "nestjs-form-data": "^1.8.3",
     "eslint": "^8.29.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "jest": "^29.3.1",
+    "nestjs-form-data": "^1.8.3",
     "pactum": "^3.3.1",
     "prettier": "^2.8.1",
     "prisma": "^4.7.1",

@@ -4,6 +4,7 @@ p {
 
 body {
   background-color: rgb(255, 255, 255);
+  word-break: break-word;
 }
 
 #game {

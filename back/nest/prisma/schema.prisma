@@ -126,6 +126,7 @@ model Message {
 enum GameMode {
   BATTLEROYAL
   CLASSIC
+  RANKED
 }
 
 enum UserStatus {

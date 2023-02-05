@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 
 import "./style.css";
 import { getMe } from "./api/auth-api";
@@ -16,8 +16,18 @@ import RoomsMenuContainer from "./chat/components/main";
 
 export interface IAppProps {}
 const App: React.FunctionComponent<IAppProps> = (props) => {
+  const navigate = useNavigate();
+  const goRoot = () => {
+    navigate("/");
+  };
   useEffect(() => {
-    getMe();
+    try {
+      getMe();
+    } catch (e) {
+      console.log("getMe error in /app, redirecting");
+      goRoot();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

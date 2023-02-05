@@ -4,7 +4,7 @@ import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
 import { GameMode } from "./game-type";
 
-export interface ILobbyComponentProps { }
+export interface ILobbyComponentProps {}
 
 const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
@@ -15,6 +15,7 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
   };
 
   const handleCreateLobbyClick = () => {
+    console.log("send create lobby");
     socket.emit("CreateLobby");
   };
 
@@ -22,63 +23,57 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
     socket.emit("LeavingLobby");
   };
 
-  const handleSendHistoryClick = () => {
-    const playerOne = {
-      id: "2ce6e635-f65c-4150-ae8c-4293a4227bdb",
-      score: 3,
-      placement: 1,
-    };
-    const playerTwo = {
-      id: "afc89610-96e7-4ef5-bd9c-2dd279936c2c",
-      score: 0,
-      placement: 2,
-    };
-    const newHistory = {
-      mode: GameMode.classic,
-      score: [playerOne, playerTwo],
-    };
-    socket.emit("NewHistory", { newHistory: newHistory });
-  };
-
   const handleStartGameClick = () => {
-    socket.emit("CreateGame");
+    socket.emit("CreateGame", { mode: GameMode.classic });
   };
 
-  return (<>
-    <div className="profile__panel__top">Debug stuff?</div>
-    <div className="profile__panel__bottom">
-      socket: {socket?.id}
-      <br />
-      <button onClick={handleSendHistoryClick}>Send history</button>
-      <button onClick={handleCreateLobbyClick}>Create lobby</button>
-    </div>
+  const handleReaddyClick = () => {
+    socket.emit("PlayerLobbyReaddy");
+  };
 
-    <div className="profile__panel__top">Game lobby</div>
-    <div className="profile__panel__bottom">
-      {lobby ? (<>
-        Player 1: {lobby.playerOne}
-        Player 2: {lobby.playerTwo}
-        <button onClick={handleLeavingLobbyClick}>Leave lobby</button>
-        <button onClick={handleStartGameClick}>Start Game</button>
-        <table>
-          <tbody>
-            <tr>
-              {lobby.invited.map((user, i) => {
-                return <th key={i}>{user}</th>;
-              })}
-            </tr>
-          </tbody>
-        </table>
-      </>) : (<>
-        {inQueue ? (
-          "Looking for an opponent..."
+  return (
+    <>
+      <div className="profile__panel__top">Debug stuff?</div>
+      <div className="profile__panel__bottom">
+        socket: {socket?.id}
+        <br />
+        <button onClick={handleCreateLobbyClick}>Create lobby</button>
+      </div>
+
+      <div className="profile__panel__top">Game lobby</div>
+      <div className="profile__panel__bottom">
+        {lobby ? (
+          <>
+            {lobby.playerOne && <>Player 1: {lobby.playerOne.nickname}</>}
+            {lobby.playerTwo && <>Player 2: {lobby.playerTwo.nickname}</>}
+            <button onClick={handleLeavingLobbyClick}>Leave lobby</button>
+            {lobby.playerOne && lobby.playerOne.id === sessionStorage.getItem("userid") && (
+              <button disabled={lobby.playerTwo && !lobby.playerTwo.readdy} onClick={handleStartGameClick}>
+                Start Game
+              </button>
+            )}
+            {lobby.playerTwo && lobby.playerTwo.id === sessionStorage.getItem("userid") && !lobby.playerTwo.readdy && (
+              <button onClick={handleReaddyClick}>not Readdy</button>
+            )}
+            {lobby.playerTwo && lobby.playerTwo.id === sessionStorage.getItem("userid") && lobby.playerTwo.readdy && (
+              <button onClick={handleReaddyClick}>readdy</button>
+            )}
+            <table>
+              <tbody>
+                <tr>
+                  {lobby.invited.map((user, i) => {
+                    return <th key={i}>{user}</th>;
+                  })}
+                </tr>
+              </tbody>
+            </table>
+          </>
         ) : (
-          <button onClick={handleClick}>Join matchmaking</button>
+          <>{inQueue ? "Looking for an opponent..." : <button onClick={handleClick}>Join matchmaking</button>}</>
         )}
-      </>
-      )}
-    </div>
-  </>);
+      </div>
+    </>
+  );
 };
 
 export default LobbyComponent;

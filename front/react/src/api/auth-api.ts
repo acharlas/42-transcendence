@@ -1,5 +1,5 @@
-import axiosWithAuth from './axiosInstances/protectedCalls';
-import axiosNoAuth from './axiosInstances/unprotectedCalls';
+import axiosWithAuth from "./axiosInstances/protectedCalls";
+import axiosNoAuth from "./axiosInstances/unprotectedCalls";
 
 export interface loginDto {
   username: string;
@@ -19,56 +19,54 @@ export interface fortyTwoLoginDto {
 export const getMe = async (): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     axiosWithAuth
-      .get('/users/me', {
-        headers: {
-          Authorization:
-            'Bearer ' + window.sessionStorage.getItem('AccessToken'),
-        },
-      })
+      .get("/users/me")
       .then((ret) => {
-        sessionStorage.setItem('username', ret.data.username);
-        sessionStorage.setItem('nickname', ret.data.nickname);
-        sessionStorage.setItem('userid', ret.data.id);
+        if (!ret?.data) {
+          return reject("no data");
+        }
+        sessionStorage.setItem("username", ret.data.username);
+        sessionStorage.setItem("nickname", ret.data.nickname);
+        sessionStorage.setItem("userid", ret.data.id);
         return resolve();
       })
       .catch((err) => {
-        console.log({ err });
+        console.log("getMe catch", err);
         return reject(err);
       });
-  });
+  }).catch(() => {});
 };
 
 export const signin = async (credentials: loginDto) => {
-  const response = await axiosNoAuth.post('/auth/signin', {
+  const response = await axiosNoAuth.post("/auth/signin", {
     username: credentials.username,
     password: credentials.password,
   });
-  window.sessionStorage.setItem('AccessToken', response.data.access_token);
-  window.sessionStorage.setItem('RefreshToken', response.data.refresh_token);
+  window.sessionStorage.setItem("AccessToken", response.data.access_token);
+  window.sessionStorage.setItem("RefreshToken", response.data.refresh_token);
   return response.data.access_token;
 };
 
 export const signup = async (credentials: signupDto) => {
-  const response = await axiosNoAuth.post('/auth/signup', {
+  const response = await axiosNoAuth.post("/auth/signup", {
     password: credentials.password,
     username: credentials.username,
   });
-  window.sessionStorage.setItem('AccessToken', response.data.access_token);
-  window.sessionStorage.setItem('RefreshToken', response.data.refresh_token);
+  window.sessionStorage.setItem("AccessToken", response.data.access_token);
+  window.sessionStorage.setItem("RefreshToken", response.data.refresh_token);
   return response.data.access_token;
 };
 
 export const fortyTwoSign = async (dto: fortyTwoLoginDto) => {
   try {
-    const response = await axiosNoAuth.post('/auth/signinApi', {
+    const response = await axiosNoAuth.post("/auth/signinApi", {
       code: dto.code,
       state: dto.state,
     });
-    window.sessionStorage.setItem('AccessToken', response.data.access_token);
-    window.sessionStorage.setItem('RefreshToken', response.data.refresh_token);
+    window.sessionStorage.setItem("AccessToken", response.data.access_token);
+    window.sessionStorage.setItem("RefreshToken", response.data.refresh_token);
     return response;
   } catch (e) {
-    console.log('Oauth error', e);
+    console.log("Oauth error", e);
     return e;
   }
 };

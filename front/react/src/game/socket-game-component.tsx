@@ -1,25 +1,17 @@
 import { PropsWithChildren, useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../context/game.context";
-import {
-  defaultSocketContextState,
-  SocketContextProvider,
-  SocketReducer,
-} from "../context/socket.context";
+import { defaultSocketContextState, SocketContextProvider, SocketReducer } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
 import { Lobby, Position } from "./game-type";
 
 export interface ISocketGameContextComponentProps extends PropsWithChildren {}
 
-const SocketGameContextComponent: React.FunctionComponent<
-  ISocketGameContextComponentProps
-> = (props) => {
+const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComponentProps> = (props) => {
   const { children } = props;
-  const [SocketState, SocketDispatch] = useReducer(
-    SocketReducer,
-    defaultSocketContextState
-  );
+  const [SocketState, SocketDispatch] = useReducer(SocketReducer, defaultSocketContextState);
   const {
+    timer,
     setInQueue,
     setLobby,
     lobby,
@@ -30,6 +22,9 @@ const SocketGameContextComponent: React.FunctionComponent<
     gameBounds,
     ball,
     game,
+    player1Score,
+    player2Score,
+    setHistory,
   } = useGame();
 
   const socket = useSocket("http://localhost:3333/game", {
@@ -55,12 +50,47 @@ const SocketGameContextComponent: React.FunctionComponent<
     socket.removeAllListeners();
     const StartListener = () => {
       /**** Game-related listeners ****/
+      /** Game Pause */
+      socket.on("EndGame", ({ history, lobby }: { history: History; lobby: Lobby }) => {
+        console.log("EndGame: ");
+        game.destroy(true); // destroy the game at the end to prevent leaks
+        //switch scene game un truc dans le genre
+
+        navigate("/app/game/Recap");
+        setHistory(history);
+        setLobby(lobby);
+      });
+      /** Game Pause */
+      socket.on("GameResume", () => {
+        console.log("GameResume: ");
+
+        //switch scene game un truc dans le genre
+        if (game) game.scene.resume("default");
+      });
+      /** Surrender */
+      socket.on("Surrender", () => {
+        console.log("Surrender: ");
+        navigate("/app/game/");
+      });
+      /** EnnemySurrender */
+      socket.on("EnnemySurrender", () => {
+        console.log("EnnemySurrender: ");
+        navigate("/app/game/");
+      });
+      /** Game Pause */
+      socket.on("GamePause", () => {
+        console.log("GamePause: ");
+
+        if (game) game.scene.pause("default");
+        //switch scene timer un truc dans le genre
+      });
       /** Game start */
       socket.on("StartGame", (lobby: Lobby) => {
         console.log("everyone ready: ", lobby);
 
         setLobby(lobby);
         console.log({ game });
+        if (timer) timer.paused = !timer.paused;
         if (game) game.scene.resume("default");
       });
       /** Game creation */
@@ -72,25 +102,13 @@ const SocketGameContextComponent: React.FunctionComponent<
       });
       /** setBallPosition */
       socket.on("NewBallPos", (position: Position) => {
-        // console.log("ball: ", { position }); //spammy
-        if (ball)
-          ball.setPosition(
-            position.x * gameBounds.x + ball.body.width / 2,
-            position.y * gameBounds.y + ball.body.height / 2
-          );
+        // console.log("ball: ", { position });
+        if (ball) ball.setPosition(position.x * gameBounds.x, position.y * gameBounds.y);
       });
       /**setPlayerPosition */
       socket.on("NewPlayerPos", (position: { player: boolean; y: number }) => {
-        if (!position.player)
-          player2.setPosition(
-            ball.width / 2 + 1,
-            position.y * gameBounds.y + player1.body.height / 2
-          );
-        if (position.player)
-          player1.setPosition(
-            gameBounds.x,
-            position.y * gameBounds.y + player1.body.height / 2
-          );
+        if (!position.player) player2.setPosition(ball.width / 2 + 1, position.y * gameBounds.y);
+        if (position.player) player1.setPosition(gameBounds.x, position.y * gameBounds.y);
       });
 
       /**** Matchmaking-related listeners ****/
@@ -116,7 +134,6 @@ const SocketGameContextComponent: React.FunctionComponent<
       socket.on("PlayerLeave", (uid: string) => {
         console.log("user: ", uid, " leave the lobby");
         Removeplayer(uid);
-        navigate("/app/game");
       });
       /** You leave the lobby */
       socket.on("LeaveLobby", (lobbyId: string) => {
@@ -124,10 +141,22 @@ const SocketGameContextComponent: React.FunctionComponent<
         setInQueue(false);
         setLobby(null);
       });
+      /** update the lobby */
+      socket.on("UpdateLobby", (lobby: Lobby) => {
+        console.log("UpdateLobby: ", lobby);
+        setLobby(lobby);
+      });
       /** Receive new id */
       socket.on("new_user", (uid: string) => {
         console.log("User connected, new user received", uid, "last uid");
         SocketDispatch({ type: "update_uid", payload: uid });
+      });
+
+      /* update score */
+      socket.on("updateScore", (newScore: number[]) => {
+        // console.log("rec updateScore", newScore);
+        player1Score.current = newScore[1];
+        player2Score.current = newScore[0];
       });
 
       /**** Connection-related listeners ****/
@@ -159,23 +188,9 @@ const SocketGameContextComponent: React.FunctionComponent<
       });
     };
     StartListener();
-  }, [
-    socket,
-    lobby,
-    setLobby,
-    setInQueue,
-    inQueue,
-    ball,
-    player1,
-    player2,
-    game,
-  ]);
+  }, [socket, timer, lobby, setLobby, setInQueue, inQueue, ball, player1, player2, game, player1Score, player2Score]);
 
-  return (
-    <SocketContextProvider value={{ SocketState, SocketDispatch }}>
-      {children}
-    </SocketContextProvider>
-  );
+  return <SocketContextProvider value={{ SocketState, SocketDispatch }}>{children}</SocketContextProvider>;
 };
 
 export default SocketGameContextComponent;

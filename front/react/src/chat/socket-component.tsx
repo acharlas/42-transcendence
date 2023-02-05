@@ -2,25 +2,16 @@ import { PropsWithChildren, useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { SelectedChatWindow, useChat } from "../context/chat.context";
-import {
-  defaultSocketContextState,
-  SocketContextProvider,
-  SocketReducer,
-} from "../context/socket.context";
+import { defaultSocketContextState, SocketContextProvider, SocketReducer } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
 import { ErrMessage } from "./chat-error-msg";
 import { Channel, ChannelType, Message, Room, User, UserStatus } from "./type";
 
-export interface ISocketContextComponentProps extends PropsWithChildren { }
+export interface ISocketContextComponentProps extends PropsWithChildren {}
 
-const SocketContextComponent: React.FunctionComponent<
-  ISocketContextComponentProps
-> = (props) => {
+const SocketContextComponent: React.FunctionComponent<ISocketContextComponentProps> = (props) => {
   const { children } = props;
-  const [SocketState, SocketDispatch] = useReducer(
-    SocketReducer,
-    defaultSocketContextState
-  );
+  const [SocketState, SocketDispatch] = useReducer(SocketReducer, defaultSocketContextState);
   const {
     rooms,
     setRooms,
@@ -73,12 +64,7 @@ const SocketContextComponent: React.FunctionComponent<
     const StartListener = () => {
       /**error received */
       socket.on("ErrMessage", ({ code }: { code: string }) => {
-        console.log(
-          "Error code:",
-          code,
-          "\nError message:",
-          ErrMessage[code]
-        );
+        console.log("Error code:", code, "\nError message:", ErrMessage[code]);
         if (code.search("err1") >= 0) {
           setFriendErrMsg(ErrMessage[code]);
         } else if (code.search("err2") >= 0) {
@@ -97,8 +83,7 @@ const SocketContextComponent: React.FunctionComponent<
       socket.on("GameInvite", (invite: { id: string; username: string }) => {
         console.log("invite receive: ", invite);
         setInviteList([...inviteList, invite]);
-        if (selectedChatWindow !== SelectedChatWindow.INVITES)
-          setHasNewInvite(true);
+        if (selectedChatWindow !== SelectedChatWindow.INVITES) setHasNewInvite(true);
       });
       /**disconnect */
       socket.on("Disconnect", () => {
@@ -170,53 +155,43 @@ const SocketContextComponent: React.FunctionComponent<
         } else {
           room.user.push(user);
         }
-        if (actChannel === id)
-          setUserList(room.user);
+        if (actChannel === id) setUserList(room.user);
         setRooms(newRooms);
       });
       /**receive Room message */
-      socket.on(
-        "RoomMessage",
-        ({ roomId, message }: { roomId: string; message: Message }) => {
-          console.log("Message received on: ", roomId, "\nmessage: ", {
-            message,
-          });
-          const newRooms = [...rooms];
-          const room = newRooms.find((room) => {
-            return (room.channel.id === roomId);
-          });
-          room.message.push(message);
-          if (room.channel.id !== actChannel)
-            room.newMessage = true;
-          setRooms(newRooms);
-          if (roomId === actChannel) {
-            setMessages(room.message);
+      socket.on("RoomMessage", ({ roomId, message }: { roomId: string; message: Message }) => {
+        console.log("Message received on: ", roomId, "\nmessage: ", {
+          message,
+        });
+        const newRooms = [...rooms];
+        const room = newRooms.find((room) => {
+          return room.channel.id === roomId;
+        });
+        room.message.push(message);
+        if (room.channel.id !== actChannel) room.newMessage = true;
+        setRooms(newRooms);
+        if (roomId === actChannel) {
+          setMessages(room.message);
+        } else if (room.channel.type === ChannelType.dm) {
+          if (selectedChatWindow !== SelectedChatWindow.MESSAGES) {
+            setHasNewChatMessage(true);
           }
-          else if (room.channel.type === ChannelType.dm) {
-            if (selectedChatWindow !== SelectedChatWindow.MESSAGES) {
-              setHasNewChatMessage(true);
-            }
-          }
-          else { //channel msg
-            if (selectedChatWindow !== SelectedChatWindow.CHANNELS) {
-              setHasNewChannelMessage(true);
-            }
+        } else {
+          //channel msg
+          if (selectedChatWindow !== SelectedChatWindow.CHANNELS) {
+            setHasNewChannelMessage(true);
           }
         }
-      );
+      });
       /**add a new room */
       socket.on("NewRoom", ({ room, itch }: { room: Room; itch: Boolean }) => {
-        console.log("New room received: ", room, "try to create: ", [
-          ...rooms,
-          room,
-        ]);
+        console.log("New room received: ", room, "try to create: ", [...rooms, room]);
         setRooms([...rooms, room]);
         setMessages(room.message);
         setUserList(room.user);
         setActChannel(room.channel.id);
         const user = room.user.find((user) => {
-          if (user.username === window.sessionStorage.getItem("username"))
-            return true;
+          if (user.username === window.sessionStorage.getItem("username")) return true;
           return false;
         });
         setUser(user);
@@ -233,71 +208,64 @@ const SocketContextComponent: React.FunctionComponent<
         setRooms(res);
       });
       /**UserList update */
-      socket.on(
-        "UpdateUserList",
-        ({ user, roomId }: { user: User[]; roomId: string }) => {
-          console.log("Updated user list", user);
-          const newRooms = rooms.map((room) => {
-            if (room.channel.id === roomId) {
-              room.user = [...user];
-            }
-            return room;
-          });
+      socket.on("UpdateUserList", ({ user, roomId }: { user: User[]; roomId: string }) => {
+        console.log("Updated user list", user);
+        const newRooms = rooms.map((room) => {
+          if (room.channel.id === roomId) {
+            room.user = [...user];
+          }
+          return room;
+        });
 
-          setRooms([...newRooms]);
+        setRooms([...newRooms]);
 
-          const room = newRooms.find((room) => {
-            if (room.channel.id === roomId) return true;
+        const room = newRooms.find((room) => {
+          if (room.channel.id === roomId) return true;
+          return false;
+        });
+
+        if (actChannel === roomId) {
+          setUserList(user);
+          const newUser = room.user.find((user) => {
+            if (user.username === window.sessionStorage.getItem("username")) return true;
             return false;
           });
-
-          if (actChannel === roomId) {
-            setUserList(user);
-            const newUser = room.user.find((user) => {
-              if (user.username === window.sessionStorage.getItem("username"))
-                return true;
-              return false;
-            });
-            console.log(user);
-            setUser({ ...newUser });
-            console.log("userList", userList, "priv: ", newUser.privilege);
-          }
+          console.log(user);
+          setUser({ ...newUser });
+          console.log("userList", userList, "priv: ", newUser.privilege);
         }
-      );
+      });
       /**set a user disconected */
-      socket.on(
-        "RemoveUser",
-        ({ username, roomId }: { username: string; roomId: string }) => {
-          console.log("User: ", username, "disconnect from: ", roomId);
-          const newRooms = rooms.map((room) => {
-            if (room.channel.id === roomId)
-              return {
-                channel: room.channel,
-                message: room.message,
-                user: room.user.map((user) => {
-                  if (user.username === username)
-                    return {
-                      username: user.username,
-                      nickname: user.nickname,
-                      privilege: user.privilege,
-                      status: UserStatus.disconnected,
-                    };
-                  return user;
-                }),
-              };
-            return room;
-          });
-          setRooms(newRooms);
-          if (roomId === ShowRoomSetting.channel.id) {
-            setShowRoomSetting(
-              newRooms.find((room) => {
-                if (room.channel.id === roomId) return true;
-                return false;
-              })
-            );
-          }
+      socket.on("RemoveUser", ({ username, roomId }: { username: string; roomId: string }) => {
+        console.log("User: ", username, "disconnect from: ", roomId);
+        const newRooms = rooms.map((room) => {
+          if (room.channel.id === roomId)
+            return {
+              channel: room.channel,
+              message: room.message,
+              user: room.user.map((user) => {
+                if (user.username === username)
+                  return {
+                    username: user.username,
+                    nickname: user.nickname,
+                    privilege: user.privilege,
+                    status: UserStatus.disconnected,
+                  };
+                return user;
+              }),
+            };
+          return room;
+        });
+        setRooms(newRooms);
+        if (roomId === ShowRoomSetting.channel.id) {
+          setShowRoomSetting(
+            newRooms.find((room) => {
+              if (room.channel.id === roomId) return true;
+              return false;
+            })
+          );
         }
-      );
+      });
       /**receive new id */
       socket.on("new_user", (uid: string) => {
         console.log("User connected, new user received", uid, "last uid");
@@ -322,6 +290,11 @@ const SocketContextComponent: React.FunctionComponent<
       socket.io.on("reconnect_failed", () => {
         console.log("Reconnection failed");
         alert("Connection to chat lost. Please refresh the page.");
+      });
+
+      /**Connection failed */
+      socket.on("connect_error", (err) => {
+        console.log(`connect_error due to ${err.message}`);
       });
 
       /**receive list of online users */
@@ -354,11 +327,7 @@ const SocketContextComponent: React.FunctionComponent<
     setFriendList,
   ]);
 
-  return (
-    <SocketContextProvider value={{ SocketState, SocketDispatch }}>
-      {children}
-    </SocketContextProvider>
-  );
+  return <SocketContextProvider value={{ SocketState, SocketDispatch }}>{children}</SocketContextProvider>;
 };
 
 export default SocketContextComponent;

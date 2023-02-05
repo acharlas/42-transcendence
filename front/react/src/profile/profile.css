@@ -3,13 +3,6 @@
   width: 100%;
 }
 
-.profile__panel__title {
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-  font-weight: bold;
-  text-align: center;
-}
-
 .profile__bubble {
   background-color: rgb(158, 158, 199);
   border-radius: 10px;
@@ -36,7 +29,7 @@
 }
 
 .profile__panel__bottom input {
-  width: 100%
+  width: 100%;
 }
 
 /* avatar + stats */
@@ -52,8 +45,12 @@
   flex-direction: column;
 }
 
-.stats__width .profile__panel__top {width: 100%;}
-.stats__width .profile__panel__bottom {width: 100%;}
+.stats__width .profile__panel__top {
+  width: 100%;
+}
+.stats__width .profile__panel__bottom {
+  width: 100%;
+}
 
 .center__txt {
   text-align: center;
@@ -87,9 +84,17 @@
 }
 
 .profile__avatar__container {
+  width: 100%;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.profile__avatar__container img {
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
 }
 
 /* match history */
@@ -99,8 +104,12 @@
   width: 100%;
 }
 
-.profile__hist__w {background-color: rgb(55, 116, 55);}
-.profile__hist__l {background-color: rgb(230, 75, 75);}
+.profile__hist__w {
+  background-color: rgb(55, 116, 55);
+}
+.profile__hist__l {
+  background-color: rgb(230, 75, 75);
+}
 
 .profile__hist__head th {
   font-weight: bold;
@@ -119,7 +128,7 @@
   text-align: center;
 }
 
-.dotted__table tr:nth-child(n+3) {
+.dotted__table tr:nth-child(n + 3) {
   border-top: 1px dotted black;
 }
 

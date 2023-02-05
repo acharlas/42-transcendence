@@ -1,6 +1,5 @@
 import { ConfigService } from '@nestjs/config';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { Twilio } from 'twilio';
 import { JwtService } from '@nestjs/jwt';
 
 import { PrismaService } from '../prisma/prisma.service';
@@ -18,133 +17,122 @@ export class MfaService {
   ) {}
 
   async mfaSendSms(phoneNumber: string): Promise<boolean> {
-    //TMP
-    return true; //to test stuff without calling external API
     const accountSid = this.config.get<string>('TWILIO_ACCOUNT_SID');
     const authToken = this.config.get<string>('TWILIO_AUTH_TOKEN');
     const serviceSid = this.config.get<string>('TWILIO_SERVICE_SID');
-    const client = new Twilio(accountSid, authToken);
+    const client = require('twilio')(accountSid, authToken);
 
-    client.verify.v2
-      .services(serviceSid)
-      .verifications.create(
-        { to: phoneNumber, channel: 'sms' },
-        function (err, message) {
-          if (err) {
-            console.log(err);
-            return true;
-          } else {
-            console.log('Sent 2fa request to ' + message.to);
-            return false;
-          }
-        },
-      );
-    return true;
+    return new Promise<boolean>((resolve, reject) => {
+      client.verify.v2
+        .services(serviceSid)
+        .verifications.create({ to: phoneNumber, channel: 'sms' })
+        .then(
+          (verification) => {
+            console.log(verification);
+            return resolve(true);
+          },
+          (e) => {
+            console.log(e);
+            return reject(new ForbiddenException('2fa request failed'));
+          },
+        );
+    });
   }
 
-  async mfaCheckCode(
-    phoneNumber: string,
-    codeToCheck: string,
-  ): Promise<boolean> {
-    //TMP
-    return true; //to test stuff without calling external API
+  async mfaCheckCode(phoneNumber: string, codeToCheck: string): Promise<boolean> {
     const accountSid = this.config.get<string>('TWILIO_ACCOUNT_SID');
     const authToken = this.config.get<string>('TWILIO_AUTH_TOKEN');
     const serviceSid = this.config.get<string>('TWILIO_SERVICE_SID');
-    const client = new Twilio(accountSid, authToken);
+    const client = require('twilio')(accountSid, authToken);
 
-    const ret = await client.verify.v2
-      .services(serviceSid)
-      .verificationChecks.create(
-        { to: phoneNumber, code: codeToCheck },
-        function (err, message) {
-          if (err) {
-            console.log(err);
-            return true;
-          } else {
-            return false;
-          }
-        },
-      );
-
-    console.log('Sent 2fa code checking request', ret);
-
-    if (ret.status === 'approved') return true;
-    else return false;
+    return new Promise<boolean>((resolve, reject) => {
+      client.verify.v2
+        .services(serviceSid)
+        .verificationChecks.create({ to: phoneNumber, code: codeToCheck })
+        .then(
+          (verification_check) => {
+            console.log(verification_check);
+            return resolve(verification_check.status === 'approved');
+          },
+          (e) => {
+            console.log(e);
+            return reject(new ForbiddenException('2fa verification failed'));
+          },
+        );
+    });
   }
 
   async initSetup(userId: string, dto: MfaSetupDto) {
     const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (user === null) throw new ForbiddenException('no such user');
-    if (user.mfaEnabled === true)
-      throw new ForbiddenException('mfa already enabled');
+    if (user.mfaEnabled === true) throw new ForbiddenException('mfa already enabled');
 
-    this.mfaSendSms(dto.phoneNumber);
-
-    //success: add phone number
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        mfaPhoneNumber: dto.phoneNumber,
-      },
-    });
+    const success = await this.mfaSendSms(dto.phoneNumber);
+    if (success) {
+      console.log('mfa initSetup ok');
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          mfaPhoneNumber: dto.phoneNumber,
+        },
+      });
+      return true;
+    } else {
+      console.log('mfa initSetup failed');
+      throw new ForbiddenException("Could't send 2fa sms");
+    }
   }
 
   async finishSetup(userId: string, dto: MfaValidateDto) {
     const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (user === null) throw new ForbiddenException('no such user');
-    if (user.mfaEnabled === true)
-      throw new ForbiddenException('mfa already enabled');
-    if (user.mfaPhoneNumber === null)
-      throw new ForbiddenException('no phone number');
+    if (user.mfaEnabled === true) throw new ForbiddenException('mfa already enabled');
+    if (user.mfaPhoneNumber === null) throw new ForbiddenException('no phone number');
 
-    this.mfaCheckCode(user.mfaPhoneNumber, dto.codeToCheck);
+    const success = await this.mfaCheckCode(user.mfaPhoneNumber, dto.codeToCheck);
 
-    //success: set mfa as enabled
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: {
-        mfaEnabled: true,
-      },
-    });
+    if (success) {
+      console.log('mfa finishSetup ok');
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          mfaEnabled: true,
+        },
+      });
+    } else {
+      console.log('mfa finishSetup failed');
+      throw new ForbiddenException('2fa verification failed');
+    }
   }
 
   async initSignIn(userId: string) {
     const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (user === null) throw new ForbiddenException('no such user');
-    if (user.mfaEnabled === false)
-      throw new ForbiddenException('mfa not enabled');
-    if (user.mfaPhoneNumber === null)
-      throw new ForbiddenException('no phone number');
+    if (user.mfaEnabled === false) throw new ForbiddenException('mfa not enabled');
+    if (user.mfaPhoneNumber === null) throw new ForbiddenException('no phone number');
 
     const success = await this.mfaSendSms(user.mfaPhoneNumber);
     if (success) {
       console.log('mfa initSignIn ok');
     } else {
       console.log('mfa initSignIn failed');
+      throw new ForbiddenException("Could't send 2fa sms");
     }
   }
 
-  async validateSignIn(
-    userId: string,
-    dto: MfaValidateDto,
-  ): Promise<{ access_token: string }> {
+  async validateSignIn(userId: string, dto: MfaValidateDto): Promise<{ access_token: string }> {
     const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (user === null) throw new ForbiddenException('no such user');
-    if (user.mfaEnabled === false)
-      throw new ForbiddenException('mfa not enabled');
-    if (user.mfaPhoneNumber === null)
-      throw new ForbiddenException('no phone number');
+    if (user.mfaEnabled === false) throw new ForbiddenException('mfa not enabled');
+    if (user.mfaPhoneNumber === null) throw new ForbiddenException('no phone number');
 
-    const success = await this.mfaCheckCode(
-      user.mfaPhoneNumber,
-      dto.codeToCheck,
-    );
+    const success = await this.mfaCheckCode(user.mfaPhoneNumber, dto.codeToCheck);
     if (success) {
       console.log('mfa validateSignIn ok');
       return await this.authService.signTokens(userId, false);
     } else {
       console.log('mfa validateSignIn failed');
+      throw new ForbiddenException('2fa verification failed');
     }
   }
 

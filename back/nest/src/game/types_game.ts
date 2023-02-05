@@ -1,7 +1,9 @@
+import { GameMode } from '@prisma/client';
+
 export type Lobby = {
   id: string;
-  playerOne: string;
-  playerTwo: string;
+  playerOne: Player;
+  playerTwo: Player;
   game: Game;
   invited: string[];
   viewer: string[];
@@ -10,12 +12,32 @@ export type Lobby = {
 export type Player = {
   id: string;
   mmr: number;
+  nickname: string;
+  readdy: boolean;
+};
+
+export type Playertab = {
+  id: string;
+  position: Position;
+  ready: boolean;
+  timer: number;
+  pauseAt: Date;
 };
 
 export type Game = {
   start: boolean;
-  player: { id: string; ready: boolean }[];
+  mode: GameMode;
+  player: Playertab[];
   score: number[];
+  ball: Ball;
+  paddleHeight: number;
+  paddleWidth: number;
+  ballRadius: number;
+};
+
+export type Ball = {
+  position: Position;
+  vector: Position;
 };
 
 export type Position = {
