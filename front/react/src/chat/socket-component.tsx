@@ -24,6 +24,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
     actChannel,
     setUser,
     setFriendList,
+    bloquedList,
     setBloquedList,
     setSelectUser,
     setShowRoomSetting,
@@ -176,7 +177,15 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
         if (roomId === actChannel) {
           setMessages(room.message);
         } else if (room.channel.type === ChannelType.dm) {
-          if (selectedChatWindow !== SelectedChatWindow.MESSAGES) {
+          const sender = room.user.find((sender) => {
+            return sender.username !== window.sessionStorage.getItem("username");
+          });
+          if (
+            !bloquedList.find((block) => {
+              return block.username === sender.username;
+            }) &&
+            selectedChatWindow !== SelectedChatWindow.MESSAGES
+          ) {
             setHasNewChatMessage(true);
           }
         } else {
