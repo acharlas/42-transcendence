@@ -18,6 +18,7 @@ const IngameOrOnlineComponent = (id: string) => {
     }, 1000);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //periodically check user status
