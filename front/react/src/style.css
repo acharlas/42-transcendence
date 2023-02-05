@@ -68,8 +68,7 @@ body {
 
   width: 100vw;
 
-  overflow-x: scroll;
-  overflow-y: clip;
+  overflow: clip;
 }
 
 .topbar {
