@@ -10,5 +10,6 @@ import { GameService } from './game.service';
   controllers: [GameController],
   imports: [JwtModule, ScheduleModule.forRoot()],
   providers: [GameService, HistoryService, SchedulerRegistry, UserService],
+  exports: [GameService]
 })
 export class GameModule {}

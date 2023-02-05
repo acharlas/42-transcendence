@@ -7,13 +7,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { FriendService } from 'src/friend/friend.service';
 import { BlockService } from 'src/block/block.service';
 import { UserService } from 'src/user/user.service';
-import { GameService } from 'src/game/game.service';
 import { GameGateway } from 'src/game/game.gateway';
 import { HistoryService } from 'src/history/history.service';
+import { GameModule } from 'src/game/game.module';
 
 @Module({
   controllers: [MessageController],
-  imports: [JwtModule],
+  imports: [JwtModule, GameModule],
   providers: [
     MessageService,
     MessageGateway,
@@ -21,7 +21,6 @@ import { HistoryService } from 'src/history/history.service';
     FriendService,
     BlockService,
     UserService,
-    GameService,
     GameGateway,
     HistoryService,
   ],
