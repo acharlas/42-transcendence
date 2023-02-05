@@ -282,25 +282,26 @@ export class GameService {
   /*==================ingameList======================*/
   ingameList: string[] = [];
 
+  //add players to ingame list
   async incIngameList(newLobby:Lobby) {
-    console.log("inc");
+    // console.log("inc");
     this.ingameList.push(newLobby.playerOne.id);
     this.ingameList.push(newLobby.playerTwo.id);
-    console.log(this.ingameList);
-    
+    // console.log(this.ingameList);
   }
 
-  async decIngameList(oldLobby:Lobby) {
-    console.log("dec");
+  //rm players from ingame list
+  async decIngameList(idOne, idTwo) {
+    // console.log("dec");
     this.ingameList = this.ingameList.filter(function(element, index, array){
-      return (element === oldLobby.playerOne.id || element === oldLobby.playerTwo.id);
+      return (element !== idOne && element !== idTwo);
     });
+    // console.log(this.ingameList);
   }
 
   async isPlaying(userId: string) {
-    console.log(this.ingameList);
-    console.log("tried:", userId);
-    
+    // console.log(this.ingameList);
+    // console.log("tried:", userId);
     return this.ingameList.includes(userId);
   }
   /*==================================================*/

@@ -116,7 +116,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           };
 
           if (lobby.game && lobby.game.start) {
+            //game ended by disconnect
             this.scheduleRegistry.deleteInterval(lobby.id);
+            //update ingame status
+            this.gameService.decIngameList(player1.id, player2.id);
             if (lobby.game.mode === GameMode.RANKED) {
               //update mmr
               if (player1.placement === 1) {
@@ -382,7 +385,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         client.broadcast.to(lobby.id).emit('NewBallPos', lobby.game.ball.position);
                         client.emit('NewBallPos', lobby.game.ball.position);
                       } else {
+                        //game ended by score
                         this.scheduleRegistry.deleteInterval(lobby.id);
+                        //update ingame status
+                        this.gameService.decIngameList(lobby.game.player[0].id, lobby.game.player[1].id);
                         const player1 = {
                           id: lobby.game.player[1].id,
                           score: lobby.game.score[0],
