@@ -1,6 +1,5 @@
 import { PropsWithChildren, useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
-import { User } from "../chat/type";
 import { useGame } from "../context/game.context";
 import { defaultSocketContextState, SocketContextProvider, SocketReducer } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
