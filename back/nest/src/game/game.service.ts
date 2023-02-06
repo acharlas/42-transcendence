@@ -17,12 +17,9 @@ import { Lobby, Player, Position } from './types_game';
 
 @Injectable()
 export class GameService {
-  constructor(
-    private schedulerRegistry: SchedulerRegistry,
-    private userService: UserService,
-    ) {
-      console.log("gameservice instance created");
-    }
+  constructor(private schedulerRegistry: SchedulerRegistry, private userService: UserService) {
+    console.log('gameservice instance created');
+  }
 
   LobbyList: Lobby[] = [];
   Queue: Player[] = [];
@@ -40,9 +37,9 @@ export class GameService {
           });
           if (!find) this.Queue.push(newPlayer);
           if (find)
-            this.Queue = this.Queue.filter(player => {
-              return !(player.id === userId)
-            })
+            this.Queue = this.Queue.filter((player) => {
+              return !(player.id === userId);
+            });
           return resolve();
         })
         .catch((err) => {
@@ -287,7 +284,7 @@ export class GameService {
   ingameList: string[] = [];
 
   //add players to ingame list
-  async incIngameList(newLobby:Lobby) {
+  async incIngameList(newLobby: Lobby) {
     // console.log("inc");
     this.ingameList.push(newLobby.playerOne.id);
     this.ingameList.push(newLobby.playerTwo.id);
@@ -297,8 +294,8 @@ export class GameService {
   //rm players from ingame list
   async decIngameList(idOne, idTwo) {
     // console.log("dec");
-    this.ingameList = this.ingameList.filter(function(element, index, array){
-      return (element !== idOne && element !== idTwo);
+    this.ingameList = this.ingameList.filter(function (element, index, array) {
+      return element !== idOne && element !== idTwo;
     });
     // console.log(this.ingameList);
   }
@@ -396,9 +393,7 @@ export class GameService {
     });
   }
 
-  async PlayerReady(
-    userId: string,
-  ): Promise<Lobby> {
+  async PlayerReady(userId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
       const lobby = this.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);

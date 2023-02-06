@@ -5,8 +5,9 @@ import { getUser } from "../api/user-api";
 import Avatar from "../avatar/avatar_component";
 import "../style.css";
 import "./profile.css";
-import { HistoryMatch } from "../game/game-type";
+import { Achievement, HistoryMatch } from "../game/game-type";
 import { getHistory } from "../api/history-api";
+import { getAchievement } from "../api/achiev-api";
 
 interface User {
   nickname: string;
@@ -32,6 +33,7 @@ export default function Profile() {
     mmr: 0,
   });
   const [history, setHistory] = useState<HistoryMatch[]>([]);
+  const [achievement, setAchievement] = useState<Achievement[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -68,8 +70,27 @@ export default function Profile() {
         });
     };
 
+    const fetchUserAchievement = async () => {
+      const comp = (a: HistoryMatch, b: HistoryMatch) => {
+        if (a.date > b.date) return 1;
+        else if (a.date === b.date) return 1;
+        return 0;
+      };
+      await getAchievement()
+        .then((res) => {
+          console.log("Achievement: ", res);
+          setAchievement(res.data);
+        })
+        .catch((e) => {
+          console.log(e);
+          goRoot();
+          return;
+        });
+    };
+
     fetchUserData();
     fetchUserHistory();
+    fetchUserAchievement();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -141,9 +162,14 @@ export default function Profile() {
       <div className="profile__panel">
         <div className="profile__panel__top">Achievements</div>
         <div className="profile__panel__bottom profile__achiev__list">
-          <div className="profile__achiev profile__bubble">on a roll</div>
-          <div className="profile__achiev profile__bubble">close call</div>
-          <div className="profile__achiev profile__bubble">reverse sweep</div>
+          {achievement &&
+            achievement.map((ach, i) => {
+              return (
+                <div key={i} className="profile__achiev profile__bubble">
+                  {ach}
+                </div>
+              );
+            })}
         </div>
       </div>
     </>

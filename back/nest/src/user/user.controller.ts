@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-import { User, UserHistory } from '@prisma/client';
+import { Achievement, User, UserHistory } from '@prisma/client';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { EditUserDto } from './dto';
@@ -20,10 +20,7 @@ export class UserController {
   }
 
   @Get(':id')
-  getUserId(
-    @GetUser('id') userId: string,
-    @Param('id') id: string,
-  ): Promise<User> {
+  getUserId(@GetUser('id') userId: string, @Param('id') id: string): Promise<User> {
     return new Promise<User>((resolve, reject) => {
       this.userService
         .getUserId(userId, id)
@@ -51,9 +48,7 @@ export class UserController {
   }
 
   @Get('history/:id')
-  getUserHistory(
-    @Param('id') userId: string,
-  ): Promise<{ history: UserHistory[] }> {
+  getUserHistory(@Param('id') userId: string): Promise<{ history: UserHistory[] }> {
     return new Promise<{ history: UserHistory[] }>((resolve, reject) => {
       this.userService
         .getHistory(userId)
@@ -66,11 +61,22 @@ export class UserController {
     });
   }
 
+  @Get('achievement/me')
+  getAchievement(@GetUser('id') userId: string): Promise<Achievement[]> {
+    return new Promise<Achievement[]>((resolve, reject) => {
+      this.userService
+        .GetAchievement(userId)
+        .then((ret) => {
+          return resolve(ret);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
+    });
+  }
+
   @Patch()
-  editUser(
-    @GetUser('id') userId: string,
-    @Body() dto: EditUserDto,
-  ): Promise<User> {
+  editUser(@GetUser('id') userId: string, @Body() dto: EditUserDto): Promise<User> {
     return this.userService.editUser(userId, dto);
   }
 }

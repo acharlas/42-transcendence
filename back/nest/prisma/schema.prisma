@@ -45,6 +45,8 @@ model User {
 
   refreshToken String?
 
+  achievement Achievement[]
+
   @@map("users")
 }
 
@@ -141,6 +143,11 @@ enum UserPrivilege {
   default
   muted
   ban
+}
+
+enum Achievement {
+  EasyWin
+  HardLosse
 }
 
 enum UserType {

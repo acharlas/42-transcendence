@@ -20,6 +20,11 @@ export enum GameMode {
   ranked = "RANKED",
 }
 
+export enum Achievement {
+  EasyWin = "EasyWin",
+  HardLosse = "HardLosse",
+}
+
 export class CreateHistoryDto {
   mode: GameMode;
   score: [
