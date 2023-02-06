@@ -71,11 +71,6 @@ export default function Profile() {
     };
 
     const fetchUserAchievement = async () => {
-      const comp = (a: HistoryMatch, b: HistoryMatch) => {
-        if (a.date > b.date) return 1;
-        else if (a.date === b.date) return 1;
-        return 0;
-      };
       await getAchievement()
         .then((res) => {
           console.log("Achievement: ", res);
