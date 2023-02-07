@@ -68,9 +68,11 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     function preload() {
       this.load.image("ball", "http://localhost:3001/assets/ball.png");
       this.load.image("paddle", "http://localhost:3001/assets/paddle.png");
+      this.load.image("map", "http://localhost:3001/assets/map_classic.png");
     }
 
     function create() {
+      this.add.image(CanvasWidth/2, CanvasHeight/2, "map").setOrigin(0.5,0.5);
       setGameBounds({
         x: this.physics.world.bounds.width,
         y: this.physics.world.bounds.height,
