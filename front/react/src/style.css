@@ -74,21 +74,21 @@ body {
 .topbar {
   position: absolute;
   top: 0px;
-  height: 60px;
+  height: min(60px, 20vh);
   justify-content: left;
 }
 
 .bottombar {
   position: absolute;
   bottom: 0px;
-  height: 60px;
+  height: min(60px, 20vh);
   justify-content: right;
 }
 
 .middle {
   position: absolute;
-  top: 60px;
-  height: calc(100% - 120px);
+  top: min(60px, 20vh);
+  height: calc(100vh - min(120px, 40vh));
   width: 100%;
 
   display: flex;
@@ -109,7 +109,7 @@ body {
 /* cosmetic addons to headers */
 .header-line {
   position: absolute;
-  height: 3px;
+  height: min(3px, max(2px, 9vh));
   width: 100%;
 
   background: rgb(145, 145, 145);
@@ -119,24 +119,24 @@ body {
 }
 
 .header-line-1a {
-  top: 0px;
+  top: 0;
 }
 
 .header-line-1b {
-  top: 57px;
+  bottom: min(57px, 19vh);
 }
 
 .header-line-2a {
-  bottom: 57px;
+  top: min(57px, 19vh);
 }
 
 .header-line-2b {
-  bottom: 0px;
+  bottom: 0;
 }
 
 .header-filter {
   position: absolute;
-  height: 60px;
+  height: min(57px, 19vh);
   width: 100%;
 
   background: rgb(190, 190, 190);

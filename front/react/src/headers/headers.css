@@ -5,6 +5,8 @@
 
   font-weight: 700;
   word-break: break-word;
+  overflow: clip;
+  text-align: center;
 
   cursor: pointer;
 

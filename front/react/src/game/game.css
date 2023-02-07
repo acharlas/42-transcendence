@@ -11,21 +11,21 @@
   /* fill in gaps with bg */
   background-color: rgb(158, 158, 199);
   border-style: solid;
-  border-radius: 10px;
+  border-radius: min(10px, 5vh);
   border-width: min(20px, 3vh) 0;
   /* image-rendering: pixelated; */
 }
 
 .game-root {
   position: fixed;
-  top: 70px;
+  top: min(60px, 20vh);
   left: 0;
-  height: calc(100% - 140px);
+  height: calc(100% - min(120px, 40vh));
   width: 55%;
 }
 
 .game-root-child {
-  padding: 0 10px;
+  padding: 10px;
   height: 100%;
   width: 100%;
 }
