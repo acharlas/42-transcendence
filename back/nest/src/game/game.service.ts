@@ -17,9 +17,7 @@ import { Lobby, Player, Position } from './types_game';
 
 @Injectable()
 export class GameService {
-  constructor(private schedulerRegistry: SchedulerRegistry, private userService: UserService) {
-    console.log('gameservice instance created');
-  }
+  constructor(private schedulerRegistry: SchedulerRegistry, private userService: UserService) { }
 
   LobbyList: Lobby[] = [];
   Queue: Player[] = [];
