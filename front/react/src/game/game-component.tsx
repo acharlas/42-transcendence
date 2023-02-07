@@ -10,7 +10,6 @@ export interface IGameComponentProps {}
 const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   let navigate = useNavigate();
   const { socket } = useContext(SocketContext).SocketState;
-  if (!socket) navigate("/app/game");
   const {
     setBall,
     setPlayer1,
@@ -24,10 +23,11 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     player2Score,
   } = useGame();
   const gameRef = useRef<HTMLDivElement>(null);
-  const playerOneId = useRef<string>(lobby.playerOne.id);
-  const playerTwoId = useRef<string>(lobby.playerTwo.id);
+  const playerOneId = useRef<string>(lobby?.playerOne?.id);
+  const playerTwoId = useRef<string>(lobby?.playerTwo?.id);
 
   useEffect(() => {
+    if (!socket) navigate("/app/game");
     console.log("USEEFFECT game-component new Phaser.Game");
     const game = new Phaser.Game({
       type: Phaser.AUTO,
@@ -166,7 +166,18 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     return function cleanup() {};
-  }, [socket, player1Score, player2Score, setBall, setCursors, setGame, setGameBounds, setPlayer1, setPlayer2]);
+  }, [
+    navigate,
+    socket,
+    player1Score,
+    player2Score,
+    setBall,
+    setCursors,
+    setGame,
+    setGameBounds,
+    setPlayer1,
+    setPlayer2,
+  ]);
 
   const click = () => {
     setGame(game);
