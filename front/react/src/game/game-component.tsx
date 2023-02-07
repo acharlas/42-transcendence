@@ -1,9 +1,11 @@
 import { FunctionComponent, useContext, useEffect, useRef } from "react";
 import Phaser from "phaser";
+
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
 import { useNavigate } from "react-router-dom";
 import { CanvasHeight, CanvasWidth } from "./consts/const";
+import "./game.css";
 
 export interface IGameComponentProps {}
 
@@ -36,7 +38,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         height: CanvasHeight,
         mode: Phaser.Scale.FIT,
         parent: gameRef.current,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
+        // autoCenter: Phaser.Scale.CENTER_BOTH,
       },
       scene: {
         init: init,
@@ -72,7 +74,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     function create() {
-      this.add.image(CanvasWidth/2, CanvasHeight/2, "map").setOrigin(0.5,0.5);
+      this.add.image(CanvasWidth / 2, CanvasHeight / 2, "map").setOrigin(0.5, 0.5);
       setGameBounds({
         x: this.physics.world.bounds.width,
         y: this.physics.world.bounds.height,
@@ -202,12 +204,11 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   }, [game, socket]);
 
   return (
-    <>
-      <button onClick={clickpa}>Pause</button>
-      <button onClick={click}>PlayerReady</button>
-      <button>timer</button>
-      <div ref={gameRef} />
-    </>
+    <div className="game-root">
+      <div className="game-root-child">
+        <div className="game-canvas-parent" ref={gameRef} />
+      </div>
+    </div>
   );
 };
 
