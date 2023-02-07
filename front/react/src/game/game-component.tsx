@@ -94,17 +94,20 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       cursors = this.input.keyboard.createCursorKeys();
 
       //score
-      textScorePlayer1 = this.add
-        .text((CanvasWidth * 1) / 4, CanvasHeight / 5, "0", {
-          fontSize: "100px",
-        })
-        .setOrigin(0.5, 0.5);
-
-      textScorePlayer2 = this.add
-        .text((CanvasWidth * 3) / 4, CanvasHeight / 5, "0", {
-          fontSize: "100px",
-        })
-        .setOrigin(0.5, 0.5);
+      //use stupid values to avoid firefox DOM warnings...
+      const scoreStyle = {
+        backgroundColor: "#00000000",
+        color: "white",
+        fontFamily: "Teko",
+        fontSize: "130px",
+        stroke: "#00000000",
+        "shadow.color": "#00000000",
+        "shadow.blur": 0,
+        "shadow.stroke": false,
+        "shadow.fill": true,
+      };
+      textScorePlayer1 = this.add.text((CanvasWidth * 1) / 4, CanvasHeight / 5, "0", scoreStyle).setOrigin(0.5, 0.5);
+      textScorePlayer2 = this.add.text((CanvasWidth * 3) / 4, CanvasHeight / 5, "0", scoreStyle).setOrigin(0.5, 0.5);
 
       //react vars
       setCursors(cursors);
