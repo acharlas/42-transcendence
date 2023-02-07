@@ -147,7 +147,7 @@ enum UserPrivilege {
 
 enum Achievement {
   EasyWin
-  HardLosse
+  HardLoss
 }
 
 enum UserType {

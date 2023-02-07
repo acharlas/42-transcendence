@@ -160,10 +160,10 @@ export class UserService {
                   score[1] === 2 &&
                   score[0] === 0 &&
                   !achievementPLayerTwo.find((ach) => {
-                    return ach === Achievement.HardLosse;
+                    return ach === Achievement.HardLoss;
                   })
                 )
-                  this.AddAchievement(player[1].id, Achievement.HardLosse).catch((err) => {
+                  this.AddAchievement(player[1].id, Achievement.HardLoss).catch((err) => {
                     return reject(err);
                   });
 
@@ -171,10 +171,10 @@ export class UserService {
                   score[0] === 2 &&
                   score[1] === 0 &&
                   !achievementPLayerTwo.find((ach) => {
-                    return ach === Achievement.HardLosse;
+                    return ach === Achievement.HardLoss;
                   })
                 )
-                  this.AddAchievement(player[0].id, Achievement.HardLosse).catch((err) => {
+                  this.AddAchievement(player[0].id, Achievement.HardLoss).catch((err) => {
                     return reject(err);
                   });
                 return resolve();

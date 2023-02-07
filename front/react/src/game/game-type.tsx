@@ -22,7 +22,7 @@ export enum GameMode {
 
 export enum Achievement {
   EasyWin = "EasyWin",
-  HardLosse = "HardLosse",
+  HardLoss = "HardLoss",
 }
 
 export class CreateHistoryDto {

@@ -6,7 +6,7 @@
 */
 -- AlterEnum
 BEGIN;
-CREATE TYPE "Achievement_new" AS ENUM ('EasyWin', 'HardLosse');
+CREATE TYPE "Achievement_new" AS ENUM ('EasyWin', 'HardLoss');
 ALTER TABLE "users" ALTER COLUMN "achievement" TYPE "Achievement_new"[] USING ("achievement"::text::"Achievement_new"[]);
 ALTER TYPE "Achievement" RENAME TO "Achievement_old";
 ALTER TYPE "Achievement_new" RENAME TO "Achievement";
