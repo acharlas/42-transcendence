@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ModuleRef } from '@nestjs/core';
 import { PassportStrategy } from '@nestjs/passport';
@@ -36,10 +36,15 @@ export class JwtRefreshStrategy extends PassportStrategy(
       console.log("Can't validate: Missing 2FA");
       throw new UnauthorizedException('2FA required');
     }
-    const refreshToken = request
+    try {
+      const refreshToken = request
       .get('Authorization')
       .replace('Bearer', '')
       .trim();
-    return { ...payload, refreshToken };
+      return { ...payload, refreshToken };
+    } catch (e) {
+      console.log(e);
+      throw new BadRequestException('request error');
+    }
   }
 }
