@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { GameMode } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
+import { ballAlpha, ballMomentumStart, BallSpeed, MaxBallXVelocity } from './const';
 import {
   PlayerIsInWatching,
   PlayerIsInLobby,
@@ -402,6 +403,8 @@ export class GameService {
         ballRadius: 0,
         score: [0, 0],
         ball: { position: { x: 0.5, y: 0.5 }, vector: RandSpeed(this.Speed) },
+        ballMomentum: ballMomentumStart,
+        fun: false,
       };
       this.incIngameList(lobby);
       return resolve(lobby);
@@ -467,10 +470,9 @@ export class GameService {
       });
       if (!lobby) return reject(new ForbiddenException('no lobby'));
       let nextPos: Position;
-
       nextPos = {
-        x: lobby.game.ball.position.x + lobby.game.ball.vector.x * 60,
-        y: lobby.game.ball.position.y + lobby.game.ball.vector.y * 60,
+        x: lobby.game.ball.position.x + lobby.game.ball.vector.x * BallSpeed,
+        y: lobby.game.ball.position.y + lobby.game.ball.vector.y * BallSpeed,
       };
       nextPos = NormPos(nextPos);
       const bounce = BallOnPaddle(lobby, nextPos);
@@ -491,7 +493,8 @@ export class GameService {
         //   lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
         //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
         // }
-        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
+        lobby.game.ball.vector.x = Math.min(lobby.game.ball.vector.x * lobby.game.ballMomentum, MaxBallXVelocity) * -1;
+
         //console.log('bounce');
         if (bounce === 1)
           lobby.game.ball.position.x =
@@ -514,7 +517,7 @@ export class GameService {
         // );
         //lobby.game.ball.position = { x: 0.5, y: 0.5 };
         //nextPos = NoOOB(nextPos, lobby);
-        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
+        lobby.game.ball.vector.x = RandSpeed(this.Speed).x * -1;
         lobby.game.ball.position = { x: 0.5, y: 0.5 };
         //lobby.game.ball.position = { ...nextPos };
         //console.log('vitesse score', lobby.game.ball.vector.x);
@@ -526,6 +529,10 @@ export class GameService {
         //   lobby.game.ball.position,
         // );
         //nextPos = NoOOB(nextPos, lobby);
+        const temp = lobby.game.ball.vector.x;
+        lobby.game.ball.vector.x =
+          Math.cos(ballAlpha) * lobby.game.ball.vector.x - Math.sin(ballAlpha) * lobby.game.ball.vector.y;
+        lobby.game.ball.vector.y = Math.sin(ballAlpha) * temp + Math.cos(ballAlpha) * lobby.game.ball.vector.y;
         lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
         //lobby.game.ball.position = { ...nextPos };
         //console.log('vitesse', lobby.game.ball.vector.y);
