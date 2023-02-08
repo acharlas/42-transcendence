@@ -16,7 +16,7 @@ import { socketTab, SocketWithAuth } from '../message/types_message';
 import { GameService } from './game.service';
 import { Position } from './types_game';
 import { PlayerIsInLobby, PlayerIsReaddy } from './game.utils';
-import { Achievement, GameMode } from '@prisma/client';
+import { GameMode } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
 
 @WebSocketGateway({
@@ -113,7 +113,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             placement: lobby.game.player[0].id === client.userID ? 2 : 1,
           };
           const history = {
-            mode: lobby.game.mode,
+            mode: lobby.mode,
             score: [player1, player2],
           };
 
@@ -122,7 +122,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             this.scheduleRegistry.deleteInterval(lobby.id);
             //update ingame status
             this.gameService.decIngameList(player1.id, player2.id);
-            if (lobby.game.mode === GameMode.RANKED) {
+            if (lobby.mode === GameMode.RANKED) {
               //update mmr
               if (player1.placement === 1) {
                 this.historyService.updateRankings({ winnerId: player1.id, loserId: player2.id });
@@ -131,7 +131,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
               }
               client.broadcast.to(lobby.id).emit('EndGame', {
                 history: {
-                  mode: lobby.game.mode,
+                  mode: lobby.mode,
                   score: [
                     { ...player1, nickName: lobby.playerTwo.nickname },
                     { ...player2, nickName: lobby.playerOne.nickname },
@@ -142,7 +142,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             } else {
               client.broadcast.to(lobby.id).emit('EndGame', {
                 history: {
-                  mode: lobby.game.mode,
+                  mode: lobby.mode,
                   score: [
                     { ...player1, nickName: lobby.playerTwo.nickname },
                     { ...player2, nickName: lobby.playerOne.nickname },
@@ -197,7 +197,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           socketPlayerTwo.socket.join(lobby.id);
           socketPlayerOne.socket.emit('GameCreate', lobby);
           socketPlayerTwo.socket.emit('GameCreate', lobby);
-          this.CreateGame(socketPlayerOne.socket, GameMode.RANKED);
+          this.CreateGame(socketPlayerOne.socket, lobby.mode);
           socketPlayerOne.socket.emit('QueueJoin');
           socketPlayerTwo.socket.emit('QueueJoin');
         });
@@ -217,11 +217,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   /*Join queue*/
   @SubscribeMessage('JoiningQueue')
-  JoiningQueue(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  JoiningQueue(@ConnectedSocket() client: SocketWithAuth, @MessageBody('mode') mode: GameMode): Promise<void> {
     console.log('User:', client.userID, ' joining the queue');
     return new Promise<void>((resolve, reject) => {
       this.gameService
-        .JoiningQueue(client.userID)
+        .JoiningQueue(client.userID, mode)
         .then(() => {
           client.emit('QueueJoin');
           return resolve();
@@ -285,6 +285,26 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           }
           client.emit('LeaveLobby');
           client.leave(lobby.id);
+          return resolve();
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject();
+        });
+    });
+  }
+
+  /*Create lobby*/
+  @SubscribeMessage('ChangeLobbyMode')
+  ChangeLobbyMode(@ConnectedSocket() client: SocketWithAuth, @MessageBody('mode') mode: GameMode): Promise<void> {
+    console.log('User:', client.userID, 'is readdy');
+    return new Promise<void>((resolve, reject) => {
+      this.gameService
+        .ChangeLobbyMode(client.userID, mode)
+        .then((lobby) => {
+          console.log('end');
+          client.emit('UpdateLobby', lobby);
+          client.to(lobby.id).emit('UpdateLobby', lobby);
           return resolve();
         })
         .catch((err) => {
@@ -407,7 +427,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         };
 
                         //game is ranked
-                        if (lobby.game.mode === GameMode.RANKED) {
+                        if (lobby.mode === GameMode.RANKED) {
                           //update mmr
                           if (player1.placement === 1) {
                             this.historyService.updateRankings({ winnerId: player1.id, loserId: player2.id });
@@ -423,13 +443,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         }
 
                         const history = {
-                          mode: lobby.game.mode,
+                          mode: lobby.mode,
                           score: [player1, player2],
                         };
-                        if (lobby.game.mode === GameMode.RANKED) {
+                        if (lobby.mode === GameMode.RANKED) {
                           client.broadcast.to(lobby.id).emit('EndGame', {
                             history: {
-                              mode: lobby.game.mode,
+                              mode: lobby.mode,
                               score: [
                                 { ...player1, nickName: lobby.playerTwo.nickname },
                                 { ...player2, nickName: lobby.playerOne.nickname },
@@ -439,7 +459,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                           });
                           client.emit('EndGame', {
                             history: {
-                              mode: lobby.game.mode,
+                              mode: lobby.mode,
                               score: [
                                 { ...player1, nickName: lobby.playerTwo.nickname },
                                 { ...player2, nickName: lobby.playerOne.nickname },
@@ -450,7 +470,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                         } else {
                           client.broadcast.to(lobby.id).emit('EndGame', {
                             history: {
-                              mode: lobby.game.mode,
+                              mode: lobby.mode,
                               score: [
                                 { ...player1, nickName: lobby.playerTwo.nickname },
                                 { ...player2, nickName: lobby.playerOne.nickname },
@@ -460,7 +480,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                           });
                           client.emit('EndGame', {
                             history: {
-                              mode: lobby.game.mode,
+                              mode: lobby.mode,
                               score: [
                                 { ...player1, nickName: lobby.playerTwo.nickname },
                                 { ...player2, nickName: lobby.playerOne.nickname },
