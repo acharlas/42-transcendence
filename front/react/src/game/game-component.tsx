@@ -186,20 +186,16 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     setPlayer2,
   ]);
 
-  const click = () => {
-    setGame(game);
-    socket.emit("PlayerReady");
-  };
-  const clickpa = () => {
-    game.scene.pause("default");
-  };
-
   useEffect(() => {
     console.log("USEEFFECT game-component game init");
 
     if (game) {
       socket.emit("PlayerReady");
-      game.scene.pause("default");
+      if (
+        lobby.playerOne.id === sessionStorage.getItem("userid") ||
+        lobby.playerTwo.id === sessionStorage.getItem("userid")
+      )
+        game.scene.pause("default");
     }
   }, [game, socket]);
 

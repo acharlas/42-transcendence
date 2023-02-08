@@ -55,10 +55,11 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       /** Game Pause */
       socket.on("EndGame", ({ history, lobby }: { history: History; lobby: Lobby }) => {
         console.log("EndGame: ");
+        setLobby(null);
         game.destroy(true); // destroy the game at the end to prevent leaks
         //switch scene game un truc dans le genre
 
-        navigate("/app/game/Recap");
+        navigate("/app/game/recap");
         setHistory(history);
         setLobby(lobby);
       });
@@ -121,7 +122,8 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       });
       /** New match found */
       socket.on("JoinLobby", (lobby: Lobby) => {
-        console.log("new lobby arrive ", { lobby });
+        console.log("new lobby join ", { lobby });
+        navigate("/app/game");
         setInQueue(false);
         setLobby(lobby);
       });
@@ -130,6 +132,10 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
         console.log("JoinSpectate: ", { lobby });
 
         setLobby(lobby);
+        if (lobby.game) {
+          player1Score.current = lobby.game.score[1];
+          player2Score.current = lobby.game.score[0];
+        }
         if (lobby.game) navigate("/app/game/" + lobby.id);
       });
       /** Player leave the lobby */

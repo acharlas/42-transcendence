@@ -172,7 +172,36 @@ export class GameService {
         return PlayerIsInLobby(userId, lobby);
       });
       if (actLobby) {
-        return reject(new ForbiddenException('already in a room'));
+        if (actLobby.game)
+          return reject(new ForbiddenException('already in a game'));
+        else {
+          this.LeaveLobby(userId).then(lobby => {
+            const joinLobby = this.LobbyList.find((lobby) => {
+              if (lobby.id === lobbyId) return true;
+              return false;
+            });
+            if (!joinLobby) return reject(new ForbiddenException('no such lobby'));
+            if (joinLobby.playerTwo) return reject(new ForbiddenException('lobby is full'));
+            return resolve(
+              new Promise<Lobby>((resolve, reject) => {
+                this.CreatePlayer(userId)
+                  .then((player) => {
+                    joinLobby.playerTwo = player;
+                    joinLobby.invited = joinLobby.invited.filter((user) => {
+                      if (user === userId) return false;
+                      return true;
+                    });
+                    return resolve(joinLobby);
+                  })
+                  .catch((err) => {
+                    return reject(err);
+                  });
+              }),
+            );
+          }).catch(err => {
+            return reject(err);
+          })
+        }
       }
       const joinLobby = this.LobbyList.find((lobby) => {
         if (lobby.id === lobbyId) return true;

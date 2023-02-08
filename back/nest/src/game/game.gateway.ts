@@ -475,6 +475,18 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                             this.gameService
                               .EndGame(lobby.playerOne.id)
                               .then(() => {
+                                this.gameService
+                                  .LeaveLobby(lobby.playerOne.id)
+                                  .then((lobby) => {
+                                    this.gameService.LeaveLobby(lobby.playerTwo.id).catch((err) => {
+                                      console.log(err);
+                                      return reject(err);
+                                    });
+                                  })
+                                  .catch((err) => {
+                                    console.log(err);
+                                    return reject(err);
+                                  });
                                 return resolve();
                               })
                               .catch((err) => {

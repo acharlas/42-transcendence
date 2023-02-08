@@ -14,7 +14,7 @@ const GameIndex: FunctionComponent<IGameIndexProps> = (props) => {
         <Routes>
           <Route path="/" element={<LobbyComponent />} />
           <Route path="/:id" element={<GameComponent />} />
-          <Route path="/Recap" element={<GameRecap />} />
+          <Route path="/recap" element={<GameRecap />} />
         </Routes>
       </SocketGameContextComponent>
     </GameProvider>
