@@ -18,17 +18,13 @@ import { Lobby, Player, Position } from './types_game';
 
 @Injectable()
 export class GameService {
-  constructor(
-    private schedulerRegistry: SchedulerRegistry,
-    private userService: UserService,
-    ) {
-      console.log("gameservice instance created");
-    }
+  constructor(private schedulerRegistry: SchedulerRegistry, private userService: UserService) {
+    console.log('gameservice instance created');
+  }
 
   LobbyList: Lobby[] = [];
   Queue: Player[] = [];
   Speed: number = 0.0000666666;
-   
 
   /*==================Queue===========================*/
   async JoiningQueue(userId: string): Promise<void> {
@@ -285,7 +281,7 @@ export class GameService {
   ingameList: string[] = [];
 
   //add players to ingame list
-  async incIngameList(newLobby:Lobby) {
+  async incIngameList(newLobby: Lobby) {
     // console.log("inc");
     this.ingameList.push(newLobby.playerOne.id);
     this.ingameList.push(newLobby.playerTwo.id);
@@ -295,8 +291,8 @@ export class GameService {
   //rm players from ingame list
   async decIngameList(idOne, idTwo) {
     // console.log("dec");
-    this.ingameList = this.ingameList.filter(function(element, index, array){
-      return (element !== idOne && element !== idTwo);
+    this.ingameList = this.ingameList.filter(function (element, index, array) {
+      return element !== idOne && element !== idTwo;
     });
     // console.log(this.ingameList);
   }
@@ -377,6 +373,7 @@ export class GameService {
         score: [0, 0],
         ball: { position: { x: 0.5, y: 0.5 }, vector: RandSpeed(this.Speed) },
         ballMomentum: ballMomentumStart,
+        fun: false,
       };
       this.incIngameList(lobby);
       return resolve(lobby);
@@ -456,7 +453,7 @@ export class GameService {
         //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
         // }
         lobby.game.ball.vector.x = Math.min(lobby.game.ball.vector.x * lobby.game.ballMomentum, MaxBallXVelocity) * -1;
-        
+
         //console.log('bounce');
         if (bounce === 1)
           lobby.game.ball.position.x =
@@ -491,10 +488,11 @@ export class GameService {
         //   lobby.game.ball.position,
         // );
         //nextPos = NoOOB(nextPos, lobby);
-        const temp = lobby.game.ball.vector.x
-        lobby.game.ball.vector.x = Math.cos(ballAlpha) * lobby.game.ball.vector.x - Math.sin(ballAlpha) * lobby.game.ball.vector.y
-        lobby.game.ball.vector.y = Math.sin(ballAlpha) * temp + Math.cos(ballAlpha) * lobby.game.ball.vector.y
-        lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1 ;    
+        const temp = lobby.game.ball.vector.x;
+        lobby.game.ball.vector.x =
+          Math.cos(ballAlpha) * lobby.game.ball.vector.x - Math.sin(ballAlpha) * lobby.game.ball.vector.y;
+        lobby.game.ball.vector.y = Math.sin(ballAlpha) * temp + Math.cos(ballAlpha) * lobby.game.ball.vector.y;
+        lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
         //lobby.game.ball.position = { ...nextPos };
         //console.log('vitesse', lobby.game.ball.vector.y);
       } else {

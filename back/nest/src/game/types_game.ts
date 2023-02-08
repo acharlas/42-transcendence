@@ -34,6 +34,7 @@ export type Game = {
   paddleWidth: number;
   ballRadius: number;
   ballMomentum: number;
+  fun: boolean;
 };
 
 export type Ball = {
@@ -45,7 +46,3 @@ export type Position = {
   x: number;
   y: number;
 };
-
-export var playerHeight = 0.21333333333333335;
-export var playerWidth = 0.04;
-export var ballRadius: 0.05333333333333334;
