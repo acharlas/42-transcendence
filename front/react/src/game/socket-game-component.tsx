@@ -1,9 +1,11 @@
 import { PropsWithChildren, useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
+import { getMe } from "../api/auth-api";
 import { useGame } from "../context/game.context";
 import { defaultSocketContextState, SocketContextProvider, SocketReducer } from "../context/socket.context";
 import { useSocket } from "../context/use-socket";
 import { Lobby, Position } from "./game-type";
+import { Socket } from "socket.io-client";
 
 export interface ISocketGameContextComponentProps extends PropsWithChildren {}
 
@@ -32,10 +34,21 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
     reconnectionDelay: 5000,
     autoConnect: false,
     auth: {
-      token: sessionStorage.getItem("RefreshToken"),
+      token: sessionStorage.getItem("AccessToken"),
     },
   });
   let navigate = useNavigate();
+
+  //refresh token
+  async function getNewTok(socket: Socket) {
+    console.log(sessionStorage.getItem("AccessToken"));
+    await getMe();
+    // socket.auth.token = sessionStorage.getItem("AccessToken");
+    console.log("retry connection");
+    const newAuth = { ...socket.auth, token: sessionStorage.getItem("AccessToken") };
+    socket.auth = newAuth;
+    socket.connect();
+  }
 
   useEffect(() => {
     console.log("USEEFFECT socket-game-component SOCKET CONNECT");
@@ -163,13 +176,20 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
 
       /**** Connection-related listeners ****/
       /** Disconnect */
-      socket.on("Disconnect", () => {
+      socket.on("disconnect", () => {
         console.log("disconnect");
         socket.disconnect();
       });
       /** Handshake */
       socket.on("handshake", (id: string) => {
         console.log("user id is: ", id);
+      });
+      /**Connection failed */
+      socket.on("connect_error", (err) => {
+        console.log(`connect_error due to ${err.message}`);
+        if (err?.message === "FORBIDDEN") {
+          getNewTok(socket);
+        }
       });
       /** Reconnect event */
       socket.io.on("reconnect", (attempt) => {

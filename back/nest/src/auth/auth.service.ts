@@ -51,14 +51,17 @@ export class AuthService {
       fullyAuth: !mfaNeeded,
     };
     //TODO: 2 secrets
+    console.log(this.config.get('JWT_SECRET'));
+    console.log(this.config.get('JWT_SECRET_REFRESH'));
+    
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(payload, {
-        expiresIn: '2h',
+        expiresIn: '4s',
         secret: this.config.get('JWT_SECRET'),
       }),
       this.jwt.signAsync(payload, {
         expiresIn: '2d',
-        secret: this.config.get('JWT_SECRET'),
+        secret: this.config.get('JWT_SECRET_REFRESH'),
       }),
     ]);
     await this.updateRefreshToken(userId, refreshToken);

@@ -6,6 +6,8 @@ import { defaultSocketContextState, SocketContextProvider, SocketReducer } from 
 import { useSocket } from "../context/use-socket";
 import { ErrMessage } from "./chat-error-msg";
 import { Channel, ChannelType, Message, Room, User, UserStatus } from "./type";
+import { Socket } from "socket.io-client";
+import { getMe } from "../api/auth-api";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {}
 
@@ -59,6 +61,17 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
     /** save socket in context */
     SocketDispatch({ type: "update_socket", payload: socket });
   }, [socket]);
+
+  //refresh token
+  async function getNewTok(socket: Socket) {
+    console.log(sessionStorage.getItem("AccessToken"));
+    await getMe();
+    // socket.auth.token = sessionStorage.getItem("AccessToken");
+    console.log("retry connection");
+    const newAuth = { ...socket.auth, token: sessionStorage.getItem("AccessToken") };
+    socket.auth = newAuth;
+    socket.connect();
+  }
 
   useEffect(() => {
     console.log("USEEFFECT socket-component StartListener");
@@ -293,6 +306,13 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
         console.log("Reconnection attempt: " + attempt);
       });
 
+      /**Connection failed */
+      socket.on("connect_error", (err) => {
+        console.log(`connect_error due to ${err.message}`);
+        if (err?.message === "FORBIDDEN") {
+          getNewTok(socket);
+        }
+      });
       /**Reconnection error */
       socket.io.on("reconnect_error", (error) => {
         console.log("Reconnection error: " + error);
