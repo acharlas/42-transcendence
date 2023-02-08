@@ -5,18 +5,18 @@ export interface Lobby {
   game: Game;
   invited: string[];
   viewer: string[];
+  mode: GameMode;
 }
 
 export type Game = {
   start: boolean;
   player: Player[];
   score: number[];
-  mode: GameMode;
 };
 
 export enum GameMode {
   classic = "CLASSIC",
-  battleRoyal = "BATTLEROYAL",
+  hyperspeed = "HYPERSPEED",
   ranked = "RANKED",
 }
 

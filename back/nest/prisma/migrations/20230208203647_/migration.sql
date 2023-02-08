@@ -1,11 +1,14 @@
 -- CreateEnum
-CREATE TYPE "GameMode" AS ENUM ('BATTLEROYAL', 'CLASSIC');
+CREATE TYPE "GameMode" AS ENUM ('HYPERSPEED', 'CLASSIC', 'RANKED');
 
 -- CreateEnum
-CREATE TYPE "UserStatus" AS ENUM ('connected', 'disconnected');
+CREATE TYPE "UserStatus" AS ENUM ('connected', 'disconnected', 'invited');
 
 -- CreateEnum
 CREATE TYPE "UserPrivilege" AS ENUM ('owner', 'admin', 'default', 'muted', 'ban');
+
+-- CreateEnum
+CREATE TYPE "Achievement" AS ENUM ('EasyWin', 'HardLoss');
 
 -- CreateEnum
 CREATE TYPE "UserType" AS ENUM ('fortyTwo', 'normal');
@@ -29,6 +32,8 @@ CREATE TABLE "users" (
     "mfaEnabled" BOOLEAN NOT NULL DEFAULT false,
     "mfaPhoneNumber" TEXT,
     "avatarPath" TEXT,
+    "refreshToken" TEXT,
+    "achievement" "Achievement"[],
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );

@@ -10,8 +10,8 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
   const { inQueue, lobby } = useGame();
 
-  const handleQueueClick = () => {
-    socket.emit("JoiningQueue");
+  const handleQueueClick = (gameMode: GameMode) => {
+    socket.emit("JoiningQueue", { mode: gameMode });
   };
 
   const handleLeavingLobbyClick = () => {
@@ -24,6 +24,10 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
 
   const handleReaddyClick = () => {
     socket.emit("PlayerLobbyReaddy");
+  };
+
+  const handleChangeLobbyModeClick = () => {
+    socket.emit("ChangeLobbyMode", { mode: lobby.mode === GameMode.classic ? GameMode.hyperspeed : GameMode.classic });
   };
 
   //user that created game can launch it
@@ -62,7 +66,12 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
         <>
           <div className="profile__panel__top">Matchmaking in progress...</div>
           <div className="profile__panel__bottom">
-            <button className="fullwidth-button" onClick={handleQueueClick}>
+            <button
+              className="fullwidth-button"
+              onClick={() => {
+                handleQueueClick(GameMode.classic);
+              }}
+            >
               Cancel :(
             </button>
           </div>
@@ -73,10 +82,20 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
         <>
           <div className="profile__panel__top">Select a game mode to queue up</div>
           <div className="profile__panel__bottom">
-            <button className="fullwidth-button" onClick={handleQueueClick}>
+            <button
+              className="fullwidth-button"
+              onClick={() => {
+                handleQueueClick(GameMode.ranked);
+              }}
+            >
               Serious ranked pong :]
             </button>
-            <button className="fullwidth-button" onClick={handleQueueClick}>
+            <button
+              className="fullwidth-button"
+              onClick={() => {
+                handleQueueClick(GameMode.hyperspeed);
+              }}
+            >
               Funny speedy pong :3 (todo)
             </button>
           </div>
@@ -92,6 +111,13 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
         <div className="profile__panel__bottom">
           {<div>Player 1: {lobby?.playerOne?.nickname || "?"}</div>}
           {<div>Player 2: {lobby?.playerTwo?.nickname || "Invite someone!"}</div>}
+          <button
+            className="fullwidth-button"
+            disabled={lobby.playerOne.id !== sessionStorage.getItem("userid")}
+            onClick={handleChangeLobbyModeClick}
+          >
+            {lobby.mode}
+          </button>
           {lobby?.playerOne &&
             lobby?.playerTwo &&
             (lobby?.playerOne?.id === sessionStorage.getItem("userid") ? elemGameLaunch() : elemReady())}

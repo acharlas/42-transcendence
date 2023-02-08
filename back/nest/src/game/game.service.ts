@@ -26,23 +26,23 @@ export class GameService {
     ) { }
 
   LobbyList: Lobby[] = [];
-  Queue: Player[] = [];
+  Queue: { player: Player; mode: GameMode }[] = [];
   Speed: number = 0.0000666666;
 
   /*==================Queue===========================*/
-  async JoiningQueue(userId: string): Promise<void> {
+  async JoiningQueue(userId: string, gameMode: GameMode): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       console.log('actual queue: ', this.Queue);
       this.CreatePlayer(userId)
         .then((newPlayer) => {
           const find = this.Queue.find((player) => {
-            if (player.id === newPlayer.id) return true;
+            if (player.player.id === newPlayer.id) return true;
             return false;
           });
-          if (!find) this.Queue.push(newPlayer);
+          if (!find) this.Queue.push({ player: newPlayer, mode: gameMode });
           if (find)
             this.Queue = this.Queue.filter((player) => {
-              return !(player.id === userId);
+              return !(player.player.id === userId);
             });
           return resolve();
         })
@@ -55,7 +55,7 @@ export class GameService {
   async LeavingQueue(userId: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.Queue = this.Queue.filter((player) => {
-        if (player.id === userId) return false;
+        if (player.player.id === userId) return false;
         return false;
       });
       return resolve();
@@ -77,6 +77,7 @@ export class GameService {
                 playerOne: { id: userId, mmr: user.mmr, nickname: user.nickname, readdy: true },
                 playerTwo: null,
                 game: null,
+                mode: GameMode.CLASSIC,
                 invited: [],
                 viewer: [],
               };
@@ -178,35 +179,36 @@ export class GameService {
         return PlayerIsInLobby(userId, lobby);
       });
       if (actLobby) {
-        if (actLobby.game)
-          return reject(new ForbiddenException('already in a game'));
+        if (actLobby.game) return reject(new ForbiddenException('already in a game'));
         else {
-          this.LeaveLobby(userId).then(lobby => {
-            const joinLobby = this.LobbyList.find((lobby) => {
-              if (lobby.id === lobbyId) return true;
-              return false;
-            });
-            if (!joinLobby) return reject(new ForbiddenException('no such lobby'));
-            if (joinLobby.playerTwo) return reject(new ForbiddenException('lobby is full'));
-            return resolve(
-              new Promise<Lobby>((resolve, reject) => {
-                this.CreatePlayer(userId)
-                  .then((player) => {
-                    joinLobby.playerTwo = player;
-                    joinLobby.invited = joinLobby.invited.filter((user) => {
-                      if (user === userId) return false;
-                      return true;
+          this.LeaveLobby(userId)
+            .then((lobby) => {
+              const joinLobby = this.LobbyList.find((lobby) => {
+                if (lobby.id === lobbyId) return true;
+                return false;
+              });
+              if (!joinLobby) return reject(new ForbiddenException('no such lobby'));
+              if (joinLobby.playerTwo) return reject(new ForbiddenException('lobby is full'));
+              return resolve(
+                new Promise<Lobby>((resolve, reject) => {
+                  this.CreatePlayer(userId)
+                    .then((player) => {
+                      joinLobby.playerTwo = player;
+                      joinLobby.invited = joinLobby.invited.filter((user) => {
+                        if (user === userId) return false;
+                        return true;
+                      });
+                      return resolve(joinLobby);
+                    })
+                    .catch((err) => {
+                      return reject(err);
                     });
-                    return resolve(joinLobby);
-                  })
-                  .catch((err) => {
-                    return reject(err);
-                  });
-              }),
-            );
-          }).catch(err => {
-            return reject(err);
-          })
+                }),
+              );
+            })
+            .catch((err) => {
+              return reject(err);
+            });
         }
       }
       const joinLobby = this.LobbyList.find((lobby) => {
@@ -311,6 +313,18 @@ export class GameService {
       return resolve(lobby);
     });
   }
+
+  async ChangeLobbyMode(userId: string, mode: GameMode): Promise<Lobby> {
+    return new Promise<Lobby>((resolve, reject) => {
+      const lobby = this.LobbyList.find((lobby) => {
+        return PlayerIsInLobby(userId, lobby);
+      });
+      if (lobby) {
+        lobby.mode = mode;
+        return resolve(lobby);
+      } else return reject(new ForbiddenException('no lobby'));
+    });
+  }
   /*=============================================*/
 
   /*==================ingameList======================*/
@@ -351,21 +365,22 @@ export class GameService {
         const playerOne = this.Queue[n];
         const playerTwo = this.Queue.find((playerTwo) => {
           // if (playerTwo.mmr === playerOne.mmr && playerOne.id !== playerTwo.id) return true;
-          if (playerOne.id !== playerTwo.id) return true;
+          if (playerOne.player.id !== playerTwo.player.id && playerOne.mode === playerTwo.mode) return true;
           return false;
         });
         if (playerTwo) {
           const lobby = {
-            id: playerOne.id + playerTwo.id,
-            playerOne: { ...playerOne, readdy: true },
-            playerTwo: { ...playerTwo, readdy: true },
+            id: playerOne.player.id + playerTwo.player.id,
+            playerOne: { ...playerOne.player, readdy: true },
+            playerTwo: { ...playerTwo.player, readdy: true },
             game: null,
+            mode: playerOne.mode,
             invited: [],
             viewer: [],
           };
           this.LobbyList = [...this.LobbyList, lobby];
           this.Queue = this.Queue.filter((player) => {
-            if (player.id !== playerOne.id && player.id !== playerTwo.id) return true;
+            if (player.player.id !== playerOne.player.id && player.player.id !== playerTwo.player.id) return true;
             return false;
           });
           newLobby.push(lobby);
@@ -402,14 +417,12 @@ export class GameService {
           { id: lobby.playerOne.id, ready: false, pauseAt: null, timer: 60000, position: { x: 0, y: 0.5 } },
           { id: lobby.playerTwo.id, ready: false, pauseAt: null, timer: 60000, position: { x: 0, y: 0.5 } },
         ],
-        mode: gameMode,
         paddleHeight: 0,
         paddleWidth: 0,
         ballRadius: 0,
         score: [0, 0],
         ball: { position: { x: 0.5, y: 0.5 }, vector: RandSpeed(this.Speed) },
-        ballMomentum: ballMomentumStart,
-        fun: false,
+        ballMomentum: gameMode === GameMode.HYPERSPEED ? ballMomentumStart : 1,
       };
       this.incIngameList(lobby);
       return resolve(lobby);
@@ -498,7 +511,10 @@ export class GameService {
         //   lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
         //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
         // }
-        lobby.game.ball.vector.x = Math.min(lobby.game.ball.vector.x * lobby.game.ballMomentum, MaxBallXVelocity) * -1;
+        if (lobby.mode === GameMode.HYPERSPEED)
+          lobby.game.ball.vector.x =
+            Math.min(lobby.game.ball.vector.x * lobby.game.ballMomentum, MaxBallXVelocity) * -1;
+        else lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
 
         //console.log('bounce');
         if (bounce === 1)
@@ -534,11 +550,14 @@ export class GameService {
         //   lobby.game.ball.position,
         // );
         //nextPos = NoOOB(nextPos, lobby);
-        const temp = lobby.game.ball.vector.x;
-        lobby.game.ball.vector.x =
-          Math.cos(ballAlpha) * lobby.game.ball.vector.x - Math.sin(ballAlpha) * lobby.game.ball.vector.y;
-        lobby.game.ball.vector.y = Math.sin(ballAlpha) * temp + Math.cos(ballAlpha) * lobby.game.ball.vector.y;
+        if (lobby.mode === GameMode.HYPERSPEED) {
+          const temp = lobby.game.ball.vector.x;
+          lobby.game.ball.vector.x =
+            Math.cos(ballAlpha) * lobby.game.ball.vector.x - Math.sin(ballAlpha) * lobby.game.ball.vector.y;
+          lobby.game.ball.vector.y = Math.sin(ballAlpha) * temp + Math.cos(ballAlpha) * lobby.game.ball.vector.y;
+        }
         lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
+
         //lobby.game.ball.position = { ...nextPos };
         //console.log('vitesse', lobby.game.ball.vector.y);
       } else {

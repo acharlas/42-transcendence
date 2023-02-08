@@ -5,6 +5,7 @@ export type Lobby = {
   playerOne: Player;
   playerTwo: Player;
   game: Game;
+  mode: GameMode;
   invited: string[];
   viewer: string[];
 };
@@ -26,7 +27,6 @@ export type Playertab = {
 
 export type Game = {
   start: boolean;
-  mode: GameMode;
   player: Playertab[];
   score: number[];
   ball: Ball;
@@ -34,7 +34,6 @@ export type Game = {
   paddleWidth: number;
   ballRadius: number;
   ballMomentum: number;
-  fun: boolean;
 };
 
 export type Ball = {
