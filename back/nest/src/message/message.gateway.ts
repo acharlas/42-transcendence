@@ -17,6 +17,7 @@ import { GameGateway } from 'src/game/game.gateway';
 import { GameService } from 'src/game/game.service';
 import { PlayerIsInLobby, PlayerIsInWatching } from 'src/game/game.utils';
 import { Lobby } from 'src/game/types_game';
+import { SocketService } from 'src/socket/socket.service';
 import { UserService } from 'src/user/user.service';
 import { ChannelService } from '../channel/channel.service';
 import { socketTab, SocketWithAuth } from './types_message';
@@ -32,6 +33,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     private userService: UserService,
     private gameGateWay: GameGateway,
     private gameService: GameService,
+    private socketService: SocketService,
   ) {}
 
   SocketList: socketTab[] = [];
@@ -46,7 +48,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   handleConnection(client: SocketWithAuth): void {
     const socket = this.io.sockets;
 
-    const find = this.SocketList.find((socket) => {
+    const find = this.socketService.chatSockets.find((socket) => {
       if (socket.userId === client.userID) return true;
       return false;
     });
@@ -54,23 +56,23 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       console.log('find:', find);
       if (find.socket.id !== client.id) {
         find.socket.emit('Disconnect');
-        this.SocketList = this.SocketList.filter((socket) => {
+        this.socketService.chatSockets = this.socketService.chatSockets.filter((socket) => {
           if (socket.socket.id === find.socket.id) return false;
           return true;
         });
         find.socket.disconnect();
       }
     }
-    this.SocketList.push({ userId: client.userID, socket: client });
+    this.socketService.chatSockets.push({ userId: client.userID, socket: client });
     //Inform frontend clients
     this.io.emit(
       'OnlineList',
-      this.SocketList.map(function (a) {
+      this.socketService.chatSockets.map(function (a) {
         return a.userId;
       }),
     );
 
-    console.log('Socket list after connection: ', this.SocketList);
+    console.log('Socket list after connection: ', this.socketService.chatSockets);
     console.log(`Number of sockets connected: ${socket.size}`);
 
     this.channelService
@@ -107,20 +109,20 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
 
   handleDisconnect(client: SocketWithAuth): void {
     const socket = this.io.sockets;
-    this.SocketList = this.SocketList.filter((sock) => {
+    this.socketService.chatSockets = this.socketService.chatSockets.filter((sock) => {
       if (sock.userId === client.userID) return false;
       return true;
     });
     //Inform frontend clients
     this.io.emit(
       'OnlineList',
-      this.SocketList.map(function (a) {
+      this.socketService.chatSockets.map(function (a) {
         return a.userId;
       }),
     );
 
     console.log(`Client disconnected: ${client.id} | name: ${client.username}`);
-    console.log('Socket list after disconnection: ', this.SocketList);
+    console.log('Socket list after disconnection: ', this.socketService.chatSockets);
     console.log(`Number of sockets connected: ${socket.size}`);
   }
 
@@ -264,7 +266,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
                   client.to(roomId).emit('UpdateUserList', { roomId: roomId, user: user });
                   client.emit('UpdateUserList', { roomId: roomId, user: user });
                   if (privilege === UserPrivilege.ban) {
-                    const sock = this.SocketList.find((sock) => {
+                    const sock = this.socketService.chatSockets.find((sock) => {
                       if (sock.socket.username === toModifie) return true;
                       return false;
                     });
@@ -534,7 +536,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
             .then((room) => {
               client.emit('NewRoom', { room, itch: true });
               client.join(room.channel.id);
-              const sock = this.SocketList.find((sock) => {
+              const sock = this.socketService.chatSockets.find((sock) => {
                 if (sock.userId === to.id) return true;
                 return false;
               });
@@ -591,7 +593,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   ): Promise<void> {
     console.log('InviteUserInGame: ', inviteId);
     const addPlayerToRoom = (lobby: Lobby, user: User): void => {
-      const gameSocket = this.gameGateWay.SocketList.find((socket) => {
+      const gameSocket = this.socketService.gameSockets.find((socket) => {
         if (socket.userId === client.userID) return true;
         return false;
       });
@@ -599,7 +601,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         gameSocket.socket.join(lobby.id);
         gameSocket.socket.emit('JoinLobby', lobby);
       } else client.emit('JoinGame');
-      const inviteSocket = this.SocketList.find((socket) => {
+      const inviteSocket = this.socketService.chatSockets.find((socket) => {
         if (socket.userId === inviteId) return true;
         return false;
       });
@@ -665,7 +667,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         .JoinLobby(client.userID, lobby.id)
         .then((lobby) => {
           console.log('has join');
-          const gameSocket = this.gameGateWay.SocketList.find((socket) => {
+          const gameSocket = this.socketService.gameSockets.find((socket) => {
             if (socket.userId === client.userID) return true;
             return false;
           });
@@ -673,7 +675,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
             gameSocket.socket.emit('JoinLobby', lobby);
             gameSocket.socket.join(lobby.id);
           } else client.emit('JoinGame');
-          const gameHostSocket = this.gameGateWay.SocketList.find((socket) => {
+          const gameHostSocket = this.socketService.gameSockets.find((socket) => {
             if (socket.userId === userid) return true;
             return false;
           });
@@ -700,7 +702,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       this.gameService
         .JoinViewer(client.userID, lobby.id)
         .then((lobby) => {
-          const gameSocket = this.gameGateWay.SocketList.find((socket) => {
+          const gameSocket = this.socketService.gameSockets.find((socket) => {
             if (socket.userId === client.userID) return true;
             return false;
           });

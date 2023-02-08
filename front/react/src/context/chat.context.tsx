@@ -23,6 +23,8 @@ export interface IoChatContextState {
   setUserList: Function;
   onlineList: User[];
   setOnlineList: Function;
+  ingameList: User[];
+  setIngameList: Function;
   actChannel: string | undefined;
   setActChannel: Function;
   selectUser: User | undefined;
@@ -58,58 +60,60 @@ export interface IoChatContextState {
 
 const ChatContext = createContext<IoChatContextState>({
   selectedChatWindow: undefined,
-  setSelectedChatWindow: () => { },
+  setSelectedChatWindow: () => {},
   rooms: [],
-  setRooms: () => { },
+  setRooms: () => {},
   user: undefined,
-  setUser: () => { },
+  setUser: () => {},
   messages: [],
-  setMessages: () => { },
+  setMessages: () => {},
   userList: [],
-  setUserList: () => { },
+  setUserList: () => {},
   onlineList: [],
-  setOnlineList: () => { },
+  setOnlineList: () => {},
+  ingameList: [],
+  setIngameList: () => {},
   actChannel: "",
-  setActChannel: () => { },
+  setActChannel: () => {},
   selectUser: undefined,
-  setSelectUser: () => { },
+  setSelectUser: () => {},
   showTimeSelector: undefined,
-  setShowTimeSelector: () => { },
+  setShowTimeSelector: () => {},
   friendList: undefined,
-  setFriendList: () => { },
+  setFriendList: () => {},
   bloquedList: undefined,
-  setBloquedList: () => { },
+  setBloquedList: () => {},
   ShowRoomSetting: undefined,
-  setShowRoomSetting: () => { },
-  closeChatBox: () => { },
-  setNewRoom: () => { },
+  setShowRoomSetting: () => {},
+  closeChatBox: () => {},
+  setNewRoom: () => {},
   JoinErrMsg: undefined,
-  setJoinErrMsg: () => { },
+  setJoinErrMsg: () => {},
   CreateErrMsg: undefined,
-  setCreateErrMsg: () => { },
+  setCreateErrMsg: () => {},
   FriendErrMsg: undefined,
-  setFriendErrMsg: () => { },
+  setFriendErrMsg: () => {},
   BlockErrMsg: undefined,
-  setBlockErrMsg: () => { },
-  resetErrMsg: () => { },
+  setBlockErrMsg: () => {},
+  resetErrMsg: () => {},
   inviteList: [],
-  setInviteList: () => { },
+  setInviteList: () => {},
   hasNewInvite: false,
-  setHasNewInvite: () => { },
+  setHasNewInvite: () => {},
   hasNewChatMessage: false,
-  setHasNewChatMessage: () => { },
+  setHasNewChatMessage: () => {},
   hasNewChannelMessage: false,
-  setHasNewChannelMessage: () => { },
+  setHasNewChannelMessage: () => {},
 });
 
 function ChatProvider(props: any) {
-  const [selectedChatWindow, setSelectedChatWindow] =
-    useState<SelectedChatWindow>(SelectedChatWindow.CHANNELS);
+  const [selectedChatWindow, setSelectedChatWindow] = useState<SelectedChatWindow>(SelectedChatWindow.CHANNELS);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [user, setUser] = useState<User>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [userList, setUserList] = useState<User[]>([]);
   const [onlineList, setOnlineList] = useState<string[]>([]);
+  const [ingameList, setIngameList] = useState<string[]>([]);
   const [actChannel, setActChannel] = useState<string>("");
   const [selectUser, setSelectUser] = useState<User>();
   const [showTimeSelector, setShowTimeSelector] = useState<UserPrivilege>(null);
@@ -155,8 +159,7 @@ function ChatProvider(props: any) {
     setUserList(room.user);
     setUser(
       room.user.find((user) => {
-        if (user.username === window.sessionStorage.getItem("username"))
-          return true;
+        if (user.username === window.sessionStorage.getItem("username")) return true;
         return false;
       })
     );
@@ -173,6 +176,8 @@ function ChatProvider(props: any) {
         setUserList,
         onlineList,
         setOnlineList,
+        ingameList,
+        setIngameList,
         rooms,
         setRooms,
         actChannel,

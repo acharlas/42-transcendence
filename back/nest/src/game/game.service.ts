@@ -1,6 +1,8 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { GameMode } from '@prisma/client';
+import { MessageGateway } from 'src/message/message.gateway';
+import { SocketService } from 'src/socket/socket.service';
 import { UserService } from 'src/user/user.service';
 import { ballAlpha, ballMomentumStart, BallSpeed, MaxBallXVelocity } from './const';
 import {
@@ -18,7 +20,10 @@ import { Lobby, Player, Position } from './types_game';
 
 @Injectable()
 export class GameService {
-  constructor(private schedulerRegistry: SchedulerRegistry, private userService: UserService) { }
+  constructor(private schedulerRegistry: SchedulerRegistry,
+    private userService: UserService,
+    private socketService: SocketService,
+    ) { }
 
   LobbyList: Lobby[] = [];
   Queue: Player[] = [];
@@ -317,6 +322,9 @@ export class GameService {
     this.ingameList.push(newLobby.playerOne.id);
     this.ingameList.push(newLobby.playerTwo.id);
     // console.log(this.ingameList);
+    const sock = this.socketService.chatSockets.find((socket)=>{return (socket.userId === newLobby.playerOne.id)})
+    sock.socket.broadcast.emit("IngameList", this.ingameList);
+    sock.socket.emit("IngameList", this.ingameList);
   }
 
   //rm players from ingame list
@@ -326,12 +334,9 @@ export class GameService {
       return element !== idOne && element !== idTwo;
     });
     // console.log(this.ingameList);
-  }
-
-  async isPlaying(userId: string) {
-    // console.log(this.ingameList);
-    // console.log("tried:", userId);
-    return this.ingameList.includes(userId);
+    const sock = this.socketService.chatSockets.find((socket)=>{return (socket.userId === idTwo)})
+    sock.socket.broadcast.emit("IngameList", this.ingameList);
+    sock.socket.emit("IngameList", this.ingameList);
   }
   /*==================================================*/
 

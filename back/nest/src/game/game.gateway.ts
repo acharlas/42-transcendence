@@ -18,6 +18,7 @@ import { Position } from './types_game';
 import { PlayerIsInLobby, PlayerIsReaddy } from './game.utils';
 import { Achievement, GameMode } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
+import { SocketService } from 'src/socket/socket.service';
 
 @WebSocketGateway({
   namespace: 'game',
@@ -28,9 +29,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     private historyService: HistoryService,
     private scheduleRegistry: SchedulerRegistry,
     private userService: UserService,
+    private socketService: SocketService,
   ) {}
 
-  SocketList: socketTab[] = [];
+  // SocketList: socketTab[] = [];
 
   @WebSocketServer() io: Namespace;
   server: Server;
@@ -42,8 +44,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleConnection(client: SocketWithAuth): void {
     const socket = this.io.sockets;
 
-    console.log('socket list in game: ', this.SocketList);
-    const find = this.SocketList.find((socket) => {
+    console.log('socket list in game: ', this.socketService.gameSockets);
+    const find = this.socketService.gameSockets.find((socket) => {
       if (socket.userId === client.userID) return true;
       return false;
     });
@@ -52,14 +54,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       console.log('find to game:', find);
       if (find.socket.id !== client.id) {
         find.socket.emit('Disconnect');
-        this.SocketList = this.SocketList.filter((socket) => {
+        this.socketService.gameSockets = this.socketService.gameSockets.filter((socket) => {
           if (socket.socket.id === find.socket.id) return false;
           return true;
         });
         find.socket.disconnect();
       }
     }
-    this.SocketList.push({ userId: client.userID, socket: client });
+    this.socketService.gameSockets.push({ userId: client.userID, socket: client });
     const lobby = this.gameService.LobbyList.find((lobby) => {
       return PlayerIsInLobby(client.userID, lobby);
     });
@@ -68,7 +70,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       client.join(lobby.id);
       client.emit('JoinLobby', lobby);
     }
-    this.SocketList.push({ userId: client.userID, socket: client });
+    this.socketService.gameSockets.push({ userId: client.userID, socket: client });
     const lobbyWatch = this.gameService.LobbyList.find((lobby) => {
       if (
         lobby.viewer.find((viewer) => {
@@ -90,7 +92,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   handleDisconnect(client: SocketWithAuth): void {
     const socket = this.io.sockets;
-    this.SocketList = this.SocketList.filter((sock) => {
+    this.socketService.gameSockets = this.socketService.gameSockets.filter((sock) => {
       if (sock.userId === client.userID) return false;
       return true;
     });
@@ -182,11 +184,11 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       .then((newLobby) => {
         // console.log('lobby: ', { newLobby });
         newLobby.forEach((lobby) => {
-          const socketPlayerOne = this.SocketList.find((socket) => {
+          const socketPlayerOne = this.socketService.gameSockets.find((socket) => {
             if (socket.userId === lobby.playerOne.id) return true;
             return false;
           });
-          const socketPlayerTwo = this.SocketList.find((socket) => {
+          const socketPlayerTwo = this.socketService.gameSockets.find((socket) => {
             if (socket.userId === lobby.playerTwo.id) return true;
             return false;
           });

@@ -21,6 +21,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
     setMessages,
     setUserList,
     setOnlineList,
+    setIngameList,
     actChannel,
     setUser,
     setFriendList,
@@ -314,6 +315,11 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
         setOnlineList(newOnlineList);
         console.log("Received onlineList: ", { newOnlineList });
       });
+      /**receive list of ingame users */
+      socket.on("IngameList", (newIngameList: string[]) => {
+        setIngameList(newIngameList);
+        console.log("Received IngameList: ", { newIngameList });
+      });
     };
     StartListener();
   }, [
@@ -331,6 +337,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
     setBlockErrMsg,
     setBloquedList,
     setOnlineList,
+    setIngameList,
     setCreateErrMsg,
     setFriendErrMsg,
     setJoinErrMsg,

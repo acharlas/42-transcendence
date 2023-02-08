@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { MessageController } from './message.controller';
 import { MessageGateway } from './message.gateway';
@@ -10,10 +10,11 @@ import { UserService } from 'src/user/user.service';
 import { GameGateway } from 'src/game/game.gateway';
 import { HistoryService } from 'src/history/history.service';
 import { GameModule } from 'src/game/game.module';
+import { SocketModule } from 'src/socket/socket.module';
 
 @Module({
   controllers: [MessageController],
-  imports: [JwtModule, GameModule],
+  imports: [JwtModule, GameModule, SocketModule],
   providers: [
     MessageService,
     MessageGateway,
@@ -24,5 +25,6 @@ import { GameModule } from 'src/game/game.module';
     GameGateway,
     HistoryService,
   ],
+  exports: [MessageGateway]
 })
 export class MessageModule {}
