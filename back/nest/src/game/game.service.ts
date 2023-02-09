@@ -437,7 +437,7 @@ export class GameService {
         ball: { position: { x: 0.5, y: 0.5 }, vector: RandSpeed(this.Speed) },
         ballMomentum: gameMode === GameMode.HYPERSPEED ? ballMomentumStart : 1,
       };
-      this.incIngameList(lobby);
+      this.incIngameList(lobby );
       return resolve(lobby);
     });
   }
@@ -501,6 +501,7 @@ export class GameService {
       });
       if (!lobby) return reject(new ForbiddenException('no lobby'));
       let nextPos: Position;
+      console.log(lobby.game.ball)
       nextPos = {
         x: lobby.game.ball.position.x + lobby.game.ball.vector.x * BallSpeed,
         y: lobby.game.ball.position.y + lobby.game.ball.vector.y * BallSpeed,
@@ -524,7 +525,7 @@ export class GameService {
         //   lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
         //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
         // }
-        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
+        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1 * lobby.game.ballMomentum;
         //console.log('bounce');
         if (bounce === 1)
           lobby.game.ball.position.x =
