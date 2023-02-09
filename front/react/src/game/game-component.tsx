@@ -5,7 +5,8 @@ import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
 import { useNavigate } from "react-router-dom";
 import "./game.css";
-import { CanvasHeight, CanvasWidth, PaddleVelocity } from "./consts/const";
+import { CanvasHeight, CanvasWidth, HyperboostPaddleVelocity, PaddleVelocity } from "./consts/const";
+import { GameMode } from "./game-type";
 
 export interface IGameComponentProps {}
 
@@ -27,6 +28,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   const gameRef = useRef<HTMLDivElement>(null);
   const playerOneId = useRef<string>(lobby?.playerOne?.id);
   const playerTwoId = useRef<string>(lobby?.playerTwo?.id);
+  const paddleGamevelocity = lobby.mode === GameMode.hyperspeed ? HyperboostPaddleVelocity : PaddleVelocity;
 
   useEffect(() => {
     if (!socket) navigate("/app/game");
@@ -69,7 +71,11 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
     function preload() {
       this.load.image("ball", "http://localhost:3001/assets/ball.png");
-      this.load.image("paddle", "http://localhost:3001/assets/paddle.png");
+      if (lobby.mode === GameMode.hyperspeed) {
+        this.load.image("paddle", "http://localhost:3001/assets/paddlex64.png");
+      } else {
+        this.load.image("paddle", "http://localhost:3001/assets/paddle.png");
+      }
       this.load.image("map", "http://localhost:3001/assets/map_classic.png");
     }
 
@@ -142,6 +148,9 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         ballRadius: ball.body.height / this.physics.world.bounds.height,
         position,
       });
+
+      if (lobby.mode === GameMode.hyperspeed) {
+      }
     }
 
     function update() {
@@ -153,11 +162,11 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
       if (cursors.up.isDown || cursors.down.isDown) {
         if (cursors.up.isDown) {
-          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(-PaddleVelocity);
-          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(-PaddleVelocity);
+          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(-paddleGamevelocity);
+          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(-paddleGamevelocity);
         } else if (cursors.down.isDown) {
-          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(PaddleVelocity);
-          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(PaddleVelocity);
+          if (lobby.playerTwo.id === window.sessionStorage.getItem("userid")) player1.setVelocityY(paddleGamevelocity);
+          if (lobby.playerOne.id === window.sessionStorage.getItem("userid")) player2.setVelocityY(paddleGamevelocity);
         }
 
         if (playerTwoId.current === window.sessionStorage.getItem("userid"))
