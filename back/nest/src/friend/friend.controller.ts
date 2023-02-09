@@ -32,6 +32,12 @@ export class FriendController {
       this.friendService
         .addFriend(userId, dto)
         .then((ret) => {
+          ret.myfriend.forEach(x=>{
+            delete x.mfaEnabled;
+            delete x.mfaPhoneNumber;
+            delete x.hash;
+            delete x.refreshToken;
+          })
           return resolve(ret);
         })
         .catch((err) => {
@@ -50,6 +56,12 @@ export class FriendController {
       this.friendService
         .removeFriend(userId, dto)
         .then((ret) => {
+          ret.myfriend.forEach(x=>{
+            delete x.mfaEnabled;
+            delete x.mfaPhoneNumber;
+            delete x.hash;
+            delete x.refreshToken;
+          })
           return resolve(ret);
         })
         .catch((err) => {
@@ -67,6 +79,12 @@ export class FriendController {
       this.friendService
         .getFriend(userId, id)
         .then((ret) => {
+          ret.myfriend.forEach(x=>{
+            delete x.mfaEnabled;
+            delete x.mfaPhoneNumber;
+            delete x.hash;
+            delete x.refreshToken;
+          })
           return resolve(ret);
         })
         .catch((err) => {

@@ -33,6 +33,12 @@ export class BlockController {
       this.blockService
         .addBlock(userId, dto)
         .then((ret) => {
+          ret.myblock.forEach(x=>{
+            delete x.mfaEnabled;
+            delete x.mfaPhoneNumber;
+            delete x.hash;
+            delete x.refreshToken;
+          })
           return resolve(ret);
         })
         .catch((err) => {
@@ -51,6 +57,12 @@ export class BlockController {
       this.blockService
         .removeBlock(userId, dto)
         .then((ret) => {
+          ret.myblock.forEach(x=>{
+            delete x.mfaEnabled;
+            delete x.mfaPhoneNumber;
+            delete x.hash;
+            delete x.refreshToken;
+          })
           return resolve(ret);
         })
         .catch((err) => {
@@ -68,6 +80,12 @@ export class BlockController {
       this.blockService
         .getBlock(userId, id)
         .then((ret) => {
+          ret.myblock.forEach(x=>{
+            delete x.mfaEnabled;
+            delete x.mfaPhoneNumber;
+            delete x.hash;
+            delete x.refreshToken;
+          })
           return resolve(ret);
         })
         .catch((err) => {

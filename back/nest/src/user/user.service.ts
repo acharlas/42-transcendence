@@ -34,7 +34,10 @@ export class UserService {
         ...dto,
       },
     });
+    delete user.mfaEnabled;
+    delete user.mfaPhoneNumber;
     delete user.hash;
+    delete user.refreshToken;
     return user;
   }
 
