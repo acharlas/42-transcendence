@@ -52,7 +52,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         default: "arcade",
         arcade: {
           gravity: { y: 0 },
-          debug: true,
         },
       },
     });
