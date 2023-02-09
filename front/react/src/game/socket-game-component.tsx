@@ -61,7 +61,6 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
 
         navigate("/app/game/recap");
         setHistory(history);
-        setLobby(lobby);
       });
       /** Game Pause */
       socket.on("GameResume", () => {

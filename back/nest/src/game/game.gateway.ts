@@ -151,7 +151,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                     { ...player2, nickName: lobby.playerOne.nickname },
                   ],
                 },
-                lobby: { ...lobby, game: null },
+                lobby: null,
               });
             }
           }

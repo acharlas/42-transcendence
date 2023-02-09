@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Achievement, User, UserHistory } from '@prisma/client';
 import { EndPoint } from 'src/game/const';
-import { Lobby, Player, Playertab } from 'src/game/types_game';
+import { Playertab } from 'src/game/types_game';
 import { PrismaService } from '../prisma/prisma.service';
 import { EditUserDto } from './dto';
 
@@ -27,19 +27,27 @@ export class UserService {
   }
 
   async editUser(userId: string, dto: EditUserDto): Promise<User> {
-    const user = await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        ...dto,
-      },
+    return new Promise<User>((resolve, reject) => {
+      this.prisma.user
+        .update({
+          where: {
+            id: userId,
+          },
+          data: {
+            ...dto,
+          },
+        })
+        .then((user) => {
+          delete user.mfaEnabled;
+          delete user.mfaPhoneNumber;
+          delete user.hash;
+          delete user.refreshToken;
+          return resolve(user);
+        })
+        .catch((err) => {
+          return reject(err);
+        });
     });
-    delete user.mfaEnabled;
-    delete user.mfaPhoneNumber;
-    delete user.hash;
-    delete user.refreshToken;
-    return user;
   }
 
   async getHistory(UserId: string): Promise<{ history: UserHistory[] }> {

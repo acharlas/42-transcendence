@@ -18,7 +18,7 @@ model User {
   hash  String
 
   username String  @unique
-  nickname String
+  nickname String  @unique
   wins     Int     @default(0)
   losses   Int     @default(0)
   mmr      Int     @default(1000)

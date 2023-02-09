@@ -9,7 +9,7 @@ import Avatar from "../avatar/avatar_component";
 import { useGame } from "../context/game.context";
 
 export default function GameRecap() {
-  const { history } = useGame();
+  const { history, setLobby } = useGame();
   let navigate = useNavigate();
   useEffect(() => {
     if (!history) {
@@ -18,7 +18,10 @@ export default function GameRecap() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  if (!history) return;
+
+  useEffect(() => {
+    setLobby(null);
+  });
 
   const wName: string = history.score.find((player) => {
     return player.placement === 1;
