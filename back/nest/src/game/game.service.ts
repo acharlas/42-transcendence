@@ -20,10 +20,11 @@ import { Lobby, Player, Position } from './types_game';
 
 @Injectable()
 export class GameService {
-  constructor(private schedulerRegistry: SchedulerRegistry,
+  constructor(
+    private schedulerRegistry: SchedulerRegistry,
     private userService: UserService,
     private socketService: SocketService,
-    ) { }
+  ) {}
 
   LobbyList: Lobby[] = [];
   Queue: { player: Player; mode: GameMode }[] = [];
@@ -336,9 +337,11 @@ export class GameService {
     this.ingameList.push(newLobby.playerOne.id);
     this.ingameList.push(newLobby.playerTwo.id);
     // console.log(this.ingameList);
-    const sock = this.socketService.chatSockets.find((socket)=>{return (socket.userId === newLobby.playerOne.id)})
-    sock.socket.broadcast.emit("IngameList", this.ingameList);
-    sock.socket.emit("IngameList", this.ingameList);
+    const sock = this.socketService.chatSockets.find((socket) => {
+      return socket.userId === newLobby.playerOne.id;
+    });
+    sock.socket.broadcast.emit('IngameList', this.ingameList);
+    sock.socket.emit('IngameList', this.ingameList);
   }
 
   //rm players from ingame list
@@ -348,9 +351,11 @@ export class GameService {
       return element !== idOne && element !== idTwo;
     });
     // console.log(this.ingameList);
-    const sock = this.socketService.chatSockets.find((socket)=>{return (socket.userId === idTwo)})
-    sock.socket.broadcast.emit("IngameList", this.ingameList);
-    sock.socket.emit("IngameList", this.ingameList);
+    const sock = this.socketService.chatSockets.find((socket) => {
+      return socket.userId === idTwo;
+    });
+    sock.socket.broadcast.emit('IngameList', this.ingameList);
+    sock.socket.emit('IngameList', this.ingameList);
   }
   /*==================================================*/
 
@@ -511,11 +516,7 @@ export class GameService {
         //   lobby.game.ball.vector.x = this.Speed * Math.cos(angle);
         //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
         // }
-        if (lobby.mode === GameMode.HYPERSPEED)
-          lobby.game.ball.vector.x =
-            Math.min(lobby.game.ball.vector.x * lobby.game.ballMomentum, MaxBallXVelocity) * -1;
-        else lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
-
+        lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1;
         //console.log('bounce');
         if (bounce === 1)
           lobby.game.ball.position.x =
@@ -551,12 +552,12 @@ export class GameService {
         // );
         //nextPos = NoOOB(nextPos, lobby);
         if (lobby.mode === GameMode.HYPERSPEED) {
-          const temp = lobby.game.ball.vector.x;
-          lobby.game.ball.vector.x =
-            Math.cos(ballAlpha) * lobby.game.ball.vector.x - Math.sin(ballAlpha) * lobby.game.ball.vector.y;
-          lobby.game.ball.vector.y = Math.sin(ballAlpha) * temp + Math.cos(ballAlpha) * lobby.game.ball.vector.y;
-        }
-        lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
+          lobby.game.ball.position.y =
+            nextPos.y + lobby.game.ballRadius / 2 >= 1
+              ? 0 + lobby.game.ballRadius / 2 + 0.00001
+              : 1 - lobby.game.ballRadius / 2 - 0.00001;
+          lobby.game.ball.position.x = nextPos.x;
+        } else lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
 
         //lobby.game.ball.position = { ...nextPos };
         //console.log('vitesse', lobby.game.ball.vector.y);
