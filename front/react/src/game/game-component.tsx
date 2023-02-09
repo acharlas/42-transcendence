@@ -183,7 +183,9 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       }
     }
 
-    return function cleanup() {};
+    return function cleanup() {
+      game.destroy(true);
+    };
     // eslint-disable-next-line
   }, [
     navigate,

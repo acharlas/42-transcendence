@@ -286,7 +286,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           if (lobby) {
             client.broadcast.to(lobby.id).emit('UpdateLobby', lobby);
           }
-          client.emit('LeaveLobby');
+          client.emit('LeaveLobby'); 
           client.leave(lobby.id);
           return resolve();
         })
