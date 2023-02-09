@@ -172,6 +172,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     return function cleanup() {};
+    // eslint-disable-next-line
   }, [
     navigate,
     socket,
@@ -196,6 +197,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       )
         game.scene.pause("default");
     }
+    // eslint-disable-next-line
   }, [game, socket]);
 
   return (

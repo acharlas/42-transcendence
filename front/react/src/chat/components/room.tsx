@@ -13,16 +13,7 @@ import ChannelUserListComponent from "./channel-user-list";
 function RoomComponent() {
   const newMessageRef = useRef(null);
   const bottomRef = useRef(null);
-  const {
-    rooms,
-    messages,
-    actChannel,
-    userList,
-    setSelectUser,
-    selectUser,
-    user,
-    bloquedList,
-  } = useChat();
+  const { rooms, messages, actChannel, userList, setSelectUser, selectUser, user, bloquedList } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
 
   useEffect(() => {
@@ -36,12 +27,13 @@ function RoomComponent() {
   function handleSendMessage() {
     const message = newMessageRef.current.value;
     newMessageRef.current.value = "";
-    if (!String(message).trim()) {return;} //Not sending empty messages
+    if (!String(message).trim()) {
+      return;
+    } //Not sending empty messages
     console.log("Sending message: ", actChannel);
     if (message[0] != null) {
       userList.find((user) => {
-        if (user.username === window.sessionStorage.getItem("username"))
-          return true;
+        if (user.username === window.sessionStorage.getItem("username")) return true;
         return false;
       });
       socket.emit("SendRoomMessage", {
@@ -52,7 +44,13 @@ function RoomComponent() {
   }
 
   const handleSelectUser = ({ user }: { user: User }) => {
-    if (selectUser && selectUser.username === user.username)
+    if (
+      selectUser &&
+      selectUser.username === user.username &&
+      rooms.find((room) => {
+        return room.channel.id === actChannel;
+      }).channel.type !== ChannelType.dm
+    )
       setSelectUser(undefined);
     else setSelectUser(user);
   };
@@ -65,82 +63,85 @@ function RoomComponent() {
     }
   };
 
-  const room = rooms.find((room) => { return (room.channel.id === actChannel); });
+  const room = rooms.find((room) => {
+    return room.channel.id === actChannel;
+  });
   const affInvite = (): boolean => {
-    return (room &&
+    return (
+      room &&
       room.channel.type === ChannelType.private &&
-      (user.privilege === UserPrivilege.admin ||
-        user.privilege === UserPrivilege.owner)
+      (user.privilege === UserPrivilege.admin || user.privilege === UserPrivilege.owner)
     );
   };
   const affSettings = (): boolean => {
-    return (room &&
+    return (
+      room &&
       room.channel.type !== ChannelType.dm &&
-      (user.privilege === UserPrivilege.admin ||
-        user.privilege === UserPrivilege.owner)
+      (user.privilege === UserPrivilege.admin || user.privilege === UserPrivilege.owner)
     );
   };
   const affLeave = (): boolean => {
-    return (room &&
+    return (
+      room &&
       room.channel.type !== ChannelType.dm &&
-      (user.privilege !== UserPrivilege.admin &&
-        user.privilege !== UserPrivilege.owner)
+      user.privilege !== UserPrivilege.admin &&
+      user.privilege !== UserPrivilege.owner
     );
   };
   const getChannelName = (): string => {
-    return (room?.channel?.name || "Chat");
-  }
+    return room?.channel?.name || "Chat";
+  };
 
   if (!actChannel) return <></>;
-  return (<>
-    <div className="profile__panel__top">
-      {getChannelName()}
-    </div>
-    <div className="profile__panel__bottom">
-      <div className="room-chat-message-container">
-        {messages.map((message, index) => {
-          const msgUser = userList.find((user) => {
-            return (user.username === message.username);
-          });
-          if (
-            !bloquedList.find((bloque) => {
-              return (bloque.username === message.username);
-            })
-          )
-            return (
-              <div key={index} className="room-chat-message-text">
-                <button
-                  className="room-chat-button-user"
-                  onClick={() =>
-                    handleSelectUser({
-                      user: msgUser,
-                    })
-                  }
-                  disabled={user !== null && user.username === msgUser.username}
-                >
-                  {msgUser ? msgUser.nickname : msgUser.nickname} {" :"}
-                </button>
-                {message.content}
-              </div>
-            );
-          return null;
-        })}
-        <p ref={bottomRef}></p>
-      </div>
+  return (
+    <>
+      <div className="profile__panel__top">{getChannelName()}</div>
+      <div className="profile__panel__bottom">
+        <div className="room-chat-message-container">
+          {messages.map((message, index) => {
+            const msgUser = userList.find((user) => {
+              return user.username === message.username;
+            });
+            if (
+              !bloquedList.find((bloque) => {
+                return bloque.username === message.username;
+              })
+            )
+              return (
+                <div key={index} className="room-chat-message-text">
+                  <button
+                    className="room-chat-button-user"
+                    onClick={() =>
+                      handleSelectUser({
+                        user: msgUser,
+                      })
+                    }
+                    disabled={user !== null && user.username === msgUser.username}
+                  >
+                    {msgUser ? msgUser.nickname : msgUser.nickname} {" :"}
+                  </button>
+                  {message.content}
+                </div>
+              );
+            return null;
+          })}
+          <p ref={bottomRef}></p>
+        </div>
 
-      <textarea
-        className="room-chat-textbox"
-        placeholder="New message..."
-        ref={newMessageRef}
-        onKeyDown={handleEnter}
-      />
-    </div>
-    {affSettings() && <ChannelUserListComponent {...room} />}
-    {selectUser && <RoomUserMenuComponent />}
-    {affSettings() && <ChannelSettingsComponent />}
-    {affLeave() && <ChannelLeaveComponent />}
-    {affInvite() && <ChannelInviteComponent />}
-  </>);
+        <textarea
+          className="room-chat-textbox"
+          placeholder="New message..."
+          ref={newMessageRef}
+          onKeyDown={handleEnter}
+        />
+      </div>
+      {affSettings() && <ChannelUserListComponent {...room} />}
+      {selectUser && <RoomUserMenuComponent />}
+      {affSettings() && <ChannelSettingsComponent />}
+      {affLeave() && <ChannelLeaveComponent />}
+      {affInvite() && <ChannelInviteComponent />}
+    </>
+  );
 }
 
 export default RoomComponent;

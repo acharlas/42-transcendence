@@ -30,17 +30,23 @@ function ChatMainComponent() {
     resetErrMsg,
     inviteList,
     setInviteList,
+    setSelectUser,
   } = useChat();
 
   function handleJoinRoom(key: string) {
     console.log("try to join:", key);
-    if (key === actChannel) return;
     closeChatBox();
     const curRoom = rooms.find((room) => {
       return room.channel.id === key;
     });
     curRoom.newMessage = false;
     setNewRoom(curRoom);
+    if (curRoom.channel.type === ChannelType.dm) {
+      const other = curRoom.user.find((x) => {
+        return x.id !== sessionStorage.getItem("userid");
+      });
+      setSelectUser(other);
+    }
     console.log("user set to: ", user);
   }
 
@@ -109,18 +115,12 @@ function ChatMainComponent() {
         <div className="profile__panel__top">Add friend</div>
         <div className="profile__panel__bottom">
           <form>
-            <input
-              value={newFriend}
-              onChange={handleChangeNewFriend}
-              placeholder="Nickname..."
-            />
+            <input value={newFriend} onChange={handleChangeNewFriend} placeholder="Nickname..." />
             <button onClick={handleAddFriend} className="fullwidth-button">
               <IoIosAddCircle />
             </button>
           </form>
-          {FriendErrMsg && (
-            <p className="room-chat-err-message">{FriendErrMsg}</p>
-          )}
+          {FriendErrMsg && <p className="room-chat-err-message">{FriendErrMsg}</p>}
         </div>
         <div className="profile__panel__top">Friends</div>
         <div className="profile__panel__bottom">
@@ -160,18 +160,12 @@ function ChatMainComponent() {
         <div className="profile__panel__top">Add block</div>
         <div className="profile__panel__bottom">
           <form>
-            <input
-              value={newBlock}
-              onChange={handleChangeNewBlock}
-              placeholder="Nickname..."
-            />
+            <input value={newBlock} onChange={handleChangeNewBlock} placeholder="Nickname..." />
             <button onClick={handleAddBlock} className="fullwidth-button">
               <IoIosAddCircle />
             </button>
           </form>
-          {BlockErrMsg && (
-            <p className="room-chat-err-message">{BlockErrMsg}</p>
-          )}
+          {BlockErrMsg && <p className="room-chat-err-message">{BlockErrMsg}</p>}
         </div>
         <div className="profile__panel__top">Blocked users</div>
         <div className="profile__panel__bottom">
@@ -179,9 +173,7 @@ function ChatMainComponent() {
             {bloquedList.map((block, id) => {
               return (
                 <li key={id}>
-                  <button className="room-menu-button-user-block-friend">
-                    {block.nickname}
-                  </button>
+                  <button className="room-menu-button-user-block-friend">{block.nickname}</button>
                   <button
                     className="room-menu-button-remove-user"
                     onClick={() => {
@@ -223,10 +215,7 @@ function ChatMainComponent() {
                 <div key={id}>
                   <button
                     className="chan-list-button"
-                    disabled={
-                      channel.id === actChannel ||
-                      (user && user.privilege === UserPrivilege.ban)
-                    }
+                    disabled={channel.id === actChannel || (user && user.privilege === UserPrivilege.ban)}
                     title={`Go to ${channel.name}`}
                     onClick={() => handleJoinRoom(channel.id)}
                   >
@@ -247,68 +236,66 @@ function ChatMainComponent() {
 
   var messageListIsEmpty: boolean = true;
   function menuElemMessages() {
-    return (<>
-      <div className="profile__panel__top">Contacts</div>
-      <div className="profile__panel__bottom">
-        {rooms.map((room, id) => {
-          const usr = room.user.find((usr) => {
-            return usr.username !== window.sessionStorage.getItem("username");
-          });
-          if (
-            room.channel.type !== ChannelType.dm ||
-            bloquedList.find((block) => {
-              return block.username === usr.username;
-            })
-          )
-            return null;
-          messageListIsEmpty = false;
-          return (
-            <div key={id}>
-              <button
-                onClick={() => handleJoinRoom(room.channel.id)}
-                className="room-menu-button-dm"
-                disabled={room.channel.id === actChannel}
-              >
-                {
-                  room.user.find((usr) => {
-                    return (
-                      usr.username !==
-                      window.sessionStorage.getItem("username")
-                    );
-                  }).username
-                }
-                {room.newMessage && <BiMessageAltAdd />}
-              </button>
-            </div>
-          );
-        })}
-        {messageListIsEmpty && <>No private chats for now... chat with someone!</>}
-      </div>
-    </>);
+    return (
+      <>
+        <div className="profile__panel__top">Contacts</div>
+        <div className="profile__panel__bottom">
+          {rooms.map((room, id) => {
+            const usr = room.user.find((usr) => {
+              return usr.username !== window.sessionStorage.getItem("username");
+            });
+            if (
+              room.channel.type !== ChannelType.dm ||
+              bloquedList.find((block) => {
+                return block.username === usr.username;
+              })
+            )
+              return null;
+            messageListIsEmpty = false;
+            return (
+              <div key={id}>
+                <button
+                  onClick={() => handleJoinRoom(room.channel.id)}
+                  className="room-menu-button-dm"
+                  disabled={room.channel.id === actChannel}
+                >
+                  {
+                    room.user.find((usr) => {
+                      return usr.username !== window.sessionStorage.getItem("username");
+                    }).username
+                  }
+                  {room.newMessage && <BiMessageAltAdd />}
+                </button>
+              </div>
+            );
+          })}
+          {messageListIsEmpty && <>No private chats for now... chat with someone!</>}
+        </div>
+      </>
+    );
   }
 
   var inviteListIsEmpty: boolean = true;
   function menuElemInvites() {
-    return (<>
-      <div className="profile__panel__top">Game invites</div>
-      <div className="profile__panel__bottom">
-        {inviteList.map((invite, id) => {
-          console.log("Game invite from:" + invite.username);
-          inviteListIsEmpty = false;
-          return (
-            <div key={id}>
-              <button
-                onClick={() => handleAcceptInvite(invite.id)}
-                className="room-menu-button-dm"
-              >
-                {"Play with " + invite.username}
-              </button>
-            </div>
-          );
-        })}
-        {inviteListIsEmpty && <>No game invite at the moment.</>}
-      </div>
-    </>);
+    return (
+      <>
+        <div className="profile__panel__top">Game invites</div>
+        <div className="profile__panel__bottom">
+          {inviteList.map((invite, id) => {
+            console.log("Game invite from:" + invite.username);
+            inviteListIsEmpty = false;
+            return (
+              <div key={id}>
+                <button onClick={() => handleAcceptInvite(invite.id)} className="room-menu-button-dm">
+                  {"Play with " + invite.username}
+                </button>
+              </div>
+            );
+          })}
+          {inviteListIsEmpty && <>No game invite at the moment.</>}
+        </div>
+      </>
+    );
   }
 
   if (actChannel) return <RoomComponent />;

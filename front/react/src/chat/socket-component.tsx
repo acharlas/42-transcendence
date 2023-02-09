@@ -211,6 +211,12 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
         setSelectUser(null);
         setShowRoomSetting(room);
         setActChannel(room.channel.id);
+        if (room.channel.type === ChannelType.dm)
+          setSelectUser(
+            room.user.find((user) => {
+              return user.id !== sessionStorage.getItem("userid");
+            })
+          );
       });
       /**room list */
       socket.on("Rooms", (res: Room[]) => {

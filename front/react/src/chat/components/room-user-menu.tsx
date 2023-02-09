@@ -85,8 +85,7 @@ function UserMenuComponent() {
   const handleSendDm = () => {
     const chan = rooms.find((room) => {
       const u = room.user.find((usr) => {
-        if (usr.username === window.sessionStorage.getItem("username"))
-          return true;
+        if (usr.username === window.sessionStorage.getItem("username")) return true;
         return false;
       });
       const u2 = room.user.find((usr) => {
@@ -114,9 +113,13 @@ function UserMenuComponent() {
         <button onClick={handleShowUserProfile} className="fullwidth-button">
           Show profile
         </button>
-        <button onClick={handleSendDm} className="fullwidth-button">
-          Send message
-        </button>
+        {rooms.find((room) => {
+          return room.channel.id === actChannel;
+        }).channel.type !== ChannelType.dm && (
+          <button onClick={handleSendDm} className="fullwidth-button">
+            Send message
+          </button>
+        )}
 
         <button onClick={handleInviteToPlay} className="fullwidth-button margin-before">
           Send game invite
