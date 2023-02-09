@@ -19,6 +19,7 @@ import { PlayerIsInLobby, PlayerIsReaddy } from './game.utils';
 import { GameMode } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
 import { SocketService } from 'src/socket/socket.service';
+import { EndPoint } from './const';
 
 @WebSocketGateway({
   namespace: 'game',
@@ -408,7 +409,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                   this.gameService
                     .UpdateBall(lobby.id)
                     .then((lobby) => {
-                      if (lobby.game.score[0] < 2 && lobby.game.score[1] < 2) {
+                      if (lobby.game.score[0] < EndPoint && lobby.game.score[1] < EndPoint) {
                         // if (lobby.game.score[0] < 99999 && lobby.game.score[1] < 99999) {
                         client.broadcast.to(lobby.id).emit('NewBallPos', lobby.game.ball.position);
                         client.emit('NewBallPos', lobby.game.ball.position);
