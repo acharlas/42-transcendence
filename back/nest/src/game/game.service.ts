@@ -341,7 +341,7 @@ export class GameService {
       return socket.userId === newLobby.playerOne.id;
     });
     const sock2 = this.socketService.chatSockets.find((socket) => {
-      return socket.userId === newLobby.playerOne.id;
+      return socket.userId === newLobby.playerTwo.id;
     });
     if (sock1) {
       sock1.socket.broadcast.emit('IngameList', this.ingameList);
