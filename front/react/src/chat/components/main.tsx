@@ -72,12 +72,12 @@ function ChatMainComponent() {
     setNewBlock(event.target.value);
   };
 
-  const handleRemoveFriend = (username: string) => {
-    socket.emit("RemoveFriend", { username });
+  const handleRemoveFriend = (nickname: string) => {
+    socket.emit("RemoveFriend", { nickname });
   };
 
-  const handleRemoveBlock = (username: string) => {
-    socket.emit("RemoveBlock", { username });
+  const handleRemoveBlock = (nickname: string) => {
+    socket.emit("RemoveBlock", { nickname });
   };
 
   const handleAcceptInvite = (userid: string) => {
@@ -90,22 +90,30 @@ function ChatMainComponent() {
     socket.emit("AccepteGameInvite", { userid });
   };
 
-  const handleSendDm = (username: string) => {
+  const handleSendDm = (nickname: string) => {
     const foundDmRoom = rooms.find((room) => {
       const u = room.user.find((usr) => {
         return usr.username === window.sessionStorage.getItem("username");
       });
       const u2 = room.user.find((usr) => {
-        return usr.username === username;
+        return usr.nickname === nickname;
       });
       return room.channel.type === ChannelType.dm && u && u2;
     });
-    if (foundDmRoom) {
+
+    if (!foundDmRoom) {
+      console.log("send dm creation: ", nickname);
       closeChatBox();
-      setNewRoom(foundDmRoom);
-    } else {
-      closeChatBox();
-      socket.emit("Dm", { sendTo: username });
+      socket.emit("Dm", { sendTo: nickname });
+      return;
+    }
+    closeChatBox();
+    setNewRoom(foundDmRoom);
+    if (foundDmRoom.channel.type === ChannelType.dm) {
+      const other = foundDmRoom.user.find((x) => {
+        return x.id !== sessionStorage.getItem("userid");
+      });
+      setSelectUser(other);
     }
   };
 
@@ -132,7 +140,7 @@ function ChatMainComponent() {
                   <button
                     className="room-menu-button-user-block-friend"
                     onClick={() => {
-                      handleSendDm(friend.username);
+                      handleSendDm(friend.nickname);
                     }}
                   >
                     {friend.nickname}
@@ -140,7 +148,9 @@ function ChatMainComponent() {
                   <button
                     className="room-menu-button-remove-user"
                     onClick={() => {
-                      handleRemoveFriend(friend.username);
+                      console.log("AUAUAU", friend);
+
+                      handleRemoveFriend(friend.nickname);
                     }}
                   >
                     <MdPersonRemove />
@@ -177,7 +187,7 @@ function ChatMainComponent() {
                   <button
                     className="room-menu-button-remove-user"
                     onClick={() => {
-                      handleRemoveBlock(block.username);
+                      handleRemoveBlock(block.nickname);
                     }}
                   >
                     <MdPersonRemove />
@@ -262,7 +272,7 @@ function ChatMainComponent() {
                   {
                     room.user.find((usr) => {
                       return usr.username !== window.sessionStorage.getItem("username");
-                    }).username
+                    }).nickname
                   }
                   {room.newMessage && <BiMessageAltAdd />}
                 </button>
@@ -282,12 +292,12 @@ function ChatMainComponent() {
         <div className="profile__panel__top">Game invites</div>
         <div className="profile__panel__bottom">
           {inviteList.map((invite, id) => {
-            console.log("Game invite from:" + invite.username);
+            console.log("Game invite from:" + invite.nickname);
             inviteListIsEmpty = false;
             return (
               <div key={id}>
                 <button onClick={() => handleAcceptInvite(invite.id)} className="room-menu-button-dm">
-                  {"Play with " + invite.username}
+                  {"Play with " + invite.nickname}
                 </button>
               </div>
             );

@@ -85,7 +85,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
         navigate("/app/game");
       });
       /**receive a invite */
-      socket.on("GameInvite", (invite: { id: string; username: string }) => {
+      socket.on("GameInvite", (invite: { id: string; nickname: string }) => {
         console.log("invite receive: ", invite);
         setInviteList([...inviteList, invite]);
         if (selectedChatWindow !== SelectedChatWindow.INVITES) setHasNewInvite(true);

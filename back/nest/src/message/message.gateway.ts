@@ -404,7 +404,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   /*============================================*/
   /*REMOVE FRIEND*/
   @SubscribeMessage('RemoveFriend')
-  RemoveFriend(@MessageBody('username') remove: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  RemoveFriend(@MessageBody('nickname') remove: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('remove friend: ', remove);
     return new Promise<void>((resolve, reject) => {
       this.userService
@@ -447,7 +447,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   /*============================================*/
   /*REMOVE BLOCK*/
   @SubscribeMessage('RemoveBlock')
-  RemoveBlock(@MessageBody('username') remove: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
+  RemoveBlock(@MessageBody('nickname') remove: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
     console.log('remove block: ', remove);
     return new Promise<void>((resolve, reject) => {
       this.userService
@@ -608,7 +608,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       if (inviteSocket)
         inviteSocket.socket.emit('GameInvite', {
           id: user.id,
-          username: user.username,
+          nickname: user.nickname,
         });
       return;
     };

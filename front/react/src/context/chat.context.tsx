@@ -48,7 +48,7 @@ export interface IoChatContextState {
   BlockErrMsg: string;
   setBlockErrMsg: Function;
   resetErrMsg: Function;
-  inviteList: { id: string; username: string }[];
+  inviteList: { id: string; nickname: string }[];
   setInviteList: Function;
   hasNewInvite: boolean;
   hasNewChatMessage: boolean;
@@ -127,7 +127,7 @@ function ChatProvider(props: any) {
   const [inviteList, setInviteList] = useState<
     {
       id: string;
-      username: string;
+      nickname: string;
     }[]
   >([]);
   const [hasNewInvite, setHasNewInvite] = useState<boolean>(false);

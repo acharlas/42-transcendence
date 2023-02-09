@@ -83,32 +83,35 @@ function UserMenuComponent() {
   };
 
   const handleSendDm = () => {
-    const chan = rooms.find((room) => {
+    const foundDmRoom = rooms.find((room) => {
       const u = room.user.find((usr) => {
         if (usr.username === window.sessionStorage.getItem("username")) return true;
         return false;
       });
       const u2 = room.user.find((usr) => {
-        if (usr.username === selectUser.username) return true;
+        if (usr.nickname === selectUser.nickname) return true;
         return false;
       });
       if (room.channel.type === ChannelType.dm && u && u2) return true;
       return false;
     });
-    if (!chan) {
-      console.log("send dm creation: ", selectUser.username);
-      socket.emit("Dm", { sendTo: selectUser.username });
+    if (!foundDmRoom) {
+      console.log("send dm creation: ", selectUser.nickname);
+      socket.emit("Dm", { sendTo: selectUser.nickname });
       return;
     }
-    console.log("chan found: ", chan);
-    closeChatBox();
-    setNewRoom(chan);
+    const other = foundDmRoom.user.find((x) => {
+      return x.id !== sessionStorage.getItem("userid");
+    });
+    console.log("chan found: ", foundDmRoom);
+    setNewRoom(foundDmRoom);
+    setSelectUser(other);
   };
 
   if (user.username === selectUser.username) return <></>;
   return (
     <>
-      <div className="profile__panel__top">{selectUser.username}</div>
+      <div className="profile__panel__top">{selectUser.nickname}</div>
       <div className="profile__panel__bottom">
         <button onClick={handleShowUserProfile} className="fullwidth-button">
           Show profile

@@ -54,12 +54,14 @@ export class UserService {
     return playerHistory;
   }
 
-  async getUser(username: string): Promise<User> {
+  async getUser(nickname: string): Promise<User> {
     return new Promise<User>((resolve, reject) => {
+      console.log(nickname);
+      
       this.prisma.user
         .findUnique({
           where: {
-            username: username,
+            nickname: nickname,
           },
         })
         .then((user) => {
