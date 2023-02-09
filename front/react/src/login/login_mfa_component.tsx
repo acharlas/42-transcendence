@@ -1,24 +1,20 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaRocket } from 'react-icons/fa';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaRocket } from "react-icons/fa";
 
-import './login_style.css';
-import '../style.css';
-import displayErrorMsgs from '../utils/displayErrMsgs';
-import {
-  checkMfaDto,
-  requestMfaSigninFinish,
-  requestMfaSigninInit,
-} from '../api/mfa-api';
+import "./login_style.css";
+import "../style.css";
+import displayErrorMsgs from "../utils/displayErrMsgs";
+import { checkMfaDto, requestMfaSigninFinish, requestMfaSigninInit } from "../api/mfa-api";
 
 export default function MfaSignin() {
   let navigate = useNavigate();
   const goHome = () => {
-    navigate('/app');
+    navigate("/app");
   };
 
-  const [smsCode, setSmsCode] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [smsCode, setSmsCode] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const HandleSmsCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSmsCode(event.target.value);
@@ -31,7 +27,6 @@ export default function MfaSignin() {
 
   const sendSmsCode = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    //TODO: countdown/modularity
     await requestMfaSigninInit();
   };
 
@@ -39,13 +34,13 @@ export default function MfaSignin() {
     event.preventDefault();
 
     try {
-      setErrorMessage('');
+      setErrorMessage("");
       await signinWithMfa({ codeToCheck: smsCode });
       goHome();
     } catch (e) {
       console.log(e);
       if (e?.response?.status === 401) {
-        setErrorMessage('Session expired, please sign in again.');
+        setErrorMessage("Session expired, please sign in again.");
       } else {
         setErrorMessage(e?.response?.data?.message);
       }

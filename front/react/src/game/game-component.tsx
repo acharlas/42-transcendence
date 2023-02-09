@@ -145,7 +145,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     function update() {
-      //TODO : not do that every frame?
       textScorePlayer1.setText(player1Score.current);
       textScorePlayer2.setText(player2Score.current);
 

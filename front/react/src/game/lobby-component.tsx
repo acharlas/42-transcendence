@@ -96,7 +96,7 @@ const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
                 handleQueueClick(GameMode.hyperspeed);
               }}
             >
-              Funny speedy pong :3 (todo)
+              Funny speedy pong :3
             </button>
           </div>
         </>

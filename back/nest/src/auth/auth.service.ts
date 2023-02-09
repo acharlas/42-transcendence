@@ -50,7 +50,6 @@ export class AuthService {
       sub: userId,
       fullyAuth: !mfaNeeded,
     };
-    //TODO: 2 secrets
     const [accessToken, refreshToken] = await Promise.all([
       this.jwt.signAsync(payload, {
         expiresIn: '2h',
