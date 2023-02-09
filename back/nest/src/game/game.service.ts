@@ -238,6 +238,10 @@ export class GameService {
 
   async PlayerDisconnect(userId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
+      const inQueue = this.Queue.find((player) => {
+        return player.player.id === userId;
+      });
+      if (inQueue) this.LeavingQueue(userId);
       const oldLobby = {
         ...this.LobbyList.find((lobby) => {
           return PlayerIsInLobby(userId, lobby);
