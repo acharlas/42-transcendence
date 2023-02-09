@@ -1,4 +1,5 @@
-import React, { FunctionComponent, useContext } from "react";
+import { FunctionComponent, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useGame } from "../context/game.context";
 import SocketContext from "../context/socket.context";
@@ -9,6 +10,11 @@ export interface ILobbyComponentProps {}
 const LobbyComponent: FunctionComponent<ILobbyComponentProps> = (props) => {
   const { socket } = useContext(SocketContext).SocketState;
   const { inQueue, lobby } = useGame();
+  let navigate = useNavigate();
+
+  useEffect(() => {
+    if (lobby && lobby.game) navigate("/app");
+  });
 
   const handleQueueClick = (gameMode: GameMode) => {
     socket.emit("JoiningQueue", { mode: gameMode });
