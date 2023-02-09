@@ -20,25 +20,33 @@ export default function GameRecap() {
   }, []);
 
   useEffect(() => {
+    if (!history) {
+      navigate("/app");
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  });
+
+  useEffect(() => {
     setLobby(null);
   });
 
-  const wName: string = history.score.find((player) => {
+  const wName: string = history?.score.find((player) => {
     return player.placement === 1;
   }).nickName;
-  const lName: string = history.score.find((player) => {
+  const lName: string = history?.score.find((player) => {
     return player.placement === 2;
   }).nickName;
-  const wId: string = history.score.find((player) => {
+  const wId: string = history?.score.find((player) => {
     return player.placement === 1;
   }).id;
-  const lId: string = history.score.find((player) => {
+  const lId: string = history?.score.find((player) => {
     return player.placement === 2;
   }).id;
-  const wScore: number = history.score.find((player) => {
+  const wScore: number = history?.score.find((player) => {
     return player.placement === 1;
   }).score;
-  const lScore: number = history.score.find((player) => {
+  const lScore: number = history?.score.find((player) => {
     return player.placement === 2;
   }).score;
 
