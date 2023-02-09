@@ -337,11 +337,19 @@ export class GameService {
     this.ingameList.push(newLobby.playerOne.id);
     this.ingameList.push(newLobby.playerTwo.id);
     // console.log(this.ingameList);
-    const sock = this.socketService.chatSockets.find((socket) => {
+    const sock1 = this.socketService.chatSockets.find((socket) => {
       return socket.userId === newLobby.playerOne.id;
     });
-    sock.socket.broadcast.emit('IngameList', this.ingameList);
-    sock.socket.emit('IngameList', this.ingameList);
+    const sock2 = this.socketService.chatSockets.find((socket) => {
+      return socket.userId === newLobby.playerOne.id;
+    });
+    if (sock1) {
+      sock1.socket.broadcast.emit('IngameList', this.ingameList);
+      sock1.socket.emit('IngameList', this.ingameList);
+    } else if (sock2) {
+      sock2.socket.broadcast.emit('IngameList', this.ingameList);
+      sock2.socket.emit('IngameList', this.ingameList);
+    }
   }
 
   //rm players from ingame list
