@@ -41,8 +41,8 @@ export class GameService {
           });
           if (!find) this.Queue.push({ player: newPlayer, mode: gameMode });
           if (find)
-            this.Queue = this.Queue.filter((player) => {
-              return !(player.player.id === userId);
+            this.LeavingQueue(userId).catch((err) => {
+              return reject(err);
             });
           return resolve();
         })
@@ -56,7 +56,7 @@ export class GameService {
     return new Promise<void>((resolve, reject) => {
       this.Queue = this.Queue.filter((player) => {
         if (player.player.id === userId) return false;
-        return false;
+        return true;
       });
       return resolve();
     });
@@ -238,6 +238,10 @@ export class GameService {
 
   async PlayerDisconnect(userId: string): Promise<Lobby> {
     return new Promise<Lobby>((resolve, reject) => {
+      const inQueue = this.Queue.find((player) => {
+        return player.player.id === userId;
+      });
+      if (inQueue) this.LeavingQueue(userId);
       const oldLobby = {
         ...this.LobbyList.find((lobby) => {
           return PlayerIsInLobby(userId, lobby);
@@ -358,11 +362,19 @@ export class GameService {
       return element !== idOne && element !== idTwo;
     });
     // console.log(this.ingameList);
-    const sock = this.socketService.chatSockets.find((socket) => {
+    const sock1 = this.socketService.chatSockets.find((socket) => {
+      return socket.userId === idOne;
+    });
+    const sock2 = this.socketService.chatSockets.find((socket) => {
       return socket.userId === idTwo;
     });
-    sock.socket.broadcast.emit('IngameList', this.ingameList);
-    sock.socket.emit('IngameList', this.ingameList);
+    if (sock1) {
+      sock1.socket.broadcast.emit('IngameList', this.ingameList);
+      sock1.socket.emit('IngameList', this.ingameList);
+    } else if (sock2) {
+      sock2.socket.broadcast.emit('IngameList', this.ingameList);
+      sock2.socket.emit('IngameList', this.ingameList);
+    }
   }
   /*==================================================*/
 

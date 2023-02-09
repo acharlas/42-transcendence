@@ -114,6 +114,9 @@ CREATE TABLE "_blocks" (
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "users_nickname_key" ON "users"("nickname");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "channels_name_key" ON "channels"("name");
 
 -- CreateIndex

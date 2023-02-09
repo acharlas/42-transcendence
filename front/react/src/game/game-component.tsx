@@ -28,10 +28,14 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   const gameRef = useRef<HTMLDivElement>(null);
   const playerOneId = useRef<string>(lobby?.playerOne?.id);
   const playerTwoId = useRef<string>(lobby?.playerTwo?.id);
-  const paddleGamevelocity = lobby.mode === GameMode.hyperspeed ? HyperboostPaddleVelocity : PaddleVelocity;
+  const paddleGamevelocity = lobby?.mode === GameMode.hyperspeed ? HyperboostPaddleVelocity : PaddleVelocity;
 
   useEffect(() => {
-    if (!socket) navigate("/app/game");
+    console.log(lobby);
+    if (!lobby) navigate("/app");
+  }, [lobby, navigate]);
+
+  useEffect(() => {
     console.log("USEEFFECT game-component new Phaser.Game");
     const game = new Phaser.Game({
       type: Phaser.AUTO,
@@ -70,7 +74,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
     function preload() {
       this.load.image("ball", "http://localhost:3001/assets/ball.png");
-      if (lobby.mode === GameMode.hyperspeed) {
+      if (lobby && lobby.mode === GameMode.hyperspeed) {
         this.load.image("paddle", "http://localhost:3001/assets/paddlex64.png");
       } else {
         this.load.image("paddle", "http://localhost:3001/assets/paddle.png");
@@ -148,7 +152,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         position,
       });
 
-      if (lobby.mode === GameMode.hyperspeed) {
+      if (lobby && lobby.mode === GameMode.hyperspeed) {
       }
     }
 
@@ -179,7 +183,9 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       }
     }
 
-    return function cleanup() {};
+    return function cleanup() {
+      game.destroy(true);
+    };
     // eslint-disable-next-line
   }, [
     navigate,
@@ -196,12 +202,12 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
 
   useEffect(() => {
     console.log("USEEFFECT game-component game init");
-
     if (game) {
       socket.emit("PlayerReady");
       if (
-        lobby.playerOne.id === sessionStorage.getItem("userid") ||
-        lobby.playerTwo.id === sessionStorage.getItem("userid")
+        lobby &&
+        ((lobby.playerOne && lobby.playerOne.id === sessionStorage.getItem("userid")) ||
+          (lobby.playerTwo && lobby.playerTwo.id === sessionStorage.getItem("userid")))
       )
         game.scene.pause("default");
     }

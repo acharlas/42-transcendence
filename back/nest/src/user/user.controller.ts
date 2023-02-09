@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { Achievement, User, UserHistory } from '@prisma/client';
@@ -45,12 +45,12 @@ export class UserController {
       this.userService
         .getUsers()
         .then((ret) => {
-          ret.forEach(x=>{
+          ret.forEach((x) => {
             delete x.mfaEnabled;
             delete x.mfaPhoneNumber;
             delete x.hash;
             delete x.refreshToken;
-          })
+          });
           return resolve(ret);
         })
         .catch((err) => {
@@ -89,6 +89,16 @@ export class UserController {
 
   @Patch()
   editUser(@GetUser('id') userId: string, @Body() dto: EditUserDto): Promise<User> {
-    return this.userService.editUser(userId, dto);
+    return new Promise<User>((resolve, reject) => {
+      this.userService
+        .editUser(userId, dto)
+        .then((user) => {
+          return resolve(user);
+        })
+        .catch((err) => {
+          console.log(err);
+          return reject(new ForbiddenException('nickname already taken'));
+        });
+    });
   }
 }
