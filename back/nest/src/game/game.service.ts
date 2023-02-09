@@ -41,8 +41,8 @@ export class GameService {
           });
           if (!find) this.Queue.push({ player: newPlayer, mode: gameMode });
           if (find)
-            this.Queue = this.Queue.filter((player) => {
-              return !(player.player.id === userId);
+            this.LeavingQueue(userId).catch((err) => {
+              return reject(err);
             });
           return resolve();
         })
@@ -56,7 +56,7 @@ export class GameService {
     return new Promise<void>((resolve, reject) => {
       this.Queue = this.Queue.filter((player) => {
         if (player.player.id === userId) return false;
-        return false;
+        return true;
       });
       return resolve();
     });
