@@ -1,10 +1,9 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { GameMode } from '@prisma/client';
-import { MessageGateway } from 'src/message/message.gateway';
 import { SocketService } from 'src/socket/socket.service';
 import { UserService } from 'src/user/user.service';
-import { ballAlpha, ballMomentumStart, BallSpeed, MaxBallXVelocity } from './const';
+import { ballMomentumStart, BallSpeed, MaxBallXVelocity } from './const';
 import {
   PlayerIsInWatching,
   PlayerIsInLobby,
@@ -437,7 +436,7 @@ export class GameService {
         ball: { position: { x: 0.5, y: 0.5 }, vector: RandSpeed(this.Speed) },
         ballMomentum: gameMode === GameMode.HYPERSPEED ? ballMomentumStart : 1,
       };
-      this.incIngameList(lobby );
+      this.incIngameList(lobby);
       return resolve(lobby);
     });
   }
@@ -501,7 +500,7 @@ export class GameService {
       });
       if (!lobby) return reject(new ForbiddenException('no lobby'));
       let nextPos: Position;
-      console.log(lobby.game.ball)
+      console.log(lobby.game.ball);
       nextPos = {
         x: lobby.game.ball.position.x + lobby.game.ball.vector.x * BallSpeed,
         y: lobby.game.ball.position.y + lobby.game.ball.vector.y * BallSpeed,

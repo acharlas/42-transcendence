@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Achievement, User, UserHistory } from '@prisma/client';
+import { EndPoint } from 'src/game/const';
 import { Lobby, Player, Playertab } from 'src/game/types_game';
 import { PrismaService } from '../prisma/prisma.service';
 import { EditUserDto } from './dto';
@@ -130,7 +131,7 @@ export class UserService {
 
   async AchievementUpdate(player: Playertab[], score: number[]): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      if ((score[1] === 2 && score[0] === 0) || (score[0] === 2 && score[1] === 0)) {
+      if ((score[1] === EndPoint && score[0] === 0) || (score[0] === EndPoint && score[1] === 0)) {
         console.log('achievement detect');
         this.GetAchievement(player[0].id)
           .then((achievementPLayerOne) => {
@@ -138,7 +139,7 @@ export class UserService {
               .then((achievementPLayerTwo) => {
                 console.log('achievement update: ', achievementPLayerOne, achievementPLayerTwo);
                 if (
-                  score[1] === 2 &&
+                  score[1] === EndPoint &&
                   score[0] === 0 &&
                   !achievementPLayerOne.find((ach) => {
                     return ach === Achievement.EasyWin;
@@ -149,7 +150,7 @@ export class UserService {
                   });
 
                 if (
-                  score[0] === 2 &&
+                  score[0] === EndPoint &&
                   score[1] === 0 &&
                   !achievementPLayerTwo.find((ach) => {
                     return ach === Achievement.EasyWin;
@@ -160,7 +161,7 @@ export class UserService {
                   });
 
                 if (
-                  score[1] === 2 &&
+                  score[1] === EndPoint &&
                   score[0] === 0 &&
                   !achievementPLayerTwo.find((ach) => {
                     return ach === Achievement.HardLoss;
@@ -171,7 +172,7 @@ export class UserService {
                   });
 
                 if (
-                  score[0] === 2 &&
+                  score[0] === EndPoint &&
                   score[1] === 0 &&
                   !achievementPLayerTwo.find((ach) => {
                     return ach === Achievement.HardLoss;
