@@ -16,6 +16,8 @@ export class UserController {
 
   @Get('me')
   getMe(@GetUser() user: User): User {
+    delete user.hash;
+    delete user.refreshToken;
     return user;
   }
 
@@ -25,6 +27,10 @@ export class UserController {
       this.userService
         .getUserId(userId, id)
         .then((ret) => {
+          delete ret.mfaEnabled;
+          delete ret.mfaPhoneNumber;
+          delete ret.hash;
+          delete ret.refreshToken;
           return resolve(ret);
         })
         .catch((err) => {
@@ -39,6 +45,12 @@ export class UserController {
       this.userService
         .getUsers()
         .then((ret) => {
+          ret.forEach(x=>{
+            delete x.mfaEnabled;
+            delete x.mfaPhoneNumber;
+            delete x.hash;
+            delete x.refreshToken;
+          })
           return resolve(ret);
         })
         .catch((err) => {
