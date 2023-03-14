@@ -7,7 +7,7 @@ import { AuthSigninDto, AuthSignupDto } from 'src/auth/dto';
 
 describe('Friend Block Suite', () => {
   beforeAll(async () => {
-    pactum.request.setBaseUrl('http://localhost:3334');
+    pactum.request.setBaseUrl('http://5.182.18.157:3334');
   });
 
   //mockres

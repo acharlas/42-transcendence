@@ -3,7 +3,7 @@ import * as pactum from 'pactum';
 
 /*describe('Message Suite', () => {
   beforeAll(async () => {
-    pactum.request.setBaseUrl('http://localhost:3334');
+    pactum.request.setBaseUrl('http://5.182.18.157:3334');
   });
 
   it('Create User1', () => {
