@@ -19,7 +19,7 @@ export class SokcetIOAdapter extends IoAdapter {
     const cors = {
       origin: [
         `http://5.182.18.157:4444`,
-        new RegExp(`/^http:\/\/192\.168\.1\.([1-9]|[1-9]\d):4444$/`),
+        new RegExp(`/^http:\/\/5\.182\.18\.([1-9]|[1-9]\d):4444$/`),
       ],
     };
 
