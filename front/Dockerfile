@@ -12,5 +12,6 @@ RUN npm install
 # Install the rest
 COPY ./react ./
 RUN npm install
+Run npm run build
 
-CMD ["npm", "start"]
+CMD ["npm", "build"]

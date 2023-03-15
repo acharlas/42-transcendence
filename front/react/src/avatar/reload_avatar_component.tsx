@@ -4,7 +4,7 @@ export default function ReloadAvatar(id: string, reload: number, classname: stri
   return (
     <img
       className={classname}
-      src={`http://localhost:3333/avatar/` + id + "?rld=" + reload}
+      src={`http://5.182.18.157:3333/avatar/` + id + "?rld=" + reload}
       onError={({ currentTarget }) => {
         currentTarget.onerror = null; // no looping
         currentTarget.src = defaultPicture;

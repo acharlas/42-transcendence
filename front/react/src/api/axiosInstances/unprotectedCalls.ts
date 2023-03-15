@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios from "axios";
 
 const axiosNoAuth = axios.create({
-  baseURL: 'http://localhost:3333',
+  baseURL: "http://5.182.18.157:3333",
 });
 
 axiosNoAuth.interceptors.request.use(
@@ -12,7 +12,7 @@ axiosNoAuth.interceptors.request.use(
   (error) => {
     // console.log(error);
     return Promise.reject(error);
-  },
+  }
 );
 
 axiosNoAuth.interceptors.response.use(
@@ -23,7 +23,7 @@ axiosNoAuth.interceptors.response.use(
   async (error) => {
     // console.log(error);
     return Promise.reject(error);
-  },
+  }
 );
 
 export default axiosNoAuth;
