@@ -18,8 +18,8 @@ export class SokcetIOAdapter extends IoAdapter {
   createIOServer(port: number, options?: ServerOptions) {
     const cors = {
       origin: [
-        `http://5.182.18.157:4444`,
-        new RegExp(`/^http:\/\/5\.182\.18\.([1-9]|[1-9]\d):4444$/`),
+        `http://5.182.18.157:3001`,
+        new RegExp(`/^http:\/\/5\.182\.18\.([1-9]|[1-9]\d):3001$/`),
       ],
     };
 
