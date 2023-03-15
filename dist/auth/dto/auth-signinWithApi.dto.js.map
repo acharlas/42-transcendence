@@ -1,0 +1,1 @@
+{"version":3,"file":"auth-signinWithApi.dto.js","sourceRoot":"","sources":["../../../src/auth/dto/auth-signinWithApi.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,6CAA8C;AAC9C,qDAAuD;AAEvD,MAAa,oBAAoB;CAUhC;AATC;IAAC,IAAA,0BAAQ,GAAE;IACV,IAAA,4BAAU,GAAE;IACZ,IAAA,qBAAW,GAAE;;gDACH;AAEX;IAAC,IAAA,0BAAQ,GAAE;IACV,IAAA,4BAAU,GAAE;IACZ,IAAA,qBAAW,GAAE;;mDACA;AAThB,oDAUC"}

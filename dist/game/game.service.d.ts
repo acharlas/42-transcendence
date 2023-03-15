@@ -1,0 +1,40 @@
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { GameMode } from '@prisma/client';
+import { SocketService } from 'src/socket/socket.service';
+import { UserService } from 'src/user/user.service';
+import { Lobby, Player } from './types_game';
+export declare class GameService {
+    private schedulerRegistry;
+    private userService;
+    private socketService;
+    constructor(schedulerRegistry: SchedulerRegistry, userService: UserService, socketService: SocketService);
+    LobbyList: Lobby[];
+    Queue: {
+        player: Player;
+        mode: GameMode;
+    }[];
+    Speed: number;
+    JoiningQueue(userId: string, gameMode: GameMode): Promise<void>;
+    LeavingQueue(userId: string): Promise<void>;
+    CreateLobby(userId: string): Promise<Lobby>;
+    AddInvite(lobbyId: string, inviteId: string): Promise<Lobby>;
+    LeaveLobby(userId: string): Promise<Lobby>;
+    CreatePlayer(userId: string): Promise<Player>;
+    JoinLobby(userId: string, lobbyId: string): Promise<Lobby>;
+    PlayerDisconnect(userId: string): Promise<Lobby>;
+    FindPLayerLobby(userId: string): Promise<Lobby>;
+    JoinViewer(userId: string, lobbyId: string): Promise<Lobby>;
+    PlayerLobbyReaddy(userId: string): Promise<Lobby>;
+    ChangeLobbyMode(userId: string, mode: GameMode): Promise<Lobby>;
+    ingameList: string[];
+    incIngameList(newLobby: Lobby): Promise<void>;
+    decIngameList(idOne: any, idTwo: any): Promise<void>;
+    MatchPlayer(): Promise<Lobby[]>;
+    UpdatePlayerPos(userId: string, position: number): Promise<Lobby>;
+    CreateGame(userId: string, gameMode: GameMode): Promise<Lobby>;
+    SetGameStart(lobbyId: string): Promise<Lobby>;
+    PlayerReady(userId: string): Promise<Lobby>;
+    UpdatePlayer(userId: string, paddleHeight: number, paddleWidth: number, ballRadius: number, position: number): Promise<Lobby>;
+    EndGame(userId: string): Promise<Lobby>;
+    UpdateBall(lobbyId: string): Promise<Lobby>;
+}

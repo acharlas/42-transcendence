@@ -1,0 +1,1 @@
+{"version":3,"file":"avatar.module.js","sourceRoot":"","sources":["../../src/avatar/avatar.module.ts"],"names":[],"mappings":";;;;;;;;;AAAA,2CAAwC;AAGxC,2DAAuD;AACvD,qDAAiD;AAS1C,IAAM,YAAY,GAAlB,MAAM,YAAY;CAAI,CAAA;AAAhB,YAAY;IAPxB,IAAA,eAAM,EAAC;QACN,OAAO,EAAE,EAER;QACD,WAAW,EAAE,CAAC,oCAAgB,CAAC;QAC/B,SAAS,EAAE,CAAC,8BAAa,CAAC;KAC3B,CAAC;GACW,YAAY,CAAI;AAAhB,oCAAY"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"history.module.js","sourceRoot":"","sources":["../../src/history/history.module.ts"],"names":[],"mappings":";;;;;;;;;AAAA,2CAA+D;AAC/D,uDAAmD;AACnD,uDAAmD;AACnD,6DAAyD;AAQlD,IAAM,aAAa,GAAnB,MAAM,aAAa;CAAG,CAAA;AAAhB,aAAa;IAJzB,IAAA,eAAM,EAAC;QACN,SAAS,EAAE,CAAC,gCAAc,EAAE,gCAAc,CAAC;QAC3C,WAAW,EAAE,CAAC,sCAAiB,CAAC;KACjC,CAAC;GACW,aAAa,CAAG;AAAhB,sCAAa"}

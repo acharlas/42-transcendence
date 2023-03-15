@@ -1,0 +1,17 @@
+import { Lobby, Position } from './types_game';
+export declare const PlayerIsInLobby: (userId: string, lobby: Lobby) => boolean;
+export declare const PlayerIsInWatching: (userId: string, lobby: Lobby) => string;
+export declare const PlayerIsReaddy: (lobby: Lobby) => boolean;
+export declare const LobbyIsReaddy: (lobby: Lobby) => boolean;
+export declare const WitchPlayer: (userId: string, lobby: Lobby) => number;
+export declare const BallOnPaddle: (lobby: Lobby, ballPos: Position) => number;
+export declare const BallOnPaddleOne: (lobby: Lobby, ballPos: Position) => boolean;
+export declare const BallOnPaddleTwo: (lobby: Lobby, ballPos: Position) => boolean;
+export declare const NoOOB: (pos: Position, lobby: Lobby) => Position;
+export declare const NormPos: (pos: Position) => Position;
+export declare const BallScore: (lobby: Lobby, ballPos: Position) => boolean;
+export declare const ballHitWall: (lobby: Lobby, ballPos: Position) => boolean;
+export declare const RandSpeed: (speed: number) => Position;
+export declare const RelativeIntersectionY: (lobby: Lobby, paddleY: number) => number;
+export declare const normalizedRelativeIntersectionY: (lobby: Lobby, paddleY: number) => number;
+export declare const bounceAngle: (lobby: Lobby, paddleY: number) => number;
