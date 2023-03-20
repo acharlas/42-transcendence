@@ -23,7 +23,6 @@ COPY ./nest ./
 RUN npm install
 RUN npx prisma generate
 RUN nest build
-RUN npm run build
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["npm", "run", "start:prod"]
