@@ -22,6 +22,7 @@ const jwt_1 = require("@nestjs/jwt");
 const mfa_module_1 = require("./mfa/mfa.module");
 const avatar_module_1 = require("./avatar/avatar.module");
 const game_module_1 = require("./game/game.module");
+const serve_static_1 = require("@nestjs/serve-static");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -43,6 +44,9 @@ AppModule = __decorate([
             mfa_module_1.MfaModule,
             avatar_module_1.AvatarModule,
             game_module_1.GameModule,
+            serve_static_1.ServeStaticModule.forRoot({
+                rootPath: '../../../front/react/build/index.html',
+            }),
         ],
     })
 ], AppModule);
