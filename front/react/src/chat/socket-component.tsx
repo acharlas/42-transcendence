@@ -165,9 +165,6 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
       });
       /**receive Room message */
       socket.on("RoomMessage", ({ roomId, message }: { roomId: string; message: Message }) => {
-        //console.log("Message received on: ", roomId, "\nmessage: ", {
-          message,
-        });
         const newRooms = [...rooms];
         const room = newRooms.find((room) => {
           return room.channel.id === roomId;
