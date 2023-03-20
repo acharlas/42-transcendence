@@ -73,7 +73,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     function preload() {
-      this.load.image("ball", "../image/ball.png");
+      this.load.image("ball", "../../public/assets//ball.png");
       if (lobby && lobby.mode === GameMode.hyperspeed) {
         this.load.image("paddle", "../image/paddlex64.png");
       } else {
