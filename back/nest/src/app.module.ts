@@ -13,6 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MfaModule } from './mfa/mfa.module';
 import { AvatarModule } from './avatar/avatar.module';
 import { GameModule } from './game/game.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 //import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -33,6 +34,9 @@ import { GameModule } from './game/game.module';
     MfaModule,
     AvatarModule,
     GameModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../../../front/react/build/', 'index.html'),
+    }),
   ],
 })
 export class AppModule {}
