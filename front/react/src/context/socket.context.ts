@@ -21,15 +21,7 @@ export interface ISocketContextAction {
   payload: TSocketContextpayload;
 }
 
-export const SocketReducer = (
-  state: IoSocketContextState,
-  action: ISocketContextAction
-) => {
-  //console.log(
-    `Message received - Action: ${action.type} - payload: `,
-    action.payload
-  );
-
+export const SocketReducer = (state: IoSocketContextState, action: ISocketContextAction) => {
   switch (action.type) {
     case "update_socket":
       //console.log("newsocket", action.payload);
