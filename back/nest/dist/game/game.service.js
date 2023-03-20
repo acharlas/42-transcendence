@@ -29,7 +29,6 @@ let GameService = class GameService {
     }
     async JoiningQueue(userId, gameMode) {
         return new Promise((resolve, reject) => {
-            console.log('actual queue: ', this.Queue);
             this.CreatePlayer(userId)
                 .then((newPlayer) => {
                 const find = this.Queue.find((player) => {
@@ -487,7 +486,6 @@ let GameService = class GameService {
             if (!lobby)
                 return reject(new common_1.ForbiddenException('no lobby'));
             let nextPos;
-            console.log(lobby.game.ball);
             nextPos = {
                 x: lobby.game.ball.position.x + lobby.game.ball.vector.x * const_1.BallSpeed,
                 y: lobby.game.ball.position.y + lobby.game.ball.vector.y * const_1.BallSpeed,

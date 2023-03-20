@@ -33,18 +33,15 @@ let GameGateway = class GameGateway {
         this.socketService = socketService;
     }
     afterInit(client) {
-        console.log(`client in game after init: ${client.id}`);
     }
     handleConnection(client) {
         const socket = this.io.sockets;
-        console.log('socket list in game: ', this.socketService.gameSockets);
         const find = this.socketService.gameSockets.find((socket) => {
             if (socket.userId === client.userID)
                 return true;
             return false;
         });
         if (find) {
-            console.log('find to game:', find);
             if (find.socket.id !== client.id) {
                 find.socket.emit('Disconnect');
                 this.socketService.gameSockets = this.socketService.gameSockets.filter((socket) => {
@@ -59,7 +56,6 @@ let GameGateway = class GameGateway {
         const lobby = this.gameService.LobbyList.find((lobby) => {
             return (0, game_utils_1.PlayerIsInLobby)(client.userID, lobby);
         });
-        console.log('lobby find: ', lobby);
         if (lobby) {
             client.join(lobby.id);
             client.emit('JoinLobby', lobby);
@@ -74,13 +70,10 @@ let GameGateway = class GameGateway {
                 return true;
             return false;
         });
-        console.log('lobby watch find: ', lobbyWatch);
         if (lobbyWatch) {
             client.join(lobbyWatch.id);
             client.emit('JoinSpectate', lobbyWatch);
         }
-        console.log(`Client connected to game: ${client.id} | userid: ${client.userID} | name: ${client.username}`);
-        console.log(`Number of sockets connected to game: ${socket.size}`);
     }
     handleDisconnect(client) {
         const socket = this.io.sockets;
@@ -89,12 +82,9 @@ let GameGateway = class GameGateway {
                 return false;
             return true;
         });
-        console.log(`Client disconnected of game: ${client.id} | name: ${client.username}`);
-        console.log(`Number of sockets connected to game: ${socket.size}`);
         this.gameService
             .PlayerDisconnect(client.userID)
             .then((lobby) => {
-            console.log('lobby found');
             if (lobby) {
                 const player1 = {
                     id: lobby.game.player[1].id,
@@ -153,14 +143,12 @@ let GameGateway = class GameGateway {
                         return;
                     })
                         .catch((err) => {
-                        console.log(err);
                         return;
                     });
                 });
             }
         })
             .catch((err) => {
-            console.log(err);
             return;
         });
     }
@@ -189,16 +177,13 @@ let GameGateway = class GameGateway {
             });
         })
             .catch((err) => {
-            console.log(err);
         });
     }
     handshake(client) {
-        console.log('sending back user id....');
         client.emit('handshake', client.id);
         return;
     }
     JoiningQueue(client, mode) {
-        console.log('User:', client.userID, ' joining the queue');
         return new Promise((resolve, reject) => {
             this.gameService
                 .JoiningQueue(client.userID, mode)
@@ -207,13 +192,11 @@ let GameGateway = class GameGateway {
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
     }
     LeavingQueue(client) {
-        console.log('User:', client.userID, ' Leaving the queue');
         return new Promise((resolve, reject) => {
             this.gameService
                 .LeavingQueue(client.userID)
@@ -221,14 +204,12 @@ let GameGateway = class GameGateway {
                 client.emit('LeaveQueue');
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
             return resolve();
         });
     }
     CreateLobby(client) {
-        console.log('User:', client.userID, 'create lobby');
         return new Promise((resolve, reject) => {
             this.gameService
                 .CreateLobby(client.userID)
@@ -239,13 +220,11 @@ let GameGateway = class GameGateway {
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
     }
     LeavingLobby(client) {
-        console.log('User:', client.userID, ' Leaving lobby');
         return new Promise((resolve, reject) => {
             this.gameService
                 .LeaveLobby(client.userID)
@@ -258,47 +237,39 @@ let GameGateway = class GameGateway {
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
     }
     ChangeLobbyMode(client, mode) {
-        console.log('User:', client.userID, 'is readdy');
         return new Promise((resolve, reject) => {
             this.gameService
                 .ChangeLobbyMode(client.userID, mode)
                 .then((lobby) => {
-                console.log('end');
                 client.emit('UpdateLobby', lobby);
                 client.to(lobby.id).emit('UpdateLobby', lobby);
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
     }
     PlayerLobbbyReaddy(client) {
-        console.log('User:', client.userID, 'is readdy');
         return new Promise((resolve, reject) => {
             this.gameService
                 .PlayerLobbyReaddy(client.userID)
                 .then((lobby) => {
-                console.log('end');
                 client.emit('UpdateLobby', lobby);
                 client.to(lobby.id).emit('UpdateLobby', lobby);
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
     }
     NewHistory(client, history) {
-        console.log('Received newHistory message:', history);
         this.historyService.updateRankings({
             winnerId: 'c7a689d2-e9db-4469-9607-2a4dc47e311e',
             loserId: 'ee5f9533-0de0-44fe-ac05-8e774d6af6bc',
@@ -310,7 +281,6 @@ let GameGateway = class GameGateway {
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
@@ -328,7 +298,6 @@ let GameGateway = class GameGateway {
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
@@ -351,7 +320,6 @@ let GameGateway = class GameGateway {
                                 return resolve();
                             })
                                 .catch((err) => {
-                                console.log(err);
                                 return resolve();
                             });
                         }
@@ -443,23 +411,19 @@ let GameGateway = class GameGateway {
                                                 .LeaveLobby(lobby.playerOne.id)
                                                 .then((lobby) => {
                                                 this.gameService.LeaveLobby(lobby.playerTwo.id).catch((err) => {
-                                                    console.log(err);
                                                     return reject(err);
                                                 });
                                             })
                                                 .catch((err) => {
-                                                console.log(err);
                                                 return reject(err);
                                             });
                                             return resolve();
                                         })
                                             .catch((err) => {
-                                            console.log(err);
                                             return reject();
                                         });
                                     })
                                         .catch((err) => {
-                                        console.log(err);
                                         return reject();
                                     });
                                 }
@@ -467,7 +431,6 @@ let GameGateway = class GameGateway {
                                 client.emit('updateScore', lobby.game.score);
                             })
                                 .catch((err) => {
-                                console.log(err);
                                 return resolve();
                             });
                         }
@@ -475,7 +438,6 @@ let GameGateway = class GameGateway {
                     })
                         .catch((err) => {
                         this.scheduleRegistry.deleteInterval(lobby.id);
-                        console.log(err);
                         return;
                     });
                 };
@@ -486,7 +448,6 @@ let GameGateway = class GameGateway {
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
@@ -501,7 +462,6 @@ let GameGateway = class GameGateway {
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
@@ -516,35 +476,30 @@ let GameGateway = class GameGateway {
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
     }
     PlayerReady(client) {
         return new Promise((resolve, reject) => {
-            console.log('PlayerReady');
             this.gameService
                 .PlayerReady(client.userID)
                 .then((lobby) => {
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
     }
     UpdatePlayer(client, paddleHeight, paddleWitdh, ballRadius, position) {
         return new Promise((resolve, reject) => {
-            console.log('PlayerReady', position);
             this.gameService
                 .UpdatePlayer(client.userID, paddleHeight, paddleWitdh, ballRadius, position)
                 .then((lobby) => {
                 return resolve();
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });

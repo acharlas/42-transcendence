@@ -94,7 +94,6 @@ let UserController = class UserController {
                 return resolve(user);
             })
                 .catch((err) => {
-                console.log(err);
                 return reject(new common_1.ForbiddenException('nickname already taken'));
             });
         });

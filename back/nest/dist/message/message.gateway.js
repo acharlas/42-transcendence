@@ -37,7 +37,6 @@ let MessageGateway = class MessageGateway {
         this.SocketList = [];
     }
     afterInit(client) {
-        console.log(`client after init: ${client.id}`);
     }
     handleConnection(client) {
         const socket = this.io.sockets;
@@ -47,7 +46,6 @@ let MessageGateway = class MessageGateway {
             return false;
         });
         if (find) {
-            console.log('find:', find);
             if (find.socket.id !== client.id) {
                 find.socket.emit('Disconnect');
                 this.socketService.chatSockets = this.socketService.chatSockets.filter((socket) => {
@@ -62,28 +60,22 @@ let MessageGateway = class MessageGateway {
         this.io.emit('OnlineList', this.socketService.chatSockets.map(function (a) {
             return a.userId;
         }));
-        console.log('Socket list after connection: ', this.socketService.chatSockets);
-        console.log(`Number of sockets connected: ${socket.size}`);
         this.channelService
             .getUserRoom(client.userID)
             .then((res) => {
-            console.log('room on connection:', { res });
             client.emit('Rooms', res);
             res.forEach((room) => {
                 client.join(room.channel.id);
             });
         })
             .catch((err) => {
-            console.log(err);
         });
         this.friendService
             .getFriendList(client.userID)
             .then((friendList) => {
-            console.log('send friend list: ', friendList);
             client.emit('FriendList', friendList);
         })
             .catch((err) => {
-            console.log(err);
         });
         this.blockService
             .getBlockList(client.userID)
@@ -91,9 +83,7 @@ let MessageGateway = class MessageGateway {
             client.emit('BloquedList', bloquedList);
         })
             .catch((err) => {
-            console.log(err);
         });
-        console.log(`Client connected: ${client.id} | userid: ${client.userID} | name: ${client.username}`);
     }
     handleDisconnect(client) {
         const socket = this.io.sockets;
@@ -105,41 +95,31 @@ let MessageGateway = class MessageGateway {
         this.io.emit('OnlineList', this.socketService.chatSockets.map(function (a) {
             return a.userId;
         }));
-        console.log(`Client disconnected: ${client.id} | name: ${client.username}`);
-        console.log('Socket list after disconnection: ', this.socketService.chatSockets);
-        console.log(`Number of sockets connected: ${socket.size}`);
     }
     handshake(client) {
-        console.log('sending back user id....');
         client.emit('new_user', client.id);
         return;
     }
     CreateRoom(roomDto, client) {
-        console.log('id:', client.userID, { roomDto });
         return new Promise((resolve, reject) => {
             this.channelService
                 .createChannel(client.userID, roomDto)
                 .then((ret) => {
-                console.log('NewRoom Create Send: ', { ret });
                 client.join(ret.channel.id);
                 client.emit('NewRoom', { room: ret });
                 return resolve();
             })
                 .catch((err) => {
-                console.log('error create channel: ', err);
                 client.emit('ErrMessage', { code: 'err31' });
                 return reject(err);
             });
         });
     }
     sendRoomMessage(roomId, message, client) {
-        console.log('new message arrive:', message, 'on room: ', roomId);
         return new Promise((resolve, reject) => {
-            console.log('SendRoom message', { message }, 'channelId:', roomId);
             this.channelService
                 .addChannelMessage(client.userID, roomId, client.username, message)
                 .then((ret) => {
-                console.log('message resend:', ret, 'roomid: ', roomId);
                 client.broadcast.to(roomId).emit('RoomMessage', { roomId: roomId, message: ret });
                 client.emit('RoomMessage', { roomId: roomId, message: ret });
                 return resolve();
@@ -150,7 +130,6 @@ let MessageGateway = class MessageGateway {
         });
     }
     joinRoom(name, password, client) {
-        console.log('join room:', name, 'pass', password);
         return new Promise((resolve, reject) => {
             this.channelService
                 .JoinChannelByName(name, client.userID, { password: password })
@@ -168,7 +147,6 @@ let MessageGateway = class MessageGateway {
                 return resolve();
             })
                 .catch((err) => {
-                console.log('MESSAGE: ', err.message);
                 if (err.message)
                     client.emit('ErrMessage', { code: err.message });
                 return reject(err);
@@ -176,7 +154,6 @@ let MessageGateway = class MessageGateway {
         });
     }
     LeaveRoom(roomId, client) {
-        console.log('leave room: ', roomId);
         return new Promise((resolve, reject) => {
             this.channelService
                 .leaveChannel(client.userID, roomId)
@@ -195,9 +172,7 @@ let MessageGateway = class MessageGateway {
         });
     }
     UpdateUserPrivilege(roomId, privilege, time, toModifie, client) {
-        console.log('date: ', time, 'Privilege: ', privilege);
         return new Promise((resolve, reject) => {
-            console.log('update user: ', toModifie, 'with pricilege: ', privilege);
             this.channelService
                 .channelUserUpdate(client.userID, toModifie, roomId, privilege, time)
                 .then((ret) => {
@@ -205,7 +180,6 @@ let MessageGateway = class MessageGateway {
                     this.channelService
                         .getChannelUser(roomId)
                         .then((user) => {
-                        console.log('send msg back');
                         client.to(roomId).emit('UpdateUserList', { roomId: roomId, user: user });
                         client.emit('UpdateUserList', { roomId: roomId, user: user });
                         if (privilege === client_1.UserPrivilege.ban) {
@@ -223,7 +197,6 @@ let MessageGateway = class MessageGateway {
                     });
                     return resolve();
                 }).catch((err) => {
-                    console.log(err);
                     return reject(err);
                 }));
             })
@@ -233,19 +206,16 @@ let MessageGateway = class MessageGateway {
         });
     }
     BanUser(user, time, client) {
-        console.log('date');
         return new Promise((resolve, reject) => {
             return resolve();
         });
     }
     addFriend(friend, client) {
-        console.log('newFriend', friend);
         return new Promise((resolve, reject) => {
             this.userService
                 .getUser(friend)
                 .then((user) => {
                 if (!user) {
-                    console.log('friend not found: ', friend);
                     client.emit('ErrMessage', { code: 'err12' });
                     return;
                 }
@@ -261,26 +231,22 @@ let MessageGateway = class MessageGateway {
                                 return resolve();
                             })
                                 .catch((err) => {
-                                console.log(err);
                                 return reject(err);
                             });
                         }));
                     })
                         .catch((err) => {
-                        console.log(err);
                         return reject(err);
                     });
                 }));
             })
                 .catch((err) => {
-                console.log(err);
                 client.emit('ErrMessage', { code: 'err11' });
                 return reject(err);
             });
         });
     }
     addBlock(Block, client) {
-        console.log('newBlock', Block);
         return new Promise((resolve, reject) => {
             this.userService
                 .getUser(Block)
@@ -301,26 +267,22 @@ let MessageGateway = class MessageGateway {
                                 return resolve();
                             })
                                 .catch((err) => {
-                                console.log(err);
                                 return reject();
                             });
                         }));
                     })
                         .catch((err) => {
-                        console.log(err);
                         client.emit('ErrMessage', { code: 'err21' });
                         return reject(err);
                     });
                 }));
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
     }
     RemoveFriend(remove, client) {
-        console.log('remove friend: ', remove);
         return new Promise((resolve, reject) => {
             this.userService
                 .getUser(remove)
@@ -337,25 +299,21 @@ let MessageGateway = class MessageGateway {
                                 return resolve();
                             })
                                 .catch((err) => {
-                                console.log(err);
                                 return reject(err);
                             });
                         }));
                     })
                         .catch((err) => {
-                        console.log(err);
                         return reject();
                     });
                 }));
             })
                 .then((err) => {
-                console.log(err);
                 return reject();
             });
         });
     }
     RemoveBlock(remove, client) {
-        console.log('remove block: ', remove);
         return new Promise((resolve, reject) => {
             this.userService
                 .getUser(remove)
@@ -372,25 +330,21 @@ let MessageGateway = class MessageGateway {
                                 return resolve();
                             })
                                 .catch((err) => {
-                                console.log(err);
                                 return reject(err);
                             });
                         }));
                     })
                         .catch((err) => {
-                        console.log(err);
                         return reject();
                     });
                 }));
             })
                 .then((err) => {
-                console.log(err);
                 return reject();
             });
         });
     }
     UpdateRoom(roomId, dto, client) {
-        console.log('update channel: ', roomId, 'with: ', { dto });
         return new Promise((resolve, reject) => {
             this.channelService
                 .editChannel(client.userID, roomId, dto)
@@ -401,21 +355,18 @@ let MessageGateway = class MessageGateway {
                         name: channel.name,
                         type: channel.type,
                     };
-                    console.log('sending update room');
                     client.broadcast.emit('UpdateRoom', updateChan);
                     client.emit('UpdateRoom', updateChan);
                     return resolve();
                 }));
             })
                 .catch((err) => {
-                console.log(err);
                 client.emit('ErrMessage', { code: err.message });
                 return reject(err);
             });
         });
     }
     Dm(sendTo, client) {
-        console.log('create dm room: ', sendTo);
         return new Promise((resolve, reject) => {
             this.userService
                 .getUser(sendTo)
@@ -435,18 +386,15 @@ let MessageGateway = class MessageGateway {
                     return resolve();
                 })
                     .catch((err) => {
-                    console.log(err);
                     return reject;
                 });
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
         });
     }
     InviteUser(user, channel, client) {
-        console.log('invite User: ', user, ' to: ', channel);
         return new Promise((resolve, reject) => {
             this.userService
                 .getUser(user)
@@ -461,13 +409,11 @@ let MessageGateway = class MessageGateway {
                 });
             })
                 .catch((err) => {
-                console.log(err);
                 return reject;
             });
         });
     }
     InviteUserInGame(inviteId, client) {
-        console.log('InviteUserInGame: ', inviteId);
         const addPlayerToRoom = (lobby, user) => {
             const gameSocket = this.socketService.gameSockets.find((socket) => {
                 if (socket.userId === client.userID)
@@ -508,7 +454,6 @@ let MessageGateway = class MessageGateway {
                                     return resolve(addPlayerToRoom(lobby, user));
                                 })
                                     .catch((err) => {
-                                    console.log(err);
                                     return reject(err);
                                 });
                             }));
@@ -518,7 +463,6 @@ let MessageGateway = class MessageGateway {
                         }
                     })
                         .catch((err) => {
-                        console.log(err);
                         return reject;
                     });
                 }));
@@ -529,7 +473,6 @@ let MessageGateway = class MessageGateway {
         });
     }
     AccepteGameInvite(userid, client) {
-        console.log('AccepteGameInvite: ', userid);
         return new Promise((resolve, reject) => {
             const lobby = this.gameService.LobbyList.find((lobby) => {
                 return (0, game_utils_1.PlayerIsInLobby)(userid, lobby);
@@ -539,7 +482,6 @@ let MessageGateway = class MessageGateway {
             this.gameService
                 .JoinLobby(client.userID, lobby.id)
                 .then((lobby) => {
-                console.log('has join');
                 const gameSocket = this.socketService.gameSockets.find((socket) => {
                     if (socket.userId === client.userID)
                         return true;
@@ -560,14 +502,12 @@ let MessageGateway = class MessageGateway {
                     gameHostSocket.socket.emit('JoinLobby', lobby);
             })
                 .catch((err) => {
-                console.log('join err:', err);
                 return reject();
             });
             return resolve();
         });
     }
     WatchPartie(userId, client) {
-        console.log('watch: ', userId);
         return new Promise((resolve, reject) => {
             const lobby = this.gameService.LobbyList.find((lobby) => {
                 return (0, game_utils_1.PlayerIsInLobby)(userId, lobby);
@@ -590,7 +530,6 @@ let MessageGateway = class MessageGateway {
                     client.emit('JoinGame');
             })
                 .catch((err) => {
-                console.log(err);
                 return reject();
             });
             return resolve();

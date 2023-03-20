@@ -17,7 +17,6 @@ let FriendService = class FriendService {
         this.prisma = prisma;
     }
     async addFriend(userId, dto) {
-        console.log('add friend', dto.userId);
         return new Promise((resolve, reject) => {
             if (userId === dto.userId) {
                 return reject(new common_1.HttpException({
@@ -145,7 +144,6 @@ let FriendService = class FriendService {
         });
     }
     async getFriend(userId, id) {
-        console.log('getFriend');
         return new Promise((resolve, reject) => {
             if (userId !== id) {
                 return reject(new common_1.HttpException({

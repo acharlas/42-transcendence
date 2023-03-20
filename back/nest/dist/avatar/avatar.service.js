@@ -56,7 +56,6 @@ let AvatarService = class AvatarService {
         if (user === null || user === void 0 ? void 0 : user.avatarPath) {
             try {
                 const file = (0, fs_1.readFileSync)((0, path_1.join)(process.cwd(), user.avatarPath));
-                console.log(file);
                 return new common_1.StreamableFile(file);
             }
             catch (e) {

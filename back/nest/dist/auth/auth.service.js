@@ -81,7 +81,6 @@ let AuthService = class AuthService {
             state: dto.state,
         };
         return new Promise((resolve, reject) => {
-            console.log({ payload });
             (0, axios_1.default)({
                 method: 'post',
                 url: 'https://api.intra.42.fr/oauth/token',
@@ -94,7 +93,6 @@ let AuthService = class AuthService {
                 return resolve(ret.data.access_token);
             })
                 .catch((err) => {
-                console.log('axios error:', err);
                 return reject(new common_1.ForbiddenException('Failed authenticating with oauth'));
             });
         });
@@ -122,12 +120,10 @@ let AuthService = class AuthService {
                     return resolve(ret);
                 })
                     .catch((err) => {
-                    console.log('signup: signToken error', err);
                     return reject(new common_1.UnauthorizedException('signup failed'));
                 });
             })
                 .catch((err) => {
-                console.log('signup: prisma.user.create error', err);
                 return reject(new common_1.UnauthorizedException('username taken'));
             });
         });
@@ -154,7 +150,6 @@ let AuthService = class AuthService {
                 }));
             })
                 .catch((err) => {
-                console.log(err);
                 return reject(new common_1.ForbiddenException('wrong password'));
             });
         });
@@ -173,7 +168,6 @@ let AuthService = class AuthService {
                     return resolve(ret);
                 })
                     .catch((err) => {
-                    console.log(err);
                     return reject(new common_1.ForbiddenException('Failed authenticating with oauth'));
                 });
             }
@@ -192,7 +186,6 @@ let AuthService = class AuthService {
                     return resolve(this.signTokens(ret.id, ret.mfaEnabled));
                 })
                     .catch((err) => {
-                    console.log(err);
                     return reject(new common_1.ForbiddenException('Failed to signup with oauth.'));
                 });
             }

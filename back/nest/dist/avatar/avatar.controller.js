@@ -24,19 +24,15 @@ let AvatarController = class AvatarController {
         this.avatarService = avatarService;
     }
     postAvatar(userId, avatar) {
-        console.log('postAvatar');
         if (!avatar) {
             throw new common_1.BadRequestException('no avatar');
         }
-        console.log(avatar);
         this.avatarService.saveAvatar(userId, { path: avatar.path });
     }
     deleteAvatar(userId) {
-        console.log('deleteAvatar');
         this.avatarService.deleteAvatar(userId);
     }
     getAvatar(targetId, res) {
-        console.log('getAvatar');
         return new Promise((resolve, reject) => {
             return this.avatarService
                 .getAvatar(targetId)

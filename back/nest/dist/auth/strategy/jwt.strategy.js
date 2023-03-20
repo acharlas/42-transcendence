@@ -30,7 +30,6 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         if (!(payload === null || payload === void 0 ? void 0 : payload.fullyAuth) &&
             (request === null || request === void 0 ? void 0 : request.url) !== '/mfa/signin/init' &&
             (request === null || request === void 0 ? void 0 : request.url) !== '/mfa/signin/validate') {
-            console.log("Can't validate: Missing 2FA");
             throw new common_1.UnauthorizedException('2FA required');
         }
         try {
@@ -43,7 +42,6 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             return user;
         }
         catch (e) {
-            console.log(e);
             throw new common_1.BadRequestException('request error');
         }
     }
