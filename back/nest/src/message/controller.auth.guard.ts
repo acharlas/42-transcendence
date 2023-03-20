@@ -13,7 +13,7 @@ export class ControllerAuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> {
     const request: RequestWithAuth = context.switchToHttp().getRequest();
-    console.log('request body: ', request.body);
+    //console.log('request body: ', request.body);
 
     const { accessToken } = request.body;
 

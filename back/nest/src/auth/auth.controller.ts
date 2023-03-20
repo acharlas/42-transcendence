@@ -30,7 +30,7 @@ export class AuthController {
           return resolve(ret);
         })
         .catch((err) => {
-          console.log('error:', { err });
+          //console.log('error:', { err });
           return reject(err);
         });
     });
@@ -62,7 +62,7 @@ export class AuthController {
               this.authService
                 .signWithApi(ret)
                 .then((ret) => {
-                  console.log({ ret });
+                  //console.log({ ret });
                   return resolve(ret);
                 })
                 .catch((err) => {
@@ -83,10 +83,10 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @Get('refresh')
   refreshTokens(@Req() req: Request) {
-    console.log(req);
+    //console.log(req);
     const userId = req.user['sub'];
     const refreshToken = req.user['refreshToken'];
-    console.log(userId, refreshToken);
+    //console.log(userId, refreshToken);
     return this.authService.refreshTokens(userId, refreshToken);
   }
 

@@ -53,7 +53,7 @@ function UserMenuComponent() {
   };
 
   const AdminUser = () => {
-    console.log("set as admin");
+    //console.log("set as admin");
     socket.emit("UpdateUserPrivilege", {
       roomId: actChannel,
       privilege: "admin",
@@ -64,7 +64,7 @@ function UserMenuComponent() {
   };
 
   const setToDefault = () => {
-    console.log("set to default");
+    //console.log("set to default");
     socket.emit("UpdateUserPrivilege", {
       roomId: actChannel,
       privilege: "default",
@@ -96,14 +96,14 @@ function UserMenuComponent() {
       return false;
     });
     if (!foundDmRoom) {
-      console.log("send dm creation: ", selectUser.nickname);
+      //console.log("send dm creation: ", selectUser.nickname);
       socket.emit("Dm", { sendTo: selectUser.nickname });
       return;
     }
     const other = foundDmRoom.user.find((x) => {
       return x.id !== sessionStorage.getItem("userid");
     });
-    console.log("chan found: ", foundDmRoom);
+    //console.log("chan found: ", foundDmRoom);
     setNewRoom(foundDmRoom);
     setSelectUser(other);
   };

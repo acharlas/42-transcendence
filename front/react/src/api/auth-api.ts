@@ -30,7 +30,7 @@ export const getMe = async (): Promise<void> => {
         return resolve();
       })
       .catch((err) => {
-        console.log("getMe catch", err);
+        //console.log("getMe catch", err);
         return reject(err);
       });
   }).catch(() => {});
@@ -66,7 +66,7 @@ export const fortyTwoSign = async (dto: fortyTwoLoginDto) => {
     window.sessionStorage.setItem("RefreshToken", response.data.refresh_token);
     return response;
   } catch (e) {
-    console.log("Oauth error", e);
+    //console.log("Oauth error", e);
     return e;
   }
 };

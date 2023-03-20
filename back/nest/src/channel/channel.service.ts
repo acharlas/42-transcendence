@@ -79,7 +79,7 @@ export class ChannelService {
                   });
                 })
                 .catch((err) => {
-                  console.log(err);
+                  //console.log(err);
                   return reject(new ForbiddenException('channel already exist'));
                 });
             }),
@@ -250,7 +250,7 @@ export class ChannelService {
 
   async joinChannelById(userId: string, channelId: string, dto: JoinChannelDto): Promise<Room> {
     return new Promise<Room>((resolve, reject) => {
-      console.log('join channel:', channelId);
+      //console.log('join channel:', channelId);
       this.prisma.channel
         .findUnique({
           where: {
@@ -310,7 +310,7 @@ export class ChannelService {
           );
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           throw new ForbiddenException('Access to resource denied');
         });
     });
@@ -366,9 +366,9 @@ export class ChannelService {
   }
 
   async joinUpdateChannel(user: User, channel: Channel): Promise<Room> {
-    //console.log('join channel:', channel);
+    ////console.log('join channel:', channel);
     return new Promise<Room>((resolve, reject) => {
-      console.log('joining channel: ', { channel }, 'user: ', { user });
+      //console.log('joining channel: ', { channel }, 'user: ', { user });
       this.prisma.channelUser
         .findUnique({
           where: {
@@ -376,12 +376,12 @@ export class ChannelService {
           },
         })
         .then((userChan) => {
-          console.log('userChan find:', { userChan });
+          //console.log('userChan find:', { userChan });
           if (userChan) {
             if (userChan.privilege === UserPrivilege.ban) {
               const date = new Date();
-              console.log(date.getTime());
-              console.log(userChan.time.getTime());
+              //console.log(date.getTime());
+              //console.log(userChan.time.getTime());
               if (date.getTime() < userChan.time.getTime()) return reject(new ForbiddenException('err44'));
             }
             if (userChan.status === UserStatus.connected) {
@@ -444,7 +444,7 @@ export class ChannelService {
                     });
                   })
                   .catch((err) => {
-                    console.log(err);
+                    //console.log(err);
                     return reject(err);
                   });
               }),
@@ -517,7 +517,7 @@ export class ChannelService {
             );
         })
         .catch((err) => {
-          console.log('usernotfound', err);
+          //console.log('usernotfound', err);
           return reject(err);
         });
     });
@@ -547,7 +547,7 @@ export class ChannelService {
               },
             })
             .then((ret) => {
-              console.log(ret, ret.length);
+              //console.log(ret, ret.length);
               if (!ret || ret.length === 0) {
                 this.prisma.channel
                   .deleteMany({
@@ -556,7 +556,7 @@ export class ChannelService {
                     },
                   })
                   .then((ret) => {
-                    console.log('delete: ', ret);
+                    //console.log('delete: ', ret);
                   })
                   .catch((err) => {
                     return reject(err);
@@ -608,7 +608,7 @@ export class ChannelService {
   }
 
   async addChannelMessage(userId: string, channelId: string, username: string, content: string): Promise<MessageCont> {
-    console.log('add message on chanelid:', channelId, ' by userid:', userId);
+    //console.log('add message on chanelid:', channelId, ' by userid:', userId);
     return new Promise<MessageCont>((resolve, reject) => {
       this.prisma.channelUser
         .findUnique({
@@ -622,8 +622,8 @@ export class ChannelService {
         .then((res) => {
           if (res.privilege === UserPrivilege.muted) {
             const date = new Date();
-            console.log(date.getTime());
-            console.log(res.time.getTime());
+            //console.log(date.getTime());
+            //console.log(res.time.getTime());
             if (date.getTime() < res.time.getTime()) return reject(new ForbiddenException('you are muted'));
           }
           return resolve(
@@ -660,7 +660,7 @@ export class ChannelService {
           );
         })
         .catch((err) => {
-          console.log({ err });
+          //console.log({ err });
           return reject(new ForbiddenException("user isn't on channel"));
         });
     });
@@ -674,7 +674,7 @@ export class ChannelService {
     time: Date,
   ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      console.log('user update type: ', priv);
+      //console.log('user update type: ', priv);
       this.prisma.user
         .findUnique({
           where: {
@@ -697,11 +697,11 @@ export class ChannelService {
                   },
                 })
                 .then((userPriv) => {
-                  console.log('find channelUser modifie', priv);
+                  //console.log('find channelUser modifie', priv);
                   if (userPriv.privilege !== UserPrivilege.admin && userPriv.privilege !== UserPrivilege.owner) {
                     return new ForbiddenException('missing admin rights');
                   }
-                  console.log('is admin or owner');
+                  //console.log('is admin or owner');
                   return resolve(
                     new Promise<void>((resolve, reject) => {
                       this.prisma.channelUser
@@ -717,13 +717,13 @@ export class ChannelService {
                           },
                         })
                         .then((modifPriv) => {
-                          console.log('find channelUser modifie', priv);
+                          //console.log('find channelUser modifie', priv);
                           if (modifPriv.privilege === priv) return;
                           if (
                             (modifPriv.privilege === 'admin' || modifPriv.privilege === 'owner') &&
                             (priv === 'ban' || priv === 'muted')
                           ) {
-                            console.log("can't ban/mute an admin/owner");
+                            //console.log("can't ban/mute an admin/owner");
                             return reject(new ForbiddenException("can't ban/mute an admin/owner"));
                           }
                           if (priv === 'ban')
@@ -739,7 +739,7 @@ export class ChannelService {
                               }),
                             );
                           else if (priv === 'muted') {
-                            console.log('switch to muted');
+                            //console.log('switch to muted');
                             return resolve(
                               new Promise<void>((resolve, reject) => {
                                 this.muteUser(userModified.id, channelId, time)
@@ -754,7 +754,7 @@ export class ChannelService {
                           } else {
                             //change privileges
                             if (userPriv.privilege !== UserPrivilege.owner) {
-                              console.log('missing owner rights');
+                              //console.log('missing owner rights');
                               return new ForbiddenException('missing owner rights');
                             }
                             return resolve(
@@ -771,7 +771,7 @@ export class ChannelService {
                           }
                         })
                         .catch((err) => {
-                          console.log('error', err);
+                          //console.log('error', err);
                           return reject(err);
                         });
                     }),
@@ -791,7 +791,7 @@ export class ChannelService {
 
   async banUser(userId: string, channelId: string, Time: Date): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      console.log('ban player', userId);
+      //console.log('ban player', userId);
       this.prisma.channelUser
         .update({
           where: {
@@ -1010,7 +1010,7 @@ export class ChannelService {
   }
 
   async CreateDm(userId: string, to: string): Promise<Room> {
-    console.log('create dm with: ', userId, 'to: ', to);
+    //console.log('create dm with: ', userId, 'to: ', to);
     return new Promise<Room>((resolve, reject) => {
       this.prisma.channel
         .create({

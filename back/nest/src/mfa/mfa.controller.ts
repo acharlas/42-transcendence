@@ -27,7 +27,7 @@ export class MfaController {
   @Post('signin/init')
   @HttpCode(HttpStatus.OK)
   async initSignIn(@GetUser('id') userId: string) {
-    console.log('mfa/signin/init');
+    //console.log('mfa/signin/init');
     return this.mfaService.initSignIn(userId);
   }
 
@@ -37,14 +37,14 @@ export class MfaController {
     @GetUser('id') userId: string,
     @Body() dto: MfaValidateDto,
   ) {
-    console.log('mfa/signin/validate', userId, { dto });
+    //console.log('mfa/signin/validate', userId, { dto });
     return this.mfaService.validateSignIn(userId, dto);
   }
 
   @Post('setup/init')
   @HttpCode(HttpStatus.CREATED)
   async initSetup(@GetUser('id') userId: string, @Body() dto: MfaSetupDto) {
-    console.log('mfa/setup/init', { dto });
+    //console.log('mfa/setup/init', { dto });
     return this.mfaService.initSetup(userId, dto);
   }
 
@@ -54,14 +54,14 @@ export class MfaController {
     @GetUser('id') userId: string,
     @Body() dto: MfaValidateDto,
   ) {
-    console.log('mfa/setup/validate', { dto });
+    //console.log('mfa/setup/validate', { dto });
     return this.mfaService.finishSetup(userId, dto);
   }
 
   @Delete('disable')
   @HttpCode(HttpStatus.NO_CONTENT)
   async disable(@GetUser('id') userId: string) {
-    console.log('mfa/disable');
+    //console.log('mfa/disable');
     return this.mfaService.disable(userId);
   }
 }

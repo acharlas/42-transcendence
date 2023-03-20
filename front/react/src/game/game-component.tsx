@@ -31,12 +31,12 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   const paddleGamevelocity = lobby?.mode === GameMode.hyperspeed ? HyperboostPaddleVelocity : PaddleVelocity;
 
   useEffect(() => {
-    console.log(lobby);
+    //console.log(lobby);
     if (!lobby) navigate("/app");
   }, [lobby, navigate]);
 
   useEffect(() => {
-    console.log("USEEFFECT game-component new Phaser.Game");
+    //console.log("USEEFFECT game-component new Phaser.Game");
     const game = new Phaser.Game({
       type: Phaser.AUTO,
       scale: {
@@ -130,7 +130,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       setGame(game);
 
       //dbg
-      console.log(
+      //console.log(
         "salut: ",
         player1.body.height / this.physics.world.bounds.height,
         " ",
@@ -138,8 +138,8 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
         " ",
         ball.body.height / this.physics.world.bounds.height
       );
-      console.log("paddle width: ", player1.body.width);
-      console.log("paddle height: ", player2.body.height);
+      //console.log("paddle width: ", player1.body.width);
+      //console.log("paddle height: ", player2.body.height);
 
       let position =
         playerOneId.current === window.sessionStorage.getItem("userid")
@@ -201,7 +201,7 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
   ]);
 
   useEffect(() => {
-    console.log("USEEFFECT game-component game init");
+    //console.log("USEEFFECT game-component game init");
     if (game) {
       socket.emit("PlayerReady");
       if (

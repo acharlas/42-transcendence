@@ -38,23 +38,23 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
   let navigate = useNavigate();
 
   useEffect(() => {
-    console.log("USEEFFECT socket-game-component SOCKET CONNECT");
+    //console.log("USEEFFECT socket-game-component SOCKET CONNECT");
     /** connect to the web socket */
-    console.log("SOCKET CONNECT");
+    //console.log("SOCKET CONNECT");
     socket.connect();
     /** save socket in context */
     SocketDispatch({ type: "update_socket", payload: socket });
   }, [socket]);
 
   useEffect(() => {
-    console.log("USEEFFECT socket-game-component StartListener");
+    //console.log("USEEFFECT socket-game-component StartListener");
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
       /**** Game-related listeners ****/
       /** Game Pause */
       socket.on("EndGame", ({ history, lobby }: { history: History; lobby: Lobby }) => {
-        console.log("EndGame: ");
+        //console.log("EndGame: ");
         setLobby(null);
         game.destroy(true); // destroy the game at the end to prevent leaks
         //switch scene game un truc dans le genre
@@ -64,34 +64,34 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       });
       /** Game Pause */
       socket.on("GameResume", () => {
-        console.log("GameResume: ");
+        //console.log("GameResume: ");
 
         //switch scene game un truc dans le genre
         if (game) game.scene.resume("default");
       });
       /** Surrender */
       socket.on("Surrender", () => {
-        console.log("Surrender: ");
+        //console.log("Surrender: ");
         navigate("/app/game/");
       });
       /** EnnemySurrender */
       socket.on("EnnemySurrender", () => {
-        console.log("EnnemySurrender: ");
+        //console.log("EnnemySurrender: ");
         navigate("/app/game/");
       });
       /** Game Pause */
       socket.on("GamePause", () => {
-        console.log("GamePause: ");
+        //console.log("GamePause: ");
 
         if (game) game.scene.pause("default");
         //switch scene timer un truc dans le genre
       });
       /** Game start */
       socket.on("StartGame", (lobby: Lobby) => {
-        console.log("everyone ready: ", lobby);
+        //console.log("everyone ready: ", lobby);
 
         setLobby(lobby);
-        console.log({ game });
+        //console.log({ game });
         if (timer) timer.paused = !timer.paused;
         if (game) game.scene.resume("default");
       });
@@ -104,7 +104,7 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       });
       /** setBallPosition */
       socket.on("NewBallPos", (position: Position) => {
-        // console.log("ball: ", { position });
+        // //console.log("ball: ", { position });
         if (ball) ball.setPosition(position.x * gameBounds.x, position.y * gameBounds.y);
       });
       /**setPlayerPosition */
@@ -116,19 +116,19 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       /**** Matchmaking-related listeners ****/
       /** Queue Join */
       socket.on("QueueJoin", () => {
-        console.log("joining the queue");
+        //console.log("joining the queue");
         setInQueue(!inQueue);
       });
       /** New match found */
       socket.on("JoinLobby", (lobby: Lobby) => {
-        console.log("new lobby join ", { lobby });
+        //console.log("new lobby join ", { lobby });
         navigate("/app/game");
         setInQueue(false);
         setLobby(lobby);
       });
       /**JoinSpectate*/
       socket.on("JoinSpectate", (lobby: Lobby) => {
-        console.log("JoinSpectate: ", { lobby });
+        //console.log("JoinSpectate: ", { lobby });
 
         setLobby(lobby);
         if (lobby.game) {
@@ -139,29 +139,29 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       });
       /** Player leave the lobby */
       socket.on("PlayerLeave", (uid: string) => {
-        console.log("user: ", uid, " leave the lobby");
+        //console.log("user: ", uid, " leave the lobby");
         Removeplayer(uid);
       });
       /** You leave the lobby */
       socket.on("LeaveLobby", (lobbyId: string) => {
-        console.log("you leave the lobby: ", lobbyId);
+        //console.log("you leave the lobby: ", lobbyId);
         setInQueue(false);
         setLobby(null);
       });
       /** update the lobby */
       socket.on("UpdateLobby", (lobby: Lobby) => {
-        console.log("UpdateLobby: ", lobby);
+        //console.log("UpdateLobby: ", lobby);
         setLobby(lobby);
       });
       /** Receive new id */
       socket.on("new_user", (uid: string) => {
-        console.log("User connected, new user received", uid, "last uid");
+        //console.log("User connected, new user received", uid, "last uid");
         SocketDispatch({ type: "update_uid", payload: uid });
       });
 
       /* update score */
       socket.on("updateScore", (newScore: number[]) => {
-        // console.log("rec updateScore", newScore);
+        // //console.log("rec updateScore", newScore);
         player1Score.current = newScore[1];
         player2Score.current = newScore[0];
       });
@@ -169,28 +169,28 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
       /**** Connection-related listeners ****/
       /** Disconnect */
       socket.on("Disconnect", () => {
-        console.log("disconnect");
+        //console.log("disconnect");
         socket.disconnect();
       });
       /** Handshake */
       socket.on("handshake", (id: string) => {
-        console.log("user id is: ", id);
+        //console.log("user id is: ", id);
       });
       /** Reconnect event */
       socket.io.on("reconnect", (attempt) => {
-        console.log("Reconnection attempt: " + attempt);
+        //console.log("Reconnection attempt: " + attempt);
       });
       /** Reconnect attempt event */
       socket.io.on("reconnect_attempt", (attempt) => {
-        console.log("Reconnection attempt: " + attempt);
+        //console.log("Reconnection attempt: " + attempt);
       });
       /** Reconnection error */
       socket.io.on("reconnect_error", (error) => {
-        console.log("reconnect error: " + error);
+        //console.log("reconnect error: " + error);
       });
       /** Reconnection failed */
       socket.io.on("reconnect_failed", () => {
-        console.log("reconnection failed ");
+        //console.log("reconnection failed ");
         alert("we are unable to reconnect you to the web socket");
       });
     };

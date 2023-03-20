@@ -10,7 +10,7 @@ export class HistoryService {
 
   async createhistory(createHistoryDto: CreateHistoryDto): Promise<void> {
     new Promise<void>((resolve, reject) => {
-      console.log("createhistory service");
+      //console.log("createhistory service");
       this.prisma.history
         .create({
           data: {
@@ -172,8 +172,8 @@ export class HistoryService {
 
   //updates MMR and W/L for both players
   async updateRankings(gameData: updateRankingsDto) {
-    console.log("updateRanking");
-    console.log(gameData);
+    //console.log("updateRanking");
+    //console.log(gameData);
 
     this.incrementWins(gameData.winnerId);
     this.incrementLosses(gameData.loserId);
@@ -183,14 +183,14 @@ export class HistoryService {
 
     var winnerMmr = await this.getElo(gameData.winnerId);
     var loserMmr = await this.getElo(gameData.loserId);
-    console.log("old MMR:", winnerMmr, loserMmr);
+    //console.log("old MMR:", winnerMmr, loserMmr);
 
     const winnerExpectedScore = elo.getExpected(winnerMmr, loserMmr);
     const loserExpectedScore = elo.getExpected(loserMmr, winnerMmr);
 
     winnerMmr = elo.updateRating(winnerExpectedScore, 1, winnerMmr);
     loserMmr = elo.updateRating(loserExpectedScore, 0, loserMmr);
-    console.log("new MMR:", winnerMmr, loserMmr);
+    //console.log("new MMR:", winnerMmr, loserMmr);
   
     this.editElo(gameData.winnerId, await winnerMmr);
     this.editElo(gameData.loserId, await loserMmr);

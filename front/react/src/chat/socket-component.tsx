@@ -53,23 +53,23 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
   let navigate = useNavigate();
 
   useEffect(() => {
-    console.log("USEEFFECT socket-component connect to the web socket");
+    //console.log("USEEFFECT socket-component connect to the web socket");
     /** connect to the web socket */
-    console.log("SOCKET CONNECT");
+    //console.log("SOCKET CONNECT");
     socket.connect();
     /** save socket in context */
     SocketDispatch({ type: "update_socket", payload: socket });
   }, [socket]);
 
   useEffect(() => {
-    console.log("USEEFFECT socket-component StartListener");
+    //console.log("USEEFFECT socket-component StartListener");
 
     /** start the event listeners */
     socket.removeAllListeners();
     const StartListener = () => {
       /**error received */
       socket.on("ErrMessage", ({ code }: { code: string }) => {
-        console.log("Error code:", code, "\nError message:", ErrMessage[code]);
+        //console.log("Error code:", code, "\nError message:", ErrMessage[code]);
         if (code.search("err1") >= 0) {
           setFriendErrMsg(ErrMessage[code]);
         } else if (code.search("err2") >= 0) {
@@ -86,24 +86,24 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
       });
       /**receive a invite */
       socket.on("GameInvite", (invite: { id: string; nickname: string }) => {
-        console.log("invite receive: ", invite);
+        //console.log("invite receive: ", invite);
         setInviteList([...inviteList, invite]);
         if (selectedChatWindow !== SelectedChatWindow.INVITES) setHasNewInvite(true);
       });
       /**disconnect */
       socket.on("Disconnect", () => {
-        console.log("Disconnected");
+        //console.log("Disconnected");
         window.sessionStorage.clear();
         socket.disconnect();
         navigate("/");
       });
       /**user is banned from chan */
       socket.on("UserBan", (roomId) => {
-        console.log("You have been banned from: ", roomId);
+        //console.log("You have been banned from: ", roomId);
       });
       /**remove a room */
       socket.on("RemoveRoom", (channelId) => {
-        console.log("Remove room: ", channelId);
+        //console.log("Remove room: ", channelId);
         const newRooms = rooms.filter((room) => {
           if (room.channel.id === channelId) return false;
           return true;
@@ -116,7 +116,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
       });
       /**update an existing channel */
       socket.on("UpdateRoom", (updateChan: Channel) => {
-        console.log("Update channel: ", { updateChan });
+        //console.log("Update channel: ", { updateChan });
         const newRoom = rooms.map((room) => {
           if (room.channel.id === updateChan.id)
             return {
@@ -131,16 +131,16 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
       /**receive a friend list */
       socket.on("FriendList", (friendList: User[]) => {
         setFriendList(friendList);
-        console.log("Received friendlist:", { friendList });
+        //console.log("Received friendlist:", { friendList });
       });
       /**receive the bloqued user list */
       socket.on("BloquedList", (bloquedList: User[]) => {
         setBloquedList(bloquedList);
-        console.log("Received blocklist:", { bloquedList });
+        //console.log("Received blocklist:", { bloquedList });
       });
       /** A new User join a room*/
       socket.on("JoinRoom", ({ id, user }: { id: string; user: User }) => {
-        console.log("user: ", user, "join room: ", id);
+        //console.log("user: ", user, "join room: ", id);
         const newRooms = [...rooms];
         const room = newRooms.find((room) => {
           if (room.channel.id === id) return true;
@@ -165,7 +165,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
       });
       /**receive Room message */
       socket.on("RoomMessage", ({ roomId, message }: { roomId: string; message: Message }) => {
-        console.log("Message received on: ", roomId, "\nmessage: ", {
+        //console.log("Message received on: ", roomId, "\nmessage: ", {
           message,
         });
         const newRooms = [...rooms];
@@ -198,7 +198,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
       });
       /**add a new room */
       socket.on("NewRoom", ({ room, itch }: { room: Room; itch: Boolean }) => {
-        console.log("New room received: ", room, "try to create: ", [...rooms, room]);
+        //console.log("New room received: ", room, "try to create: ", [...rooms, room]);
         setRooms([...rooms, room]);
         setMessages(room.message);
         setUserList(room.user);
@@ -220,7 +220,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
       });
       /**room list */
       socket.on("Rooms", (res: Room[]) => {
-        console.log("Room list received:", res);
+        //console.log("Room list received:", res);
         res.forEach((room) => {
           room.newMessage = false;
         });
@@ -228,7 +228,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
       });
       /**UserList update */
       socket.on("UpdateUserList", ({ user, roomId }: { user: User[]; roomId: string }) => {
-        console.log("Updated user list", user);
+        //console.log("Updated user list", user);
         const newRooms = rooms.map((room) => {
           if (room.channel.id === roomId) {
             room.user = [...user];
@@ -249,14 +249,14 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
             if (user.username === window.sessionStorage.getItem("username")) return true;
             return false;
           });
-          console.log(user);
+          //console.log(user);
           setUser({ ...newUser });
-          console.log("userList", userList, "priv: ", newUser.privilege);
+          //console.log("userList", userList, "priv: ", newUser.privilege);
         }
       });
       /**set a user disconected */
       socket.on("RemoveUser", ({ username, roomId }: { username: string; roomId: string }) => {
-        console.log("User: ", username, "disconnect from: ", roomId);
+        //console.log("User: ", username, "disconnect from: ", roomId);
         const newRooms = rooms.map((room) => {
           if (room.channel.id === roomId)
             return {
@@ -287,44 +287,44 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
       });
       /**receive new id */
       socket.on("new_user", (uid: string) => {
-        console.log("User connected, new user received", uid, "last uid");
+        //console.log("User connected, new user received", uid, "last uid");
         SocketDispatch({ type: "update_uid", payload: uid });
       });
       /**reconnect event*/
       socket.io.on("reconnect", (attempt) => {
-        console.log("Reconnection attempt: " + attempt);
+        //console.log("Reconnection attempt: " + attempt);
       });
 
       /**reconnect attempt event */
       socket.io.on("reconnect_attempt", (attempt) => {
-        console.log("Reconnection attempt: " + attempt);
+        //console.log("Reconnection attempt: " + attempt);
       });
 
       /**Reconnection error */
       socket.io.on("reconnect_error", (error) => {
-        console.log("Reconnection error: " + error);
+        //console.log("Reconnection error: " + error);
       });
 
       /**Reconnection failed */
       socket.io.on("reconnect_failed", () => {
-        console.log("Reconnection failed");
+        //console.log("Reconnection failed");
         alert("Connection to chat lost. Please refresh the page.");
       });
 
       /**Connection failed */
       socket.on("connect_error", (err) => {
-        console.log(`connect_error due to ${err.message}`);
+        //console.log(`connect_error due to ${err.message}`);
       });
 
       /**receive list of online users */
       socket.on("OnlineList", (newOnlineList: User[]) => {
         setOnlineList(newOnlineList);
-        console.log("Received onlineList: ", { newOnlineList });
+        //console.log("Received onlineList: ", { newOnlineList });
       });
       /**receive list of ingame users */
       socket.on("IngameList", (newIngameList: string[]) => {
         setIngameList(newIngameList);
-        console.log("Received IngameList: ", { newIngameList });
+        //console.log("Received IngameList: ", { newIngameList });
       });
     };
     StartListener();

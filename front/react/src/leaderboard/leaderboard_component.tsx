@@ -18,7 +18,7 @@ export default function Userlist() {
           setUserlist(res.data);
         })
         .catch((e) => {
-          console.log("Error while fetching userlist", e);
+          //console.log("Error while fetching userlist", e);
         });
     };
 

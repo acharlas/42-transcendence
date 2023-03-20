@@ -28,11 +28,11 @@ export class MfaService {
         .verifications.create({ to: phoneNumber, channel: 'sms' })
         .then(
           (verification) => {
-            console.log(verification);
+            //console.log(verification);
             return resolve(true);
           },
           (e) => {
-            console.log(e);
+            //console.log(e);
             return reject(new ForbiddenException('2fa request failed'));
           },
         );
@@ -51,11 +51,11 @@ export class MfaService {
         .verificationChecks.create({ to: phoneNumber, code: codeToCheck })
         .then(
           (verification_check) => {
-            console.log(verification_check);
+            //console.log(verification_check);
             return resolve(verification_check.status === 'approved');
           },
           (e) => {
-            console.log(e);
+            //console.log(e);
             return reject(new ForbiddenException('2fa verification failed'));
           },
         );
@@ -69,7 +69,7 @@ export class MfaService {
 
     const success = await this.mfaSendSms(dto.phoneNumber);
     if (success) {
-      console.log('mfa initSetup ok');
+      //console.log('mfa initSetup ok');
       await this.prisma.user.update({
         where: { id: userId },
         data: {
@@ -78,7 +78,7 @@ export class MfaService {
       });
       return true;
     } else {
-      console.log('mfa initSetup failed');
+      //console.log('mfa initSetup failed');
       throw new ForbiddenException("Could't send 2fa sms");
     }
   }
@@ -92,7 +92,7 @@ export class MfaService {
     const success = await this.mfaCheckCode(user.mfaPhoneNumber, dto.codeToCheck);
 
     if (success) {
-      console.log('mfa finishSetup ok');
+      //console.log('mfa finishSetup ok');
       await this.prisma.user.update({
         where: { id: userId },
         data: {
@@ -100,7 +100,7 @@ export class MfaService {
         },
       });
     } else {
-      console.log('mfa finishSetup failed');
+      //console.log('mfa finishSetup failed');
       throw new ForbiddenException('2fa verification failed');
     }
   }
@@ -113,9 +113,9 @@ export class MfaService {
 
     const success = await this.mfaSendSms(user.mfaPhoneNumber);
     if (success) {
-      console.log('mfa initSignIn ok');
+      //console.log('mfa initSignIn ok');
     } else {
-      console.log('mfa initSignIn failed');
+      //console.log('mfa initSignIn failed');
       throw new ForbiddenException("Could't send 2fa sms");
     }
   }
@@ -128,10 +128,10 @@ export class MfaService {
 
     const success = await this.mfaCheckCode(user.mfaPhoneNumber, dto.codeToCheck);
     if (success) {
-      console.log('mfa validateSignIn ok');
+      //console.log('mfa validateSignIn ok');
       return await this.authService.signTokens(userId, false);
     } else {
-      console.log('mfa validateSignIn failed');
+      //console.log('mfa validateSignIn failed');
       throw new ForbiddenException('2fa verification failed');
     }
   }

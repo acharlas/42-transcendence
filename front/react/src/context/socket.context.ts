@@ -25,14 +25,14 @@ export const SocketReducer = (
   state: IoSocketContextState,
   action: ISocketContextAction
 ) => {
-  console.log(
+  //console.log(
     `Message received - Action: ${action.type} - payload: `,
     action.payload
   );
 
   switch (action.type) {
     case "update_socket":
-      console.log("newsocket", action.payload);
+      //console.log("newsocket", action.payload);
       return { ...state, socket: action.payload as Socket };
     case "update_uid":
       return { ...state, uid: action.payload as string };

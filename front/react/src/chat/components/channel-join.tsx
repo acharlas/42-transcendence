@@ -13,7 +13,7 @@ function ChannelJoinComponent() {
     const name = newRoomRef.current.value || "";
     const pass = newPassRef.current.value || "";
 
-    console.log("joining room: ", name);
+    //console.log("joining room: ", name);
     socket.emit("JoinRoom", {
       name: name,
       password: pass,
@@ -25,22 +25,12 @@ function ChannelJoinComponent() {
   return (
     <div className="chat-box-container">
       <form className="create-join-menu-title">
-        {JoinErrMsg && (
-          <p className="room-chat-err-message">{JoinErrMsg}</p>
-        )}
+        {JoinErrMsg && <p className="room-chat-err-message">{JoinErrMsg}</p>}
         Name:
-        <input
-          ref={newRoomRef}
-          placeholder="Name..."
-          className="create-join-menu-input"
-        />
+        <input ref={newRoomRef} placeholder="Name..." className="create-join-menu-input" />
         <p />
         Password (if protected):
-        <input
-          ref={newPassRef}
-          placeholder="Password..."
-          className="create-join-menu-input"
-        />
+        <input ref={newPassRef} placeholder="Password..." className="create-join-menu-input" />
       </form>
       <button className="fullwidth-button" onClick={handleJoinRoom}>
         JOIN

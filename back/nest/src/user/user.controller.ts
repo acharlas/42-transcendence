@@ -96,7 +96,7 @@ export class UserController {
           return resolve(user);
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject(new ForbiddenException('nickname already taken'));
         });
     });

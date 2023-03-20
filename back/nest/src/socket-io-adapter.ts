@@ -23,7 +23,7 @@ export class SokcetIOAdapter extends IoAdapter {
       ],
     };
 
-    console.log('config cors with:', { cors });
+    //console.log('config cors with:', { cors });
 
     const optionsWithCORS: ServerOptions = {
       ...options,
@@ -75,17 +75,17 @@ const createTokenMiddleware =
   (socket: SocketWithAuth, next) => {
     const token =
       socket.handshake.auth.token || socket.handshake.headers['token'];
-    console.log(
+    //console.log(
       `middleware: validating auth token before connection: ${token}`,
     );
 
     try {
-      console.log({ token }, 'secret: ', secret);
+      //console.log({ token }, 'secret: ', secret);
       const payload = JwtService.verify(token, { secret });
-      console.log({ payload });
+      //console.log({ payload });
       validate({ sub: payload.sub })
         .then((ret: User) => {
-          console.log('user', { ret });
+          //console.log('user', { ret });
           socket.userID = ret.id;
           socket.username = ret.username;
           next();
@@ -94,7 +94,7 @@ const createTokenMiddleware =
           return err;
         });
     } catch (e) {
-      console.log(e);
+      //console.log(e);
       next(new Error('FORBIDDEN'));
     }
   };
@@ -104,17 +104,17 @@ const createTokenMiddleware =
   (socket: SocketWithAuth, next) => {
     const token =
       socket.handshake.auth.token || socket.handshake.headers['token'];
-    console.log(
+    //console.log(
       `middleware Game: validating auth token before connection: ${token}`,
     );
 
     try {
-      console.log({ token }, 'secret Game: ', secret);
+      //console.log({ token }, 'secret Game: ', secret);
       const payload = JwtService.verify(token, { secret });
-      console.log({ payload });
+      //console.log({ payload });
       validate({ sub: payload.sub })
         .then((ret: User) => {
-          console.log('user', { ret });
+          //console.log('user', { ret });
           socket.userID = ret.id;
           socket.username = ret.username;
           next();
@@ -123,7 +123,7 @@ const createTokenMiddleware =
           return err;
         });
     } catch (e) {
-      console.log(e);
+      //console.log(e);
       next(new Error('FORBIDDEN'));
     }
   };

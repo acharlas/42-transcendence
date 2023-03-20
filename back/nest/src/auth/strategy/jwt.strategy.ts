@@ -29,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       request?.url !== '/mfa/signin/init' &&
       request?.url !== '/mfa/signin/validate'
     ) {
-      console.log("Can't validate: Missing 2FA");
+      //console.log("Can't validate: Missing 2FA");
       throw new UnauthorizedException('2FA required');
     }
     try {
@@ -41,7 +41,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       delete user.hash;
       return user;
     } catch (e) {
-      console.log(e);
+      //console.log(e);
       throw new BadRequestException('request error');
     }
   }

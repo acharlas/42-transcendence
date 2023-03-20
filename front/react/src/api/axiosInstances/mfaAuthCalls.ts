@@ -6,24 +6,24 @@ const axiosMfaAuth = axios.create({
 
 axiosMfaAuth.interceptors.request.use(
   (request) => {
-    // console.log(request);
+    // //console.log(request);
     const token = window.sessionStorage.getItem("AccessToken");
     if (token) {
       request.headers["Authorization"] = "Bearer " + token;
     } else {
-      console.log("Missing auth token in a mfa auth call.");
+      //console.log("Missing auth token in a mfa auth call.");
     }
     return request;
   },
   (error) => {
-    // console.log(error);
+    // //console.log(error);
     return Promise.reject(error);
   }
 );
 
 axiosMfaAuth.interceptors.response.use(
   (response) => {
-    // console.log(response);
+    // //console.log(response);
     return response;
   },
   async (error) => {

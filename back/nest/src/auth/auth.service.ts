@@ -92,7 +92,7 @@ export class AuthService {
       state: dto.state,
     };
     return new Promise<string>((resolve, reject) => {
-      console.log({ payload });
+      //console.log({ payload });
       axios({
         method: 'post',
         url: 'https://api.intra.42.fr/oauth/token',
@@ -105,7 +105,7 @@ export class AuthService {
           return resolve(ret.data.access_token);
         })
         .catch((err) => {
-          console.log('axios error:', err);
+          //console.log('axios error:', err);
           return reject(
             new ForbiddenException('Failed authenticating with oauth'),
           );
@@ -143,12 +143,12 @@ export class AuthService {
                 return resolve(ret);
               })
               .catch((err) => {
-                console.log('signup: signToken error', err);
+                //console.log('signup: signToken error', err);
                 return reject(new UnauthorizedException('signup failed'));
               });
           })
           .catch((err) => {
-            console.log('signup: prisma.user.create error', err);
+            //console.log('signup: prisma.user.create error', err);
             return reject(new UnauthorizedException('username taken'));
           });
       },
@@ -184,7 +184,7 @@ export class AuthService {
             );
           })
           .catch((err) => {
-            console.log(err);
+            //console.log(err);
             return reject(new ForbiddenException('wrong password'));
           });
       },
@@ -208,7 +208,7 @@ export class AuthService {
               return resolve(ret);
             })
             .catch((err) => {
-              console.log(err);
+              //console.log(err);
               return reject(
                 new ForbiddenException('Failed authenticating with oauth'),
               );
@@ -228,7 +228,7 @@ export class AuthService {
               return resolve(this.signTokens(ret.id, ret.mfaEnabled));
             })
             .catch((err) => {
-              console.log(err);
+              //console.log(err);
               return reject(
                 new ForbiddenException('Failed to signup with oauth.'),
               );

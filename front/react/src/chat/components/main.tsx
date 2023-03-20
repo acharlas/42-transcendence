@@ -34,7 +34,7 @@ function ChatMainComponent() {
   } = useChat();
 
   function handleJoinRoom(key: string) {
-    console.log("try to join:", key);
+    //console.log("try to join:", key);
     closeChatBox();
     const curRoom = rooms.find((room) => {
       return room.channel.id === key;
@@ -47,19 +47,19 @@ function ChatMainComponent() {
       });
       setSelectUser(other);
     }
-    console.log("user set to: ", user);
+    //console.log("user set to: ", user);
   }
 
   const handleAddFriend = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    console.log(newFriend);
+    //console.log(newFriend);
     resetErrMsg();
     socket.emit("AddFriend", { newFriend });
   };
 
   const handleAddBlock = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    console.log(newBlock);
+    //console.log(newBlock);
     resetErrMsg();
     socket.emit("AddBlock", { newBlock });
   };
@@ -102,7 +102,7 @@ function ChatMainComponent() {
     });
 
     if (!foundDmRoom) {
-      console.log("send dm creation: ", nickname);
+      //console.log("send dm creation: ", nickname);
       closeChatBox();
       socket.emit("Dm", { sendTo: nickname });
       return;
@@ -148,7 +148,7 @@ function ChatMainComponent() {
                   <button
                     className="room-menu-button-remove-user"
                     onClick={() => {
-                      console.log("AUAUAU", friend);
+                      //console.log("AUAUAU", friend);
 
                       handleRemoveFriend(friend.nickname);
                     }}
@@ -292,7 +292,7 @@ function ChatMainComponent() {
         <div className="profile__panel__top">Game invites</div>
         <div className="profile__panel__bottom">
           {inviteList.map((invite, id) => {
-            console.log("Game invite from:" + invite.nickname);
+            //console.log("Game invite from:" + invite.nickname);
             inviteListIsEmpty = false;
             return (
               <div key={id}>

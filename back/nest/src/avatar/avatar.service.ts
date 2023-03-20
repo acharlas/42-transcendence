@@ -51,7 +51,7 @@ export class AvatarService {
     if (user?.avatarPath) {
       try {
         const file = readFileSync(join(process.cwd(), user.avatarPath));
-        console.log(file);
+        //console.log(file);
         return new StreamableFile(file);
       } catch (e) {
         throw new NotFoundException();

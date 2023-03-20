@@ -30,7 +30,7 @@ function RoomComponent() {
     if (!String(message).trim()) {
       return;
     } //Not sending empty messages
-    console.log("Sending message: ", actChannel);
+    //console.log("Sending message: ", actChannel);
     if (message[0] != null) {
       userList.find((user) => {
         if (user.username === window.sessionStorage.getItem("username")) return true;

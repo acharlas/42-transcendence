@@ -24,7 +24,7 @@ const App: React.FunctionComponent<IAppProps> = (props) => {
     try {
       getMe();
     } catch (e) {
-      console.log("getMe error in /app, redirecting");
+      //console.log("getMe error in /app, redirecting");
       goRoot();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

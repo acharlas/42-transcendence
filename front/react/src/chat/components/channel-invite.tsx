@@ -4,7 +4,7 @@ import { FunctionComponent, useContext, useRef, useState } from "react";
 import { useChat } from "../../context/chat.context";
 import SocketContext from "../../context/socket.context";
 
-export interface IInviteUserProps { }
+export interface IInviteUserProps {}
 
 const ChannelInviteComponent: FunctionComponent<IInviteUserProps> = (props) => {
   const { actChannel } = useChat();
@@ -14,10 +14,10 @@ const ChannelInviteComponent: FunctionComponent<IInviteUserProps> = (props) => {
 
   const handleValidate = () => {
     setErrorMsg("");
-    console.log("socket", socket);
+    //console.log("socket", socket);
     const userName = userInvite.current.value || "";
 
-    console.log("invite user: ", userName);
+    //console.log("invite user: ", userName);
     if (!String(userName).trim() && userName.length === 0) {
       setErrorMsg("enter a username");
       return;
@@ -26,23 +26,18 @@ const ChannelInviteComponent: FunctionComponent<IInviteUserProps> = (props) => {
     socket.emit("InviteUser", { user: userName, channel: actChannel });
   };
 
-  return (<>
-    <div className="profile__panel__top">
-      Invite user
-    </div>
-    <div className="profile__panel__bottom">
-      {errorMsg.length !== 0 && (
-        <p className="time-selector-popup-error">{errorMsg}</p>
-      )}
-      <input
-        ref={userInvite}
-        placeholder="Username..."
-      />
-      <button onClick={handleValidate} className="fullwidth-button">
-        invite
-      </button>
-    </div>
-  </>);
+  return (
+    <>
+      <div className="profile__panel__top">Invite user</div>
+      <div className="profile__panel__bottom">
+        {errorMsg.length !== 0 && <p className="time-selector-popup-error">{errorMsg}</p>}
+        <input ref={userInvite} placeholder="Username..." />
+        <button onClick={handleValidate} className="fullwidth-button">
+          invite
+        </button>
+      </div>
+    </>
+  );
 };
 
 export default ChannelInviteComponent;

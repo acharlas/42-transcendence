@@ -8,9 +8,11 @@ export interface IChatOwnerPopupContainerProps {
   setShowPopup: Function;
 }
 
-const ChannelOwnerLeavingComponent: FunctionComponent<
-  IChatOwnerPopupContainerProps
-> = ({ setShowPopup }: { setShowPopup: Function }) => {
+const ChannelOwnerLeavingComponent: FunctionComponent<IChatOwnerPopupContainerProps> = ({
+  setShowPopup,
+}: {
+  setShowPopup: Function;
+}) => {
   const [newUser, setUser] = useState<string>("");
   const { ShowRoomSetting, setShowRoomSetting } = useChat();
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -21,12 +23,12 @@ const ChannelOwnerLeavingComponent: FunctionComponent<
   };
 
   const handleChangeSelect = (event) => {
-    console.log(event.target.value);
+    //console.log(event.target.value);
     setUser(event.target.value);
   };
 
   const handleValidate = () => {
-    console.log("change owner and leave: ", newUser);
+    //console.log("change owner and leave: ", newUser);
     if (!newUser || newUser.length === 0) {
       setErrorMsg("select a User");
       return;
@@ -45,9 +47,7 @@ const ChannelOwnerLeavingComponent: FunctionComponent<
   return (
     <>
       <p>Please choose a new owner before leaving:</p>
-      {errorMsg.length !== 0 && (
-        <p className="time-selector-popup-error">{errorMsg}</p>
-      )}
+      {errorMsg.length !== 0 && <p className="time-selector-popup-error">{errorMsg}</p>}
       <select
         onChange={handleChangeSelect}
         value={newUser}

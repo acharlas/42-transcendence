@@ -38,7 +38,7 @@ export default function MfaSignin() {
       await signinWithMfa({ codeToCheck: smsCode });
       goHome();
     } catch (e) {
-      console.log(e);
+      //console.log(e);
       if (e?.response?.status === 401) {
         setErrorMessage("Session expired, please sign in again.");
       } else {

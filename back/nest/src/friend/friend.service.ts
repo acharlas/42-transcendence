@@ -16,7 +16,7 @@ export class FriendService {
     userId: string,
     dto: FriendDto,
   ): Promise<{ myfriend: User[] }> {
-    console.log('add friend', dto.userId);
+    //console.log('add friend', dto.userId);
     return new Promise<{ myfriend: User[] }>((resolve, reject) => {
       if (userId === dto.userId) {
         return reject(
@@ -175,7 +175,7 @@ export class FriendService {
   }
 
   async getFriend(userId: string, id: string): Promise<{ myfriend: User[] }> {
-    console.log('getFriend');
+    //console.log('getFriend');
     return new Promise<{ myfriend: User[] }>((resolve, reject) => {
       if (userId !== id) {
         return reject(

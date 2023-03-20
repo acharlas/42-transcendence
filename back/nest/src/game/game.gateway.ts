@@ -39,20 +39,20 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   server: Server;
 
   afterInit(client: Socket): void {
-    console.log(`client in game after init: ${client.id}`);
+    //console.log(`client in game after init: ${client.id}`);
   }
 
   handleConnection(client: SocketWithAuth): void {
     const socket = this.io.sockets;
 
-    console.log('socket list in game: ', this.socketService.gameSockets);
+    //console.log('socket list in game: ', this.socketService.gameSockets);
     const find = this.socketService.gameSockets.find((socket) => {
       if (socket.userId === client.userID) return true;
       return false;
     });
 
     if (find) {
-      console.log('find to game:', find);
+      //console.log('find to game:', find);
       if (find.socket.id !== client.id) {
         find.socket.emit('Disconnect');
         this.socketService.gameSockets = this.socketService.gameSockets.filter((socket) => {
@@ -66,7 +66,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const lobby = this.gameService.LobbyList.find((lobby) => {
       return PlayerIsInLobby(client.userID, lobby);
     });
-    console.log('lobby find: ', lobby);
+    //console.log('lobby find: ', lobby);
     if (lobby) {
       client.join(lobby.id);
       client.emit('JoinLobby', lobby);
@@ -82,13 +82,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         return true;
       return false;
     });
-    console.log('lobby watch find: ', lobbyWatch);
+    //console.log('lobby watch find: ', lobbyWatch);
     if (lobbyWatch) {
       client.join(lobbyWatch.id);
       client.emit('JoinSpectate', lobbyWatch);
     }
-    console.log(`Client connected to game: ${client.id} | userid: ${client.userID} | name: ${client.username}`);
-    console.log(`Number of sockets connected to game: ${socket.size}`);
+    //console.log(`Client connected to game: ${client.id} | userid: ${client.userID} | name: ${client.username}`);
+    //console.log(`Number of sockets connected to game: ${socket.size}`);
   }
 
   handleDisconnect(client: SocketWithAuth): void {
@@ -98,12 +98,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       return true;
     });
 
-    console.log(`Client disconnected of game: ${client.id} | name: ${client.username}`);
-    console.log(`Number of sockets connected to game: ${socket.size}`);
+    //console.log(`Client disconnected of game: ${client.id} | name: ${client.username}`);
+    //console.log(`Number of sockets connected to game: ${socket.size}`);
     this.gameService
       .PlayerDisconnect(client.userID)
       .then((lobby) => {
-        console.log('lobby found');
+        //console.log('lobby found');
         if (lobby) {
           const player1 = {
             id: lobby.game.player[1].id,
@@ -165,25 +165,25 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                 return;
               })
               .catch((err) => {
-                console.log(err);
+                //console.log(err);
                 return;
               });
           });
         }
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
         return;
       });
   }
 
   @Cron('*/1 * * * * *')
   sync() {
-    // console.log('cron');
+    // //console.log('cron');
     this.gameService
       .MatchPlayer()
       .then((newLobby) => {
-        // console.log('lobby: ', { newLobby });
+        // //console.log('lobby: ', { newLobby });
         newLobby.forEach((lobby) => {
           const socketPlayerOne = this.socketService.gameSockets.find((socket) => {
             if (socket.userId === lobby.playerOne.id) return true;
@@ -193,7 +193,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
             if (socket.userId === lobby.playerTwo.id) return true;
             return false;
           });
-          // console.log('player one: ', { socketPlayerOne }, ' player two: ', {
+          // //console.log('player one: ', { socketPlayerOne }, ' player two: ', {
           //   socketPlayerTwo,
           // });
           socketPlayerOne.socket.join(lobby.id);
@@ -206,14 +206,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         });
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
       });
   }
 
   /*HandShake*/
   @SubscribeMessage('handshake')
   handshake(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('sending back user id....');
+    //console.log('sending back user id....');
     client.emit('handshake', client.id);
     return;
   }
@@ -221,7 +221,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   /*Join queue*/
   @SubscribeMessage('JoiningQueue')
   JoiningQueue(@ConnectedSocket() client: SocketWithAuth, @MessageBody('mode') mode: GameMode): Promise<void> {
-    console.log('User:', client.userID, ' joining the queue');
+    //console.log('User:', client.userID, ' joining the queue');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .JoiningQueue(client.userID, mode)
@@ -230,7 +230,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -239,7 +239,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   /*Leaving queue*/
   @SubscribeMessage('LeavingQueue')
   LeavingQueue(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, ' Leaving the queue');
+    //console.log('User:', client.userID, ' Leaving the queue');
 
     return new Promise<void>((resolve, reject) => {
       this.gameService
@@ -248,7 +248,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           client.emit('LeaveQueue');
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
       return resolve();
@@ -258,7 +258,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   /*Create lobby*/
   @SubscribeMessage('CreateLobby')
   CreateLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, 'create lobby');
+    //console.log('User:', client.userID, 'create lobby');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .CreateLobby(client.userID)
@@ -269,7 +269,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -278,7 +278,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   /*Leaving lobby*/
   @SubscribeMessage('LeavingLobby')
   LeavingLobby(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, ' Leaving lobby');
+    //console.log('User:', client.userID, ' Leaving lobby');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .LeaveLobby(client.userID)
@@ -291,7 +291,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -300,18 +300,18 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   /*Create lobby*/
   @SubscribeMessage('ChangeLobbyMode')
   ChangeLobbyMode(@ConnectedSocket() client: SocketWithAuth, @MessageBody('mode') mode: GameMode): Promise<void> {
-    console.log('User:', client.userID, 'is readdy');
+    //console.log('User:', client.userID, 'is readdy');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .ChangeLobbyMode(client.userID, mode)
         .then((lobby) => {
-          console.log('end');
+          //console.log('end');
           client.emit('UpdateLobby', lobby);
           client.to(lobby.id).emit('UpdateLobby', lobby);
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -320,18 +320,18 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   /*Create lobby*/
   @SubscribeMessage('PlayerLobbyReaddy')
   PlayerLobbbyReaddy(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('User:', client.userID, 'is readdy');
+    //console.log('User:', client.userID, 'is readdy');
     return new Promise<void>((resolve, reject) => {
       this.gameService
         .PlayerLobbyReaddy(client.userID)
         .then((lobby) => {
-          console.log('end');
+          //console.log('end');
           client.emit('UpdateLobby', lobby);
           client.to(lobby.id).emit('UpdateLobby', lobby);
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -343,7 +343,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @ConnectedSocket() client: SocketWithAuth,
     @MessageBody('newHistory') history: CreateHistoryDto,
   ): Promise<void> {
-    console.log('Received newHistory message:', history);
+    //console.log('Received newHistory message:', history);
     this.historyService.updateRankings({
       winnerId: 'c7a689d2-e9db-4469-9607-2a4dc47e311e',
       loserId: 'ee5f9533-0de0-44fe-ac05-8e774d6af6bc',
@@ -355,7 +355,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -376,7 +376,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -402,7 +402,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                       return resolve();
                     })
                     .catch((err) => {
-                      console.log(err);
+                      //console.log(err);
                       return resolve();
                     });
                 } else if (lobby.game.start) {
@@ -502,23 +502,23 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                                   .LeaveLobby(lobby.playerOne.id)
                                   .then((lobby) => {
                                     this.gameService.LeaveLobby(lobby.playerTwo.id).catch((err) => {
-                                      console.log(err);
+                                      //console.log(err);
                                       return reject(err);
                                     });
                                   })
                                   .catch((err) => {
-                                    console.log(err);
+                                    //console.log(err);
                                     return reject(err);
                                   });
                                 return resolve();
                               })
                               .catch((err) => {
-                                console.log(err);
+                                //console.log(err);
                                 return reject();
                               });
                           })
                           .catch((err) => {
-                            console.log(err);
+                            //console.log(err);
                             return reject();
                           });
                       }
@@ -526,7 +526,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
                       client.emit('updateScore', lobby.game.score);
                     })
                     .catch((err) => {
-                      console.log(err);
+                      //console.log(err);
                       return resolve();
                     });
                 }
@@ -534,7 +534,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
               })
               .catch((err) => {
                 this.scheduleRegistry.deleteInterval(lobby.id);
-                console.log(err);
+                //console.log(err);
                 return;
               });
           };
@@ -546,7 +546,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -563,7 +563,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -581,7 +581,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -591,14 +591,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('PlayerReady')
   PlayerReady(@ConnectedSocket() client: SocketWithAuth): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      console.log('PlayerReady');
+      //console.log('PlayerReady');
       this.gameService
         .PlayerReady(client.userID)
         .then((lobby) => {
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -614,14 +614,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     @MessageBody('position') position: number,
   ): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      console.log('PlayerReady', position);
+      //console.log('PlayerReady', position);
       this.gameService
         .UpdatePlayer(client.userID, paddleHeight, paddleWitdh, ballRadius, position)
         .then((lobby) => {
           return resolve();
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });

@@ -32,7 +32,7 @@ export class GameService {
   /*==================Queue===========================*/
   async JoiningQueue(userId: string, gameMode: GameMode): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      console.log('actual queue: ', this.Queue);
+      //console.log('actual queue: ', this.Queue);
       this.CreatePlayer(userId)
         .then((newPlayer) => {
           const find = this.Queue.find((player) => {
@@ -336,10 +336,10 @@ export class GameService {
 
   //add players to ingame list
   async incIngameList(newLobby: Lobby) {
-    // console.log("inc");
+    // //console.log("inc");
     this.ingameList.push(newLobby.playerOne.id);
     this.ingameList.push(newLobby.playerTwo.id);
-    // console.log(this.ingameList);
+    // //console.log(this.ingameList);
     const sock1 = this.socketService.chatSockets.find((socket) => {
       return socket.userId === newLobby.playerOne.id;
     });
@@ -357,11 +357,11 @@ export class GameService {
 
   //rm players from ingame list
   async decIngameList(idOne, idTwo) {
-    // console.log("dec");
+    // //console.log("dec");
     this.ingameList = this.ingameList.filter(function (element, index, array) {
       return element !== idOne && element !== idTwo;
     });
-    // console.log(this.ingameList);
+    // //console.log(this.ingameList);
     const sock1 = this.socketService.chatSockets.find((socket) => {
       return socket.userId === idOne;
     });
@@ -383,7 +383,7 @@ export class GameService {
     let n = 0;
     const newLobby: Lobby[] = [];
 
-    // console.log('queue: ', this.Queue);
+    // //console.log('queue: ', this.Queue);
     return new Promise<Lobby[]>((resolve, reject) => {
       while (n < this.Queue.length) {
         const playerOne = this.Queue[n];
@@ -512,7 +512,7 @@ export class GameService {
       });
       if (!lobby) return reject(new ForbiddenException('no lobby'));
       let nextPos: Position;
-      console.log(lobby.game.ball);
+      //console.log(lobby.game.ball);
       nextPos = {
         x: lobby.game.ball.position.x + lobby.game.ball.vector.x * BallSpeed,
         y: lobby.game.ball.position.y + lobby.game.ball.vector.y * BallSpeed,
@@ -520,7 +520,7 @@ export class GameService {
       nextPos = NormPos(nextPos);
       const bounce = BallOnPaddle(lobby, nextPos);
       if (bounce >= 0) {
-        // console.log(
+        // //console.log(
         //   'bounce!!!!!!!!!!!!!!!!!!!!!!!',
         //   bounce,
         //   lobby.game.player[bounce].position.x,
@@ -537,7 +537,7 @@ export class GameService {
         //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
         // }
         lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1 * lobby.game.ballMomentum;
-        //console.log('bounce');
+        ////console.log('bounce');
         if (bounce === 1)
           lobby.game.ball.position.x =
             lobby.game.player[1].position.x - lobby.game.paddleWidth / 2 - lobby.game.ballRadius / 2;
@@ -551,7 +551,7 @@ export class GameService {
         //     : lobby.game.player[bounce].position.x - lobby.game.paddleWidth / 2 - lobby.game.ballRadius;
         // lobby.game.ball.position.y = nextPos.y;
       } else if (BallScore(lobby, nextPos)) {
-        // console.log(
+        // //console.log(
         //   'ball score',
         //   lobby.game.player[0].position,
         //   lobby.game.player[1].position,
@@ -562,9 +562,9 @@ export class GameService {
         lobby.game.ball.vector.x = RandSpeed(this.Speed).x * -1;
         lobby.game.ball.position = { x: 0.5, y: 0.5 };
         //lobby.game.ball.position = { ...nextPos };
-        //console.log('vitesse score', lobby.game.ball.vector.x);
+        ////console.log('vitesse score', lobby.game.ball.vector.x);
       } else if (ballHitWall(lobby, nextPos)) {
-        // console.log(
+        // //console.log(
         //   'ball hit the wall',
         //   lobby.game.player[0].position,
         //   lobby.game.player[1].position,
@@ -580,7 +580,7 @@ export class GameService {
         } else lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
 
         //lobby.game.ball.position = { ...nextPos };
-        //console.log('vitesse', lobby.game.ball.vector.y);
+        ////console.log('vitesse', lobby.game.ball.vector.y);
       } else {
         //nextPos = NoOOB(nextPos, lobby);
         lobby.game.ball.position = { ...nextPos };

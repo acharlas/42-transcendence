@@ -64,7 +64,7 @@ export class UserService {
 
   async getUser(nickname: string): Promise<User> {
     return new Promise<User>((resolve, reject) => {
-      console.log(nickname);
+      //console.log(nickname);
       
       this.prisma.user
         .findUnique({
@@ -142,12 +142,12 @@ export class UserService {
   async AchievementUpdate(player: Playertab[], score: number[]): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if ((score[1] === EndPoint && score[0] === 0) || (score[0] === EndPoint && score[1] === 0)) {
-        console.log('achievement detect');
+        //console.log('achievement detect');
         this.GetAchievement(player[0].id)
           .then((achievementPLayerOne) => {
             this.GetAchievement(player[1].id)
               .then((achievementPLayerTwo) => {
-                console.log('achievement update: ', achievementPLayerOne, achievementPLayerTwo);
+                //console.log('achievement update: ', achievementPLayerOne, achievementPLayerTwo);
                 if (
                   score[1] === EndPoint &&
                   score[0] === 0 &&

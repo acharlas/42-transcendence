@@ -42,7 +42,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   server: Server;
 
   afterInit(client: Socket): void {
-    console.log(`client after init: ${client.id}`);
+    //console.log(`client after init: ${client.id}`);
   }
 
   handleConnection(client: SocketWithAuth): void {
@@ -53,7 +53,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       return false;
     });
     if (find) {
-      console.log('find:', find);
+      //console.log('find:', find);
       if (find.socket.id !== client.id) {
         find.socket.emit('Disconnect');
         this.socketService.chatSockets = this.socketService.chatSockets.filter((socket) => {
@@ -72,29 +72,29 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       }),
     );
 
-    console.log('Socket list after connection: ', this.socketService.chatSockets);
-    console.log(`Number of sockets connected: ${socket.size}`);
+    //console.log('Socket list after connection: ', this.socketService.chatSockets);
+    //console.log(`Number of sockets connected: ${socket.size}`);
 
     this.channelService
       .getUserRoom(client.userID)
       .then((res) => {
-        console.log('room on connection:', { res });
+        //console.log('room on connection:', { res });
         client.emit('Rooms', res);
         res.forEach((room) => {
           client.join(room.channel.id);
         });
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
       });
     this.friendService
       .getFriendList(client.userID)
       .then((friendList) => {
-        console.log('send friend list: ', friendList);
+        //console.log('send friend list: ', friendList);
         client.emit('FriendList', friendList);
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
       });
     this.blockService
       .getBlockList(client.userID)
@@ -102,9 +102,9 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
         client.emit('BloquedList', bloquedList);
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
       });
-    console.log(`Client connected: ${client.id} | userid: ${client.userID} | name: ${client.username}`);
+    //console.log(`Client connected: ${client.id} | userid: ${client.userID} | name: ${client.username}`);
   }
 
   handleDisconnect(client: SocketWithAuth): void {
@@ -121,16 +121,16 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       }),
     );
 
-    console.log(`Client disconnected: ${client.id} | name: ${client.username}`);
-    console.log('Socket list after disconnection: ', this.socketService.chatSockets);
-    console.log(`Number of sockets connected: ${socket.size}`);
+    //console.log(`Client disconnected: ${client.id} | name: ${client.username}`);
+    //console.log('Socket list after disconnection: ', this.socketService.chatSockets);
+    //console.log(`Number of sockets connected: ${socket.size}`);
   }
 
   /*==========================================*/
   /*HANDSHAKE*/
   @SubscribeMessage('handshake')
   handshake(client: SocketWithAuth): Promise<void> {
-    console.log('sending back user id....');
+    //console.log('sending back user id....');
     client.emit('new_user', client.id);
     return;
   }
@@ -142,18 +142,18 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     @ConnectedSocket()
     client: SocketWithAuth,
   ): Promise<void> {
-    console.log('id:', client.userID, { roomDto });
+    //console.log('id:', client.userID, { roomDto });
     return new Promise<void>((resolve, reject) => {
       this.channelService
         .createChannel(client.userID, roomDto)
         .then((ret) => {
-          console.log('NewRoom Create Send: ', { ret });
+          //console.log('NewRoom Create Send: ', { ret });
           client.join(ret.channel.id);
           client.emit('NewRoom', { room: ret });
           return resolve();
         })
         .catch((err) => {
-          console.log('error create channel: ', err);
+          //console.log('error create channel: ', err);
           client.emit('ErrMessage', { code: 'err31' });
           return reject(err);
         });
@@ -168,13 +168,13 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     @MessageBody('message') message: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    console.log('new message arrive:', message, 'on room: ', roomId);
+    //console.log('new message arrive:', message, 'on room: ', roomId);
     return new Promise<void>((resolve, reject) => {
-      console.log('SendRoom message', { message }, 'channelId:', roomId);
+      //console.log('SendRoom message', { message }, 'channelId:', roomId);
       this.channelService
         .addChannelMessage(client.userID, roomId, client.username, message)
         .then((ret) => {
-          console.log('message resend:', ret, 'roomid: ', roomId);
+          //console.log('message resend:', ret, 'roomid: ', roomId);
           client.broadcast.to(roomId).emit('RoomMessage', { roomId: roomId, message: ret });
           client.emit('RoomMessage', { roomId: roomId, message: ret });
           return resolve();
@@ -193,7 +193,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     @MessageBody('password') password: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    console.log('join room:', name, 'pass', password);
+    //console.log('join room:', name, 'pass', password);
     return new Promise<void>((resolve, reject) => {
       this.channelService
         .JoinChannelByName(name, client.userID, { password: password })
@@ -210,7 +210,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           return resolve();
         })
         .catch((err) => {
-          console.log('MESSAGE: ', err.message);
+          //console.log('MESSAGE: ', err.message);
           if (err.message) client.emit('ErrMessage', { code: err.message });
           return reject(err);
         });
@@ -221,7 +221,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   /* USER LEAVES A ROOM*/
   @SubscribeMessage('LeaveRoom')
   LeaveRoom(@MessageBody('roomId') roomId: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('leave room: ', roomId);
+    //console.log('leave room: ', roomId);
     return new Promise<void>((resolve, reject) => {
       this.channelService
         .leaveChannel(client.userID, roomId)
@@ -251,9 +251,9 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     @MessageBody('toModifie') toModifie: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    console.log('date: ', time, 'Privilege: ', privilege);
+    //console.log('date: ', time, 'Privilege: ', privilege);
     return new Promise<void>((resolve, reject) => {
-      console.log('update user: ', toModifie, 'with pricilege: ', privilege);
+      //console.log('update user: ', toModifie, 'with pricilege: ', privilege);
       this.channelService
         .channelUserUpdate(client.userID, toModifie, roomId, privilege, time)
         .then((ret) => {
@@ -262,7 +262,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
               this.channelService
                 .getChannelUser(roomId)
                 .then((user) => {
-                  console.log('send msg back');
+                  //console.log('send msg back');
                   client.to(roomId).emit('UpdateUserList', { roomId: roomId, user: user });
                   client.emit('UpdateUserList', { roomId: roomId, user: user });
                   if (privilege === UserPrivilege.ban) {
@@ -279,7 +279,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
                 });
               return resolve();
             }).catch((err) => {
-              console.log(err);
+              //console.log(err);
               return reject(err);
             }),
           );
@@ -298,7 +298,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     @MessageBody('Date') time: Date,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    console.log('date');
+    //console.log('date');
     return new Promise<void>((resolve, reject) => {
       return resolve();
     });
@@ -308,13 +308,13 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   /*ADD FRIEND*/
   @SubscribeMessage('AddFriend')
   addFriend(@MessageBody('newFriend') friend: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('newFriend', friend);
+    //console.log('newFriend', friend);
     return new Promise<void>((resolve, reject) => {
       this.userService
         .getUser(friend)
         .then((user) => {
           if (!user) {
-            console.log('friend not found: ', friend);
+            //console.log('friend not found: ', friend);
             client.emit('ErrMessage', { code: 'err12' });
             return;
           }
@@ -332,21 +332,21 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
                           return resolve();
                         })
                         .catch((err) => {
-                          console.log(err);
+                          //console.log(err);
                           return reject(err);
                         });
                     }),
                   );
                 })
                 .catch((err) => {
-                  console.log(err);
+                  //console.log(err);
                   return reject(err);
                 });
             }),
           );
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           client.emit('ErrMessage', { code: 'err11' });
           return reject(err);
         });
@@ -357,7 +357,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   /*ADD BLOCK*/
   @SubscribeMessage('AddBlock')
   addBlock(@MessageBody('newBlock') Block: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('newBlock', Block);
+    //console.log('newBlock', Block);
     return new Promise<void>((resolve, reject) => {
       this.userService
         .getUser(Block)
@@ -380,14 +380,14 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
                           return resolve();
                         })
                         .catch((err) => {
-                          console.log(err);
+                          //console.log(err);
                           return reject();
                         });
                     }),
                   );
                 })
                 .catch((err) => {
-                  console.log(err);
+                  //console.log(err);
                   client.emit('ErrMessage', { code: 'err21' });
                   return reject(err);
                 });
@@ -395,7 +395,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           );
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -405,7 +405,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   /*REMOVE FRIEND*/
   @SubscribeMessage('RemoveFriend')
   RemoveFriend(@MessageBody('nickname') remove: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('remove friend: ', remove);
+    //console.log('remove friend: ', remove);
     return new Promise<void>((resolve, reject) => {
       this.userService
         .getUser(remove)
@@ -424,21 +424,21 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
                           return resolve();
                         })
                         .catch((err) => {
-                          console.log(err);
+                          //console.log(err);
                           return reject(err);
                         });
                     }),
                   );
                 })
                 .catch((err) => {
-                  console.log(err);
+                  //console.log(err);
                   return reject();
                 });
             }),
           );
         })
         .then((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -448,7 +448,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   /*REMOVE BLOCK*/
   @SubscribeMessage('RemoveBlock')
   RemoveBlock(@MessageBody('nickname') remove: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('remove block: ', remove);
+    //console.log('remove block: ', remove);
     return new Promise<void>((resolve, reject) => {
       this.userService
         .getUser(remove)
@@ -467,21 +467,21 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
                           return resolve();
                         })
                         .catch((err) => {
-                          console.log(err);
+                          //console.log(err);
                           return reject(err);
                         });
                     }),
                   );
                 })
                 .catch((err) => {
-                  console.log(err);
+                  //console.log(err);
                   return reject();
                 });
             }),
           );
         })
         .then((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -495,7 +495,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     @MessageBody('updateChannelDto') dto: EditChannelDto,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    console.log('update channel: ', roomId, 'with: ', { dto });
+    //console.log('update channel: ', roomId, 'with: ', { dto });
     return new Promise<void>((resolve, reject) => {
       this.channelService
         .editChannel(client.userID, roomId, dto)
@@ -507,7 +507,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
                 name: channel.name,
                 type: channel.type,
               };
-              console.log('sending update room');
+              //console.log('sending update room');
               client.broadcast.emit('UpdateRoom', updateChan);
               client.emit('UpdateRoom', updateChan);
               return resolve();
@@ -515,7 +515,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           );
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           client.emit('ErrMessage', { code: err.message });
           return reject(err);
         });
@@ -526,7 +526,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   /*DM USER*/
   @SubscribeMessage('Dm')
   Dm(@MessageBody('sendTo') sendTo: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('create dm room: ', sendTo);
+    //console.log('create dm room: ', sendTo);
     return new Promise<void>((resolve, reject) => {
       this.userService
         .getUser(sendTo)
@@ -545,12 +545,12 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
               return resolve();
             })
             .catch((err) => {
-              console.log(err);
+              //console.log(err);
               return reject;
             });
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
     });
@@ -564,7 +564,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     @MessageBody('channel') channel: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    console.log('invite User: ', user, ' to: ', channel);
+    //console.log('invite User: ', user, ' to: ', channel);
     return new Promise<void>((resolve, reject) => {
       this.userService
         .getUser(user)
@@ -579,7 +579,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
             });
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject;
         });
     });
@@ -591,7 +591,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     @MessageBody('inviteId') inviteId: string,
     @ConnectedSocket() client: SocketWithAuth,
   ): Promise<void> {
-    console.log('InviteUserInGame: ', inviteId);
+    //console.log('InviteUserInGame: ', inviteId);
     const addPlayerToRoom = (lobby: Lobby, user: User): void => {
       const gameSocket = this.socketService.gameSockets.find((socket) => {
         if (socket.userId === client.userID) return true;
@@ -631,7 +631,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
                             return resolve(addPlayerToRoom(lobby, user));
                           })
                           .catch((err) => {
-                            console.log(err);
+                            //console.log(err);
                             return reject(err);
                           });
                       }),
@@ -641,7 +641,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
                   }
                 })
                 .catch((err) => {
-                  console.log(err);
+                  //console.log(err);
                   return reject;
                 });
             }),
@@ -657,7 +657,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   /*invite a player to a lobby*/
   @SubscribeMessage('AccepteGameInvite')
   AccepteGameInvite(@MessageBody('userid') userid: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('AccepteGameInvite: ', userid);
+    //console.log('AccepteGameInvite: ', userid);
     return new Promise<void>((resolve, reject) => {
       const lobby = this.gameService.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userid, lobby);
@@ -666,7 +666,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
       this.gameService
         .JoinLobby(client.userID, lobby.id)
         .then((lobby) => {
-          console.log('has join');
+          //console.log('has join');
           const gameSocket = this.socketService.gameSockets.find((socket) => {
             if (socket.userId === client.userID) return true;
             return false;
@@ -682,7 +682,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           if (gameHostSocket) gameHostSocket.socket.emit('JoinLobby', lobby);
         })
         .catch((err) => {
-          console.log('join err:', err);
+          //console.log('join err:', err);
           return reject();
         });
       return resolve();
@@ -693,7 +693,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   /*invite a player to a lobby*/
   @SubscribeMessage('WatchPartie')
   WatchPartie(@MessageBody('userId') userId: string, @ConnectedSocket() client: SocketWithAuth): Promise<void> {
-    console.log('watch: ', userId);
+    //console.log('watch: ', userId);
     return new Promise<void>((resolve, reject) => {
       const lobby = this.gameService.LobbyList.find((lobby) => {
         return PlayerIsInLobby(userId, lobby);
@@ -712,7 +712,7 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
           } else client.emit('JoinGame');
         })
         .catch((err) => {
-          console.log(err);
+          //console.log(err);
           return reject();
         });
       return resolve();

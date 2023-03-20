@@ -15,14 +15,14 @@ export class HistoryController {
   @Get('me')
   getUserHistory(@GetUser('id') userId: string): Promise<HistoryMatch[]> {
     return new Promise<HistoryMatch[]>((resolve, reject) => {
-      console.log('get history: ', userId);
+      //console.log('get history: ', userId);
       this.historyService
         .getUserHistory(userId)
         .then((history) => {
           return resolve(history);
         })
         .catch((err) => {
-          console.log('err: ', err);
+          //console.log('err: ', err);
           return reject(err);
         });
     });

@@ -11,18 +11,18 @@ export const refreshTokens = async (): Promise<any> => {
         },
       })
       .then((r) => {
-        // console.log('Old tokens:');
-        // console.log(window.sessionStorage.getItem('AccessToken'));
-        // console.log(window.sessionStorage.getItem('RefreshToken'));
+        // //console.log('Old tokens:');
+        // //console.log(window.sessionStorage.getItem('AccessToken'));
+        // //console.log(window.sessionStorage.getItem('RefreshToken'));
         window.sessionStorage.setItem("AccessToken", r.data.access_token);
         window.sessionStorage.setItem("RefreshToken", r.data.refresh_token);
-        // console.log('New tokens:');
-        // console.log(window.sessionStorage.getItem('AccessToken'));
-        // console.log(window.sessionStorage.getItem('RefreshToken'));
+        // //console.log('New tokens:');
+        // //console.log(window.sessionStorage.getItem('AccessToken'));
+        // //console.log(window.sessionStorage.getItem('RefreshToken'));
         return resolve(r);
       })
       .catch((e) => {
-        console.log("Error in refreshTokens", e);
+        //console.log("Error in refreshTokens", e);
         return reject(e);
       });
   });
@@ -36,7 +36,7 @@ export const deleteRefreshToken = async (): Promise<any> => {
         return resolve(ret);
       })
       .catch((e) => {
-        console.log("Error in deleteRefreshToken", e);
+        //console.log("Error in deleteRefreshToken", e);
         return reject(e);
       });
   });

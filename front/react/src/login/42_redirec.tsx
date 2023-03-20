@@ -20,12 +20,12 @@ export default function Redirect() {
     const prevState = sessionStorage.getItem("oauth_state");
     sessionStorage.removeItem("oauth_state");
     if (!prevState) {
-      console.log("Missing CSRF state!");
+      //console.log("Missing CSRF state!");
       navigate("/");
       return;
     }
     if (state !== prevState) {
-      console.log("Possible CSRF attempt!");
+      //console.log("Possible CSRF attempt!");
       navigate("/");
       return;
     }
@@ -40,7 +40,7 @@ export default function Redirect() {
         }
       })
       .catch((e) => {
-        console.log("error in Redirect():", e);
+        //console.log("error in Redirect():", e);
         navigate("/signup");
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps

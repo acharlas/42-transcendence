@@ -44,7 +44,7 @@ export default function Profile() {
           setMfaStatus(res.data?.mfaEnabled ? MfaStatus.ENABLED : MfaStatus.DISABLED);
         })
         .catch((e) => {
-          console.log("Settings: Error in fetchSettingsData", e);
+          //console.log("Settings: Error in fetchSettingsData", e);
         });
     };
 
@@ -66,7 +66,7 @@ export default function Profile() {
         }, 100);
       } catch (e) {
         setAvatarError(e?.response?.data?.message);
-        console.log("failed to upload avatar");
+        //console.log("failed to upload avatar");
       }
     } else {
       setAvatarError("please select a file to upload");
@@ -208,7 +208,7 @@ export default function Profile() {
       setSmsCode("");
       if (response?.status === 201) setMfaStatus(MfaStatus.ENABLED);
     } catch (e) {
-      console.log("Settings: error in validateCode", e);
+      //console.log("Settings: error in validateCode", e);
       setMfaError(e?.response?.data?.message);
     }
   };

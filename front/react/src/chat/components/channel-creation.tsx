@@ -12,14 +12,14 @@ function ChannelCreationComponent() {
   const { CreateErrMsg, setCreateErrMsg } = useChat();
 
   function handleCreateRoom() {
-    console.log("socket", socket);
+    //console.log("socket", socket);
     const roomName = newRoomRef.current.value || "";
     let password: string;
 
     if (newPassword.current) password = newPassword.current.value || "";
     else password = "";
 
-    console.log("create room", roomName, password);
+    //console.log("create room", roomName, password);
     if (!String(roomName).trim()) return;
 
     if (!password.length && type === ChannelType.protected) {
@@ -36,50 +36,41 @@ function ChannelCreationComponent() {
   }
 
   const handleChangeSelect = (event) => {
-    console.log(event.target.value);
+    //console.log(event.target.value);
     setType(event.target.value);
-    if (event.target.value !== "protected" && newPassword.current)
-      newPassword.current.value = "";
+    if (event.target.value !== "protected" && newPassword.current) newPassword.current.value = "";
   };
 
-  return (<>
-    <form className="create-join-menu-title">
-      {CreateErrMsg && <p className="room-chat-err-message">{CreateErrMsg}</p>}
-      <p>Name:</p>
-      <input
-        ref={newRoomRef}
-        placeholder="Name..."
-        className="create-join-menu-input"
-      />
-      <p>Room Type:</p>
-      <select
-        onChange={handleChangeSelect}
-        value={type}
-        name="channel type"
-        id="channel-select"
-        className="create-join-menu-input"
-      >
-        <option value="public">public</option>
-        <option value="protected">protected</option>
-        <option value="private">private</option>
-      </select>
-      {type === "protected" && (
-        <>
-          <p>
-            Password:
-          </p>
-          <input
-            ref={newPassword}
-            placeholder="Password..."
-            className="create-join-menu-input"
-          />
-        </>
-      )}
-    </form>
-    <button className="fullwidth-button" onClick={handleCreateRoom}>
-      CREATE
-    </button>
-  </>);
+  return (
+    <>
+      <form className="create-join-menu-title">
+        {CreateErrMsg && <p className="room-chat-err-message">{CreateErrMsg}</p>}
+        <p>Name:</p>
+        <input ref={newRoomRef} placeholder="Name..." className="create-join-menu-input" />
+        <p>Room Type:</p>
+        <select
+          onChange={handleChangeSelect}
+          value={type}
+          name="channel type"
+          id="channel-select"
+          className="create-join-menu-input"
+        >
+          <option value="public">public</option>
+          <option value="protected">protected</option>
+          <option value="private">private</option>
+        </select>
+        {type === "protected" && (
+          <>
+            <p>Password:</p>
+            <input ref={newPassword} placeholder="Password..." className="create-join-menu-input" />
+          </>
+        )}
+      </form>
+      <button className="fullwidth-button" onClick={handleCreateRoom}>
+        CREATE
+      </button>
+    </>
+  );
 }
 
 export default ChannelCreationComponent;

@@ -45,7 +45,7 @@ export default function Profile() {
           setUserData(res.data);
         })
         .catch((e) => {
-          console.log(e);
+          //console.log(e);
           goRoot();
           return;
         });
@@ -59,12 +59,12 @@ export default function Profile() {
       };
       await getHistory()
         .then((res) => {
-          console.log("history: ", res);
+          //console.log("history: ", res);
           const hist = res?.data?.sort(comp);
           setHistory(hist);
         })
         .catch((e) => {
-          console.log(e);
+          //console.log(e);
           goRoot();
           return;
         });
@@ -73,11 +73,11 @@ export default function Profile() {
     const fetchUserAchievement = async () => {
       await getAchievement()
         .then((res) => {
-          console.log("Achievement: ", res);
+          //console.log("Achievement: ", res);
           setAchievement(res.data);
         })
         .catch((e) => {
-          console.log(e);
+          //console.log(e);
           goRoot();
           return;
         });
