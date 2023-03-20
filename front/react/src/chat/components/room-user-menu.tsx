@@ -17,7 +17,6 @@ function UserMenuComponent() {
     friendList,
     bloquedList,
     rooms,
-    closeChatBox,
     setNewRoom,
   } = useChat();
   const { socket } = useContext(SocketContext).SocketState;
