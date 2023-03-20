@@ -75,9 +75,6 @@ const createTokenMiddleware =
   (socket: SocketWithAuth, next) => {
     const token =
       socket.handshake.auth.token || socket.handshake.headers['token'];
-    //console.log(
-      `middleware: validating auth token before connection: ${token}`,
-    );
 
     try {
       //console.log({ token }, 'secret: ', secret);
@@ -104,9 +101,7 @@ const createTokenMiddleware =
   (socket: SocketWithAuth, next) => {
     const token =
       socket.handshake.auth.token || socket.handshake.headers['token'];
-    //console.log(
-      `middleware Game: validating auth token before connection: ${token}`,
-    );
+    
 
     try {
       //console.log({ token }, 'secret Game: ', secret);
