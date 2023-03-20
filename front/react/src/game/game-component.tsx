@@ -73,13 +73,13 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     function preload() {
-      this.load.image("ball", "../../public/assets/ball.png");
+      this.load.image("ball", "http://5.182.18.157:3333/assets/ball.png");
       if (lobby && lobby.mode === GameMode.hyperspeed) {
-        this.load.image("paddle", "../../public/assets/paddlex64.png");
+        this.load.image("paddle", "http://5.182.18.157:3333/assets/ball.png");
       } else {
-        this.load.image("paddle", "../../public/assets/paddle.png");
+        this.load.image("paddle", "http://5.182.18.157:3333/assets/ball.png");
       }
-      this.load.image("map", "../../public/assets/map_classic.png");
+      this.load.image("map", "http://5.182.18.157:3333/assets/ball.png");
     }
 
     function create() {
