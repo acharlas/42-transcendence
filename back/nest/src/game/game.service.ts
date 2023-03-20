@@ -537,7 +537,7 @@ export class GameService {
         //   lobby.game.ball.vector.y = this.Speed * -Math.sin(angle);
         // }
         lobby.game.ball.vector.x = lobby.game.ball.vector.x * -1 * lobby.game.ballMomentum;
-        ////console.log('bounce');
+        //console.log('bounce');
         if (bounce === 1)
           lobby.game.ball.position.x =
             lobby.game.player[1].position.x - lobby.game.paddleWidth / 2 - lobby.game.ballRadius / 2;
@@ -562,7 +562,7 @@ export class GameService {
         lobby.game.ball.vector.x = RandSpeed(this.Speed).x * -1;
         lobby.game.ball.position = { x: 0.5, y: 0.5 };
         //lobby.game.ball.position = { ...nextPos };
-        ////console.log('vitesse score', lobby.game.ball.vector.x);
+        //console.log('vitesse score', lobby.game.ball.vector.x);
       } else if (ballHitWall(lobby, nextPos)) {
         // //console.log(
         //   'ball hit the wall',
@@ -580,7 +580,7 @@ export class GameService {
         } else lobby.game.ball.vector.y = lobby.game.ball.vector.y * -1;
 
         //lobby.game.ball.position = { ...nextPos };
-        ////console.log('vitesse', lobby.game.ball.vector.y);
+        //console.log('vitesse', lobby.game.ball.vector.y);
       } else {
         //nextPos = NoOOB(nextPos, lobby);
         lobby.game.ball.position = { ...nextPos };

@@ -366,7 +366,7 @@ export class ChannelService {
   }
 
   async joinUpdateChannel(user: User, channel: Channel): Promise<Room> {
-    ////console.log('join channel:', channel);
+    //console.log('join channel:', channel);
     return new Promise<Room>((resolve, reject) => {
       //console.log('joining channel: ', { channel }, 'user: ', { user });
       this.prisma.channelUser
