@@ -17,7 +17,6 @@ class SokcetIOAdapter extends platform_socket_io_1.IoAdapter {
                 new RegExp(`/^http:\/\/5\.182\.18\.([1-9]|[1-9]\d):3001$/`),
             ],
         };
-        console.log('config cors with:', { cors });
         const optionsWithCORS = Object.assign(Object.assign({}, options), { cors });
         const jwtService = this.app.get(jwt_1.JwtService);
         const server = super.createIOServer(port, optionsWithCORS);
@@ -45,14 +44,10 @@ class SokcetIOAdapter extends platform_socket_io_1.IoAdapter {
 exports.SokcetIOAdapter = SokcetIOAdapter;
 const createTokenMiddleware = (JwtService, secret, validate) => (socket, next) => {
     const token = socket.handshake.auth.token || socket.handshake.headers['token'];
-    console.log(`middleware: validating auth token before connection: ${token}`);
     try {
-        console.log({ token }, 'secret: ', secret);
         const payload = JwtService.verify(token, { secret });
-        console.log({ payload });
         validate({ sub: payload.sub })
             .then((ret) => {
-            console.log('user', { ret });
             socket.userID = ret.id;
             socket.username = ret.username;
             next();
@@ -62,20 +57,15 @@ const createTokenMiddleware = (JwtService, secret, validate) => (socket, next) =
         });
     }
     catch (e) {
-        console.log(e);
         next(new Error('FORBIDDEN'));
     }
 };
 const createTokenGameMiddleware = (JwtService, secret, validate) => (socket, next) => {
     const token = socket.handshake.auth.token || socket.handshake.headers['token'];
-    console.log(`middleware Game: validating auth token before connection: ${token}`);
     try {
-        console.log({ token }, 'secret Game: ', secret);
         const payload = JwtService.verify(token, { secret });
-        console.log({ payload });
         validate({ sub: payload.sub })
             .then((ret) => {
-            console.log('user', { ret });
             socket.userID = ret.id;
             socket.username = ret.username;
             next();
@@ -85,7 +75,6 @@ const createTokenGameMiddleware = (JwtService, secret, validate) => (socket, nex
         });
     }
     catch (e) {
-        console.log(e);
         next(new Error('FORBIDDEN'));
     }
 };

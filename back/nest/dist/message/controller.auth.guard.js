@@ -18,7 +18,6 @@ let ControllerAuthGuard = class ControllerAuthGuard {
     }
     canActivate(context) {
         const request = context.switchToHttp().getRequest();
-        console.log('request body: ', request.body);
         const { accessToken } = request.body;
         try {
             const payload = this.jwtService.verify(accessToken);

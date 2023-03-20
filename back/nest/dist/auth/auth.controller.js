@@ -31,7 +31,6 @@ let AuthController = class AuthController {
                 return resolve(ret);
             })
                 .catch((err) => {
-                console.log('error:', { err });
                 return reject(err);
             });
         });
@@ -59,7 +58,6 @@ let AuthController = class AuthController {
                     this.authService
                         .signWithApi(ret)
                         .then((ret) => {
-                        console.log({ ret });
                         return resolve(ret);
                     })
                         .catch((err) => {
@@ -76,10 +74,8 @@ let AuthController = class AuthController {
         });
     }
     refreshTokens(req) {
-        console.log(req);
         const userId = req.user['sub'];
         const refreshToken = req.user['refreshToken'];
-        console.log(userId, refreshToken);
         return this.authService.refreshTokens(userId, refreshToken);
     }
     logout(userId) {

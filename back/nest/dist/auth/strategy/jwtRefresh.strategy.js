@@ -30,7 +30,6 @@ let JwtRefreshStrategy = class JwtRefreshStrategy extends (0, passport_1.Passpor
         if (!payload.fullyAuth &&
             request.url !== '/mfa/signin/init' &&
             request.url !== '/mfa/signin/validate') {
-            console.log("Can't validate: Missing 2FA");
             throw new common_1.UnauthorizedException('2FA required');
         }
         try {
@@ -41,7 +40,6 @@ let JwtRefreshStrategy = class JwtRefreshStrategy extends (0, passport_1.Passpor
             return Object.assign(Object.assign({}, payload), { refreshToken });
         }
         catch (e) {
-            console.log(e);
             throw new common_1.BadRequestException('request error');
         }
     }

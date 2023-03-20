@@ -24,14 +24,12 @@ let HistoryController = class HistoryController {
     }
     getUserHistory(userId) {
         return new Promise((resolve, reject) => {
-            console.log('get history: ', userId);
             this.historyService
                 .getUserHistory(userId)
                 .then((history) => {
                 return resolve(history);
             })
                 .catch((err) => {
-                console.log('err: ', err);
                 return reject(err);
             });
         });

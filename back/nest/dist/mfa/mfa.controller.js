@@ -25,23 +25,18 @@ let MfaController = class MfaController {
         this.mfaService = mfaService;
     }
     async initSignIn(userId) {
-        console.log('mfa/signin/init');
         return this.mfaService.initSignIn(userId);
     }
     async validateSignIn(userId, dto) {
-        console.log('mfa/signin/validate', userId, { dto });
         return this.mfaService.validateSignIn(userId, dto);
     }
     async initSetup(userId, dto) {
-        console.log('mfa/setup/init', { dto });
         return this.mfaService.initSetup(userId, dto);
     }
     async finishSetup(userId, dto) {
-        console.log('mfa/setup/validate', { dto });
         return this.mfaService.finishSetup(userId, dto);
     }
     async disable(userId) {
-        console.log('mfa/disable');
         return this.mfaService.disable(userId);
     }
 };
