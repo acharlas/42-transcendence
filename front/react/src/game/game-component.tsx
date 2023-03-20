@@ -73,13 +73,13 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     function preload() {
-      this.load.image("ball", "http://5.182.18.157:3333/assets/ball.png");
+      this.load.image("ball", "../image/ball.png");
       if (lobby && lobby.mode === GameMode.hyperspeed) {
-        this.load.image("paddle", "http://5.182.18.157:3333/assets/paddlex64.png");
+        this.load.image("paddle", "../image/paddlex64.png");
       } else {
-        this.load.image("paddle", "http://5.182.18.157:3333/assets/paddle.png");
+        this.load.image("paddle", "../image/paddle.png");
       }
-      this.load.image("map", "http://5.182.18.157:3333/assets/map_classic.png");
+      this.load.image("map", "../image/map_classic.png");
     }
 
     function create() {
@@ -130,14 +130,6 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
       setGame(game);
 
       //dbg
-      //console.log(
-        "salut: ",
-        player1.body.height / this.physics.world.bounds.height,
-        " ",
-        player1.body.width / this.physics.world.bounds.width,
-        " ",
-        ball.body.height / this.physics.world.bounds.height
-      );
       //console.log("paddle width: ", player1.body.width);
       //console.log("paddle height: ", player2.body.height);
 

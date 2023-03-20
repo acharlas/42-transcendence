@@ -35,7 +35,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     AvatarModule,
     GameModule,
     ServeStaticModule.forRoot({
-      rootPath: '../../../front/react/build/index.html',
+      rootPath: '/root/42-transcendence/front/react/build',
     }),
   ],
 })
