@@ -5,7 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { PrismaService } from './prisma/prisma.service';
 import { SokcetIOAdapter } from './socket-io-adapter';
-import { writeFileSync, readFileSync } from 'fs';
+import * as fs from 'fs';
 
 async function bootstrap() {
   const httpsOptions = {
