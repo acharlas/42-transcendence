@@ -7,7 +7,11 @@ import { PrismaService } from './prisma/prisma.service';
 import { SokcetIOAdapter } from './socket-io-adapter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = {
+    key: fs.readFileSync('/etc/letsencrypt/live/cossetheo.com/fullchain.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/cossetheo.com/privkey.pem'),
+  };
+  const app = await NestFactory.create(AppModule, {httpsOptions});
   const configService = app.get(ConfigService);
   const prisma = app.get(PrismaService);
 
