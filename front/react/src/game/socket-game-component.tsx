@@ -27,7 +27,7 @@ const SocketGameContextComponent: React.FunctionComponent<ISocketGameContextComp
     setHistory,
   } = useGame();
 
-  const socket = useSocket("http://5.182.18.157:3333/game", {
+  const socket = useSocket("http://5.182.18.157:80/game", {
     reconnectionAttempts: 5,
     reconnectionDelay: 5000,
     autoConnect: false,

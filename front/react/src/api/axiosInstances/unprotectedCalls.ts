@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosNoAuth = axios.create({
-  baseURL: "http://5.182.18.157:3333",
+  baseURL: "http://5.182.18.157:80",
 });
 
 axiosNoAuth.interceptors.request.use(
