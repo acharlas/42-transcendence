@@ -20,7 +20,7 @@ http://5.182.18.157:3001/
 
 ### OpenApi (swagger)
 
-http://5.182.18.157:80/docs/
+http://5.182.18.157:443/docs/
 
 ## Env files templates
 

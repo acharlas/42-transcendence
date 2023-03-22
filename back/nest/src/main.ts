@@ -31,6 +31,6 @@ async function bootstrap() {
   });
 
   app.useWebSocketAdapter(new SokcetIOAdapter(app, configService, prisma));
-  await app.listen(3333);
+  await app.listen(443);
 }
 bootstrap();

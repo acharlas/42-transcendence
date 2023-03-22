@@ -3,7 +3,7 @@ import axios from "axios";
 import { refreshTokens } from "../refresh-api";
 
 const axiosWithAuth = axios.create({
-  baseURL: "http://5.182.18.157:80",
+  baseURL: "http://5.182.18.157:443",
 });
 
 axiosWithAuth.interceptors.request.use(
