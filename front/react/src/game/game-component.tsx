@@ -73,13 +73,13 @@ const GameComponent: FunctionComponent<IGameComponentProps> = (props) => {
     }
 
     function preload() {
-      this.load.image("ball", "https://5.182.18.157:443/assets/ball.png");
+      this.load.image("ball", "https://astropong.cossetheo.com/assets/ball.png");
       if (lobby && lobby.mode === GameMode.hyperspeed) {
-        this.load.image("paddle", "https://5.182.18.157:443/assets/paddlex64.png");
+        this.load.image("paddle", "https://astropong.cossetheo.com/assets/paddlex64.png");
       } else {
-        this.load.image("paddle", "https://5.182.18.157:443/assets/paddle.png");
+        this.load.image("paddle", "https://astropong.cossetheo.com/assets/paddle.png");
       }
-      this.load.image("map", "https://5.182.18.157:443/assets/map_classic.png");
+      this.load.image("map", "https://astropong.cossetheo.com/assets/map_classic.png");
     }
 
     function create() {

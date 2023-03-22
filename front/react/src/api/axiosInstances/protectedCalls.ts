@@ -3,7 +3,7 @@ import axios from "axios";
 import { refreshTokens } from "../refresh-api";
 
 const axiosWithAuth = axios.create({
-  baseURL: "https://5.182.18.157:443",
+  baseURL: "https://astropong.cossetheo.com",
 });
 
 axiosWithAuth.interceptors.request.use(

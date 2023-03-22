@@ -16,18 +16,18 @@ Deploy project with:
 
 ### Front
 
-http://5.182.18.157:3001/
+https://5.182.18.157:3001/
 
 ### OpenApi (swagger)
 
-https://5.182.18.157:443/docs/
+https://astropong.cossetheo.com/docs/
 
 ## Env files templates
 
 - frontend: `/front/react/.env` (exposed to the public - no secrets here!)
 
 ```
-REACT_APP_42API_REDIRECT='http://5.182.18.157:3001/42-redirect'
+REACT_APP_42API_REDIRECT='https://5.182.18.157:3001/42-redirect'
 REACT_APP_42API_UID='REPLACE'
 ```
 
@@ -37,7 +37,7 @@ REACT_APP_42API_UID='REPLACE'
 DATABASE_URL='postgresql://postgres:postgres@db:5432/postgres?schema=public'
 JWT_SECRET='REPLACE'
 
-42API_REDIRECT='http://5.182.18.157:3001/42-redirect'
+42API_REDIRECT='https://5.182.18.157:3001/42-redirect'
 42API_UID='REPLACE'
 42API_SECRET='REPLACE'
 
@@ -52,7 +52,7 @@ TWILIO_SERVICE_SID='REPLACE'
 DATABASE_URL='postgresql://postgres:postgres@test-db:5433/postgres?schema=public'
 JWT_SECRET='REPLACE'
 
-42API_REDIRECT='http://5.182.18.157:3001/42-redirect'
+42API_REDIRECT='https://5.182.18.157:3001/42-redirect'
 42API_UID='REPLACE'
 42API_SECRET='REPLACE'
 

@@ -5,7 +5,7 @@ import axiosWithAuth from "./axiosInstances/protectedCalls";
 export const refreshTokens = async (): Promise<any> => {
   return new Promise<any>((resolve, reject) => {
     axios
-      .get("https://5.182.18.157:443/auth/refresh", {
+      .get("https://astropong.cossetheo.com/auth/refresh", {
         headers: {
           Authorization: "Bearer " + window.sessionStorage.getItem("RefreshToken"),
         },
