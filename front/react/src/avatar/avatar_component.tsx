@@ -7,7 +7,7 @@ export default function Avatar(id: string, classname: string = "profile__avatar"
   return (
     <img
       className={classname}
-      src={`http://5.182.18.157:443/avatar/` + id}
+      src={`https://5.182.18.157:443/avatar/` + id}
       onError={({ currentTarget }) => {
         currentTarget.onerror = null; // no looping
         currentTarget.src = defaultPicture;

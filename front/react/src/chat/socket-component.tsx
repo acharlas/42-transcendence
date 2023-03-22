@@ -42,7 +42,7 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
     selectedChatWindow,
   } = useChat();
 
-  const socket = useSocket("http://5.182.18.157:443/chat", {
+  const socket = useSocket("https://5.182.18.157:443/chat", {
     reconnectionAttempts: 5,
     reconnectionDelay: 5000,
     autoConnect: false,

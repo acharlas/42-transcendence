@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosMfaAuth = axios.create({
-  baseURL: "http://5.182.18.157:443",
+  baseURL: "https://5.182.18.157:443",
 });
 
 axiosMfaAuth.interceptors.request.use(
